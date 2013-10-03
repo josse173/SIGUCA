@@ -25,10 +25,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 // development only
 if ('development' == app.get('env')) {
   app.use(express.errorHandler());
+  app.locals.pretty = true;
+  //app.configure('development', function () { app.locals.pretty = true; });
 }
+
+/** Agregar las rutas para cada página que se va a ofrecer, si la página envía datos de regreso al servirdor deben crear un app.post tambiém
+**/
 
 app.get('/', routes.index);
 app.get('/users', user.list);
+app.get('/roles', routes.roles); //Llama la vista de roles a través de ./routes/index.js
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

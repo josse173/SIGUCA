@@ -1,0 +1,12 @@
+extend layout
+
+//-Cualquier cosa dentro del bloque sigucaCSS va a ser insertado en el head del layout
+block sigucaCSS
+	link(rel='stylesheet', href='/stylesheets/sigucaRoles.css')
+	//Este es un comentario que va a salir en el HTML
+	//-Y este es un comentario que solo jade ve.
+
+block content
+	h1 PAJA DE LA TIMBUCA
+	a.btn.btn-primary
+		|&nbsp;Boton

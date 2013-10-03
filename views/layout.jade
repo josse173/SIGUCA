@@ -1,7 +1,19 @@
 doctype 5
 html
   head
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
     title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel='stylesheet', href='/stylesheets/flatly.bootstrap.min.css')
+
+    block sigucaCSS
+    link(rel='stylesheet', href='/stylesheets/sigucaMain.css')
   body
+    h1 Esto no es timbuca, es SIGUCA!
+
     block content
+    
+    script(src="/javascripts/jquery-2.0.3.min.js")
+    script(src="/javascripts/bootstrap.min.js")
+    //- Con este bloque pueden agregar scripts individuales para cada vista
+    block sigucaJS
