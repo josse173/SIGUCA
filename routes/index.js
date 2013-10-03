@@ -5,7 +5,7 @@
  */
 
 exports.index = function(req, res){
-  res.render('index', { title: 'Express' });
+  res.render('index', { title: 'SIGUCA' });
 };
 
 exports.roles = function(req, res){
