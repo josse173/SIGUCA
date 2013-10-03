@@ -9,6 +9,6 @@ exports.index = function(req, res){
 };
 
 exports.roles = function(req, res){
-	res.render('roles', {title: 'SIGUCA - Administración de Roles'})
+	res.render('roles', {title: 'SIGUCA - Administración de Roles', rol: req.rol, nombre: req.nombre})
 }
 

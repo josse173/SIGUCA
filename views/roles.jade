@@ -8,5 +8,17 @@ block sigucaCSS
 
 block content
 	h1 PAJA DE LA TIMBUCA
-	a.btn.btn-primary
-		|&nbsp;Boton
+
+	form.form-horizontal(action="roles" method="post")
+		div.control-group
+			label.control-label(for="rol")
+				|Rol
+			div.controls
+				input(type="text" name="rol" placeholder="Nuevo Rol")
+		div.control-group
+			label.control-label(for="nombre")
+				|Nombre
+			div.controls
+				input(type="text" name="nombre" placeholder="Nombre")
+		button.btn.btn-primary(type="submit" value="roles")
+			|Ingresar a Mongo

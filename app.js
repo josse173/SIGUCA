@@ -9,6 +9,17 @@ var user = require('./routes/user');
 var http = require('http');
 var path = require('path');
 
+/** Leer la configuración de ./config/config **/
+var env = process.env.NODE_ENV || 'development';
+var config = require('./config/config')[env];
+var mongoose = require('mongoose');
+
+//Para conectarse a la base de datos indicada en config.db
+mongoose.connect(config.db);
+
+require('./models/roles');
+var dbRol = mongoose.model('Rol'); //Con esto tenemos el modelo rol listo para ser guardado en mongo
+
 var app = express();
 
 // all environments
@@ -35,6 +46,21 @@ if ('development' == app.get('env')) {
 app.get('/', routes.index);
 app.get('/users', user.list);
 app.get('/roles', routes.roles); //Llama la vista de roles a través de ./routes/index.js
+app.post('/roles', function(req, res){
+	console.log('Recibimos rol:'+req.body.rol+' y nombre:'+req.body.nombre);
+	var newRol = new dbRol (req.body)
+	newRol.save(function(err){
+		if (err) {
+			return res.render('roles', {
+				errors: utils.errors(err.errors),
+				rol: rol,
+				nombre: nombre,
+				title: 'SIGUCA - Administración de Roles - Intende nuevamente'
+			});
+		};
+	});
+	res.redirect('/');
+});
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
