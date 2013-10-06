@@ -7,9 +7,74 @@ block sigucaCSS
 
 block content
   
-  .row
-        h4 SIGUCA
-        p#descripcion  GRAFICOS
+  div.row
+    div.col-sm-9
+       img.img-responsive(src='/images/crossFilter.png', alt='Responsive image')
+    div.col-sm-3
+     div.filter
+       label#tGrafico(for='grafico') 
+         |Tipo de Gráfico: 
+       .btn-group
+           button.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown')
+            | Todos
+            span.caret
+           ul.dropdown-menu
+            li
+             a(href='#') Barras
+            li
+             a(href='#') CrossFilter
+     div.filter
+       label#tHorario(for='horario') 
+         |Tipo de Horario: 
+       .btn-group
+           button.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown')
+            | Todos
+            span.caret
+           ul.dropdown-menu
+            li
+             a(href='#') Diurno
+            li
+             a(href='#') De 1pm a 8pm
+     div.filter
+        label#empleados(for='empleados') 
+         |Empleados: 
+        .btn-group
+           button.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown')
+            | Todos
+            span.caret
+           ul.dropdown-menu
+            li
+             a(href='#') Rita Cortés Gallardo
+            li
+             a(href='#') Elena Porras Piedra
+            li
+             a(href='#') Zacarías Piedra del Río
+     div.filter
+        label#fInicio(for='fInicio') 
+         |Fecha de Inicio: 
+        .btn-group
+           button.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown')
+            | Todos
+            span.caret
+           ul.dropdown-menu
+            li
+             a(href='#') Insert datePicker
+     div.filter
+        label#fFinal(for='fFinal') 
+         |Fecha Final: 
+        .btn-group
+           button.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown')
+            | Todos
+            span.caret
+           ul.dropdown-menu
+            li
+             a(href='#') Insert datePicker
+            
+            
+
+
+
+
      
 block sigucaNavbarItems
   ul.nav.navbar-nav
