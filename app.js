@@ -40,11 +40,14 @@ if ('development' == app.get('env')) {
   //app.configure('development', function () { app.locals.pretty = true; });
 }
 
-/** Agregar las rutas para cada página que se va a ofrecer, si la página envía datos de regreso al servirdor deben crear un app.post tambiém
+/** Agregar las rutas para cada página que se va a ofrecer, 
+si la página envía datos de regreso al servirdor deben crear un app.post tambiém
 **/
 
 app.get('/', routes.index);
 app.get('/users', user.list);
+app.get('/ingresado', routes.ingresado);
+app.get('/graficos', routes.graficos);
 app.get('/roles', routes.roles); //Llama la vista de roles a través de ./routes/index.js
 app.post('/roles', function(req, res){
 	console.log('Recibimos rol:'+req.body.rol+' y nombre:'+req.body.nombre);

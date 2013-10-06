@@ -1,0 +1,35 @@
+extends layout
+
+block sigucaCSS
+  link(rel='stylesheet', href='/stylesheets/flipclock.css')
+  link(rel='stylesheet', href='/stylesheets/sigucaGraficos.css')
+  link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
+
+block content
+  
+  .row
+        h4 SIGUCA
+        p#descripcion  GRAFICOS
+     
+block sigucaNavbarItems
+  ul.nav.navbar-nav
+    li
+      a(href="/ingresado")
+        |Escritorio
+    li.active
+      a(href="#")
+        |Gráficos
+    li
+      a(href="#")
+        |Acciones
+    li
+      a(href="#")
+        |Ayuda
+
+          
+          
+
+block sigucaJS
+  script(src="/javascripts/flipclock/libs/prefixfree.min.js")
+  script(src="/javascripts/flipclock/flipclock.min.js")
+  script(src="/javascripts/sigucaHome.js")

@@ -2,17 +2,29 @@ extends layout
 
 block sigucaCSS
   link(rel='stylesheet', href='/stylesheets/flipclock.css')
+  link(rel='stylesheet', href='/stylesheets/sigucaInicio.css')
+  link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
 
 block content
-  h1= title
-  p Welcome to #{title}
-  div#flipClock
-
+  div.contenedorPrin
+    div.row
+     div.col-sm-3
+      a.btn.btn-primary(href='/roles', role='button', data-toggle='modal') Ingresar
+       #myModal.modal.hide.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+         
+     div.col-sm-9
+        #flipClock
+    div.segundoPanel
+        h4 SIGUCA
+        p#descripcion  Sistema de Gestiión de Usuarios y Control de Asistencia.
+     
 block sigucaNavbarItems
   ul.nav.navbar-nav
     li.active
       a(href="#")
         |Help
+          
+          
 
 block sigucaJS
   script(src="/javascripts/flipclock/libs/prefixfree.min.js")
