@@ -709,7 +709,7 @@ var FlipClock;
 			for(var x = 0; x < 10; x++) {
 				var item = $([
 				'<li data-digit="'+x+'">',
-					'<a href="#">',
+					'<a name="">',
 						'<div class="up">',
 							'<div class="shadow"></div>',
 							'<div class="inn">'+x+'</div>',
