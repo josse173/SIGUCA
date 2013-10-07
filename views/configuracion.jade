@@ -8,6 +8,8 @@ block sigucaCSS
 block content
   div.row
     div.col-sm-8
+     h1 Configuraciones
+     br
      div.filter
        label#tGrafico(for='grafico') 
          |Recursos Humanos: 
@@ -56,7 +58,7 @@ block content
      
 block sigucaNavbarItems
   ul.nav.navbar-nav
-    li.active 
+    li 
       a(href="/escritorio")
         i.icon-home.icon-large
         |&nbsp;Escritorio
@@ -68,7 +70,7 @@ block sigucaNavbarItems
       a(href="/justificaciones")
         i.icon-edit.icon-large  
         |&nbsp;Justificaciones
-    li
+    li.active
       a(href="/configuracion")
         i.icon-cogs.icon-large
         |&nbsp;Configuracion

@@ -33,3 +33,9 @@
     margin-top: 15px;
     width: 150px;
 }
+.filter {
+    height: 70px;
+}
+#tGrafico {
+    width: 150px;
+}

@@ -7,15 +7,15 @@ block sigucaCSS
 
 block sigucaNavbarItems
   ul.nav.navbar-nav
-    li.active 
-      a(href="#")
+    li
+      a(href="/escritorio")
         i.icon-home.icon-large
         |&nbsp;Escritorio
     li
       a(href="/graficos")
         i.icon-bar-chart.icon-large
         |&nbsp;Gráficos
-    li
+    li.active 
       a(href="/justificaciones")
         i.icon-edit.icon-large  
         |&nbsp;Justificaciones
@@ -31,6 +31,7 @@ block sigucaNavbarItems
 block content
   div.row
     div.col-sm-8
+     h1 Justificaciones
      img.img-responsive(src='/images/calendar.png', alt='Responsive image')
     div.col-sm-4
      div.permisosSolicitados
@@ -39,10 +40,9 @@ block content
          ul.permisos
            li Vacaciones
            li Cita
-
-      div.boton
-       a.btn.btn-primary(href='/roles', role='button', data-toggle='modal') +Permiso         
-
+        div.boton
+          a.btn.btn-primary(href='/roles', role='button', data-toggle='modal') +Permiso
+  
 block sigucaJS
   script(src="/javascripts/flipclock/libs/prefixfree.min.js")
   script(src="/javascripts/flipclock/flipclock.min.js")
