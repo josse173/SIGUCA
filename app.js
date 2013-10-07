@@ -48,7 +48,7 @@ app.get('/', routes.index);
 app.get('/escritorio', routes.escritorio);
 app.get('/graficos', routes.graficos);
 app.get('/ayuda', routes.ayuda);
-app.get('/configuraciones', routes.configuracion);
+app.get('/configuracion', routes.configuracion);
 app.get('/justificaciones', routes.justificaciones);
 app.get('/roles', routes.roles); //Llama la vista de roles a través de ./routes/index.js
 app.post('/roles', function(req, res){
