@@ -4,16 +4,17 @@ html
     meta(charset='utf-8')
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
     title= title
+    link(type="image/x-icon" href='/images/favicon.ico')
+    link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
     link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
     link(rel='stylesheet', href='/stylesheets/bootstrap-theme.min.css')
-    link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
-
 
 
     block sigucaCSS
     link(rel='stylesheet', href='/stylesheets/sigucaMain.css')
-  body
 
+
+  body
     //-Aqui deben agregar la barra de navegación junto 
     //con un bloque llamado sigucaNavbarItems que puedan expandir en cada vista    
     div.navbar.navbar-inverse.navbar-fixed-top(role="navigation")
@@ -29,8 +30,6 @@ html
             |Siguca
       div.collapse.navbar-collapse.navbar-ex1-collapse.navbar-right        
         block sigucaNavbarItems
-
-
 
     block content
 

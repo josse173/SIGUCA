@@ -45,9 +45,10 @@ si la página envía datos de regreso al servirdor deben crear un app.post tambi
 **/
 
 app.get('/', routes.index);
-app.get('/users', user.list);
-app.get('/ingresado', routes.ingresado);
+app.get('/escritorio', routes.escritorio);
 app.get('/graficos', routes.graficos);
+app.get('/ayuda', routes.ayuda);
+app.get('/configuraciones', routes.configuracion);
 app.get('/roles', routes.roles); //Llama la vista de roles a través de ./routes/index.js
 app.post('/roles', function(req, res){
 	console.log('Recibimos rol:'+req.body.rol+' y nombre:'+req.body.nombre);
@@ -58,7 +59,7 @@ app.post('/roles', function(req, res){
 				errors: utils.errors(err.errors),
 				rol: rol,
 				nombre: nombre,
-				title: 'SIGUCA - Administración de Roles - Intende nuevamente'
+				title: 'SIGUCA - Administración de Roles - Intente nuevamente'
 			});
 		};
 	});

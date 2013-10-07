@@ -5,8 +5,26 @@ block sigucaCSS
   link(rel='stylesheet', href='/stylesheets/sigucaGraficos.css')
   link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
 
-block content
-  
+block sigucaNavbarItems
+  ul.nav.navbar-nav
+    li.active 
+      a(href="/escritorio")
+        i.icon-home.icon-large
+        |&nbsp;Escritorio
+    li
+      a(href="/graficos")
+        i.icon-stats.icon-large
+        |&nbsp;Gráficos
+    li
+      a(href="configuracion")
+        i.icon-cog.icon-large
+        |&nbsp;Configuración
+    li
+      a(href="ayuda")
+        i.icon-question-sign.icon-large  
+        |&nbsp;Ayuda
+
+block content  
   div.row
     div.col-sm-9
        img.img-responsive(src='/images/crossFilter.png', alt='Responsive image')
@@ -68,33 +86,9 @@ block content
             span.caret
            ul.dropdown-menu
             li
-             a(href='#') Insert datePicker
-            
-            
-
-
-
-
-     
-block sigucaNavbarItems
-  ul.nav.navbar-nav
-    li
-      a(href="/ingresado")
-        |Escritorio
-    li.active
-      a(href="#")
-        |Gráficos
-    li
-      a(href="#")
-        |Acciones
-    li
-      a(href="#")
-        |Ayuda
-
-          
-          
+             a(href='#') Insert datePicker         
 
 block sigucaJS
   script(src="/javascripts/flipclock/libs/prefixfree.min.js")
   script(src="/javascripts/flipclock/flipclock.min.js")
-  script(src="/javascripts/sigucaHome.js")
+  script(src="/javascripts/sigucaMain.js")

@@ -5,29 +5,27 @@ block sigucaCSS
   link(rel='stylesheet', href='/stylesheets/sigucaInicio.css')
   link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
 
-block content
-  div.contenedorPrin
-    div.row
-     div.col-sm-3
-      a.btn.btn-primary(href='/roles', role='button', data-toggle='modal') Ingresar
-       #myModal.modal.hide.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
-         
-     div.col-sm-9
-        #flipClock
-    div.segundoPanel
-        h1 SIGUCA
-        p#descripcion  Sistema de Gestiión de Usuarios y Control de Asistencia.
-     
 block sigucaNavbarItems
   ul.nav.navbar-nav
     li.active
       a(href="#")
-        |Help
-          
-          
+        i.icon-question-sign.icon-large
+        |&nbsp;Ayuda   
+
+block content
+  div.contenedorPrin
+    div.row
+     div.col-sm-3
+      a.btn.btn-primary(href='/escritorio', role='button', data-toggle='modal') Ingresar
+       #myModal.modal.hide.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')         
+     div.col-sm-9
+        #flipClock
+    div.segundoPanel
+        h1 SIGUCA
+        p#descripcion  Sistema de Gestiión de Usuarios y Control de Asistencia.       
 
 block sigucaJS
   script(src="/javascripts/flipclock/libs/prefixfree.min.js")
   script(src="/javascripts/flipclock/flipclock.min.js")
-  script(src="/javascripts/sigucaHome.js")
+  script(src="/javascripts/reloj.js")
 

@@ -8,15 +8,20 @@
 exports.index = function(req, res){
   res.render('index', { title: 'SIGUCA' });
 };
-
 exports.roles = function(req, res){
-	res.render('roles', {title: 'SIGUCA - Administración de Roles', rol: req.rol, nombre: req.nombre})
-}
-exports.ingresado = function(req, res){
-	res.render('ingresado', {title: 'Usuario Ingresado'})
-}
+	res.render('roles', {title: 'SIGUCA - Administración de Roles', rol: req.rol, nombre: req.nombre});
+};
+exports.escritorio = function(req, res){
+	res.render('escritorio', {title: 'Usuario escritorio'});
+};
 exports.graficos = function(req, res){
-	res.render('graficos', {title: 'Graficos'})
-}
+	res.render('graficos', {title: 'Graficos'});
+};
+exports.ayuda = function(req, res){
+	res.render('ayuda', {title: 'Ayuda'});
+};
+exports.configuracion = function(req, res){
+	res.render('configuracion',{title: 'Configuración'});
+};
 
 

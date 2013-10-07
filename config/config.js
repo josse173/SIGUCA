@@ -9,7 +9,7 @@ module.exports = {
 		db: 'mongodb://localhost/sigucaDB_dev',
 		root: 'rootPath',
 		app: {
-			name: 'SIGUCA ambiente desarollo'
+			name: 'SIGUCA Ambiente de Desarollo'
 		}
 	},
 	'production': {
