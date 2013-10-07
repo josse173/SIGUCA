@@ -1,0 +1,44 @@
+extends layout
+
+block sigucaCSS
+  link(rel='stylesheet', href='/stylesheets/flipclock.css')
+  link(rel='stylesheet', href='/stylesheets/sigucaAcciones.css')
+  link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
+
+block content
+  div.row
+    div.col-sm-8
+     img.img-responsive(src='/images/calendar.png', alt='Responsive image')
+    div.col-sm-4
+     div.permisosSolicitados
+       div.permisosMes
+         h3 Permisos de Octubre
+         ul.permisos
+           li Vacaciones
+           li Cita
+
+      div.boton
+       a.btn.btn-primary(href='/roles', role='button', data-toggle='modal') +Permiso
+
+     
+block sigucaNavbarItems
+  ul.nav.navbar-nav
+    li
+      a(href="/ingresado")
+        |Escritorio
+    li
+      a(href="/graficos")
+        |Gráficos
+    li.active
+      a(href="#")
+        |Acciones
+    li
+      a(href="#")
+        |Ayuda
+          
+          
+
+block sigucaJS
+  script(src="/javascripts/flipclock/libs/prefixfree.min.js")
+  script(src="/javascripts/flipclock/flipclock.min.js")
+  script(src="/javascripts/sigucaHome.js")

@@ -47,8 +47,12 @@ si la página envía datos de regreso al servirdor deben crear un app.post tambi
 app.get('/', routes.index);
 app.get('/escritorio', routes.escritorio);
 app.get('/graficos', routes.graficos);
+<<<<<<< HEAD
 app.get('/ayuda', routes.ayuda);
 app.get('/configuraciones', routes.configuracion);
+=======
+app.get('/acciones', routes.acciones);
+>>>>>>> 087902f2688f71cae775522927ef91d7b09450e6
 app.get('/roles', routes.roles); //Llama la vista de roles a través de ./routes/index.js
 app.post('/roles', function(req, res){
 	console.log('Recibimos rol:'+req.body.rol+' y nombre:'+req.body.nombre);
