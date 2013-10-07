@@ -23,6 +23,11 @@ exports.ayuda = function(req, res){
 exports.configuracion = function(req, res){
 	res.render('configuracion',{title: 'Configuración'});
 };
+exports.justificaciones = function(req, res){
+	res.render('justificaciones', {title: 'Justificaciones/Permisos'});
+};
+
+
 
 
 
