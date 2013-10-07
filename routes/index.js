@@ -18,5 +18,8 @@ exports.ingresado = function(req, res){
 exports.graficos = function(req, res){
 	res.render('graficos', {title: 'Graficos'})
 }
+exports.acciones = function(req, res){
+	res.render('acciones', {title: 'Justificaciones/Permisos'})
+}
 
 

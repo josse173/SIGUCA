@@ -48,6 +48,7 @@ app.get('/', routes.index);
 app.get('/users', user.list);
 app.get('/ingresado', routes.ingresado);
 app.get('/graficos', routes.graficos);
+app.get('/acciones', routes.acciones);
 app.get('/roles', routes.roles); //Llama la vista de roles a través de ./routes/index.js
 app.post('/roles', function(req, res){
 	console.log('Recibimos rol:'+req.body.rol+' y nombre:'+req.body.nombre);
