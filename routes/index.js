@@ -15,7 +15,6 @@ exports.escritorio = function(req, res){
 	res.render('escritorio', {title: 'Usuario escritorio'});
 };
 exports.graficos = function(req, res){
-<<<<<<< HEAD
 	res.render('graficos', {title: 'Graficos'});
 };
 exports.ayuda = function(req, res){
@@ -24,12 +23,7 @@ exports.ayuda = function(req, res){
 exports.configuracion = function(req, res){
 	res.render('configuracion',{title: 'Configuración'});
 };
-=======
-	res.render('graficos', {title: 'Graficos'})
-}
-exports.acciones = function(req, res){
-	res.render('acciones', {title: 'Justificaciones/Permisos'})
-}
->>>>>>> 087902f2688f71cae775522927ef91d7b09450e6
+
+
 
 
