@@ -6,23 +6,26 @@ block sigucaCSS
   link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
 
 block sigucaNavbarItems
-  ul.nav.navbar-nav
-    li.active
-      a(href="/ayuda")
-        i.icon-question-sign.icon-large
-        |&nbsp;Ayuda   
-
+  ul#nav.main
+    li
+     a.active(href='/Ayuda')
+      |Ayuda 
+      i.icon-question-sign.icon-large  
+        
+        
 block content
-  div.contenedorPrin
-    div.row
-     div.col-sm-3
-      a.btn.btn-primary(href='/escritorio', role='button', data-toggle='modal') Ingresar
-       #myModal.modal.hide.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')         
-     div.col-sm-9
-        #flipClock
-    div.segundoPanel
-        h1 SIGUCA
-        p#descripcion  Sistema de Gestiión de Usuarios y Control de Asistencia.       
+  .wrapper
+    .grids.top
+        .grid-6.grid.intro
+          h2 SIGUCA
+          p
+            | Sistema de Gestión de Usuarios y Control de Asistencia
+          a.button(href='/escritorio')
+            | Ingresar!
+
+        .grid-10.grid  
+          #flipClock 
+          
 
 block sigucaJS
   script(src="/javascripts/flipclock/libs/prefixfree.min.js")
