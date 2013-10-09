@@ -1,0 +1,87 @@
+extends layout
+
+block sigucaCSS
+  link(rel='stylesheet', href='/stylesheets/flipclock.css')
+  link(rel='stylesheet', href='/stylesheets/sigucaJustificaciones.css')
+  link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
+
+block content
+  div.row
+    div.col-sm-8
+     h1 Configuraciones
+     br
+     div.filter
+       label#tGrafico(for='grafico') 
+         |Recursos Humanos: 
+       .btn-group
+           button.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown')
+            | Todos
+            span.caret
+           ul.dropdown-menu
+            li
+             a(href='#') Pericles los Palotes
+            li
+             a(href='#') Celia Cruz
+     div.filter
+       label#tGrafico(for='grafico') 
+         |Tecnologia: 
+       .btn-group
+           button.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown')
+            | Todos
+            span.caret
+           ul.dropdown-menu
+            li
+             a(href='#') Gabriel Martinez
+            li
+             a(href='#') Paquita la del Barrio
+     div.filter
+       label#tGrafico(for='grafico') 
+         |Gerencia: 
+       .btn-group
+           button.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown')
+            | Todos
+            span.caret
+           ul.dropdown-menu
+            li
+             a(href='#') Alvaro
+            li
+             a(href='#') Federico
+    div.col-sm-4
+     div.permisosSolicitados
+       div.boton
+        a.btn.btn-primary(href='/roles', role='button', data-toggle='modal') +Rol
+       div.boton
+        a.btn.btn-primary(href='/categoria', role='button', data-toggle='modal') +Categoria
+       div.boton
+        a.btn.btn-primary(href='/empleado', role='button', data-toggle='modal') +Empleado
+
+     
+block sigucaNavbarItems
+  ul.nav.navbar-nav
+    li 
+      a(href="/escritorio")
+        i.icon-home.icon-large
+        |&nbsp;Escritorio
+    li
+      a(href="/graficos")
+        i.icon-bar-chart.icon-large
+        |&nbsp;Graficos
+    li
+      a(href="/justificaciones")
+        i.icon-edit.icon-large  
+        |&nbsp;Justificaciones
+    li.active
+      a(href="/configuracion")
+        i.icon-cogs.icon-large
+        |&nbsp;Configuracion
+    li
+      a(href="/ayuda")
+        i.icon-question-sign.icon-large  
+        |&nbsp;Ayuda
+          
+          
+
+block sigucaJS
+  script(src="/javascripts/flipclock/libs/prefixfree.min.js")
+  script(src="/javascripts/flipclock/flipclock.min.js")
+  script(src="/javascripts/sigucaHome.js")

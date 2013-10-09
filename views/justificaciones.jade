@@ -6,6 +6,7 @@ block sigucaCSS
   link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
 
 block sigucaNavbarItems
+<<<<<<< HEAD
   hr
   ul#nav.main
     li
@@ -27,11 +28,33 @@ block sigucaNavbarItems
     li
      a(href="/ayuda")
         |Ayuda&nbsp;
+=======
+  ul.nav.navbar-nav
+    li
+      a(href="/escritorio")
+        i.icon-home.icon-large
+        |&nbsp;Escritorio
+    li
+      a(href="/graficos")
+        i.icon-bar-chart.icon-large
+        |&nbsp;Gráficos
+    li.active 
+      a(href="/justificaciones")
+        i.icon-edit.icon-large  
+        |&nbsp;Justificaciones
+    li
+      a(href="/configuracion")
+        i.icon-cogs.icon-large
+        |&nbsp;Configuración
+    li
+      a(href="/ayuda")
+>>>>>>> 5ca2b373157a619f54ef4617efc5a1762e42d0f0
         i.icon-question-sign.icon-large  
 
 block content
   div.row
     div.col-sm-8
+     h1 Justificaciones
      img.img-responsive(src='/images/calendar.png', alt='Responsive image')
     div.col-sm-4
      div.permisosSolicitados
@@ -40,10 +63,9 @@ block content
          ul.permisos
            li Vacaciones
            li Cita
-
-      div.boton
-       a.btn.btn-primary(href='/roles', role='button', data-toggle='modal') +Permiso         
-
+        div.boton
+          a.btn.btn-primary(href='/roles', role='button', data-toggle='modal') +Permiso
+  
 block sigucaJS
   script(src="/javascripts/flipclock/libs/prefixfree.min.js")
   script(src="/javascripts/flipclock/flipclock.min.js")

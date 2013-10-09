@@ -17,6 +17,12 @@ var mongoose = require('mongoose');
 //Para conectarse a la base de datos indicada en config.db
 mongoose.connect(config.db);
 
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'Error de conexión:'));
+db.once('open', function callback () {
+  console.log('Conexión a Mongo abierta');
+});
+
 require('./models/roles');
 var dbRol = mongoose.model('Rol'); //Con esto tenemos el modelo rol listo para ser guardado en mongo
 
@@ -48,7 +54,7 @@ app.get('/', routes.index);
 app.get('/escritorio', routes.escritorio);
 app.get('/graficos', routes.graficos);
 app.get('/ayuda', routes.ayuda);
-app.get('/configuraciones', routes.configuracion);
+app.get('/configuracion', routes.configuracion);
 app.get('/justificaciones', routes.justificaciones);
 app.get('/roles', routes.roles); //Llama la vista de roles a través de ./routes/index.js
 app.post('/roles', function(req, res){
