@@ -6,51 +6,28 @@ block sigucaCSS
   link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
 
 block sigucaNavbarItems
-<<<<<<< HEAD
-  hr
-  ul#nav.main
-=======
   ul.nav.navbar-nav
     li 
       a(href="/escritorio")
         i.icon-home.icon-large
         |&nbsp;Escritorio
->>>>>>> 5ca2b373157a619f54ef4617efc5a1762e42d0f0
     li
-     a(href='/escritorio')
-       |Escritorio&nbsp;
-       i.icon-home.icon-large  
+      a(href="/graficos")
+        i.icon-bar-chart.icon-large
+        |&nbsp;Graficos
     li
-<<<<<<< HEAD
-     a(href="/graficos")
-       |Gráficos&nbsp;
-       i.icon-bar-chart.icon-large
-    li
-     a(href="/justificaciones")
-       |Justificaciones&nbsp;
-       i.icon-edit.icon-large
-    li
-     a(href="/configuracion")
-       |Configuración&nbsp;
-       i.icon-cogs.icon-large
-    li
-     a.active(href="/ayuda")
-        |Ayuda&nbsp;
-        i.icon-question-sign.icon-large 
-=======
       a(href="/justificaciones")
         i.icon-edit.icon-large  
         |&nbsp;Justificaciones
-    li
+    li.active
       a(href="/configuracion")
         i.icon-cogs.icon-large
-        |&nbsp;Configuración
-    li.active
+        |&nbsp;Configuracion
+    li
       a(href="/ayuda")
         i.icon-question-sign.icon-large  
         |&nbsp;Ayuda
 
->>>>>>> 5ca2b373157a619f54ef4617efc5a1762e42d0f0
 block content
   div.row
   div.col-sm-4
