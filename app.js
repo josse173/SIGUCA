@@ -4,15 +4,15 @@
  */
 
 var express = require('express');
+var mongoose = require('mongoose');
 var routes = require('./routes');
 var user = require('./routes/user');
 var http = require('http');
 var path = require('path');
-
 /** Leer la configuración de ./config/config **/
 var env = process.env.NODE_ENV || 'development';
 var config = require('./config/config')[env];
-var mongoose = require('mongoose');
+
 
 //Para conectarse a la base de datos indicada en config.db
 mongoose.connect(config.db);
