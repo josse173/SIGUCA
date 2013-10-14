@@ -14,10 +14,9 @@ var SchemaEmpleado = new Schema({
 	apellido2: { type: String, default: '' },
 	email: { type: String, default: '' },
 	cedula: Number,
-	idCategoria: Number,
 	codTarjeta: { type: String, default: '' },
-	/*Justificaciones: {
-		idMarca: { type: String, default: '' },
+	Justificaciones: {
+		idMarca: String,
 		comentario: { type: String, default: '' },
 		aprobadoPor: Number,
    },
@@ -25,9 +24,18 @@ var SchemaEmpleado = new Schema({
 		hora: Date,
 		tipoMarca: Boolean,
    },
+   categoriaHorario: {
+		nombre: { type: String, default: '' },
+		idSupervisor: Number,
+		defHorario: {
+			tipo: { type: String, default: '' },
+			marcaEntrada: String,
+			marcaSalida: String,
+		}
+   },
    Eventos: {
 		tipoEvento: Boolean,
-   }*/
+   }
 }
 /*, { autoIndex: false }*/); // Para cuando se ponga en producción
 /*SchemaEmpleado.path('nombre').validate(function (nombre) {

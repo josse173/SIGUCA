@@ -26,12 +26,3 @@ exports.configuracion = function(req, res){
 exports.justificaciones = function(req, res){
 	res.render('justificaciones', {title: 'Justificaciones/Permisos | SIGUCA'});
 };
-exports.empleado = function(req, res){
-	res.render('empleado', {title: 'SIGUCA - Administración de Empleados', 
-							nombre: req.nombre, 
-							apellido1: req.apellido1, 
-							apellido2: req.apellido2, 
-							cedula: req.cedula,
-							idCategoria: req.idCategoria,
-							codTarjeta: req.codTarjeta});
-};

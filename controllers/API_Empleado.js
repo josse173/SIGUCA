@@ -1,7 +1,6 @@
 /** SIGUCA  
  *
  *		API del Empleado
- *			Exporta 3 métodos:
  *				crea - Crea nuevo Empleado
  *				registra - Registra Empleado
  *				buscaPorCedula - Busca a un Empleado por cédula
