@@ -7,35 +7,32 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
-//Crear el modelo de Empleado
+//Crear el esquema de Empleado
 var SchemaEmpleado = new Schema({
-	nombre: { type: String, default: '' },
-	apellido1: { type: String, default: '' },
-	apellido2: { type: String, default: '' },
-	email: { type: String, default: '' },
-	cedula: Number,
-	codTarjeta: { type: String, default: '' },
-	Justificaciones: {
-		idMarca: String,
-		comentario: { type: String, default: '' },
-		aprobadoPor: Number,
-   },
-   Marca: {
-		hora: Date,
-		tipoMarca: Boolean,
-   },
-   categoriaHorario: {
 		nombre: { type: String, default: '' },
-		idSupervisor: Number,
-		defHorario: {
-			tipo: { type: String, default: '' },
-			marcaEntrada: String,
-			marcaSalida: String,
-		}
-   },
-   Eventos: {
-		tipoEvento: Boolean,
-   }
+		apellido1: { type: String, default: '' },
+		apellido2: { type: String, default: '' },
+		email: { type: String, default: '' },
+		cedula: { type: Number, default: 0 },
+		codTarjeta: { type: String, default: '' },
+		departamento: {type : Schema.ObjectId, ref : 'Departamento'},
+		justificaciones: [{
+			fecha: Date,
+			comentario: { type: String, default: '' },
+			resolucion: Boolean,
+			resolucionPor: {type : Schema.ObjectId, ref : 'Usuario'},
+		}],
+		jornadas: [{
+			nombre: {type: String, default: ''},
+			horaEntrada: Date,
+			horaSalida: Date,
+			marcaEntrada: Date,
+			marcaSalida: Date,
+			receso: [{ 
+				marcaSalida: Date,
+				marcaEntrada: Date,
+			}],
+		}]
 }
 /*, { autoIndex: false }*/); // Para cuando se ponga en producción
 /*SchemaEmpleado.path('nombre').validate(function (nombre) {
