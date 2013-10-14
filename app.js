@@ -1,18 +1,20 @@
-
-/**
- * Module dependencies.
+/** SIGUCA
+ *
+ * 		Aplicación Principal
+ *
  */
 
 var express = require('express');
 var mongoose = require('mongoose');
 var routes = require('./routes');
-var user = require('./routes/user');
-var http = require('http');
 var path = require('path');
 /** Leer la configuración de ./config/config **/
 var env = process.env.NODE_ENV || 'development';
 var config = require('./config/config')[env];
 
+var api_empleado = require('./controllers/API_empleado.js');
+
+var app = express();
 
 //Para conectarse a la base de datos indicada en config.db
 mongoose.connect(config.db);
@@ -23,21 +25,24 @@ db.once('open', function callback () {
   console.log('Conexión a Mongo abierta');
 });
 
+
 require('./models/roles');
+
 var dbRol = mongoose.model('Rol'); //Con esto tenemos el modelo rol listo para ser guardado en mongo
 
-var app = express();
+// Configuración de ambientes.
+app.configure(function(){
+	app.set('port', process.env.PORT || 3000);
+	app.set('views', __dirname + '/views');
+	app.set('view engine', 'jade');
+	app.use(express.favicon());
+	app.use(express.logger('dev'));
+	app.use(express.bodyParser());
+	app.use(express.methodOverride());
+	app.use(app.router);
+	app.use(express.static(path.join(__dirname, 'public')));
+});
 
-// all environments
-app.set('port', process.env.PORT || 3000);
-app.set('views', __dirname + '/views');
-app.set('view engine', 'jade');
-app.use(express.favicon());
-app.use(express.logger('dev'));
-app.use(express.bodyParser());
-app.use(express.methodOverride());
-app.use(app.router);
-app.use(express.static(path.join(__dirname, 'public')));
 
 // development only
 if ('development' == app.get('env')) {
@@ -57,7 +62,7 @@ app.get('/ayuda', routes.ayuda);
 app.get('/configuracion', routes.configuracion);
 app.get('/justificaciones', routes.justificaciones);
 app.get('/roles', routes.roles); //Llama la vista de roles a través de ./routes/index.js
-app.post('/roles', function(req, res){
+/*app.post('/roles', function(req, res){
 	console.log('Recibimos rol:'+req.body.rol+' y nombre:'+req.body.nombre);
 	var newRol = new dbRol (req.body)
 	newRol.save(function(err){
@@ -71,8 +76,16 @@ app.post('/roles', function(req, res){
 		};
 	});
 	res.redirect('/');
-});
+});*/
+app.get('/empleado', api_empleado.registra);
+app.post('/empleado', api_empleado.crea);
+/*app.get('/empleado/:cedula.:format?', api_empleado.buscaPorCedula);
+app.get('/empleado', api_empleado.lista);
+*/
 
-http.createServer(app).listen(app.get('port'), function(){
+app.listen(3000);
+console.log('Express server listening on port ' + app.get('port'));
+
+/* http.createServer(app).listen(app.get('port'), function(){			ELIMINADO POR DEPRECADO
   console.log('Express server listening on port ' + app.get('port'));
-});
+}); */

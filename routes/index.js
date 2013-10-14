@@ -12,23 +12,26 @@ exports.roles = function(req, res){
 	res.render('roles', {title: 'SIGUCA - Administración de Roles', rol: req.rol, nombre: req.nombre});
 };
 exports.escritorio = function(req, res){
-	res.render('escritorio', {title: 'Usuario escritorio'});
+	res.render('escritorio', {title: 'Usuario escritorio | SIGUCA'});
 };
 exports.graficos = function(req, res){
-	res.render('graficos', {title: 'Graficos'});
+	res.render('graficos', {title: 'Graficos | SIGUCA'});
 };
 exports.ayuda = function(req, res){
-	res.render('ayuda', {title: 'Ayuda'});
+	res.render('ayuda', {title: 'Ayuda | SIGUCA'});
 };
 exports.configuracion = function(req, res){
-	res.render('configuracion',{title: 'Configuración'});
+	res.render('configuracion',{title: 'Configuración | SIGUCA'});
 };
 exports.justificaciones = function(req, res){
-	res.render('justificaciones', {title: 'Justificaciones/Permisos'});
+	res.render('justificaciones', {title: 'Justificaciones/Permisos | SIGUCA'});
 };
-
-
-
-
-
-
+exports.empleado = function(req, res){
+	res.render('empleado', {title: 'SIGUCA - Administración de Empleados', 
+							nombre: req.nombre, 
+							apellido1: req.apellido1, 
+							apellido2: req.apellido2, 
+							cedula: req.cedula,
+							idCategoria: req.idCategoria,
+							codTarjeta: req.codTarjeta});
+};

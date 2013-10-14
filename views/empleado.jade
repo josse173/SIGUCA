@@ -1,0 +1,48 @@
+extend layout
+
+//-Cualquier cosa dentro del bloque sigucaCSS va a ser insertado en el head del layout
+block sigucaCSS
+	link(rel='stylesheet', href='/stylesheets/sigucaRoles.css')
+	//Este es un comentario que va a salir en el HTML
+	//-Y este es un comentario que solo jade ve.
+
+block content
+	h1 SIGUCA
+	form.form-horizontal(action="/empleado" method="post")
+		div.control-group
+			label.control-label(for="nombre")
+				|Nombre
+			div.controls
+				input(type="text", name="nombre", placeholder="Nombre", value=empleado.nombre)
+		div.control-group
+			label.control-label(for="apellido1")
+				|Primer Apellido
+			div.controls
+				input(type="text", name="apellido1", placeholder="Primer Apellido", value=empleado.apellido1)
+		div.control-group
+			label.control-label(for="apellido2")
+				|Segundo Apellido
+			div.controls
+				input(type="text", name="apellido2", placeholder="Segundo Apellido", value=empleado.apellido2)
+		div.control-group
+			label.control-label(for="email")
+				|Correo electrónico
+			div.controls
+				input(type="text", name="email", placeholder="Correo electrónico", value=empleado.email)
+		div.control-group
+			label.control-label(for="cedula")
+				|Cédula
+			div.controls
+				input(type="text", name="cedula", placeholder="Cédula", value=empleado.cedula)
+		div.control-group
+			label.control-label(for="idCategoria")
+				|Id Categoría
+			div.controls
+				input(type="text", name="idCategoria", placeholder="ID de Categoría", value=empleado.idCategoria)
+		div.control-group
+			label.control-label(for="codTarjeta")
+				|Código de Tarjeta
+			div.controls
+				input(type="text", name="codTarjeta", placeholder="Código de Tarjeta", value=empleado.codTarjeta)
+		button.btn.btn-primary(type="submit")
+			|Crear

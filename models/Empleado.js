@@ -1,38 +1,71 @@
 /** SIGUCA 
  *
- * Modelo de Marcas
+ * 	Modelo de Empleado
  *
  */
 
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
-var ObjectIdEmpleado = Schema.Types.ObjectId;
-var ObjectIdMarca = Schema.Types.ObjectId;
-var ObjectIdEvento = Schema.Types.ObjectId;
+var mongoose = require('mongoose'),
+    Schema = mongoose.Schema;
 
-//Crear el modelo de roles
+//Crear el modelo de Empleado
 var SchemaEmpleado = new Schema({
-	id: ObjectIdEmpleado, // Llave primaria
-	nombre: String,
-	apellido1: String,
-	apellido2: String,
-	cedula: String,
-	idCategoria: String,
-	codTarjeta: String,
-	Justificaciones: {
-		idMarca: String,
-		comentario: String,
+	nombre: { type: String, default: '' },
+	apellido1: { type: String, default: '' },
+	apellido2: { type: String, default: '' },
+	email: { type: String, default: '' },
+	cedula: Number,
+	idCategoria: Number,
+	codTarjeta: { type: String, default: '' },
+	/*Justificaciones: {
+		idMarca: { type: String, default: '' },
+		comentario: { type: String, default: '' },
 		aprobadoPor: Number,
-   }
+   },
    Marca: {
-		idMarca: ObjectIdMarca,
 		hora: Date,
 		tipoMarca: Boolean,
-   }
+   },
    Eventos: {
-		idEvento: ObjectIdEvento,
 		tipoEvento: Boolean,
-   }
-});
+   }*/
+}
+/*, { autoIndex: false }*/); // Para cuando se ponga en producción
+/*SchemaEmpleado.path('nombre').validate(function (nombre) {
+  if (authTypes.indexOf(this.provider) !== -1) return true
+  return nombre.length
+}, 'Nombre no puede estar en blanco')
 
-mongoose.model('Empleado', SchemaEmpleado);
+SchemaEmpleado.path('idCategoria').validate(function (idCategoria) {
+  if (authTypes.indexOf(this.provider) !== -1) return true
+  return idCategoria.length
+}, 'ID de la Categoría no puede estar en blanco')
+
+SchemaEmpleado.path('email').validate(function (email) {
+  if (authTypes.indexOf(this.provider) !== -1) return true
+  return email.length
+}, 'Email no puede estar en blanco')
+
+SchemaEmpleado.path('email').validate(function (email, fn) {
+  var User = mongoose.model('User')
+  
+  // if you are authenticating by any of the oauth strategies, don't validate
+  if (authTypes.indexOf(this.provider) !== -1) fn(true)
+
+  // Check only when it is a new user or when email field is modified
+  if (this.isNew || this.isModified('Empleado')) {
+    User.find({ Empleado: empleado }).exec(function (err, empleados) {
+      fn(!err && empleados.length === 0)
+    })
+  } else fn(true)
+}, 'Email ya existe')*/
+
+/**
+* Pre-save hook
+
+
+SchemaEmpleado.pre('save', function(next) {
+  if (!this.isNew) return next()
+})*/
+
+module.exports = mongoose.model('Empleado', SchemaEmpleado);
+//Empleado.ensureIndexes(callback); // Para cuando se ponga en producción

@@ -1,4 +1,7 @@
-/** SIGUCA opciones de configuración **/
+/** SIGUCA 
+ *
+ *		Opciones de Configuración 
+**/
 
 /** definir el directorio base **/
 var path = require('path'),
