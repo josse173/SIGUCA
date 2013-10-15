@@ -12,7 +12,7 @@ var path = require('path');
 var env = process.env.NODE_ENV || 'development';
 var config = require('./config/config')[env];
 
-var api_empleado = require('./controllers/API_empleado.js');
+var api_empleado = require('./controllers/API_Empleado');
 
 var app = express();
 
