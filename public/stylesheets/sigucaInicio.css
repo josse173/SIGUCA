@@ -32,3 +32,7 @@
   padding-bottom: 2%;
   
 }
+.modal.hide.fade.in{
+	display: none;
+	
+}

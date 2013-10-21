@@ -15,19 +15,43 @@ block sigucaNavbarItems
         
 block content
   .wrapper
+
     .grids.top
         .grid-6.grid.intro
           h2 SIGUCA
+          #myModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+           .modal-dialog
+            .modal-content
+              .modal-header
+                button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+                h4.modal-title Ingreso
+              .modal-body
+                form(action='/signup',method='post')
+                   div(data-role='fieldcontain')
+                      fieldset(data-role='controlgroup')
+                        label(for='nombreU') Nombre de Usuario
+                           input(id='nombreU',type='text',value='',name='nombreU')
+                    div#passworddiv(data-role='fieldcontain')
+                      fieldset(data-role='controlgroup')
+                        label(for='contrasena') Contraseña
+                           input(id='contrasena',type='password',value='',placeholder='',name='contrasena')
+              .modal-footer
+                button.btn.btn-default(type='button', data-dismiss='modal') Cerrar
+                button.btn.btn-primary(type='button') Ingresar   
           p
             | Sistema de Gestión de Usuarios y Control de Asistencia
-          a.button(href='/escritorio')
+          a.btn.btn-primary.btn-large(href='#myModal', data-toggle='modal')  
             | Ingresar!
+        
 
         .grid-10.grid  
           #flipClock 
-          
+
+
 
 block sigucaJS
+  script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js')
+  script(src='/twitter-bootstrap/twitter-bootstrap-v2/js/bootstrap-modal.js')
   script(src="/javascripts/flipclock/libs/prefixfree.min.js")
   script(src="/javascripts/flipclock/flipclock.min.js")
   script(src="/javascripts/reloj.js")
