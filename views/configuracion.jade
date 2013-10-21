@@ -6,54 +6,38 @@ block sigucaCSS
   link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
 
 block content
-  div.row
-    div.col-sm-8
-     h1 Configuraciones
-     br
-     div.filter
-       label#tGrafico(for='grafico') 
-         |Recursos Humanos: 
-       .btn-group
-           button.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown')
-            | Todos
-            span.caret
-           ul.dropdown-menu
-            li
-             a(href='#') Pericles los Palotes
-            li
-             a(href='#') Celia Cruz
-     div.filter
-       label#tGrafico(for='grafico') 
-         |Tecnologia: 
-       .btn-group
-           button.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown')
-            | Todos
-            span.caret
-           ul.dropdown-menu
-            li
-             a(href='#') Gabriel Martinez
-            li
-             a(href='#') Paquita la del Barrio
-     div.filter
-       label#tGrafico(for='grafico') 
-         |Gerencia: 
-       .btn-group
-           button.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown')
-            | Todos
-            span.caret
-           ul.dropdown-menu
-            li
-             a(href='#') Alvaro
-            li
-             a(href='#') Federico
-    div.col-sm-4
-     div.permisosSolicitados
-       div.boton
-        a.btn.btn-primary(href='/roles', role='button', data-toggle='modal') +Rol
-       div.boton
-        a.btn.btn-primary(href='/categoria', role='button', data-toggle='modal') +Categoria
-       div.boton
-        a.btn.btn-primary(href='/empleado', role='button', data-toggle='modal') +Empleado
+  .wrapper
+    .grids
+        .grid-12.grid.green
+          h2 Configuraciones
+          label.labelP#areas(for='Areas') 
+              |Áreas:   
+          button.btn.btn-default(type='button') + 
+          button.btn.btn-default(type='button') - 
+          button.btn.btn-default(type='button') modificar
+          br
+          br
+          label.labelP#emp(for='Empleados') 
+              |Empleados:   
+          button.btn.btn-default(type='button') + 
+          button.btn.btn-default(type='button') - 
+          button.btn.btn-default(type='button') modificar
+          br
+          br
+          label.labelP#rol(for='Roles') 
+              |Roles:   
+          button.btn.btn-default(type='button') + 
+          button.btn.btn-default(type='button') - 
+          button.btn.btn-default(type='button') modificar
+          br
+          br
+          label.labelP#tHor(for='Tipos de Horario') 
+              |Tipos de Horarios:   
+          button.btn.btn-default(type='button') + 
+          button.btn.btn-default(type='button') - 
+          button.btn.btn-default(type='button') modificar
+              
+          
 
      
 block sigucaNavbarItems

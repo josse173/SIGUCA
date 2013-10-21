@@ -39,3 +39,18 @@
 #tGrafico {
     width: 150px;
 }
+.labelP{
+	padding-left: 30%;
+}
+#areas{
+	padding-right: 11%;
+}
+#emp{
+	padding-right: 6.5%;
+}
+#rol{
+	padding-right: 11.2%;
+}
+#tHor{
+	padding-right: 0.5%;
+}
