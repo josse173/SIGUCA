@@ -36,21 +36,11 @@ block content
           h2 Justificaciones
           input
 
-        .grid-4.grid.grey
-             div.filter
-                 label#tGrafico(for='grafico') 
-                   |Tipo de Gráfico: 
-                 .btn-group
-                     button.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown')
-                      | Todos
-                      span.caret
-                     ul.dropdown-menu
-                      li
-                       a(href='#') Barras
-                      li
-                       a(href='#') CrossFilter
-  
-  
+         .grid-4.grid.grey
+           div.justificaciones
+             div.botton   
+               a.btn.btn-primary(href='/justificaciones', role='button', data-toggle='modal') + Justificación
+       
              
     
 block sigucaJS
