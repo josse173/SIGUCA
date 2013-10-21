@@ -29,14 +29,19 @@ block sigucaNavbarItems
         i.icon-question-sign.icon-large 
 
 block content
-  div.row
-  div.col-sm-4
-    h1 Ayuda
-    div.align=justify
-      h2 SIGUCA: Sistema de Gestión de Usuarios y Control de Asistencia
-      p Es un programa para le gestión de la jornada laboral de los empleados de GreenCore Solutions SRL, con el fin de tener un Control preciso del uso del tiempo de cada colaborador.
-  div.col-sm-8
-    #flipClock
+  .wrapper
+    .grids
+        .grid-16.grid.green
+          h1 Ayuda
+          h1 SIGUCA: Sistema de Gestión de Usuarios y Control de Asistencia
+          p Es un sistema para le gestión de la jornada laboral de los empleados de GreenCore Solutions SRL, con el fin de tener un control preciso del uso del tiempo de cada colaborador. La implementación de éste sistema es parte del programa de la Cátedra de Ingeniería de Sistemas de la Universidad Nacional (UNA).
+          br          
+          <p><b> Integrantes del Equipo de Trabajo SIGUCA:</b></p>
+          p - José Gabriel Martínez Barboza
+          p - Tatiana Moreira Beita
+          p - Carlos Solanos Morales
+          p - Alexander Picado Jiménez
+          
         
 block sigucaJS
   script(src="/javascripts/flipclock/libs/prefixfree.min.js")
