@@ -40,25 +40,23 @@ block content
                    |Tipo de Gráfico: 
                  .btn-group
                      button.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown')
-                      | Todos
+                      | Marcas
                       span.caret
                      ul.dropdown-menu
                       li
-                       a(href='#') Barras
-                      li
-                       a(href='#') CrossFilter
+                       a(href='#') Porcentajes
              div.filter
                  label#tHorario(for='horario') 
-                   |Tipo de Horario: 
+                   |Área: 
                  .btn-group
                      button.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown')
-                      | Todos
+                      | S. técnico
                       span.caret
                      ul.dropdown-menu
                       li
-                       a(href='#') Diurno
+                       a(href='#') Todos
                       li
-                       a(href='#') De 1pm a 8pm
+                       a(href='#') Innovación 
              div.filter
                   label#empleados(for='empleados') 
                    |Empleados: 
@@ -68,17 +66,22 @@ block content
                       span.caret
                      ul.dropdown-menu
                       li
-                       a(href='#') Rita Cortés Gallardo
+                       a(href='#') Alexander Picado 
                       li
-                       a(href='#') Elena Porras Piedra
+                       a(href='#') Carlos Solano
                       li
-                       a(href='#') Zacarías Piedra del Río
+                       a(href='#') Tatiana Moreira
+                      li
+                       a(href='#') Gabriel Martinez
+                      li
+                       a(href='#') Rita Cortés
+
              div.filter
                   label#fInicio(for='fInicio') 
                    |Fecha de Inicio: 
                   .btn-group
                      button.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown')
-                      | Todos
+                      | 21/10/13
                       span.caret
                      ul.dropdown-menu
                       li
@@ -88,26 +91,12 @@ block content
                    |Fecha Final: 
                   .btn-group
                      button.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown')
-                      | Todos
+                      | 21/10/13
                       span.caret
                      ul.dropdown-menu
                       li
                        a(href='#') Insert datePicker 
   
-block sigucaNavbarItems
-  ul.nav.navbar-nav
-    li
-      a(href="/ingresado")
-        |Escritorio
-    li.active
-      a(href="/graficos")
-        |Gráficos
-    li
-      a(href="/acciones")
-        |Acciones
-    li
-      a(href="#")
-        |Ayuda
 
                     
 block sigucaJS
