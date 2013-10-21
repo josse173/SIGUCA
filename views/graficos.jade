@@ -33,7 +33,7 @@ block content
     .grids
         .grid-12.grid.green
           h2 Gráfico
-          img.img-responsive(src='/images/todos.PNG', alt='Responsive image')
+          img.img-responsive#grafico(src='/images/todos.PNG', alt='Responsive image')
         .grid-4.grid.grey
              div.filter
                  label#tGrafico(for='grafico') 
@@ -61,20 +61,20 @@ block content
                   label#empleados(for='empleados') 
                    |Empleados: 
                   .btn-group
-                     button.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown')
+                     button#empleadosSelec.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown')
                       | Todos
                       span.caret
                      ul.dropdown-menu
                       li
-                       a(href='#') Alexander Picado 
+                       a#alex(href="#", onclick= 'changeImageAlex()') Alexander Picado 
                       li
-                       a(href='#') Carlos Solano
+                       a(href='#', onclick= 'changeImageCar()') Carlos Solano
                       li
-                       a(href='#') Tatiana Moreira
+                       a(href='#', onclick='changeImageTa()') Tatiana Moreira
                       li
-                       a(href='#') Gabriel Martinez
+                       a(href='#', onclick='changeImageGa()') Gabriel Martinez
                       li
-                       a(href='#') Rita Cortés
+                       a(href='#', onclick='changeImageRi()') Rita Cortés
 
              div.filter
                   label#fInicio(for='fInicio') 
@@ -100,6 +100,7 @@ block content
 
                     
 block sigucaJS
+  script(src="/javascripts/graficos.js")
   script(src="/javascripts/flipclock/libs/prefixfree.min.js")
   script(src="/javascripts/flipclock/flipclock.min.js")
   script(src="/javascripts/sigucaMain.js")
