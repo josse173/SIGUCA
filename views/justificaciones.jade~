@@ -6,15 +6,15 @@ block sigucaCSS
   link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
 
 block sigucaNavbarItems
-  ul#nav.main
+  ul.nav.navbar-nav
     li 
       a(href="/escritorio")
         i.icon-home.icon-large
         |&nbsp;Escritorio
     li
-      a.active(href='/graficos')
+      a(href="/graficos")
         i.icon-bar-chart.icon-large
-        |&nbsp;Gráficos
+        |&nbsp;Graficos
     li
       a(href="/justificaciones")
         i.icon-edit.icon-large  
@@ -24,9 +24,9 @@ block sigucaNavbarItems
         i.icon-cogs.icon-large
         |&nbsp;Configuracion
     li
-      a(href='/Ayuda')
-        |Ayuda 
-        i.icon-question-sign.icon-large 
+      a(href="/ayuda")
+        i.icon-question-sign.icon-large  
+        |&nbsp;Ayuda
 
 block content
   div.row
