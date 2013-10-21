@@ -32,7 +32,7 @@
 	{
 		// Style to use for the calendar.  This name must match the name used in
 		// the stylesheet, using the class naming convention "gldp-cssName".
-		cssName: 'default',
+		cssName: 'darkneon',
 
 		// The z-index for the calendar control.
 		zIndex: 1000,

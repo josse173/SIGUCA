@@ -2,23 +2,26 @@ $(document).ready(function (){
     var calen =  $('input').glDatePicker({
     specialDates: [
         {
-            date: new Date(2013, 0, 8),
-            data: { message: 'Meeting every day 8 of the month' },
-            repeatMonth: true
+            date: new Date(2013,9,8,8,20,15),
+            data: { message: 'Llegada tardía por accidente de tránsito.' }
         },
         {
-            date: new Date(0, 0, 1),
-            data: { message: 'Happy New Year!' },
-            repeatYear: true
+            date: new Date("October 14, 2013 03:24:00"),
+            data: { message: 'Permiso personal.' }
+        },
+        {
+            date: new Date("October 18, 2013 03:24:00"),
+            data: { message: 'Llegada tardía por accidente de tránsito.' }
         },
     ],
     onClick: function(target, cell, date, data) {
-        target.val(date.getFullYear() + ' - ' +
+        target.val(date.getYear() + ' - ' +
                     date.getMonth() + ' - ' +
                     date.getDate());
         if(data != null) {
-             alert(data.message + '\n' + date);
+             alert('Justificación de ausencia/tardía\n' + 'Empleado: Gabriel Martínez Barboza (123456789)\n' + 'Detalle: ' + data.message + '\n' + 'Fecha:' + date.toDateString() + ' ' + date.toTimeString());
         }
+        window.confirm("¿Acepta la justificación?");
     }
     });
 })

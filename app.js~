@@ -61,7 +61,6 @@ app.get('/graficos', routes.graficos);
 app.get('/ayuda', routes.ayuda);
 app.get('/configuracion', routes.configuracion);
 app.get('/justificaciones', routes.justificaciones);
-app.get('/justificacion_nueva', routes.justificacion_nueva);
 app.get('/roles', routes.roles); //Llama la vista de roles a través de ./routes/index.js
 /*app.post('/roles', function(req, res){
 	console.log('Recibimos rol:'+req.body.rol+' y nombre:'+req.body.nombre);

@@ -26,6 +26,3 @@ exports.configuracion = function(req, res){
 exports.justificaciones = function(req, res){
 	res.render('justificaciones', {title: 'Justificaciones/Permisos | SIGUCA'});
 };
-exports.justificacion_nueva = function(req, res){
-	res.render('justificacion_nueva', {title: 'Nueva Justificacion | SIGUCA'});
-};

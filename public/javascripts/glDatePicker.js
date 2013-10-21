@@ -165,7 +165,8 @@
 		//   date : The date associated with the cell
 		//   data : Special data associated with the cell (if available, otherwise, null)
 		onClick: (function(el, cell, date, data) {
-			el.val(date.toLocaleDateString());
+			//el.val(date.toLocaleDateString());
+                        confirm("prueba");
 		}),
 
 		// Callback that will trigger when the user hovers over a selectable date.
