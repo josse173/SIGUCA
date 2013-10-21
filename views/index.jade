@@ -35,9 +35,10 @@ block content
                       fieldset(data-role='controlgroup')
                         label(for='contrasena') Contraseña
                            input(id='contrasena',type='password',value='',placeholder='',name='contrasena')
+                    
               .modal-footer
-                button.btn.btn-default(type='button', data-dismiss='modal') Cerrar
-                button.btn.btn-primary(type='button') Ingresar   
+                button.btn.btn-default(type='button', data-dismiss='modal') Cerrar 
+                button#btnYes.btn.btn-default(onclick="location.href = '/escritorio'", type='button') Ingresar
           p
             | Sistema de Gestión de Usuarios y Control de Asistencia
           a.btn.btn-primary.btn-large(href='#myModal', data-toggle='modal')  
@@ -50,6 +51,7 @@ block content
 
 
 block sigucaJS
+  
   script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js')
   script(src='/twitter-bootstrap/twitter-bootstrap-v2/js/bootstrap-modal.js')
   script(src="/javascripts/flipclock/libs/prefixfree.min.js")
