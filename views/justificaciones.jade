@@ -1,9 +1,10 @@
 extends layout
 
 block sigucaCSS
-  link(rel='stylesheet', href='/stylesheets/flipclock.css')
   link(rel='stylesheet', href='/stylesheets/sigucaJustificaciones.css')
   link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
+  link(rel='stylesheet' href='/stylesheets/glDatePicker.default.css')
+  link(rel='stylesheet' href='/stylesheets/glDatePicker.darkneon.css')
 
 block sigucaNavbarItems
   ul#nav.main
@@ -12,14 +13,14 @@ block sigucaNavbarItems
         i.icon-home.icon-large
         |&nbsp;Escritorio
     li
-      a.active(href='/graficos')
+      a(href='/graficos')
         i.icon-bar-chart.icon-large
         |&nbsp;Gráficos
     li
-      a(href="/justificaciones")
+      a.active(href="/justificaciones")
         i.icon-edit.icon-large  
         |&nbsp;Justificaciones
-    li.active
+    li
       a(href="/configuracion")
         i.icon-cogs.icon-large
         |&nbsp;Configuracion
@@ -28,22 +29,31 @@ block sigucaNavbarItems
         |Ayuda 
         i.icon-question-sign.icon-large 
 
-block content
-  div.row
-    div.col-sm-8
-     h1 Justificaciones
-     img.img-responsive(src='/images/calendar.png', alt='Responsive image')
-    div.col-sm-4
-     div.permisosSolicitados
-       div.permisosMes
-         h3 Permisos de Octubre
-         ul.permisos
-           li Vacaciones
-           li Cita
-        div.boton
-          a.btn.btn-primary(href='/roles', role='button', data-toggle='modal') +Permiso
+block content  
+  .wrapper
+    .grids
+        .grid-12.grid.green
+          h2 Justificaciones
+          input
+
+        .grid-4.grid.grey
+             div.filter
+                 label#tGrafico(for='grafico') 
+                   |Tipo de Gráfico: 
+                 .btn-group
+                     button.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown')
+                      | Todos
+                      span.caret
+                     ul.dropdown-menu
+                      li
+                       a(href='#') Barras
+                      li
+                       a(href='#') CrossFilter
   
+  
+             
+    
 block sigucaJS
-  script(src="/javascripts/flipclock/libs/prefixfree.min.js")
-  script(src="/javascripts/flipclock/flipclock.min.js")
-  script(src="/javascripts/sigucaEscritorio.js")
+  script(src="/javascripts/jquery.min.js")
+  script(src="/javascripts/glDatePicker.js")
+  script(src="/javascripts/calendario.js")

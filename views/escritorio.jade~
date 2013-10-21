@@ -1,0 +1,53 @@
+extends layout
+
+block sigucaCSS
+  link(rel='stylesheet', href='/stylesheets/flipclock.css')
+  link(rel='stylesheet', href='/stylesheets/sigucaEscritorio.css')
+  link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
+  
+block sigucaNavbarItems
+  ul#nav.main
+    li
+      a.active(href="/escritorio")
+        i.icon-home.icon-large
+        |&nbsp;Escritorio
+    li
+      a(href='/graficos')
+        i.icon-bar-chart.icon-large
+        |&nbsp;Gráficos
+    li
+      a(href="/justificaciones")
+        i.icon-edit.icon-large  
+        |&nbsp;Justificaciones
+    li
+      a(href="/configuracion")
+        i.icon-cogs.icon-large
+        |&nbsp;Configuracion
+    li
+      a(href='/Ayuda')
+        |Ayuda 
+        i.icon-question-sign.icon-large 
+
+block content
+  div.row
+  div.col-sm-4
+    h1 Últimas Marcas
+    div.container
+      p 01-01-2013 8:00AM
+      p 01-01-2013 12:00PM
+      p 01-01-2013 5:00AM
+      p 03-01-2013 8:10AM
+      p 03-01-2013 10:10AM
+      p 04-01-2013 8:05AM
+      p 04-01-2013 9:10AM
+      p 04-01-2013 5:10PM
+      p 05-01-2013 8:10AM
+      p 06-01-2013 8:10AM
+      p 07-01-2013 8:10AM    
+  div.col-sm-8
+    #flipClock
+        
+block sigucaJS
+  script(src="/javascripts/flipclock/libs/prefixfree.min.js")
+  script(src="/javascripts/flipclock/flipclock.min.js")
+
