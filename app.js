@@ -85,7 +85,7 @@ app.get('/empleado', api_empleado.lista);
 */
 
 app.listen(3000);
-console.log('Express server listening on port ' + app.get('port'));
+console.log('Servidor Express escuchando en http://localhost:' + app.get('port'));
 
 /* http.createServer(app).listen(app.get('port'), function(){			ELIMINADO POR DEPRECADO
   console.log('Express server listening on port ' + app.get('port'));
