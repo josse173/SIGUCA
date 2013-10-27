@@ -5,6 +5,10 @@
   y pasarlos a la vista con res.render('<vista>', <objeto>)
  */
 
+var mongoose    = require('mongoose');
+require('../models/roles');
+var dbRol = mongoose.model('Rol');
+
 exports.index = function(req, res){
   res.render('index', { title: 'SIGUCA' });
 };
@@ -28,4 +32,20 @@ exports.justificaciones = function(req, res){
 };
 exports.justificacion_nueva = function(req, res){
 	res.render('justificacion_nueva', {title: 'Nueva Justificacion | SIGUCA'});
+};
+
+exports.rolesPost = function(req, res){
+	console.log('Recibimos rol:'+req.body.rol+' y nombre:'+req.body.nombre);
+	var newRol = new dbRol (req.body)
+	newRol.save(function(err){
+		if (err) {
+			return res.render('roles', {
+				errors: utils.errors(err.errors),
+				rol: rol,
+				nombre: nombre,
+				title: 'SIGUCA - Administración de Roles - Intente nuevamente'
+			});
+		};
+	});
+	res.redirect('/');
 };
