@@ -26,15 +26,18 @@ block content
                 button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
                 h4.modal-title Ingreso
               .modal-body
-                form(action='/signup',method='post')
-                   div(data-role='fieldcontain')
-                      fieldset(data-role='controlgroup')
-                        label(for='nombreU') Nombre de Usuario
-                           input(id='nombreU',type='text',value='',name='nombreU')
-                    div#passworddiv(data-role='fieldcontain')
-                      fieldset(data-role='controlgroup')
-                        label(for='contrasena') Contraseña
-                           input(id='contrasena',type='password',value='',placeholder='',name='contrasena')
+                 form.form-horizontal(role="form")
+                    div.form-group.gcsContainer
+                      label.col-lg-4(for="usernameInput")
+                        |Nombre Usuario:
+                      div.col-lg-6.col-md-6.col-sm-6
+                        input.form-control(type="text" id="#usernameInput" placeholder="Nombre")
+                    div.form-group.gcsContainer
+                      label.col-lg-4.col-md-6.col-sm-6(for="passwordInput")
+                        |Contraseña:
+                      div.col-lg-6.col-md-6.col-sm-6
+                        input.form-control(type="password" id="#passwordInput" placeholder="Contraseña")
+                   
                     
               .modal-footer
                 button.btn.btn-default(type='button', data-dismiss='modal') Cerrar 
