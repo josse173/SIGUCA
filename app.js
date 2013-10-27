@@ -69,6 +69,6 @@ app.get('/empleado', api_empleado.lista);
 
 // Open App socket
 app.listen(3000);
-console.log('Express server listening on port ' + app.get('port'));
+console.log('Servidor Express escuchando en http://localhost:' + app.get('port'));
 
 
