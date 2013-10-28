@@ -1,25 +1,25 @@
-  /** SIGUCA 
+ /** SIGUCA 
  *
  * 	Modelo de Usuario
  *
- */
+ **/
 
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
-    crypto = require('crypto'), // MÛdulo de encriptaciÛn. Para la seguridad de las contraseÒas. Algoritmo Hash.
-	_ = require('underscore'); // MÛdulo para poder hacer uso del "_" sin causar conflicto.
+    crypto = require('crypto'), // M√≥dulo de encriptaci√≥n. Para la seguridad de las contrase√±as. Algoritmo Hash.
+	_ = require('underscore'); // M√≥dulo para poder hacer uso del "_" sin causar conflicto.
 
 // Crear el esquema de Usuario
 
 var SchemaUsuario = new Schema({
 		nombre: { type: String, default: '' },
-		hashed_password: { type: String, default: '' },
-		salt: { type: String, default: '' }, // http://en.wikipedia.org/wiki/Salt_%28cryptography%29
+		email: { type: String, default: '' },
 		rol: { type: String, default: '' },
-		email: { type: String, default: '' };
+		hashed_password: { type: String, default: '' },
+		salt: { type: String, default: '' }; // http://en.wikipedia.org/wiki/Salt_%28cryptography%29
 }
 
-// MÈtodo Virtual: No persiste en la BD.
+// M√©todo Virtual: No persiste en la BD.
 
 UserSchema
   .virtual('password')
@@ -42,7 +42,7 @@ UserSchema.path('nombre').validate(function (nombre) {
 
 UserSchema.path('hashed_password').validate(function (hashed_password) {
   return hashed_password.length
-}, 'ContraseÒa no puede estar en blanco.')
+}, 'Contrase√±a no puede estar en blanco.')
 
 UserSchema.path('rol').validate(function (rol) {
   return rol.length
@@ -50,7 +50,7 @@ UserSchema.path('rol').validate(function (rol) {
 
 UserSchema.path('email').validate(function (email) {
   return email.length
-}, 'Correo electrÛnico no puede estar en blanco. Se notificar· por medio de este.')
+}, 'Correo electr√≥nico no puede estar en blanco. Se notificar√° por medio de este.')
 
 UserSchema.path('email').validate(function(v, fn) {
   var UserModel = mongoose.model('User');
@@ -58,25 +58,25 @@ UserSchema.path('email').validate(function(v, fn) {
   UserModel.find('email': v.toLowerCase(), function (err, emails) {
     fn(err || emails.length === 0);
   });
-}, 'Correo electrÛnico ya se encuentra registrado.');
+}, 'Correo electr√≥nico ya se encuentra registrado.');
 
-// ValidaciÛn previa a Guardar
+// Validaci√≥n previa a Guardar
 
 UserSchema.pre('guardar', function(next) {
   if (!this.isNew) return next()
 
-  if (!validatePresenceOf(this.password))
-    next(new Error('ContraseÒa inv·lida.'))
+  if (!validaPresenciaDe(this.password))
+    next(new Error('Contrase√±a inv√°lida.'))
   else
     next()
 })
 
-// MÈtodos de Usuario
+// M√©todos de Usuario
 
 UserSchema.methods = {
 
   /**
-* Autenticar - Verifica si las contraseÒas son iguales
+* Autenticar - Verifica si las contrase√±as son iguales
 *
 * @param {String} texto
 * @return {Boolean}
@@ -99,7 +99,7 @@ UserSchema.methods = {
   },
 
   /**
-* Encripta contraseÒa
+* Encripta contrase√±a
 *
 * @param {String} password
 * @return {String}
@@ -118,5 +118,4 @@ UserSchema.methods = {
   }
 }
 
-module.exports = mongoose.model('Usuario', SchemaUsuario);
-
+mongoose.model('Usuario', UserSchema);
