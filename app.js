@@ -12,10 +12,11 @@ var mongoose = require('mongoose');
 var passport = require('passport');
 var routes = require('./routes');
 var path = require('path');
+//var apiEmpleado = require('../controllers');
 
 var app = express();
 
-/*Configuración de ambientes.
+/*Configuración de ambientes.s
 * Configuration */
 app.configure(function(){
 	app.set('port', process.env.PORT || 3000);
@@ -27,6 +28,7 @@ app.configure(function(){
 	app.use(express.methodOverride());
 	app.use(app.router);
 	app.use(express.static(path.join(__dirname, 'public')));
+
 });
 
 /** Leer la configuración de ./config/config **/
@@ -61,10 +63,11 @@ app.get('/justificaciones', routes.justificaciones);
 app.get('/justificacion_nueva', routes.justificacion_nueva);
 app.get('/roles', routes.roles); //Llama la vista de roles a través de ./routes/index.js
 app.post('/roles', routes.rolesPost);
-//app.post('/empleado', api_empleado.crea);
+//app.get('/configuracion', routes.indexAng);
 /*app.get('/empleado/:cedula.:format?', api_empleado.buscaPorCedula);
 app.get('/empleado', api_empleado.lista);
 */
+//app.post('/configuraciones', apiEmpleado.crea);
 
 
 // Open App socket

@@ -19,4 +19,21 @@ var SchemaDepartamento = new Schema({
 		}
 }
 
+exports.addContact = function (req, res) {
+	var contact;
+	contact = new ContactModel({
+		name: req.body.name,
+		phone: req.body.phone,
+	});
+	contact.save(function (err) {
+		if (!err) {
+		 	console.log("created");
+		} else {
+			console.log(err);
+		}
+	});
+ 
+	return res.send(contact);
+}
+
 module.exports = mongoose.model('Departamento', SchemaDepartamento);

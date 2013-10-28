@@ -6,155 +6,30 @@ block sigucaCSS
   link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
 
 block content
-  .wrapper
-    .grids
-        .grid-2.grid.green
+  .wrapper (ng-app="empleadoManager")
+    .grids 
         .grid-12.grid.green
-          h2 Configuraciones
-          label.labelP#areas(for='Areas') 
-              |Áreas:   
-          #modalAddArea.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
-           .modal-dialog
-            .modal-content
-              .modal-header
-                button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-                h4.modal-title Agregar Área
-              .modal-body
-                form(action='/signup',method='post')
-                   div(data-role='fieldcontain')
-                      fieldset(data-role='controlgroup')
-                        label(for='nombreA') Nombre del área:
-                           input(id='nombreA',type='text',value='',name='nombreA')
-                    div#idSup(data-role='fieldcontain')
-                      fieldset(data-role='controlgroup')
-                        label(for='idSup') Id. Supervisor:
-                           input(id='idSup',type='text',value='',placeholder='',name='idSup')
-                    div#descripcion(data-role='fieldcontain')
-                      fieldset(data-role='controlgroup')
-                        label(for='desc') Descripción:
-                           input(id='desc',type='text',value='',placeholder='',name='desc')
-                    
-              .modal-footer
-                button.btn.btn-default(type='button', data-dismiss='modal') Cerrar 
-                button#btnYes.btn.btn-default( type='button') Agregar
-          button.btn.btn-default( href='#modalAddArea', data-toggle='modal') + 
-          button.btn.btn-default(type='button') - 
-          button.btn.btn-default(type='button') modificar
-          br
-          br
-          label.labelP#emp(for='Empleados') 
-              |Empleados:   
-          #modalAddEmpleado.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
-           .modal-dialog
-            .modal-content
-              .modal-header
-                button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-                h4.modal-title Agregar Empleado
-              .modal-body
-                form(action='/signup',method='post')
-                   div(data-role='fieldcontain')
-                      fieldset(data-role='controlgroup')
-                        label(for='nombreA') Nombre:
-                           input(id='nombreA',type='text',value='',name='nombreA')
-                    div#pApe(data-role='fieldcontain')
-                      fieldset(data-role='controlgroup')
-                        label(for='pApe') Primer Apellido:
-                           input(id='pApe',type='teext',value='',placeholder='',name='pApe')
-                    div#sApe(data-role='fieldcontain')
-                      fieldset(data-role='controlgroup')
-                        label(for='sApe') Segundo Apellido:
-                           input(id='sApe',type='teext',value='',placeholder='',name='sApe')
-                    div#correo(data-role='fieldcontain')
-                      fieldset(data-role='controlgroup')
-                        label(for='correo') Correo:
-                           input(id='correo',type='teext',value='',placeholder='',name='correo')
-                    div#tel(data-role='fieldcontain')
-                      fieldset(data-role='controlgroup')
-                        label(for='tel') Télefono:
-                           input(id='tel',type='teext',value='',placeholder='',name='v')
-                    div#puesto(data-role='fieldcontain')
-                      fieldset(data-role='controlgroup')
-                        label(for='puesto') Puesto:
-                           input(id='puesto',type='text',value='',placeholder='',name='puesto')
-                    div#idArea(data-role='fieldcontain')
-                      fieldset(data-role='controlgroup')
-                        label(for='idArea') Id. área:
-                           input(id='idArea',type='text',value='',placeholder='',name='idArea')
-                    div#codTar(data-role='fieldcontain')
-                      fieldset(data-role='controlgroup')
-                        label(for='codTar') Código de la tarjeta:
-                           input(id='codTar',type='text',value='',placeholder='',name='codTar')
-                    
-              .modal-footer
-                button.btn.btn-default(type='button', data-dismiss='modal') Cerrar 
-                button#btnYes.btn.btn-default(type='button') Agregar
-          button.btn.btn-default( href='#modalAddEmpleado', data-toggle='modal')+ 
-          button.btn.btn-default(type='button') - 
-          button.btn.btn-default(type='button') modificar
-          br
-          br
-          label.labelP#rol(for='Roles') 
-              |Roles:   
-           #modalAddRol.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
-           .modal-dialog
-            .modal-content
-              .modal-header
-                button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-                h4.modal-title Agregar Rol
-              .modal-body
-                form(action='/signup',method='post')
-                   div(data-role='fieldcontain')
-                      fieldset(data-role='controlgroup')
-                        label(for='nombreA') Nombre:
-                           input(id='nombreA',type='text',value='',name='nombreA')
-                    div#pApe(data-role='fieldcontain')
-                      fieldset(data-role='controlgroup')
-                        label(for='pApe') Permisos:
-                           input(id='pApe',type='teext',value='',placeholder='',name='pApe')
-                    
-              .modal-footer
-                button.btn.btn-default(type='button', data-dismiss='modal') Cerrar 
-                button#btnYes.btn.btn-default( type='button') Agregar
-          button.btn.btn-default( href='#modalAddRol', data-toggle='modal') + 
-          button.btn.btn-default(type='button') - 
-          button.btn.btn-default(type='button') modificar
-          br
-          br
-          label.labelP#tHor(for='Tipos de Horario') 
-              |Tipos de Horarios:   
-          #modalAddTHor.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
-           .modal-dialog
-            .modal-content
-              .modal-header
-                button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-                h4.modal-title Agregar Tipo de Horario
-              .modal-body
-                form(action='/signup',method='post')
-                   div(data-role='fieldcontain')
-                      fieldset(data-role='controlgroup')
-                        label(for='nombreA') Nombre:
-                           input(id='nombreA',type='text',value='',name='nombreA')
-                    div#pApe(data-role='fieldcontain')
-                      fieldset(data-role='controlgroup')
-                        label(for='pApe') Id. área asociada:
-                           input(id='pApe',type='teext',value='',placeholder='',name='pApe')
-                    div#pApe(data-role='fieldcontain')
-                      fieldset(data-role='controlgroup')
-                        label(for='pApe') Lapso de Jornada:
-                           input(id='pApe',type='teext',value='',placeholder='',name='pApe')
-                    div#pApe(data-role='fieldcontain')
-                      fieldset(data-role='controlgroup')
-                        label(for='pApe') Lapso de descanso:
-                           input(id='pApe',type='teext',value='',placeholder='',name='pApe')
-              .modal-footer
-                button.btn.btn-default(type='button', data-dismiss='modal') Cerrar 
-                button#btnYes.btn.btn-default( type='button') Agregar
-          button.btn.btn-default( href='#modalAddTHor', data-toggle='modal') + 
-          button.btn.btn-default(type='button') - 
-          button.btn.btn-default(type='button') modificar
+          ul.inline
+            li You have {{empleado.length}} empleado.
+              li
+                .input-prepend
+                  span.add-on
+                    i.icon-search
+                  input#inputIcon.span2(type='text', placeholder='Search...', ng-model='query')
+              li
+                p Sorted by: {{columnSort.sortColumn}}
+          table.table.table-hover (ng-controller="ListController")
+            thead
+              tr
+                th(ng-repeat='header in headers')
+                  a(ng-click='columnSort.sortColumn=headers[$index];columnSort.reverse=!columnSort.reverse') {{ headers[$index] | capitalise }}
+            tbody
+              tr(ng-repeat='contact in contacts | orderBy:columnSort.sortColumn:columnSort.reverse | filter: query')
+                td {{ empleado.cedula }}
+                td {{ empleado.nombre }}  
+                td {{ empleado.apellido1 }} 
+                td {{ empleado.departamento }}    
            
-              
-          
 
      
 block sigucaNavbarItems
@@ -186,3 +61,4 @@ block sigucaJS
   script(src="/javascripts/flipclock/libs/prefixfree.min.js")
   script(src="/javascripts/flipclock/flipclock.min.js")
   script(src="/javascripts/sigucaHome.js")
+  script(src="/javascripts/angular-1.0.8/angular.min.js")
