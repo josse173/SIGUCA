@@ -26,22 +26,24 @@ block content
                 button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
                 h4.modal-title Ingreso
               .modal-body
-                 form.form-horizontal(role="form")
+                 form.form-horizontal(action="/usuarios/sesion", method="post")
                     div.form-group.gcsContainer
-                      label.col-lg-4(for="usernameInput")
-                        |Nombre Usuario:
+                      label.col-lg-4(for="email")
+                        |Correo electrónico:
                       div.col-lg-6.col-md-6.col-sm-6
-                        input.form-control(type="text" id="#usernameInput" placeholder="Nombre")
+                        input.form-control(type="email" name="email" id="#email" placeholder="Correo electrónico")
                     div.form-group.gcsContainer
-                      label.col-lg-4.col-md-6.col-sm-6(for="passwordInput")
+                      label.col-lg-4.col-md-6.col-sm-6(for="password")
                         |Contraseña:
                       div.col-lg-6.col-md-6.col-sm-6
-                        input.form-control(type="password" id="#passwordInput" placeholder="Contraseña")
-                   
+                        input.form-control(type="password" name="password" id="#password" placeholder="Contraseña")
                     
-              .modal-footer
-                button.btn.btn-default(type='button', data-dismiss='modal') Cerrar 
-                button#btnYes.btn.btn-default(onclick="location.href = '/escritorio'", type='button') Ingresar
+                    .modal-footer
+                        .form-actions
+                           button.btn.btn-primary(type='button', data-dismiss='modal') Cerrar 
+                           &nbsp;
+                           button.btn.btn-primary(type='submit') IngresarPrueba
+                           button#btnYes.btn.btn-default(onclick="location.href = '/escritorio'", type='button') Ingresar
           p
             | Sistema de Gestión de Usuarios y Control de Asistencia
           a.btn.btn-primary.btn-large(href='#myModal', data-toggle='modal')  
