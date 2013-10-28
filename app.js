@@ -6,10 +6,10 @@
 
 
 /** Dependencias
- * Module dependencies.
  */
 var express = require('express');
 var mongoose = require('mongoose');
+var passport = require('passport');
 var routes = require('./routes');
 var path = require('path');
 
