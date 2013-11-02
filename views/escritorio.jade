@@ -12,7 +12,7 @@ block imgSession
                   span.caret
                 ul.dropdown-menu
                   li 
-                   a(href='#') Cerrar Sesión 
+                   a(href='/') Cerrar Sesión 
 block sigucaNavbarItems
   ul#nav.main
     li
@@ -41,12 +41,25 @@ block content
    .grids
     .grid-10.grid.green
       h3 Marcas Personales
-      img.img-responsive#grafico(src='/images/todos.PNG', alt='Responsive image') 
-    .grid-6.grid.green  
-      h3 Eventos Recientes
-      h5 Ausencias
-      h5 Justificaciones
-      h5 Permisos
+      img.img-responsive#grafico(src='/images/tati.PNG', alt='Responsive image') 
+    .grid-6.grid.green
+     h3 Últimos Eventos   
+     ul#tabs.nav.nav-tabs(data-tabs='tabs')
+        li.active
+          a(href='#permisos', data-toggle='tab') Permisos
+        li
+          a(href='#justificaciones', data-toggle='tab') Justificaciones
+      
+      #my-tab-content.tab-content
+        #permisos.tab-pane
+          p.empleadoAu Federico Mercury 
+        #justificaciones.tab-pane
+          p.empleadoAu Chucho Valdéz 
+      
+
+
+</div>
+
     
         
 block sigucaJS
