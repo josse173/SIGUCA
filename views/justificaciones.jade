@@ -6,7 +6,14 @@ block sigucaCSS
   link(rel='stylesheet' href='/stylesheets/glDatePicker.default.css')
   link(rel='stylesheet' href='/stylesheets/glDatePicker.darkneon.css')
 block imgSession
-  img#imgSessionPers(src='images/marito.jpg', alt='something') 
+  .divSession#divSession
+    img#imgSessionPers(src='images/marito.jpg', alt='something') 
+    .btn-group.dropup
+                button.btn.btn-default.dropdown-toggle#cSession(type='button', data-toggle='dropdown')
+                  span.caret
+                ul.dropdown-menu
+                  li 
+                   a(href='#') Cerrar Sesión
 block sigucaNavbarItems
   ul#nav.main
     li 

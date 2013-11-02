@@ -17,3 +17,17 @@
     float: right;
     border-radius: 3px;
 }
+
+#cSession{
+	float: right;
+}
+#divSession{
+	float: right;
+}
+.btn.btn-default.dropdown-toggle{
+    background-color: hsl(79, 68%, 48%) !important; background-repeat: repeat-x; filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#c1e475", endColorstr="#98cd27"); background-image: -khtml-gradient(linear, left top, left bottom, from(#c1e475), to(#98cd27)); background-image: -moz-linear-gradient(top, #c1e475, #98cd27); background-image: -ms-linear-gradient(top, #c1e475, #98cd27); background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #c1e475), color-stop(100%, #98cd27)); background-image: -webkit-linear-gradient(top, #c1e475, #98cd27); background-image: -o-linear-gradient(top, #c1e475, #98cd27); background-image: linear-gradient(#c1e475, #98cd27); border-color: #98cd27 #98cd27 hsl(79, 68%, 43%); color: #333 !important; text-shadow: 0 1px 1px rgba(255, 255, 255, 0.33); -webkit-font-smoothing: antialiased;
+	}
+.dropdown-menu{
+	background-color: #00B060;
+}
+
