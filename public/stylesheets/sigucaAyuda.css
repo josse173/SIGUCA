@@ -9,3 +9,11 @@
 	margin-top: 16px;
 	
 }
+#imgSessionPers{
+	border-style:solid;
+    border-width:7px;
+    border-color:#6AAC2B;
+    margin-left: 10px;
+    float: right;
+    border-radius: 3px;
+}
