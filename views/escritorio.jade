@@ -44,17 +44,16 @@ block content
       img.img-responsive#grafico(src='/images/tati.PNG', alt='Responsive image') 
     .grid-6.grid.green
      h3 Eventos Pendientes   
-     ul#tabs.nav.nav-tabs(data-tabs='tabs')
-        li.active
-          a(href='#permisos', data-toggle='tab') Permisos
-        li
-          a(href='#justificaciones', data-toggle='tab') Justificaciones
-      
-      #my-tab-content.tab-content
-        #permisos.tab-pane
-          p.empleadoAu Federico Mercury 
-        #justificaciones.tab-pane
-          p.empleadoAu Chucho Valdéz 
+     ul.list-group
+        li.list-group-item
+            span.badge 2
+            | Solicitud Ausencias
+        li.list-group-item
+            span.badge 18
+            | Justificaciones
+        li.list-group-item
+            span.badge 0
+            | Solicitudes J.extra
       
 
 
