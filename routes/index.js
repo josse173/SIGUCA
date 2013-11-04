@@ -24,11 +24,17 @@ exports.escritorio = function(req, res){
 exports.graficos = function(req, res){
 	res.render('graficos', {title: 'Graficos | SIGUCA'});
 };
+exports.graficoAdmin = function(req, res){
+	res.render('graficoAdmin', {title: 'Graficos Administrador | SIGUCA'});
+};
 exports.ayuda = function(req, res){
 	res.render('ayuda', {title: 'Ayuda | SIGUCA'});
 };
 exports.configuracion = function(req, res){
 	res.render('configuracion',{title: 'Configuración | SIGUCA'});
+};
+exports.confAdmin = function(req, res){
+	res.render('confAdmin',{title: 'Configuración Administrador| SIGUCA'});
 };
 exports.justificaciones = function(req, res){
 	res.render('justificaciones', {title: 'Justificaciones/Permisos | SIGUCA'});

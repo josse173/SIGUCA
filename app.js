@@ -57,8 +57,10 @@ if ('development' == app.get('env')) {
 app.get('/', routes.index);
 app.get('/escritorio', routes.escritorio);
 app.get('/graficos', routes.graficos);
+app.get('/graficoAdmin', routes.graficoAdmin);
 app.get('/ayuda', routes.ayuda);
 app.get('/configuracion', routes.configuracion);
+app.get('/confAdmin', routes.confAdmin);
 app.get('/justificaciones', routes.justificaciones);
 app.get('/justificacion_nueva', routes.justificacion_nueva);
 app.get('/solicitud_extra',routes.solicitud_extra);
