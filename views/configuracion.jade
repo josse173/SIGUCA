@@ -3,6 +3,7 @@ extends layout
 block sigucaCSS
   link(rel='stylesheet', href='/stylesheets/flipclock.css')
   link(rel='stylesheet', href='/stylesheets/sigucaJustificaciones.css')
+  link(rel='stylesheet', href='/stylesheets/sigucaConfiguraciones.css')
   link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
 block imgSession
   .divSession#divSession
@@ -37,7 +38,7 @@ block content
                       | Área
                 tbody
                   tr
-                    td Gabriel Martinez Barboza
+                    td Sandra Martinez Barrantes
                     td S. Técnico
                   tr
                     td Federico García Lorca
@@ -45,6 +46,73 @@ block content
                   tr
                     td Lucía Diamante Cielo
                     td S. Técnico
+
+            button#ingreso.btn.btn-success(name='agregar', href='#addEmpleado', data-toggle='modal') Agregar
+            button#modificar.btn.btn-warning(name='modificar') Modificar
+            button#cancelar.btn.btn-danger(name='eliminar') Eliminar
+            #addEmpleado.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+             .modal-dialog
+              .modal-content
+                .modal-header
+                  button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+                  h4.modal-title Agregar Empleado
+                .modal-body
+                   form.form-horizontal
+                    fieldset
+                        div.form-group.gcsContainer
+                          label.col-lg-4(for="Nombre")
+                            |Nombre:
+                          div.col-lg-6.col-md-6.col-sm-6
+                            input.form-control(type="text" name="nombre" id="#email" placeholder="Nombre")
+                        div.form-group.gcsContainer
+                          label.col-lg-4.col-md-6.col-sm-6(for="1apellido")
+                            |Primer Apellido:
+                          div.col-lg-6.col-md-6.col-sm-6
+                            input.form-control(type="text" name="1apellido" id="#1apellido" placeholder="Primer Apellido")
+                        div.form-group.gcsContainer
+                          label.col-lg-4.col-md-6.col-sm-6(for="2apellido")
+                            |Segundo Apellido:
+                          div.col-lg-6.col-md-6.col-sm-6
+                            input.form-control(type="text" name="2apellido" id="#2apellido" placeholder="Segundo Apellido")
+                        div.form-group.gcsContainer
+                          label.col-lg-4.col-md-6.col-sm-6(for="cedula")
+                            |Cédula:
+                          div.col-lg-6.col-md-6.col-sm-6
+                            input.form-control(type="text" name="cedula" id="#cedula" placeholder="Cédula")
+                        div.form-group.gcsContainer
+                          label.col-lg-4.col-md-6.col-sm-6(for="password")
+                            |Código Tarjeta:
+                          div.col-lg-6.col-md-6.col-sm-6
+                            input.form-control(type="password" name="password" id="#password" placeholder="Contraseña")
+                        div.form-group.gcsContainer
+                          label.col-lg-4.col-md-6.col-sm-6(for="area")
+                            |Área:
+                          div.col-lg-6.col-md-6.col-sm-6
+                            select#area.input-xlarge(name='area')
+                                  option S. Técnico
+                                  option Innovación
+                        div.form-group.gcsContainer
+                          label.col-lg-4.col-md-6.col-sm-6(for="tHorario")
+                            |Tipo de Horario:
+                          div.col-lg-6.col-md-6.col-sm-6
+                            select#area.input-xlarge(name='area')
+                                  option Diurno
+                                  option Nocturno
+
+                        div.form-group.gcsContainer
+                          label.col-lg-4.col-md-6.col-sm-6(for="infoextra")
+                            |Información Adicional
+                            textarea.form-control(name='infoextra')
+
+                        //
+                           Button (Double) 
+                        .control-group
+                          label.control-label(for='ingreso')
+                          div.col-lg-6.col-md-6.col-sm-6
+                            button#ingreso.btn.btn-success(name='ingreso') Ingresar
+                            button#cancelar.btn.btn-danger(name='cancelar') Cancelar
+
+                
         .grid-8.grid.green
           div#wrappConf
              h2 Tipo de Horario
@@ -75,6 +143,40 @@ block content
                     tr
                       td Un día-casa
                       td Federico García Lorca
+            button#ingreso.btn.btn-success(name='agregar', href='#addtipoH', data-toggle='modal') Agregar
+            button#modificar.btn.btn-warning(name='modificar') Modificar
+            button#cancelar.btn.btn-danger(name='eliminar') Eliminar
+            #addtipoH.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+             .modal-dialog
+              .modal-content
+                .modal-header
+                  button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+                  h4.modal-title Agregar Tipo Horario
+                .modal-body
+                   form.form-horizontal
+                    fieldset
+                        div.form-group.gcsContainer
+                          label.col-lg-4(for="Nombre")
+                            |Nombre horario:
+                          div.col-lg-6.col-md-6.col-sm-6
+                            input.form-control(type="text" name="nombre" id="#email" placeholder="Nombre")
+                        div.form-group.gcsContainer
+                          label.col-lg-4.col-md-6.col-sm-6(for="1apellido")
+                            |Tipo:
+                          div.col-lg-6.col-md-6.col-sm-6
+                            input.form-control(type="text" name="1apellido" id="#1apellido" placeholder="Primer Apellido")
+                        div.form-group.gcsContainer
+                          label.col-lg-4.col-md-6.col-sm-6(for="infoextra")
+                            |Información Adicional
+                            textarea.form-control(name='infoextra')
+
+                        //
+                           Button (Double) 
+                        .control-group
+                          label.control-label(for='ingreso')
+                          .controls
+                            button#ingreso.btn.btn-success(name='ingreso') Ingresar
+                            button#cancelar.btn.btn-danger(name='cancelar') Cancelar
                     
 
 
