@@ -29,6 +29,7 @@ block content
                   input#inputIcon.span2(type='text', placeholder='Search...', ng-model='query')
               li
                 p Ordenar por: Nombre
+
           table.table.table-hover
                 thead
                   tr
@@ -38,13 +39,22 @@ block content
                       | Área
                 tbody
                   tr
-                    td Sandra Martinez Barrantes
+                    td 
+                      label.checkbox(for='empleados-0')
+                        input#empleados-0(name='empleados', value='1empleado', type='checkbox')
+                        | Gabriel Martinez Barboza
                     td S. Técnico
                   tr
-                    td Federico García Lorca
+                    td 
+                      label.checkbox(for='empleados-1')
+                        input#empleados-0(name='empleados', value='2empleado', type='checkbox')
+                        | Tatiana Moreira Beita
                     td Innovacion
                   tr
-                    td Lucía Diamante Cielo
+                    td 
+                      label.checkbox(for='empleados-2')
+                        input#empleados-0(name='empleados', value='3empleado', type='checkbox')
+                        | Carlos Solano Arias
                     td S. Técnico
 
             button#ingreso.btn.btn-success(name='agregar', href='#addEmpleado', data-toggle='modal') Agregar
@@ -108,7 +118,7 @@ block content
                            Button (Double) 
                         .control-group
                           label.control-label(for='ingreso')
-                          div.col-lg-6.col-md-6.col-sm-6
+                            .controls
                             button#ingreso.btn.btn-success(name='ingreso') Ingresar
                             button#cancelar.btn.btn-danger(name='cancelar') Cancelar
 
@@ -134,14 +144,19 @@ block content
                         | Empleados asignados
                   tbody
                     tr
-                      td Diurno
+                      td 
+                        label.checkbox(for='tHorario-0')
+                          input#empleados-0(name='tHorario', value='1tHorario', type='checkbox')
+                          | Diurno
                       td 
                         ul
                           li Gabriel Martinez 
                           li Lucía Diamante Cielo
-
                     tr
-                      td Un día-casa
+                      td 
+                        label.checkbox(for='tHorario-1')
+                          input#empleados-0(name='tHorario', value='2tHorario', type='checkbox')
+                          | 1 día-casa
                       td Federico García Lorca
             button#ingreso.btn.btn-success(name='agregar', href='#addtipoH', data-toggle='modal') Agregar
             button#modificar.btn.btn-warning(name='modificar') Modificar
