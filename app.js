@@ -62,6 +62,8 @@ app.get('/configuracion', routes.configuracion);
 app.get('/justificaciones', routes.justificaciones);
 app.get('/justificacion_nueva', routes.justificacion_nueva);
 app.get('/solicitud_extra',routes.solicitud_extra);
+app.get('/autoriza_extra',routes.autoriza_extra);
+app.get('/autoriza_justificacion',routes.autoriza_justificacion);
 app.get('/roles', routes.roles); //Llama la vista de roles a través de ./routes/index.js
 app.post('/roles', routes.rolesPost);
 //app.get('/configuracion', routes.indexAng);

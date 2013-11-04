@@ -1,19 +1,16 @@
 extend layout
 
-//-Cualquier cosa dentro del bloque sigucaCSS va a ser insertado en el head del layout
 block sigucaCSS
 	link(rel='stylesheet', href='/stylesheets/sigucaRoles.css')
-	//Este es un comentario que va a salir en el HTML
-	//-Y este es un comentario que solo jade ve.
-
+	
 block content
-	h1 Solicitud de Tiempo Extraordinario
-	form.form-horizontal(action="solicitud_extra" method="post")
+	h1 Autorización de Tiempo Extraordinario
+	form.form-horizontal(action="autoriza_extra" method="post")
 		div.control-group
 			label.control-label(for="Código")
 				|Empleado
 			div.controls
-				input(type="text" name="Empleado" placeholder="123456789")
+				input(type="text" name="Empleado" placeholder="123456789")	
 		div.control-group
 			label.control-label(for="Fecha")
 				|Fecha
@@ -21,9 +18,15 @@ block content
 				input(type="text" name="Fecha" placeholder="20-10-2013")
 		div.control-group
 			label.control-label(for="Tiempo")
-				|Tiempo
+				|Tiempo Solicitado
 			div.controls
 				input(type="text" name="Tiempo" placeholder="3 Horas")
+		div.control-group
+			label.control-label(for="TiempoA")
+				|Tiempo a Autorizar
+			div.controls
+				input(type="text" name="TiempoA" placeholder="2 Horas")		
 		button.btn.btn-primary(type="submit" value="roles")
-			|Enviar Solicitud
-
+			|Rechazar
+		button.btn.btn-primary(type="submit" value="roles")
+			|Autorizar	
