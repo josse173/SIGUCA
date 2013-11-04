@@ -46,6 +46,12 @@ block content
                     td S. Técnico
                   tr
                     td 
+                      label.checkbox(for='empleados-2')
+                        input#empleados-0(name='empleados', value='3empleado', type='checkbox')
+                        | Carlos Solano Arias
+                    td S. Técnico
+                  tr
+                    td 
                       label.checkbox(for='empleados-1')
                         input#empleados-0(name='empleados', value='2empleado', type='checkbox')
                         | Tatiana Moreira Beita
@@ -54,8 +60,14 @@ block content
                     td 
                       label.checkbox(for='empleados-2')
                         input#empleados-0(name='empleados', value='3empleado', type='checkbox')
-                        | Carlos Solano Arias
-                    td S. Técnico
+                        | Marta Loría Cabrera
+                    td Recursos Humanos
+                  tr
+                    td 
+                      label.checkbox(for='empleados-2')
+                        input#empleados-0(name='empleados', value='3empleado', type='checkbox')
+                        | Jairo Arrieta Sanchez
+                    td Recursos Humanos
 
             button#ingreso.btn.btn-success(name='agregar', href='#addEmpleado', data-toggle='modal') Agregar
             button#modificar.btn.btn-warning(name='modificar') Modificar
@@ -95,19 +107,35 @@ block content
                           div.col-lg-6.col-md-6.col-sm-6
                             input.form-control(type="password" name="password" id="#password" placeholder="Contraseña")
                         div.form-group.gcsContainer
+                          label.col-lg-4.col-md-6.col-sm-6(for="puesto")
+                            |Puesto:
+                          div.col-lg-6.col-md-6.col-sm-6
+                            input.form-control(type="text" name="puesto" id="#puesto" placeholder="Puesto")
+                        div.form-group.gcsContainer
+                          label.col-lg-4.col-md-6.col-sm-6(for="area")
+                            |Rol:
+                          div.col-lg-6.col-md-6.col-sm-6
+                            select#area.input-xlarge(name='area')
+                                  option Supervisor
+                                  option Empleado
+                        div.form-group.gcsContainer
                           label.col-lg-4.col-md-6.col-sm-6(for="area")
                             |Área:
                           div.col-lg-6.col-md-6.col-sm-6
                             select#area.input-xlarge(name='area')
                                   option S. Técnico
                                   option Innovación
+                                  option Recursos Humanos
                         div.form-group.gcsContainer
                           label.col-lg-4.col-md-6.col-sm-6(for="tHorario")
                             |Tipo de Horario:
                           div.col-lg-6.col-md-6.col-sm-6
                             select#area.input-xlarge(name='tHorario')
                                   option Diurno
-                                  option Nocturno
+                                  option 3 días
+                                  option 1 dia-casa
+                                  option 12 a 6
+
 
                         div.form-group.gcsContainer
                           label.col-lg-4.col-md-6.col-sm-6(for="infoextra")
@@ -127,7 +155,7 @@ block content
           div#wrappConf
              h2 Tipo de Horario
              ul.inline
-                li Hay 2 tipos de horarios.
+                li Hay 4 tipos de horarios en total.
                 li
                   .input-prepend
                     span.add-on
@@ -167,6 +195,14 @@ block content
                       td 
                         ul
                           li Innovación
+                    tr
+                      td 
+                        label.checkbox(for='tHorario-1')
+                          input#empleados-0(name='tHorario', value='2tHorario', type='checkbox')
+                          | 12 a 6
+                      td 
+                        ul
+                          li Recursos Humanos
                           
             button#ingreso.btn.btn-success(name='agregar', href='#addtipoH', data-toggle='modal') Agregar
             button#modificar.btn.btn-warning(name='modificar') Modificar
@@ -232,7 +268,7 @@ block content
         div#wrappConf
              h2 Áreas
              ul.inline
-                li Hay 5 tipos de áreas.
+                li Hay 4 tipos de áreas en total.
                 li
                   .input-prepend
                     span.add-on
@@ -281,58 +317,33 @@ block content
                         ul
                           li Sara Flores Porras
                           
-            button#ingreso.btn.btn-success(name='agregar', href='#addtipoH', data-toggle='modal') Agregar
+            button#ingreso.btn.btn-success(name='agregar', href='#addArea', data-toggle='modal') Agregar
             button#modificar.btn.btn-warning(name='modificar') Modificar
             button#cancelar.btn.btn-danger(name='eliminar') Eliminar
-            #addtipoH.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+            #addArea.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
              .modal-dialog
               .modal-content
                 .modal-header
                   button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-                  h4.modal-title Agregar Tipo Horario
+                  h4.modal-title Agregar Área
                 .modal-body
                    form.form-horizontal
                     fieldset
                         div.form-group.gcsContainer
                           label.col-lg-4(for="Nombre")
-                            |Nombre horario:
+                            |Nombre área:
                           div.col-lg-6.col-md-6.col-sm-6
-                            input.form-control(type="text" name="nombre" id="#email" placeholder="Nombre")
-                         div.form-group.gcsContainer
-                          label.col-lg-4.col-md-6.col-sm-6(for="areaAso")
-                            |Área asociada:
-                          div.col-lg-6.col-md-6.col-sm-6
-                            select#area.input-xlarge(name='areaAso')
-                                  option S. Técnico
-                                  option Innovación
-                        div.form-group.gcsContainer
-                          label.col-lg-4.col-md-6.col-sm-6(for="clasificacion")
-                            |Clasificación:
-                          div.col-lg-6.col-md-6.col-sm-6
-                            select#area.input-xlarge(name='clasificacion')
-                                  option Jornada
-                                  option Rango Semanal
+                            input.form-control(type="text" name="nombre" id="#nombre" placeholder="Nombre")
                         div.form-group.gcsContainer
                           label.col-lg-4(for="entrada")
-                            |Hora Salida:
+                            |Código Supervisor:
                           div.col-lg-6.col-md-6.col-sm-6
-                            input.form-control(type="text" name="entrada" placeholder="8 a.m")
+                            input.form-control(type="text" name="entrada" placeholder="codigo supervisor")
                         div.form-group.gcsContainer
-                          label.col-lg-4(for="salida")
-                            |Hora Salida:
-                          div.col-lg-6.col-md-6.col-sm-6
-                            input.form-control(type="text" name="salida"  placeholder="5 p.m")
-                        div.form-group.gcsContainer
-                          label.col-lg-4(for="almuerzo")
-                            |Hora Almuerzo:
-                          div.col-lg-6.col-md-6.col-sm-6
-                            input.form-control(type="text" name="almuerzo"  placeholder="12 m.d")
-                        div.form-group.gcsContainer
-                          label.col-lg-4(for="descanso")
-                            |Tiempo de descanso:
-                          div.col-lg-6.col-md-6.col-sm-6
-                            input.form-control(type="text" name="descanso"  placeholder="30 min")
-                        
+                          label.col-lg-4.col-md-6.col-sm-6(for="infoextra")
+                            |Descripción
+                            textarea.form-control(name='infoextra')
+                       
                         //
                            Button (Double) 
                         .control-group
@@ -344,7 +355,7 @@ block content
         div#wrappConf
              h2 Roles
              ul.inline
-                li Hay 2 tipos de horarios.
+                li Hay 3 tipos de roles en total.
                 li
                   .input-prepend
                     span.add-on
@@ -391,57 +402,64 @@ block content
                           li Consulta de su información
 
                           
-            button#ingreso.btn.btn-success(name='agregar', href='#addtipoH', data-toggle='modal') Agregar
+            button#ingreso.btn.btn-success(name='agregar', href='#addRol', data-toggle='modal') Agregar
             button#modificar.btn.btn-warning(name='modificar') Modificar
             button#cancelar.btn.btn-danger(name='eliminar') Eliminar
-            #addtipoH.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+            #addRol.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
              .modal-dialog
               .modal-content
                 .modal-header
                   button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-                  h4.modal-title Agregar Tipo Horario
+                  h4.modal-title Agregar Rol
                 .modal-body
                    form.form-horizontal
                     fieldset
                         div.form-group.gcsContainer
                           label.col-lg-4(for="Nombre")
-                            |Nombre horario:
+                            |Nombre Rol:
                           div.col-lg-6.col-md-6.col-sm-6
                             input.form-control(type="text" name="nombre" id="#email" placeholder="Nombre")
                          div.form-group.gcsContainer
                           label.col-lg-4.col-md-6.col-sm-6(for="areaAso")
-                            |Área asociada:
+                            |Permisos:
                           div.col-lg-6.col-md-6.col-sm-6
-                            select#area.input-xlarge(name='areaAso')
-                                  option S. Técnico
-                                  option Innovación
-                        div.form-group.gcsContainer
-                          label.col-lg-4.col-md-6.col-sm-6(for="clasificacion")
-                            |Clasificación:
-                          div.col-lg-6.col-md-6.col-sm-6
-                            select#area.input-xlarge(name='clasificacion')
-                                  option Jornada
-                                  option Rango Semanal
-                        div.form-group.gcsContainer
-                          label.col-lg-4(for="entrada")
-                            |Hora Salida:
-                          div.col-lg-6.col-md-6.col-sm-6
-                            input.form-control(type="text" name="entrada" placeholder="8 a.m")
-                        div.form-group.gcsContainer
-                          label.col-lg-4(for="salida")
-                            |Hora Salida:
-                          div.col-lg-6.col-md-6.col-sm-6
-                            input.form-control(type="text" name="salida"  placeholder="5 p.m")
-                        div.form-group.gcsContainer
-                          label.col-lg-4(for="almuerzo")
-                            |Hora Almuerzo:
-                          div.col-lg-6.col-md-6.col-sm-6
-                            input.form-control(type="text" name="almuerzo"  placeholder="12 m.d")
-                        div.form-group.gcsContainer
-                          label.col-lg-4(for="descanso")
-                            |Tiempo de descanso:
-                          div.col-lg-6.col-md-6.col-sm-6
-                            input.form-control(type="text" name="descanso"  placeholder="30 min")
+                            label.checkbox(for='ingresoAreas-1')
+                              input#addArea(name='ingresoAreas', value='ingresoAreas', type='checkbox')
+                              | Ingreso de empleados
+                            label.checkbox(for='ingresoAreas-1')
+                              input#addArea(name='ingresoAreas', value='ingresoAreas', type='checkbox')
+                              | Modificación de empleados
+                            label.checkbox(for='ingresoAreas-1')
+                              input#addArea(name='ingresoAreas', value='ingresoAreas', type='checkbox')
+                              | Eliminación de empleados
+                            label.checkbox(for='ingresoAreas-1')
+                              input#addArea(name='ingresoAreas', value='ingresoAreas', type='checkbox')
+                              | Ingreso de horarios
+                            label.checkbox(for='ingresoAreas-1')
+                              input#addArea(name='ingresoAreas', value='ingresoAreas', type='checkbox')
+                              | Modificación de horarios
+                            label.checkbox(for='ingresoAreas-1')
+                              input#addArea(name='ingresoAreas', value='ingresoAreas', type='checkbox')
+                              | Eliminación de horarios
+                            label.checkbox(for='ingresoAreas-1')
+                              input#addArea(name='ingresoAreas', value='ingresoAreas', type='checkbox')
+                              | Ingreso de áreas
+                            label.checkbox(for='ingresoAreas-1')
+                              input#addArea(name='ingresoAreas', value='ingresoAreas', type='checkbox')
+                              | Modificación de áreas
+                            label.checkbox(for='ingresoAreas-1')
+                              input#addArea(name='ingresoAreas', value='ingresoAreas', type='checkbox')
+                              | Eliminación de áreas
+                            label.checkbox(for='ingresoAreas-1')
+                              input#addArea(name='ingresoAreas', value='ingresoAreas', type='checkbox')
+                              | Ingreso de roles
+                            label.checkbox(for='ingresoAreas-1')
+                              input#addArea(name='ingresoAreas', value='ingresoAreas', type='checkbox')
+                              | Modificación de roles
+                            label.checkbox(for='ingresoAreas-1')
+                              input#addArea(name='ingresoAreas', value='ingresoAreas', type='checkbox')
+                              | Eliminación de roles
+                        
                         
                         //
                            Button (Double) 
