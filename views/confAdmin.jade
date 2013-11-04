@@ -141,7 +141,7 @@ block content
                       th
                         | Nombre de horario
                       th
-                        | Empleados asignados
+                        | Área asociada
                   tbody
                     tr
                       td 
@@ -150,8 +150,7 @@ block content
                           | Diurno
                       td 
                         ul
-                          li Gabriel Martinez Barboza
-                          li Carlos Solano Arias
+                          li S. Técnico
                     tr
                       td 
                         label.checkbox(for='tHorario-1')
@@ -159,7 +158,15 @@ block content
                           | 1 día-casa
                       td 
                         ul
-                          li Tatiana Moreira Beita
+                          li S. Técnico
+                    tr
+                      td 
+                        label.checkbox(for='tHorario-1')
+                          input#empleados-0(name='tHorario', value='2tHorario', type='checkbox')
+                          | 3 días
+                      td 
+                        ul
+                          li Innovación
                           
             button#ingreso.btn.btn-success(name='agregar', href='#addtipoH', data-toggle='modal') Agregar
             button#modificar.btn.btn-warning(name='modificar') Modificar
@@ -225,7 +232,7 @@ block content
         div#wrappConf
              h2 Áreas
              ul.inline
-                li Hay 2 tipos de horarios.
+                li Hay 5 tipos de áreas.
                 li
                   .input-prepend
                     span.add-on
@@ -237,27 +244,42 @@ block content
                   thead
                     tr
                       th
-                        | Nombre de horario
+                        | Nombre del área
                       th
-                        | Empleados asignados
+                        | Supervisor
                   tbody
                     tr
                       td 
                         label.checkbox(for='tHorario-0')
                           input#empleados-0(name='tHorario', value='1tHorario', type='checkbox')
-                          | Diurno
+                          | S. Técnico
                       td 
                         ul
-                          li Gabriel Martinez Barboza
-                          li Carlos Solano Arias
+                          li Marito Morta Leda
                     tr
                       td 
                         label.checkbox(for='tHorario-1')
                           input#empleados-0(name='tHorario', value='2tHorario', type='checkbox')
-                          | 1 día-casa
+                          | Innovación
                       td 
                         ul
-                          li Tatiana Moreira Beita
+                          li Marito Morta Leda
+                    tr
+                      td 
+                        label.checkbox(for='tHorario-1')
+                          input#empleados-0(name='tHorario', value='2tHorario', type='checkbox')
+                          | Recursos Humanos
+                      td 
+                        ul
+                          li Cristo Palmas Ríos
+                    tr
+                      td 
+                        label.checkbox(for='tHorario-1')
+                          input#empleados-0(name='tHorario', value='2tHorario', type='checkbox')
+                          | Ventas
+                      td 
+                        ul
+                          li Sara Flores Porras
                           
             button#ingreso.btn.btn-success(name='agregar', href='#addtipoH', data-toggle='modal') Agregar
             button#modificar.btn.btn-warning(name='modificar') Modificar
@@ -334,27 +356,40 @@ block content
                   thead
                     tr
                       th
-                        | Nombre de horario
+                        | Nombre de Rol
                       th
-                        | Empleados asignados
+                        | Permisos 
                   tbody
                     tr
                       td 
                         label.checkbox(for='tHorario-0')
                           input#empleados-0(name='tHorario', value='1tHorario', type='checkbox')
-                          | Diurno
+                          | Administrador
                       td 
                         ul
-                          li Gabriel Martinez Barboza
-                          li Carlos Solano Arias
+                          li IMEC Todos Empleados
+                          li IMEC Todos Tipos de horario
+                          li IMEC Todos Áreas
+                          li IMEC Todos Roles
+                          
                     tr
                       td 
                         label.checkbox(for='tHorario-1')
                           input#empleados-0(name='tHorario', value='2tHorario', type='checkbox')
-                          | 1 día-casa
+                          | Supervisor
                       td 
                         ul
-                          li Tatiana Moreira Beita
+                          li IMEC Empleados a su cargo
+                          li IMEC Tipos de horario a su cargo
+                    tr
+                      td 
+                        label.checkbox(for='tHorario-1')
+                          input#empleados-0(name='tHorario', value='2tHorario', type='checkbox')
+                          | Empleado
+                      td 
+                        ul
+                          li Consulta de su información
+
                           
             button#ingreso.btn.btn-success(name='agregar', href='#addtipoH', data-toggle='modal') Agregar
             button#modificar.btn.btn-warning(name='modificar') Modificar
