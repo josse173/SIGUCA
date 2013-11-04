@@ -14,29 +14,72 @@ block imgSession
                   li 
                    a(href='#') Cerrar Sesión
 block content
-  .wrapper (ng-app="empleadoManager")
+  .wrapper 
     .grids 
-        .grid-12.grid.green
-          ul.inline
-            li You have {{empleado.length}} empleado.
+        .grid-8.grid.green
+          div#wrappConf
+           h2 Empleados
+           ul.inline
+              li Usted tiene a cargo 3 empleados.
               li
                 .input-prepend
                   span.add-on
                     i.icon-search
                   input#inputIcon.span2(type='text', placeholder='Search...', ng-model='query')
               li
-                p Sorted by: {{columnSort.sortColumn}}
-          table.table.table-hover (ng-controller="ListController")
-            thead
-              tr
-                th(ng-repeat='header in headers')
-                  a(ng-click='columnSort.sortColumn=headers[$index];columnSort.reverse=!columnSort.reverse') {{ headers[$index] | capitalise }}
-            tbody
-              tr(ng-repeat='contact in contacts | orderBy:columnSort.sortColumn:columnSort.reverse | filter: query')
-                td {{ empleado.cedula }}
-                td {{ empleado.nombre }}  
-                td {{ empleado.apellido1 }} 
-                td {{ empleado.departamento }}    
+                p Ordenar por: Nombre
+          table.table.table-hover
+                thead
+                  tr
+                    th
+                      | Nombre empleado
+                    th
+                      | Área
+                tbody
+                  tr
+                    td Gabriel Martinez Barboza
+                    td S. Técnico
+                  tr
+                    td Federico García Lorca
+                    td Innovacion
+                  tr
+                    td Lucía Diamante Cielo
+                    td S. Técnico
+        .grid-8.grid.green
+          div#wrappConf
+             h2 Tipo de Horario
+             ul.inline
+                li Hay 2 tipos de horarios.
+                li
+                  .input-prepend
+                    span.add-on
+                      i.icon-search
+                    input#inputIcon.span2(type='text', placeholder='Search...', ng-model='query')
+                li
+                  p Ordenar por: Nombre
+            table.table.table-hover
+                  thead
+                    tr
+                      th
+                        | Nombre de horario
+                      th
+                        | Empleados asignados
+                  tbody
+                    tr
+                      td Diurno
+                      td 
+                        ul
+                          li Gabriel Martinez 
+                          li Lucía Diamante Cielo
+
+                    tr
+                      td Un día-casa
+                      td Federico García Lorca
+                    
+
+
+
+ 
            
 
      
