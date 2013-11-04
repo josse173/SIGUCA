@@ -36,7 +36,9 @@ exports.justificaciones = function(req, res){
 exports.justificacion_nueva = function(req, res){
 	res.render('justificacion_nueva', {title: 'Nueva Justificacion | SIGUCA'});
 };
-
+exports.solicitud_extra = function(req, res){
+	res.render('solicitud_extra', {title: 'Solicitud Tiempo Extra | SIGUCA'});
+};
 exports.rolesPost = function(req, res){
 	console.log('Recibimos rol:'+req.body.rol+' y nombre:'+req.body.nombre);
 	var newRol = new dbRol (req.body)
