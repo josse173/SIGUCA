@@ -34,24 +34,24 @@ block sigucaNavbarItems
         |&nbsp;Configuracion
     li
       a(href='/Ayuda')
-        |Ayuda 
+        |&nbsp;Ayuda 
         i.icon-question-sign.icon-large 
 
 block content  
   .wrapper
     .grids
-        .grid-8.grid.green
+        .grid-16.grid.green
           div#wrappConf
            h2 Justificaciones
-           ul.inline 
-             button.btn.btn-success(name='justificación_nueva', href='#justificacionNueva', data-toggle='modal') + Justificación
-             button.btn.btn-success(name='solicitud_extras', href='#solicitudExtras', data-toggle='modal')  + Tiempo Extra    
+           button.btn.btn-success(name='justificación_nueva', href='#justificacionNueva', data-toggle='modal') + Permiso
+           button.btn.btn-success(name='solicitud_extras', href='#solicitudExtras', data-toggle='modal')  + Tiempo Extra
+           ul.inline     
              #justificacionNueva.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
               .modal-dialog
                .modal-content
                  .modal-header
-                   button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-                   h4.modal-title Justificación Nueva
+                   button.close(type='button', data-dismiss='modal', aria-hidden='true') X Cerrar
+                   h4.modal-title Permiso Nuevo
                  .modal-body
                    form.form-horizontal()
                     fieldset
@@ -59,17 +59,17 @@ block content
                           label.col-lg-4(for='Fecha')
                             |Fecha
                           div.col-lg-6.col-md-6.col-sm-6
-                            input.form-control(type="text" id="datepicker")
+                            input.form-control(type="text" name="Fecha" id="datepicker" placeholder="Seleccione una fecha")
                         div.form-group.gcsContainer
-                          label.col-lg-4(for='Fecha')
-                            |Fecha
+                          label.col-lg-4(for='Empleado')
+                            |Empleado
                           div.col-lg-6.col-md-6.col-sm-6
-                            input.form-control(type="text" name="nombre" id="#email" placeholder="Nombre")
+                            input.form-control(type="text" name="Emleado" id="Empleado" placeholder="123456789")
                         div.form-group.gcsContainer
-                          label.col-lg-4(for='Fecha')
-                            |Fecha
+                          label.col-lg-4(for='Detalles')
+                            |Detalles
                           div.col-lg-6.col-md-6.col-sm-6
-                            input.form-control(type="text" name="nombre" id="#email" placeholder="Nombre")
+                            input.form-control(type="text" name="Detalles" id="Detalles" placeholder="Descripción")
                         .control-group
                           label.control-label(for='ingreso')
                             .controls
@@ -79,8 +79,8 @@ block content
               .modal-dialog
                .modal-content
                  .modal-header
-                   button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-                   h4.modal-title Justificación Nueva
+                   button.close(type='button', data-dismiss='modal', aria-hidden='true') X Cerrar
+                   h4.modal-title Solicitud Horas Extras
                  .modal-body
                    form.form-horizontal()
                     fieldset
@@ -88,22 +88,67 @@ block content
                           label.col-lg-4(for='Fecha')
                             |Fecha
                           div.col-lg-6.col-md-6.col-sm-6
-                            input.form-control(type="text" name="fecha" id="#fecha" placeholder="Fecha")
+                            input.form-control(type="text" name="Fecha" id="datepicker" placeholder="Seleccione una fecha")
                         div.form-group.gcsContainer
-                          label.col-lg-4(for='Fecha')
-                            |Fecha
+                          label.col-lg-4(for='Empleado')
+                            |Empleado
                           div.col-lg-6.col-md-6.col-sm-6
-                            input.form-control(type="text" name="nombre" id="#email" placeholder="Nombre")
+                            input.form-control(type="text" name="Empleado" id="Empleado" placeholder="123456789")
                         div.form-group.gcsContainer
-                          label.col-lg-4(for='Fecha')
-                            |Fecha
+                          label.col-lg-4(for='Horas')
+                            |Cantidad Horas
                           div.col-lg-6.col-md-6.col-sm-6
-                            input.form-control(type="text" name="nombre" id="#email" placeholder="Nombre")
+                            input.form-control(type="text" name="Horas" id="Horas" placeholder="3")
+                        div.form-group.gcsContainer
+                          label.col-lg-4(for='Motivo')
+                            |Motivo
+                          div.col-lg-6.col-md-6.col-sm-6
+                            input.form-control(type="text" name="Motivo" id="Motivo" placeholder="Justificación")
                         .control-group
                           label.control-label(for='ingreso')
                             .controls
                             button#ingreso.btn.btn-success(name='ingreso') Ingresar
-                            button#cancelar.btn.btn-danger(name='cancelar') Cancelar                            
+                            button#cancelar.btn.btn-danger(name='cancelar') Cancelar    
+          table
+             tbody(align="center")
+               tr
+                 td
+                   b CÓDIGO
+                  td
+                   b NOMBRE
+                  td
+                   b PERMISO - JUSTIFICACIÓN
+                  td
+                   b FECHA
+                                         
+             
+               tr
+                 td 
+                   label.checkbox(for='codigoEmp')
+                     input#codigoEmp(name='codigo', type='checkbox')
+                     | 114520031
+                 td 
+                   |  Gabriel Martínez Barboza
+                 td 
+                   |  Vacaciones
+                 td 
+                   |  20-12-2013 - 05-01-2014
+               tr
+                 td 
+                   label.checkbox(for='codigoEmp')
+                     input#codigoEmp(name='codigo', type='checkbox')
+                     | 1234
+                 td 
+                   |  Tatiana Moreira Beita
+                 td 
+                   |  Tardía 15 minutos
+                 td 
+                   |  05-10-2013
+
+          button.btn.btn-success(name='aceptar') Aceptar
+          button.btn.btn-danger(name='modificar') Rechazar
+                 
+                             
 
     
 block sigucaJS

@@ -6,6 +6,10 @@
 	position: relative;
 	left: 100%;
 }
+
+#button-yellow{
+	background-color:yellow;
+}
 .col-sm-8{
 	margin-top: 7%;
 	background-color: #8D2373;
@@ -24,6 +28,11 @@
 	margin-right: 32px;
 	margin-left: 32px;
 	margin-top: 30px;
+}
+
+.tbody{
+	border:0;
+
 }
 
 .btn.btn-primary{
