@@ -14,10 +14,11 @@ block imgSession
                   li 
                    a(href='#') Cerrar Sesión
 block content
-  .wrapper (ng-app="empleadoManager")
+  .wrapper 
     .grids 
-        .grid-12.grid.green
+        .grid-8.grid.green
           div#wrappConf
+           h2 Empleados
            ul.inline
               li Usted tiene a cargo 3 empleados.
               li
@@ -31,7 +32,7 @@ block content
                 thead
                   tr
                     th
-                      | Nombre
+                      | Nombre empleado
                     th
                       | Área
                 tbody
@@ -44,7 +45,37 @@ block content
                   tr
                     td Lucía Diamante Cielo
                     td S. Técnico
+        .grid-8.grid.green
+          div#wrappConf
+             h2 Tipo de Horario
+             ul.inline
+                li Hay 2 tipos de horarios.
+                li
+                  .input-prepend
+                    span.add-on
+                      i.icon-search
+                    input#inputIcon.span2(type='text', placeholder='Search...', ng-model='query')
+                li
+                  p Ordenar por: Nombre
+            table.table.table-hover
+                  thead
+                    tr
+                      th
+                        | Nombre de horario
+                      th
+                        | Empleados asignados
+                  tbody
+                    tr
+                      td Diurno
+                      td 
+                        ul
+                          li Gabriel Martinez 
+                          li Lucía Diamante Cielo
 
+                    tr
+                      td Un día-casa
+                      td Federico García Lorca
+                    
 
 
 
