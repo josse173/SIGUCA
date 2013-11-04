@@ -1,0 +1,59 @@
+extends layout
+
+block sigucaCSS
+  link(rel='stylesheet', href='/stylesheets/flipclock.css')
+  link(rel='stylesheet', href='/stylesheets/sigucaEscritorio.css')
+  link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
+block imgSession
+  .divSession#divSession
+    img#imgSessionPers(src='images/dali.jpeg', alt='something') 
+    .btn-group.dropup
+                button.btn.btn-default.dropdown-toggle#cSession(type='button', data-toggle='dropdown')
+                  span.caret
+                ul.dropdown-menu
+                  li 
+                   a(href='/') Cerrar Sesión 
+block sigucaNavbarItems
+  ul#nav.main
+    li
+      a.active(href="/escritorioEmpl")
+        i.icon-home.icon-large
+        |&nbsp;Escritorio
+    li
+      a(href="/justEmpl")
+        i.icon-edit.icon-large  
+        |&nbsp;Solicitudes/Justificaciones
+    li
+      a(href='/Ayuda')
+        |Ayuda 
+        i.icon-question-sign.icon-large 
+
+block content
+  .wrapper
+   .grids
+    .grid-10.grid.green
+      h3 Marcas Personales
+      img.img-responsive#grafico(src='/images/tati.PNG', alt='Responsive image') 
+    .grid-6.grid.green
+     h3 Solicitudes Recientes   
+     ul.list-group
+        li.list-group-item
+            span.badge 0
+            | Solicitud Ausencias
+        li.list-group-item
+            span.badge 2
+            | Justificaciones
+        li.list-group-item
+            span.badge 0
+            | Solicitudes J.extra
+      
+
+
+</div>
+
+    
+        
+block sigucaJS
+  script(src="/javascripts/flipclock/libs/prefixfree.min.js")
+  script(src="/javascripts/flipclock/flipclock.min.js")
+  script(src="/javascripts/reloj.js")

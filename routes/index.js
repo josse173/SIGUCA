@@ -19,7 +19,10 @@ exports.roles = function(req, res){
 	res.render('roles', {title: 'SIGUCA - Administración de Roles', rol: req.rol, nombre: req.nombre});
 };
 exports.escritorio = function(req, res){
-	res.render('escritorio', {title: 'Usuario escritorio | SIGUCA'});
+	res.render('escritorio', {title: 'Supervisor escritorio | SIGUCA'});
+};
+exports.escritorioEmpl = function(req, res){
+	res.render('escritorioEmpl', {title: 'Empleado escritorio | SIGUCA'});
 };
 exports.graficos = function(req, res){
 	res.render('graficos', {title: 'Graficos | SIGUCA'});
@@ -38,6 +41,9 @@ exports.confAdmin = function(req, res){
 };
 exports.justificaciones = function(req, res){
 	res.render('justificaciones', {title: 'Justificaciones/Permisos | SIGUCA'});
+};
+exports.justEmpl = function(req, res){
+	res.render('justEmpl', {title: 'Solicitudes/Justificaciones | SIGUCA'});
 };
 exports.justificacion_nueva = function(req, res){
 	res.render('justificacion_nueva', {title: 'Nueva Justificacion | SIGUCA'});

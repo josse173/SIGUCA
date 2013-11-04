@@ -1,0 +1,49 @@
+extends layout
+
+block sigucaCSS
+  link(rel='stylesheet', href='/stylesheets/sigucaJustificaciones.css')
+  link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
+  link(rel='stylesheet' href='/stylesheets/glDatePicker.default.css')
+  link(rel='stylesheet' href='/stylesheets/glDatePicker.darkneon.css')
+block imgSession
+  .divSession#divSession
+    img#imgSessionPers(src='images/dali.jpeg', alt='something') 
+    .btn-group.dropup
+                button.btn.btn-default.dropdown-toggle#cSession(type='button', data-toggle='dropdown')
+                  span.caret
+                ul.dropdown-menu
+                  li 
+                   a(href='#') Cerrar Sesión
+block sigucaNavbarItems
+  ul#nav.main
+    li
+      a(href="/escritorioEmpl")
+        i.icon-home.icon-large
+        |&nbsp;Escritorio
+    li
+      a.active(href="/justEmpl")
+        i.icon-edit.icon-large  
+        |&nbsp;Solicitudes/Justificaciones
+    li
+      a(href='/Ayuda')
+        |Ayuda 
+        i.icon-question-sign.icon-large 
+
+block content  
+  .wrapper
+    .grids
+        .grid-12.grid.green
+          h2 Justificaciones
+            div.botton   
+               a.btn.btn-primary(href='/justificacion_nueva', role='button', data-toggle='modal') + Justificación
+            div.botton
+               a.btn.btn-primary(href='/solicitud_extra', role='button', data-toggle='modal')	+ Tiempo Extra		
+          input
+
+       
+             
+    
+block sigucaJS
+  script(src="/javascripts/jquery.min.js")
+  script(src="/javascripts/glDatePicker.js")
+  script(src="/javascripts/calendario.js")
