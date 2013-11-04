@@ -17,26 +17,36 @@ block content
   .wrapper (ng-app="empleadoManager")
     .grids 
         .grid-12.grid.green
-          ul.inline
-            li You have {{empleado.length}} empleado.
+          div#wrappConf
+           ul.inline
+              li Usted tiene a cargo 3 empleados.
               li
                 .input-prepend
                   span.add-on
                     i.icon-search
                   input#inputIcon.span2(type='text', placeholder='Search...', ng-model='query')
               li
-                p Sorted by: {{columnSort.sortColumn}}
-          table.table.table-hover (ng-controller="ListController")
-            thead
-              tr
-                th(ng-repeat='header in headers')
-                  a(ng-click='columnSort.sortColumn=headers[$index];columnSort.reverse=!columnSort.reverse') {{ headers[$index] | capitalise }}
-            tbody
-              tr(ng-repeat='contact in contacts | orderBy:columnSort.sortColumn:columnSort.reverse | filter: query')
-                td {{ empleado.cedula }}
-                td {{ empleado.nombre }}  
-                td {{ empleado.apellido1 }} 
-                td {{ empleado.departamento }}    
+                p Ordenar por: Nombre
+          table.table.table-hover
+                thead
+                  tr
+                    th
+                      | Name
+                    th
+                      | Phone
+                tbody
+                  tr
+                    td Contact 1
+                    td 1234567
+                  tr
+                    td Contact 2
+                    td 123999000
+
+
+
+
+
+ 
            
 
      
