@@ -27,7 +27,7 @@ $(document).ready(function (){
                     date.getMonth() + ' - ' +
                     date.getDate());
         if(data != null) {
-             alert('Permisos-Ausencias\n' + 'Empleado: Gabriel Martínez Barboza (123456789)\n' + 'Detalle: ' + data.message + '\n' + 'Fecha:' + date.toDateString() + ' ' + date.toTimeString());
+             alert('Permisos-Justificaciones\n' + 'Empleado: Gabriel Martínez Barboza (123456789)\n' + 'Detalle: ' + data.message + '\n' + 'Fecha:' + date.toDateString() + ' ' + date.toTimeString());
         }        
     }
     });
