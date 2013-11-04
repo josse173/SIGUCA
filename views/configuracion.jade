@@ -105,7 +105,7 @@ block content
                           label.col-lg-4.col-md-6.col-sm-6(for="tHorario")
                             |Tipo de Horario:
                           div.col-lg-6.col-md-6.col-sm-6
-                            select#area.input-xlarge(name='area')
+                            select#area.input-xlarge(name='tHorario')
                                   option Diurno
                                   option Nocturno
 
@@ -175,16 +175,41 @@ block content
                             |Nombre horario:
                           div.col-lg-6.col-md-6.col-sm-6
                             input.form-control(type="text" name="nombre" id="#email" placeholder="Nombre")
-                        div.form-group.gcsContainer
-                          label.col-lg-4.col-md-6.col-sm-6(for="1apellido")
-                            |Tipo:
+                         div.form-group.gcsContainer
+                          label.col-lg-4.col-md-6.col-sm-6(for="areaAso")
+                            |Área asociada:
                           div.col-lg-6.col-md-6.col-sm-6
-                            input.form-control(type="text" name="1apellido" id="#1apellido" placeholder="Primer Apellido")
+                            select#area.input-xlarge(name='areaAso')
+                                  option S. Técnico
+                                  option Innovación
                         div.form-group.gcsContainer
-                          label.col-lg-4.col-md-6.col-sm-6(for="infoextra")
-                            |Información Adicional
-                            textarea.form-control(name='infoextra')
-
+                          label.col-lg-4.col-md-6.col-sm-6(for="clasificacion")
+                            |Clasificación:
+                          div.col-lg-6.col-md-6.col-sm-6
+                            select#area.input-xlarge(name='clasificacion')
+                                  option Jornada
+                                  option Rango Semanal
+                        div.form-group.gcsContainer
+                          label.col-lg-4(for="entrada")
+                            |Hora Salida:
+                          div.col-lg-6.col-md-6.col-sm-6
+                            input.form-control(type="text" name="entrada" placeholder="8 a.m")
+                        div.form-group.gcsContainer
+                          label.col-lg-4(for="salida")
+                            |Hora Salida:
+                          div.col-lg-6.col-md-6.col-sm-6
+                            input.form-control(type="text" name="salida"  placeholder="5 p.m")
+                        div.form-group.gcsContainer
+                          label.col-lg-4(for="almuerzo")
+                            |Hora Almuerzo:
+                          div.col-lg-6.col-md-6.col-sm-6
+                            input.form-control(type="text" name="almuerzo"  placeholder="12 m.d")
+                        div.form-group.gcsContainer
+                          label.col-lg-4(for="descanso")
+                            |Tiempo de descanso:
+                          div.col-lg-6.col-md-6.col-sm-6
+                            input.form-control(type="text" name="descanso"  placeholder="30 min")
+                        
                         //
                            Button (Double) 
                         .control-group
