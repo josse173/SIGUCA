@@ -69,7 +69,7 @@ block content
                           label.col-lg-4(for='Detalles')
                             |Detalles
                           div.col-lg-6.col-md-6.col-sm-6
-                            input.form-control(type="text" name="Detalles" id="Detalles" placeholder="Descripción")
+                            textarea.form-control(name="Detalles", placeholder="Descripción...")
                         .control-group
                           label.control-label(for='ingreso')
                             .controls
@@ -102,8 +102,8 @@ block content
                         div.form-group.gcsContainer
                           label.col-lg-4(for='Motivo')
                             |Motivo
-                          div.col-lg-6.col-md-6.col-sm-6
-                            input.form-control(type="text" name="Motivo" id="Motivo" placeholder="Justificación")
+                          div.col-lg-6.col-md-6.col-sm-6                            
+                            textarea.form-control(name='Motivo', placeholder="Descripción...")
                         .control-group
                           label.control-label(for='ingreso')
                             .controls
@@ -117,7 +117,9 @@ block content
                   td
                    b NOMBRE
                   td
-                   b PERMISO - JUSTIFICACIÓN
+                   b TIPO
+                  td
+                   b DETALLES
                   td
                    b FECHA
                                          
@@ -131,24 +133,107 @@ block content
                    |  Gabriel Martínez Barboza
                  td 
                    |  Vacaciones
+                 td
+                   |  Vaciacones 
+                 td 
+                   |  20-12-2013 al 05-01-2014
+               tr
+                 td 
+                   label.checkbox(for='codigoEmp')
+                     input#codigoEmp(name='codigo', type='checkbox')
+                     | 402110092
+                 td 
+                   |  Tatiana Moreira Beita
+                 td
+                   | Tardía
+                 td 
+                   | Retraso de 15 minutos hora de entrada
+                 td 
+                   |  05-10-2013
+               tr
+                 td 
+                   label.checkbox(for='codigoEmp')
+                     input#codigoEmp(name='codigo', type='checkbox')
+                     | 113970119
+                 td 
+                   |  Carlos Solano Morales
+                 td 
+                   |  Tardía 
+                 td 
+                   | Retraso de 30 minutos hora de entrada
+                 td 
+                   |  20-10-2013
+               tr
+                 td 
+                   label.checkbox(for='codigoEmp')
+                     input#codigoEmp(name='codigo', type='checkbox')
+                     | 402110092
+                 td 
+                   |  Tatiana Moreira Beita
+                 td 
+                   |  Tardía
+                 td 
+                   | Retraso de 15 minutos hora de almuerzo
+                 td 
+                   |  05-10-2013
+               tr
+                 td 
+                   label.checkbox(for='codigoEmp')
+                     input#codigoEmp(name='codigo', type='checkbox')
+                     | 114520031
+                 td 
+                   |  Gabriel Martínez Barboza
+                 td 
+                   |  Ausencia
+                 td
+                   |  Sin Justificar.
                  td 
                    |  20-12-2013 - 05-01-2014
                tr
                  td 
                    label.checkbox(for='codigoEmp')
                      input#codigoEmp(name='codigo', type='checkbox')
-                     | 1234
+                     | 206240769
                  td 
-                   |  Tatiana Moreira Beita
+                   |  Alexander Picado Jiménez
+                 td 
+                   |  Incapacidad
+                 td
+                   |  Incapacidad de la CCSS
+                 td 
+                   |  05-10-2013
+               tr
+                 td 
+                   label.checkbox(for='codigoEmp')
+                     input#codigoEmp(name='codigo', type='checkbox')
+                     | 113970119
+                 td 
+                   |  Carlos Solano Morales
+                 td 
+                   |  Vacaciones
+                 td
+                   |  Vacaciones
+                 td 
+                   |  10-12-2013 al 15-12-2014
+               tr
+                 td 
+                   label.checkbox(for='codigoEmp')
+                     input#codigoEmp(name='codigo', type='checkbox')
+                     | 206240769
+                 td 
+                   |  Alexander Picado Jiménez
+                 td 
+                   |  Tardía 
                  td 
                    |  Tardía 15 minutos
                  td 
-                   |  05-10-2013
+                   |  05-10-2013                                                         
 
-          button.btn.btn-success(name='aceptar') Aceptar
-          button.btn.btn-danger(name='modificar') Rechazar
-                 
-                             
+          .control-group
+          label.control-laber(for='accion')
+            .controls
+              button#accion.btn.btn-success(name='aceptar') Aceptar
+              button#accion.btn.btn-danger(name='modificar') Rechazar                             
 
     
 block sigucaJS
