@@ -57,6 +57,9 @@ exports.autoriza_extra = function(req, res){
 exports.autoriza_justificacion = function(req, res){
 	res.render('autoriza_justificacion', {title: 'Autorizacion Justificacion | SIGUCA'});
 };
+exports.dispositivos = function(req, res){
+	res.render('dispositivos', {title: 'Dispositivos | SIGUCA'});
+};
 exports.rolesPost = function(req, res){
 	console.log('Recibimos rol:'+req.body.rol+' y nombre:'+req.body.nombre);
 	var newRol = new dbRol (req.body)

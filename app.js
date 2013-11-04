@@ -70,6 +70,7 @@ app.get('/autoriza_extra',routes.autoriza_extra);
 app.get('/autoriza_justificacion',routes.autoriza_justificacion);
 app.get('/roles', routes.roles); //Llama la vista de roles a través de ./routes/index.js
 app.post('/roles', routes.rolesPost);
+app.get('/dispositivos', routes.dispositivos);
 //app.get('/configuracion', routes.indexAng);
 /*app.get('/empleado/:cedula.:format?', api_empleado.buscaPorCedula);
 app.get('/empleado', api_empleado.lista);

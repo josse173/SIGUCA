@@ -1,0 +1,108 @@
+extends layout
+
+block sigucaCSS
+  link(rel='stylesheet', href='/stylesheets/sigucaJustificaciones.css')
+  link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
+
+block imgSession
+  .divSession#divSession
+    img#imgSessionPers(src='images/marito.jpg', alt='something') 
+    .btn-group.dropup
+                button.btn.btn-default.dropdown-toggle#cSession(type='button', data-toggle='dropdown')
+                  span.caret
+                ul.dropdown-menu
+                  li 
+                   a(href='/') Cerrar Sesión 
+                   
+block sigucaNavbarItems
+  ul#nav.main
+    li 
+      a(href="/escritorio")
+        i.icon-home.icon-large
+        |&nbsp;Escritorio
+    li
+      a(href='/graficos')
+        i.icon-bar-chart.icon-large
+        |&nbsp;Gráficos
+    li
+      a(href="/justificaciones")
+        i.icon-edit.icon-large  
+        |&nbsp;Justificaciones
+    li
+      a(href="/configuracion")
+        i.icon-cogs.icon-large
+        |&nbsp;Configuracion
+    li
+      a.active(href='/dispositivos')
+        |&nbsp;Dispositivos 
+        i.fa-sitemap.icon-large
+    li
+      a(href='/Ayuda')
+        |&nbsp;Ayuda 
+        i.icon-question-sign.icon-large 
+
+
+
+block content  
+  .wrapper
+    .grids
+        .grid-16.grid.green
+          div
+           h2 Dispositivos
+          table
+             tbody(align="center")
+               tr
+                 td
+                   b CÓDIGO
+                  td
+                   b NOMBRE
+                  td
+                   b UBICACIÓN
+                  td
+                   b ESTADO            
+               tr
+                 td 
+                   label.checkbox(for='codigoEmp')
+                     input#codigoEmp(name='codigo', type='checkbox')
+                     | ABC123
+                 td 
+                   |  SIGUCA-01
+                 td 
+                   |  Sabana
+                 td
+                   |  ACTIVO 
+               tr
+                 td 
+                   label.checkbox(for='codigoEmp')
+                     input#codigoEmp(name='codigo', type='checkbox')
+                     | EFG456
+                 td 
+                   |  SIGUCA-02
+                 td
+                   | Heredia
+                 td 
+                   | ACTIVO
+               tr
+                 td 
+                   label.checkbox(for='codigoEmp')
+                     input#codigoEmp(name='codigo', type='checkbox')
+                     | HIJ789
+                 td 
+                   |  SIGUCA-03
+                 td 
+                   |  Alajuela 
+                 td 
+                   | INACTIVO
+          .control-group
+          label.control-laber(for='accion')
+            .controls
+              button#accion.btn.btn-success(name='aceptar') Activar
+              button#accion.btn.btn-danger(name='modificar') Desactivar                             
+
+    
+block sigucaJS
+
+
+
+
+
