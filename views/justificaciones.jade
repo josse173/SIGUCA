@@ -3,8 +3,8 @@ extends layout
 block sigucaCSS
   link(rel='stylesheet', href='/stylesheets/sigucaJustificaciones.css')
   link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
-  link(rel='stylesheet' href='/stylesheets/glDatePicker.default.css')
-  link(rel='stylesheet' href='/stylesheets/glDatePicker.darkneon.css')
+  link(rel='stylesheet' href='/stylesheets/jquery-ui.css')
+
 block imgSession
   .divSession#divSession
     img#imgSessionPers(src='images/marito.jpg', alt='something') 
@@ -40,18 +40,77 @@ block sigucaNavbarItems
 block content  
   .wrapper
     .grids
-        .grid-12.grid.green
-          h2 Justificaciones
-            div.botton   
-               a.btn.btn-primary(href='/justificacion_nueva', role='button', data-toggle='modal') + Justificación
-            div.botton
-               a.btn.btn-primary(href='/solicitud_extra', role='button', data-toggle='modal')	+ Tiempo Extra		
-          input
+        .grid-8.grid.green
+          div#wrappConf
+           h2 Justificaciones
+           ul.inline 
+             button.btn.btn-success(name='justificación_nueva', href='#justificacionNueva', data-toggle='modal') + Justificación
+             button.btn.btn-success(name='solicitud_extras', href='#solicitudExtras', data-toggle='modal')  + Tiempo Extra    
+             #justificacionNueva.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+              .modal-dialog
+               .modal-content
+                 .modal-header
+                   button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+                   h4.modal-title Justificación Nueva
+                 .modal-body
+                   form.form-horizontal()
+                    fieldset
+                        div.form-group.gcsContainer
+                          label.col-lg-4(for='Fecha')
+                            |Fecha
+                          div.col-lg-6.col-md-6.col-sm-6
+                            input.form-control(type="text" id="datepicker")
+                        div.form-group.gcsContainer
+                          label.col-lg-4(for='Fecha')
+                            |Fecha
+                          div.col-lg-6.col-md-6.col-sm-6
+                            input.form-control(type="text" name="nombre" id="#email" placeholder="Nombre")
+                        div.form-group.gcsContainer
+                          label.col-lg-4(for='Fecha')
+                            |Fecha
+                          div.col-lg-6.col-md-6.col-sm-6
+                            input.form-control(type="text" name="nombre" id="#email" placeholder="Nombre")
+                        .control-group
+                          label.control-label(for='ingreso')
+                            .controls
+                            button#ingreso.btn.btn-success(name='ingreso') Ingresar
+                            button#cancelar.btn.btn-danger(name='cancelar') Cancelar
+             #solicitudExtras.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+              .modal-dialog
+               .modal-content
+                 .modal-header
+                   button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+                   h4.modal-title Justificación Nueva
+                 .modal-body
+                   form.form-horizontal()
+                    fieldset
+                        div.form-group.gcsContainer
+                          label.col-lg-4(for='Fecha')
+                            |Fecha
+                          div.col-lg-6.col-md-6.col-sm-6
+                            input.form-control(type="text" name="fecha" id="#fecha" placeholder="Fecha")
+                        div.form-group.gcsContainer
+                          label.col-lg-4(for='Fecha')
+                            |Fecha
+                          div.col-lg-6.col-md-6.col-sm-6
+                            input.form-control(type="text" name="nombre" id="#email" placeholder="Nombre")
+                        div.form-group.gcsContainer
+                          label.col-lg-4(for='Fecha')
+                            |Fecha
+                          div.col-lg-6.col-md-6.col-sm-6
+                            input.form-control(type="text" name="nombre" id="#email" placeholder="Nombre")
+                        .control-group
+                          label.control-label(for='ingreso')
+                            .controls
+                            button#ingreso.btn.btn-success(name='ingreso') Ingresar
+                            button#cancelar.btn.btn-danger(name='cancelar') Cancelar                            
 
-       
-             
     
 block sigucaJS
-  script(src="/javascripts/jquery.min.js")
-  script(src="/javascripts/glDatePicker.js")
-  script(src="/javascripts/calendario.js")
+  script(src="/javascripts/jquery-1.9.1.js")
+  script(src="/javascripts/jquery-ui.js")
+  script(src="/javascripts/datepicker.js")
+
+
+
+
