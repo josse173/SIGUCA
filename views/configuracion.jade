@@ -3,6 +3,7 @@ extends layout
 block sigucaCSS
   link(rel='stylesheet', href='/stylesheets/flipclock.css')
   link(rel='stylesheet', href='/stylesheets/sigucaJustificaciones.css')
+  link(rel='stylesheet', href='/stylesheets/sigucaConfiguraciones.css')
   link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
 block imgSession
   .divSession#divSession
@@ -45,6 +46,7 @@ block content
                   tr
                     td Lucía Diamante Cielo
                     td S. Técnico
+
             button#ingreso.btn.btn-success(name='agregar', href='#addEmpleado', data-toggle='modal') Agregar
             button#modificar.btn.btn-warning(name='modificar') Modificar
             button#cancelar.btn.btn-danger(name='eliminar') Eliminar
@@ -86,7 +88,17 @@ block content
                           label.col-lg-4.col-md-6.col-sm-6(for="area")
                             |Área:
                           div.col-lg-6.col-md-6.col-sm-6
-                            input.form-control(type="area" name="area" id="#area" placeholder="Área")
+                            select#area.input-xlarge(name='area')
+                                  option S. Técnico
+                                  option Innovación
+                        div.form-group.gcsContainer
+                          label.col-lg-4.col-md-6.col-sm-6(for="tHorario")
+                            |Tipo de Horario:
+                          div.col-lg-6.col-md-6.col-sm-6
+                            select#area.input-xlarge(name='area')
+                                  option Diurno
+                                  option Nocturno
+
                         div.form-group.gcsContainer
                           label.col-lg-4.col-md-6.col-sm-6(for="infoextra")
                             |Información Adicional
@@ -96,7 +108,7 @@ block content
                            Button (Double) 
                         .control-group
                           label.control-label(for='ingreso')
-                          .controls
+                          div.col-lg-6.col-md-6.col-sm-6
                             button#ingreso.btn.btn-success(name='ingreso') Ingresar
                             button#cancelar.btn.btn-danger(name='cancelar') Cancelar
 
