@@ -2,7 +2,7 @@ $(document).ready(function (){
     var calen =  $('input').glDatePicker({
     specialDates: [
         {
-            date: new Date(2013,9,8,8,20,15),
+            date: new Date(2013,9,30,8,20,15),
             data: { message: 'Llegada tardía por accidente de tránsito.' }
         },
         {
@@ -27,7 +27,7 @@ $(document).ready(function (){
                     date.getMonth() + ' - ' +
                     date.getDate());
         if(data != null) {
-             alert('Permisos-Justificaciones\n' + 'Empleado: Gabriel Martínez Barboza (123456789)\n' + 'Detalle: ' + data.message + '\n' + 'Fecha:' + date.toDateString() + ' ' + date.toTimeString());
+             alert('Permisos-Justificaciones\n' + 'Empleado: Gabriel Martínez Barboza (123456789)\n' + 'Detalle: ' + data.message + '\n' + 'Fecha:' + date.toDateString() + ' ' + date.toTimeString() + '\nEstado: Aprobado');
         }        
     }
     });

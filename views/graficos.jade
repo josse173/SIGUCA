@@ -46,6 +46,9 @@ block content
 
         .grid-4.grid.grey
              div.filter
+                 label#tHorario(for='horario') 
+                   |Soporte Técnico
+             div.filter
                  label#tGrafico(for='grafico') 
                    |Tipo de Gráfico: 
                  .btn-group
@@ -55,18 +58,6 @@ block content
                      ul.dropdown-menu
                       li
                        a(href='#') Porcentajes
-             div.filter
-                 label#tHorario(for='horario') 
-                   |Área: 
-                 .btn-group
-                     button.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown')
-                      | S. técnico
-                      span.caret
-                     ul.dropdown-menu
-                      li
-                       a(href='#') Todos
-                      li
-                       a(href='#') Innovación 
              div.filter
                   label#empleados(for='empleados') 
                    |Empleados: 

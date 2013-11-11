@@ -19,7 +19,57 @@ block content
     .grids.top
         .grid-6.grid.intro
           h2 SIGUCA
-          #myModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+          #ingresaAdministrador.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+           .modal-dialog
+            .modal-content
+              .modal-header
+                button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+                h4.modal-title Ingreso
+              .modal-body
+                 form.form-horizontal(action="/usuarios/sesion", method="post")
+                    div.form-group.gcsContainer
+                      label.col-lg-4(for="email")
+                        |Correo electrónico:
+                      div.col-lg-6.col-md-6.col-sm-6
+                        input.form-control(type="email" name="email" id="#email" placeholder="Correo electrónico")
+                    div.form-group.gcsContainer
+                      label.col-lg-4.col-md-6.col-sm-6(for="password")
+                        |Contraseña:
+                      div.col-lg-6.col-md-6.col-sm-6
+                        input.form-control(type="password" name="password" id="#password" placeholder="Contraseña")
+                    
+                    .modal-footer
+                        .form-actions
+                           button.btn.btn-primary(type='button', data-dismiss='modal') Cerrar 
+                           &nbsp;
+                           //button.btn.btn-primary(type='submit') IngresarPrueba
+                           button#btnYes.btn.btn-default(onclick="location.href = '/graficoAdmin'", type='button') Ingresar
+          #ingresaEmpleado.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+           .modal-dialog
+            .modal-content
+              .modal-header
+                button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+                h4.modal-title Ingreso
+              .modal-body
+                 form.form-horizontal(action="/usuarios/sesion", method="post")
+                    div.form-group.gcsContainer
+                      label.col-lg-4(for="email")
+                        |Correo electrónico:
+                      div.col-lg-6.col-md-6.col-sm-6
+                        input.form-control(type="email" name="email" id="#email" placeholder="Correo electrónico")
+                    div.form-group.gcsContainer
+                      label.col-lg-4.col-md-6.col-sm-6(for="password")
+                        |Contraseña:
+                      div.col-lg-6.col-md-6.col-sm-6
+                        input.form-control(type="password" name="password" id="#password" placeholder="Contraseña")
+                    
+                    .modal-footer
+                        .form-actions
+                           button.btn.btn-primary(type='button', data-dismiss='modal') Cerrar 
+                           &nbsp;
+                           //button.btn.btn-primary(type='submit') IngresarPrueba
+                           button#btnYes.btn.btn-default(onclick="location.href = '/escritorioEmpl'", type='button') Ingresar
+          #ingresaSupervisor.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
            .modal-dialog
             .modal-content
               .modal-header
@@ -46,8 +96,17 @@ block content
                            button#btnYes.btn.btn-default(onclick="location.href = '/escritorio'", type='button') Ingresar
           p
             | Sistema de Gestión de Usuarios y Control de Asistencia
-          a.btn.btn-primary.btn-large(href='#myModal', data-toggle='modal')  
-            | Ingresar!
+          div
+           a.btn.btn-primary.btn-large(href='#ingresaAdministrador', data-toggle='modal')  
+             | Ingresa Administrador
+           br
+           br
+           a.btn.btn-primary.btn-large(href='#ingresaSupervisor', data-toggle='modal')  
+             | Ingresa Supervisor
+           br	
+           br		   
+           a.btn.btn-primary.btn-large(href='#ingresaEmpleado', data-toggle='modal')  
+             | Ingresa Empleado 
 
         .grid-10.grid  
         //  #flipClock 

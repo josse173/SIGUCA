@@ -15,7 +15,7 @@ block imgSession
                   span.caret
                 ul.dropdown-menu
                   li 
-                   a(href='#') Cerrar Sesión
+                   a(href='/') Cerrar Sesión
 block sigucaNavbarItems
   ul#nav.main
     li
@@ -46,9 +46,9 @@ block content
     .grids
         .grid-12.grid.green
           div#wrappConf
-           h2 Justificaciones
+           h2 Solicitudes y Justificaciones
            button.btn.btn-success(name='justificación_nueva', href='#justificacionNueva', data-toggle='modal') + Permiso
-           button.btn.btn-success(name='solicitud_extras', href='#solicitudExtras', data-toggle='modal')  + Tiempo Extra
+           button.btn.btn-success(name='solicitud_extras', href='#solicitudExtras', data-toggle='modal')  + Horas Extras
            ul.inline     
              #justificacionNueva.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
               .modal-dialog
@@ -68,7 +68,7 @@ block content
                           label.col-lg-4(for='Empleado')
                             |Empleado
                           div.col-lg-6.col-md-6.col-sm-6
-                            input.form-control(type="text" name="Emleado" id="Empleado" placeholder="123456789")
+                            input.form-control(type="text" name="Empleado" id="Empleado" placeholder="123456789")
                         div.form-group.gcsContainer
                           label.col-lg-4(for='Detalles')
                             |Detalles
@@ -102,7 +102,17 @@ block content
                           label.col-lg-4(for='Horas')
                             |Cantidad Horas
                           div.col-lg-6.col-md-6.col-sm-6
-                            input.form-control(type="text" name="Horas" id="Horas" placeholder="3")
+                            input.form-control(type="text" name="Horas" id="Horas" placeholder="2")
+                        div.form-group.gcsContainer
+                          label.col-lg-4(for='HorasIni')
+                            |Hora inicial
+                          div.col-lg-6.col-md-6.col-sm-6
+                            input.form-control(type="text" name="HorasIni" id="HorasIni" placeholder="3:00 p.m.")
+                        div.form-group.gcsContainer
+                          label.col-lg-4(for='HorasFin')
+                            |Hora final
+                          div.col-lg-6.col-md-6.col-sm-6
+                            input.form-control(type="text" name="HorasFin" id="HorasFin" placeholder="5:00 p.m.")
                         div.form-group.gcsContainer
                           label.col-lg-4(for='Motivo')
                             |Motivo
