@@ -19,15 +19,16 @@ var SchemaEmpleado = new Schema({
 		justificaciones: [{
 			fecha: Date,
 			comentario: { type: String, default: '' },
-			resolucion: Boolean,
+			estado: { type: Number, default: 0 }, // Pendiente - Aceptado - Rechazado
 			resolucionPor: {type : Schema.ObjectId, ref : 'Usuario'},
 		}],
 		jornadas: [{
-			nombre: {type: String, default: ''},
 			horaEntrada: Date,
 			horaSalida: Date,
 			marcaEntrada: Date,
 			marcaSalida: Date,
+			horaExtraEntrada: Date,
+			horaExtraSalida: Date,
 			receso: [{ 
 				marcaSalida: Date,
 				marcaEntrada: Date,
