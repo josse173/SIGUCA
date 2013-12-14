@@ -1,44 +1,47 @@
+//-
+//-SIGUCA Main Jade Layout
+//-
+//-Use block content to include the body of derivated pages
+//-
+//-Use block gcsCSS to include extra css from derivated pages
+//-
+//-Use block gcsScripts to add extra javascript from derivated pages
 doctype 5
 html 
   head
     meta(charset='utf-8')
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
-    title= title
-    link(type="image/x-icon" href='/img/favicon.ico')
+    link(rel='stylesheet', href='/stylesheets/sigucaMain.css')
     link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
     link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
     link(rel='stylesheet', href='/stylesheets/bootstrap-theme.min.css')
-    link(rel='stylesheet', href='stylesheets/inuit.css')
-    link(rel='stylesheet', href='stylesheets/fluid-grid16-1100px.css')
-    link(rel='stylesheet', href='stylesheets/eve-styles.css')
-    link(rel='shortcut icon', href='icon.png')
-    link(rel='apple-touch-icon-precomposed', href='img/icon.png')
-    link(rel='stylesheet', href='stylesheets/flexslider.css')
+    link(type="image/x-icon" href='/img/favicon.ico')
+    title = title
 
+    block sigucaCSS
+    
 
-  block sigucaCSS
-  link(rel='stylesheet', href='/stylesheets/sigucaMain.css')
-
-
+ 
   body
-      .wrapper
-        img(alt='something', src='images/logo-siguca.png', align='rigth')
-        img#logoGCS(src='images/logo-greencore.png', alt='something', align='rigth')
-        block imgSession
-        block sigucaNavbarItems
+    div.logo
+     img(alt='something', src='images/logo-siguca.png', align='rigth', href="#")
+     img(src='images/logo-greencore.png', alt='something', align='rigth', href="#")
+    div.navbar#barra(role="navigation")
+      div.navbar-header
+        button.navbar-toggle#botonRes(type="button" data-toggle="collapse" data-target=".navbar-ex1-collapse")
+          span.sr-only
+          span.icon-bar
+          span.icon-bar
+          span.icon-bar
         
-        hr
-       
+      div.collapse.navbar-collapse.navbar-ex1-collapse.navbar-right
+        block sigucaNavbarItems 
 
-          //
-            These are just samples, use your own icons. If you use larger ones, make sure too change the css-file to fit them in.
-                                   Dont´t forget to place your links 
-        
-        //end of wrapper div     
-          
-
+    
+         
     block content
-     
+    
+block sigucaJS
 
   script(src="/javascripts/jquery-2.0.3.min.js")
   script(src="/javascripts/bootstrap.min.js")
@@ -60,4 +63,4 @@ html
       });
 
     //- Con este bloque pueden agregar scripts individuales para cada vista
-   block sigucaJS
+   

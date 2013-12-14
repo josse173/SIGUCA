@@ -1,15 +1,17 @@
 /** SIGUCA (Sistema de Gestión de Usuarios y Control de Asistencia)
- * Aplicación principal- Main app
+ * Aplicación principal- 
+   Main app
  * 		
  *
  */
 
 
 /** Dependencias
+    Dependencies
  */
 var express = require('express');
 var mongoose = require('mongoose');
-var passport = require('passport');
+var passport = require('passport'), LocalStrategy = require('passport-local').Strategy;
 var routes = require('./routes');
 var path = require('path');
 //var apiEmpleado = require('../controllers');
@@ -34,7 +36,9 @@ app.configure(function(){
 /** Leer la configuración de ./config/config **/
 var env = process.env.NODE_ENV || 'development';
 var config = require('./config/config')[env];
+
 //Para conectarse a la base de datos indicada en config.db
+//To connect with the database on config.db
 mongoose.connect(config.db);
 
 var db = mongoose.connection;
@@ -51,32 +55,10 @@ if ('development' == app.get('env')) {
   //app.configure('development', function () { app.locals.pretty = true; });
 }
 
+
 /** Routes
 **/
-
-app.get('/', routes.index);
-app.get('/escritorio', routes.escritorio);
-app.get('/escritorioEmpl', routes.escritorioEmpl);
-app.get('/graficos', routes.graficos);
-app.get('/graficoAdmin', routes.graficoAdmin);
-app.get('/ayuda', routes.ayuda);
-app.get('/configuracion', routes.configuracion);
-app.get('/confAdmin', routes.confAdmin);
-app.get('/justificaciones', routes.justificaciones);
-app.get('/justEmpl', routes.justEmpl);
-app.get('/justificacion_nueva', routes.justificacion_nueva);
-app.get('/solicitud_extra',routes.solicitud_extra);
-app.get('/autoriza_extra',routes.autoriza_extra);
-app.get('/autoriza_justificacion',routes.autoriza_justificacion);
-app.get('/roles', routes.roles); //Llama la vista de roles a través de ./routes/index.js
-app.post('/roles', routes.rolesPost);
-app.get('/dispositivos', routes.dispositivos);
-//app.get('/configuracion', routes.indexAng);
-/*app.get('/empleado/:cedula.:format?', api_empleado.buscaPorCedula);
-app.get('/empleado', api_empleado.lista);
-*/
-//app.post('/configuraciones', apiEmpleado.crea);
-
+require('./routes/index')(app);
 
 // Open App socket
 app.listen(3000);

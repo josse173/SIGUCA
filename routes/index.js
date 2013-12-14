@@ -4,77 +4,82 @@
  * Aqui deben crear un exports para cada página que llamen desde el router, pueden agregar los datos dinámicos a través de objetos JS
   y pasarlos a la vista con res.render('<vista>', <objeto>)
  */
-
-var mongoose    = require('mongoose');
+ var mongoose    = require('mongoose');
 require('../models/roles');
 require('../models/Empleado');
 var dbRol = mongoose.model('Rol');
 var Empleado = mongoose.model('Empleado');
 
-
-exports.index = function(req, res){
-  res.render('index', { title: 'SIGUCA' });
-};
-exports.roles = function(req, res){
-	res.render('roles', {title: 'SIGUCA - Administración de Roles', rol: req.rol, nombre: req.nombre});
-};
-exports.escritorio = function(req, res){
-	res.render('escritorio', {title: 'Supervisor escritorio | SIGUCA'});
-};
-exports.escritorioEmpl = function(req, res){
-	res.render('escritorioEmpl', {title: 'Empleado escritorio | SIGUCA'});
-};
-exports.graficos = function(req, res){
-	res.render('graficos', {title: 'Graficos | SIGUCA'});
-};
-exports.graficoAdmin = function(req, res){
-	res.render('graficoAdmin', {title: 'Graficos Administrador | SIGUCA'});
-};
-exports.ayuda = function(req, res){
-	res.render('ayuda', {title: 'Ayuda | SIGUCA'});
-};
-exports.configuracion = function(req, res){
-	res.render('configuracion',{title: 'Configuración | SIGUCA'});
-};
-exports.confAdmin = function(req, res){
-	res.render('confAdmin',{title: 'Configuración Administrador| SIGUCA'});
-};
-exports.justificaciones = function(req, res){
-	res.render('justificaciones', {title: 'Justificaciones/Permisos | SIGUCA'});
-};
-exports.justEmpl = function(req, res){
-	res.render('justEmpl', {title: 'Solicitudes/Justificaciones | SIGUCA'});
-};
-exports.justificacion_nueva = function(req, res){
-	res.render('justificacion_nueva', {title: 'Nueva Justificacion | SIGUCA'});
-};
-exports.solicitud_extra = function(req, res){
-	res.render('solicitud_extra', {title: 'Solicitud Tiempo Extra | SIGUCA'});
-};
-exports.autoriza_extra = function(req, res){
-	res.render('autoriza_extra', {title: 'Autorizacion Tiempo Extra | SIGUCA'});
-};
-exports.autoriza_justificacion = function(req, res){
-	res.render('autoriza_justificacion', {title: 'Autorizacion Justificacion | SIGUCA'});
-};
-exports.dispositivos = function(req, res){
-	res.render('dispositivos', {title: 'Dispositivos | SIGUCA'});
-};
-exports.rolesPost = function(req, res){
-	console.log('Recibimos rol:'+req.body.rol+' y nombre:'+req.body.nombre);
-	var newRol = new dbRol (req.body)
-	newRol.save(function(err){
-		if (err) {
-			return res.render('roles', {
-				errors: utils.errors(err.errors),
-				rol: rol,
-				nombre: nombre,
-				title: 'SIGUCA - Administración de Roles - Intente nuevamente'
-			});
-		};
+module.exports = function(app) {
+	app.get('/', function(req, res){
+		res.render('index', { title: 'SIGUCA' });
 	});
-	res.redirect('/');
+	app.get('/escritorio', function(req, res){
+		res.render('escritorio', {title: 'Supervisor escritorio | SIGUCA'});
+	});
+	app.get('/escritorioEmpl', function(req, res){
+		res.render('escritorioEmpl', {title: 'Empleado escritorio | SIGUCA'});
+	});
+	app.get('/graficos', function(req, res){
+		res.render('graficos', {title: 'Graficos | SIGUCA'});
+	});
+	app.get('/graficoAdmin', function(req, res){
+		res.render('graficoAdmin', {title: 'Graficos Administrador | SIGUCA'});
+	});
+	app.get('/ayuda', function(req, res){
+		res.render('ayuda', {title: 'Ayuda | SIGUCA'});
+	});
+	app.get('/configuracion', function(req, res){
+		res.render('configuracion',{title: 'Configuración | SIGUCA'});
+	});
+	app.get('/confAdmin', function(req, res){
+		res.render('confAdmin',{title: 'Configuración Administrador| SIGUCA'});
+	});
+	app.get('/justificaciones', function(req, res){
+		res.render('justificaciones', {title: 'Justificaciones/Permisos | SIGUCA'});
+	});
+	app.get('/justEmpl', function(req, res){
+		res.render('justEmpl', {title: 'Solicitudes/Justificaciones | SIGUCA'});
+	});
+	app.get('/justificacion_nueva', function(req, res){
+		res.render('justificacion_nueva', {title: 'Nueva Justificacion | SIGUCA'});
+	});
+	app.get('/solicitud_extra', function(req, res){
+		res.render('solicitud_extra', {title: 'Solicitud Tiempo Extra | SIGUCA'});
+	});
+	app.get('/autoriza_extra', function(req, res){
+		res.render('autoriza_extra', {title: 'Autorizacion Tiempo Extra | SIGUCA'});
+	});
+	app.get('/autoriza_justificacion', function(req, res){
+		res.render('autoriza_justificacion', {title: 'Autorizacion Justificacion | SIGUCA'});
+	});
+	app.get('/roles', function(req, res){
+		res.render('roles', {title: 'SIGUCA - Administración de Roles', rol: req.rol, nombre: req.nombre});
+	});
+	app.post('/roles', function(req, res){
+		console.log('Recibimos rol:'+req.body.rol+' y nombre:'+req.body.nombre);
+		var newRol = new dbRol (req.body)
+		newRol.save(function(err){
+			if (err) {
+				return res.render('roles', {
+					errors: utils.errors(err.errors),
+					rol: rol,
+					nombre: nombre,
+					title: 'SIGUCA - Administración de Roles - Intente nuevamente'
+				});
+			};
+		});
+		res.redirect('/');
+	});
+	app.get('/dispositivos', function(req, res){
+		res.render('dispositivos', {title: 'Dispositivos | SIGUCA'});
+	});
+
+	
+
 };
+
+
 // Crea nuevo Empleado
 exports.crea = function(req, res) {
 	var empleado = new Empleado(req.body);
