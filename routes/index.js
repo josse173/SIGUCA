@@ -4,11 +4,12 @@
  * Aqui deben crear un exports para cada página que llamen desde el router, pueden agregar los datos dinámicos a través de objetos JS
   y pasarlos a la vista con res.render('<vista>', <objeto>)
  */
- var mongoose    = require('mongoose');
+var mongoose    = require('mongoose');
 require('../models/roles');
 require('../models/Empleado');
 var dbRol = mongoose.model('Rol');
 var Empleado = mongoose.model('Empleado');
+var AM = require('../models/cuentas-admin');
 
 module.exports = function(app) {
 	app.get('/', function(req, res){
