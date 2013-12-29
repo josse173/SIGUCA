@@ -16,7 +16,7 @@ var SchemaUsuario = new Schema({
 		email: { type: String, default: '' },
 		rol: { type: String, default: '' },
 		hashed_password: { type: String, default: '' },
-		salt: { type: String, default: '' }; // http://en.wikipedia.org/wiki/Salt_%28cryptography%29
+		salt: { type: String, default: '' }
 }
 
 // Método Virtual: No persiste en la BD.

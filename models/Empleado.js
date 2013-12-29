@@ -4,9 +4,10 @@
  *
  */
 
-var mongoose = require('mongoose'),
-    Schema = mongoose.Schema;
 
+var mongoose = require('mongoose'),
+    Schema = mongoose.Schema,
+ 	passportLocalMongoose = require('passport-local-mongoose');
 //Crear el esquema de Empleado
 var SchemaEmpleado = new Schema({
 		nombre: { type: String, default: '' },
@@ -72,6 +73,7 @@ SchemaEmpleado.path('email').validate(function (email, fn) {
 SchemaEmpleado.pre('save', function(next) {
   if (!this.isNew) return next()
 })*/
+SchemaEmpleado.plugin(passportLocalMongoose);
 
 module.exports = mongoose.model('Empleado', SchemaEmpleado);
 //Empleado.ensureIndexes(callback); // Para cuando se ponga en producción

@@ -10,11 +10,16 @@ require('../models/Empleado');
 var dbRol = mongoose.model('Rol');
 var Empleado = mongoose.model('Empleado');
 var AM = require('../models/cuentas-admin');
+var passport    = require('passport');
 
 module.exports = function(app) {
+
 	app.get('/', function(req, res){
-		res.render('index', { title: 'SIGUCA' });
+		res.render('index', { user : req.user });
 	});
+	 app.post('/', passport.authenticate('local'), function(req, res) {
+        res.redirect('/');
+    });
 	app.get('/escritorio', function(req, res){
 		res.render('escritorio', {title: 'Supervisor escritorio | SIGUCA'});
 	});

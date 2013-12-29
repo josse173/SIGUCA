@@ -11,9 +11,10 @@
  */
 var express = require('express');
 var mongoose = require('mongoose');
-var passport = require('passport'), LocalStrategy = require('passport-local').Strategy;
+var passport = require('passport');
 var routes = require('./routes');
 var path = require('path');
+LocalStrategy = require('passport-local').Strategy;
 //var apiEmpleado = require('../controllers');
 
 var app = express();
@@ -39,7 +40,13 @@ var config = require('./config/config')[env];
 
 
 
+// Configure passport
+var Account = require('./models/Empleado');
 
+passport.use(new LocalStrategy(Account.authenticate()));
+
+passport.serializeUser(Account.serializeUser());
+passport.deserializeUser(Account.deserializeUser());
 // development only
 if ('development' == app.get('env')) {
   app.use(express.errorHandler());
