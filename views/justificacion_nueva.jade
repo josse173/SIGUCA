@@ -7,23 +7,24 @@ block sigucaCSS
 	//-Y este es un comentario que solo jade ve.
 
 block content
-	h1 Justificación de Ausencia/Tardía
-	form.form-horizontal(action="justificacion_nueva" method="post")
-		div.control-group
-			label.control-label(for="Código")
-				|Empleado
-			div.controls
-				input(type="text" name="Empleado" placeholder="123456789")
-		div.control-group
-			label.control-label(for="Fecha")
-				|Fecha
-			div.controls
-				input(type="text" name="Fecha" placeholder="20-10-2013")
-		div.control-group
-			label.control-label(for="Motivo")
-				|Motivo
-			div.controls
-				input(type="text" name="Fecha" placeholder="Accidente de tránsito")
-		button.btn.btn-primary(type="submit" value="roles")
-			|Enviar Justificación
+	.container
+		h1 Justificación de Ausencia/Tardía
+		form.form-horizontal(action="justificacion_nueva" method="post")
+			div.control-group
+				label.control-label(for="Código")
+					|Empleado
+				div.controls
+					input(type="text" name="Empleado" placeholder="123456789")
+			div.control-group
+				label.control-label(for="Fecha")
+					|Fecha
+				div.controls
+					input(type="text" name="Fecha" placeholder="20-10-2013")
+			div.control-group
+				label.control-label(for="Motivo")
+					|Motivo
+				div.controls
+					input(type="text" name="Fecha" placeholder="Accidente de tránsito")
+			button.btn.btn-primary(type="submit" value="roles")
+				|Enviar Justificación
 

@@ -5,5 +5,11 @@ $(document).ready(function (){
 		clockFace: 'TwelveHourClock',
 		autoStart: true
 	});
+
+	var grafico = $('#grafico').CalHeatMap ( {
+		grafico.init({});
+	});
 })
-	
+
+
+

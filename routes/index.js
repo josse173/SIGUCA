@@ -20,6 +20,22 @@ module.exports = function(app) {
 	 app.post('/', passport.authenticate('local'), function(req, res) {
         res.redirect('/');
     });
+	app.get('/register', function(req, res) {
+      res.render('register', { });
+  	});
+
+  	app.post('/register', function(req, res) {
+    Account.register(new Account({ username : req.body.username }), req.body.password, function(err, account) {
+        if (err) {
+            return res.render('register', { account : account });
+        }
+
+        passport.authenticate('local')(req, res, function () {
+          res.redirect('/');
+        });
+    });
+  });
+
 	app.get('/escritorio', function(req, res){
 		res.render('escritorio', {title: 'Supervisor escritorio | SIGUCA'});
 	});

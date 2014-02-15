@@ -41,12 +41,12 @@ var config = require('./config/config')[env];
 
 
 // Configure passport
-var Account = require('./models/Empleado');
+var Account = require('./models/cuentas-admin');
 
 passport.use(new LocalStrategy(Account.authenticate()));
-
 passport.serializeUser(Account.serializeUser());
 passport.deserializeUser(Account.deserializeUser());
+
 // development only
 if ('development' == app.get('env')) {
   app.use(express.errorHandler());

@@ -1,66 +1,52 @@
-//-
-//-SIGUCA Main Jade Layout
-//-
-//-Use block content to include the body of derivated pages
-//-
-//-Use block gcsCSS to include extra css from derivated pages
-//-
-//-Use block gcsScripts to add extra javascript from derivated pages
-doctype 5
+doctype 
 html 
   head
     meta(charset='utf-8')
+    //To ensure proper rendering and touch zooming (boostrap)
+    //Para garantizar una adecuada renderización  en caso de dispositivos móviles
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
+
+    //Style sheets used
     link(rel='stylesheet', href='/stylesheets/sigucaMain.css')
     link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
     link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
     link(rel='stylesheet', href='/stylesheets/bootstrap-theme.min.css')
     link(type="image/x-icon" href='/img/favicon.ico')
-    title = title
+    title SIGUCA
 
     block sigucaCSS
     
 
  
   body
-    div.logo
-     img(alt='something', src='images/logo-siguca.png', align='rigth', href="#")
-     img(src='images/logo-greencore.png', alt='something', align='rigth', href="#")
-    div.navbar#barra(role="navigation")
-      div.navbar-header
-        button.navbar-toggle#botonRes(type="button" data-toggle="collapse" data-target=".navbar-ex1-collapse")
-          span.sr-only
-          span.icon-bar
-          span.icon-bar
-          span.icon-bar
-        
-      div.collapse.navbar-collapse.navbar-ex1-collapse.navbar-right
-        block sigucaNavbarItems 
+    div.container
+      div.row
+        div.col-xs-5.col-md-1
+          img(alt='something', src='images/logo-siguca.png',  href="#")#sigucaLogo
+        div.col-xs-2.col-md-10
+          div.navbar#barra(role="navigation")
+            div.navbar-header
+              button.navbar-toggle#botonRes(type="button" data-toggle="collapse" data-target=".navbar-ex1-collapse")
+            span.sr-only
+            span.icon-bar
+            span.icon-bar
+            span.icon-bar
+            div.collapse.navbar-collapse.navbar-ex1-collapse.navbar-right
+             block sigucaNavbarItems 
+        div.col-xs-5.col-md-1
+          img(src='images/logo-greencore.png', alt='something',  href="#")#grcSLogo
 
-    
-         
-    block content
-    
-block sigucaJS
-
-  script(src="/javascripts/jquery-2.0.3.min.js")
-  script(src="/javascripts/bootstrap.min.js")
-  script(src='javascripts/respond-min.js', type='text/javascript')   
-  script(src='http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js', type='text/javascript')
-  script
-      window.jQuery || document.write('<script src="scripts/jquery164min.js">\\x3C/script>')
-    // local fallback for JQuery
-  script(src='javascripts/jquery.flexslider-min.js', type='text/javascript')
   
-    script(type='text/javascript')
-      $(window).load(function() {
-      $('.flexslider').flexslider({
-      animation: "slide",
-      directionNav: false,
-      keyboardNav: true,
-      mousewheel: true
-      });
-      });
+    block content
+      
 
-    //- Con este bloque pueden agregar scripts individuales para cada vista
-   
+
+    
+    block sigucaJS
+
+      script(src="/javascripts/jquery-2.0.3.min.js")
+      script(src="/javascripts/bootstrap.min.js")
+      script(src="/javascripts/snap.svg-min.js")
+      script(src='javascripts/respond-min.js', type='text/javascript')   
+      script(src='http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js', type='text/javascript')
+      script(src="javascripts/svg.js")

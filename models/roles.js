@@ -5,7 +5,8 @@
  */
 
 var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+var Schema = mongoose.Schema,
+passportLocalMongoose = require('passport-local-mongoose');
 
 //Crear el modelo de roles
 var rolesSchema = new Schema({
@@ -30,4 +31,7 @@ rolesSchema.path('nombre').validate(function(nombre){
 	console.log('validando nombre de tamaño: '+nombre.length+' Luego del return')
 }, 'Nombre no puede ser nulo');
 
-mongoose.model('Rol', rolesSchema);
+rolesSchema.plugin(passportLocalMongoose);
+
+module.exports = mongoose.model('Rol', rolesSchema);
+

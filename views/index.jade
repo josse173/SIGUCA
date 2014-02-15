@@ -13,7 +13,9 @@ block sigucaNavbarItems
 
 
 block content
+ 
   div.container#login-container
+    //svg( version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="500px" height="500px" viewBox="0 0 500 500" enable-background="new 0 0 500 500" xml:space="preserve")
     form(method="post")#login-form.well.span4
       h1 SIGUCA
       p.subheading Sistema de Gestión de Usuarios y Control de Asistencia
@@ -37,4 +39,5 @@ block sigucaJS
   
   script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js')
   script(src='/twitter-bootstrap/twitter-bootstrap-v2/js/bootstrap-modal.js')
-  
+  script(src= '/javascripts/svg.js')
+  script(src="javascripts/snap.svg-min.js")
