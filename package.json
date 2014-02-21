@@ -14,6 +14,7 @@
     "connect-flash": "latest",
   	"passport": "latest",
   	"passport-local": "latest",
+    "passport-local-mongoose": "latest",
   	"underscore": "latest",
   	"async": "latest",
   	"view-helpers": "latest",
