@@ -22,11 +22,11 @@ block content
       div.form-group
         label(for="usernameInput")
           |Correo:
-        input.form-control(type="text" id="#usernameInput" placeholder="Correo")
+        input.form-control#emailInput(type="text"  placeholder="Correo")
       div.form-group
         label(for="passwordInput")
           |Contraseña:
-        input.form-control(type="password" id="usernameInput" placeholder="Contraseña")
+        input.form-control#passInput(type="password"  placeholder="Contraseña")
       button(type="submit")#btn-login.btn.btn-primary
         i.icon-lock.icon-white
         | Ingresar

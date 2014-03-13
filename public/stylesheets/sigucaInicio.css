@@ -63,3 +63,7 @@ input:not([type=submit]) {
 #login-container .checkbox {
   margin: 23px 0 0 180px;
 }
+#login-container .form-control {
+  color: #14100C;
+  
+}
