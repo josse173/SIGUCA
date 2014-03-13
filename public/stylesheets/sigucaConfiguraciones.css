@@ -82,3 +82,22 @@
 .dropdown-menu{
 	background-color: #00B060;
 }
+
+.optConfButtons {
+  width: 547px;
+  margin: 40px auto;
+  
+}
+.search{
+ width: 221px;
+  margin: 40px auto;
+}
+.searchButtons{
+  width: 547px;
+  margin: 40px auto;
+  
+}
+.containerCentral{
+	
+	width: 550px;
+}
