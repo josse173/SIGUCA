@@ -18,20 +18,28 @@ block content
   div.container
     .col-xs-2
     .col-xs-8
-      div.containerCentral
-        div.optConfButtons
+
+      div#containerCentral
+        form(method="post")#login-form.well.span4
+          h1 Configuraciones
+          p.subheading Seleccione el elemento
           button#ingreso.btn.btn-success(name='agregar', href='#addArea', data-toggle='modal') Empleados
           button#modificar.btn.btn-success(name='modificar') Tipos de Horarios
           button#cancelar.btn.btn-success(name='eliminar') Áreas
           button#cancelar.btn.btn-success(name='eliminar') Roles
-        div.search
-          .input-prepend
+          div.form-group
+            label(for="codInput")
+              |Código:
+            .input-prepend
             span.add-on
-              i.icon-search
             input#inputIcon.span2(type='text', placeholder='Ingrese Código', ng-model='query')
-        div.searchButtons
-          button#ingreso.btn.btn-warning(name='agregar', href='#addArea', data-toggle='modal') Buscar
-          button#modificar.btn.btn-warning(name='modificar') Búsqueda Avanzada
+          button(type="submit")#btn-buscar.btn.btn-primary
+            i.icon-search.icon-white
+            | Buscar
+          button(type="submit")#btn-busquedaAva.btn.btn-primary
+            i.icon-filter.icon-white
+            | Búsqueda Avanzada
+    
     .col-xs-2
 
    
