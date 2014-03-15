@@ -1,4 +1,4 @@
-extends layout
+extends layoutAdmin
 
 block sigucaCSS
   link(rel='stylesheet', href='/stylesheets/flipclock.css')
@@ -14,20 +14,7 @@ block imgSession
                   li 
                    a(href='/') Cerrar Sesión
 block sigucaNavbarItems
-  ul#nav.main
-    li
-      a.active(href='/graficoAdmin')
-        i.icon-bar-chart.icon-large
-        |&nbsp;Gráficos
-    li.active
-      a(href="/confAdmin")
-        i.icon-cogs.icon-large
-        |&nbsp;Configuracion
-    li
-      a(href='/Ayuda')
-        |Ayuda 
-        i.icon-question-sign.icon-large 
-
+  
 block content  
   .container
     .grids

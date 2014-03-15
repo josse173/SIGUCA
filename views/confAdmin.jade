@@ -1,4 +1,4 @@
-extends layout
+extends layoutAdmin
 
 block sigucaCSS
   link(rel='stylesheet', href='/stylesheets/flipclock.css')
@@ -44,19 +44,7 @@ block content
 
    
 block sigucaNavbarItems
-  ul.nav.navbar-nav
-     li
-      a(href='/graficoAdmin')
-        i.icon-bar-chart.icon-large
-        |&nbsp;Gráficos
-      li.active
-        a.active(href="/confAdmin")
-          i.icon-cogs.icon-large
-          |&nbsp;Configuracion
-      li
-        a(href='/Ayuda')
-          |Ayuda 
-          i.icon-question-sign.icon-large 
+ 
 
 block sigucaJS
   script(src="/javascripts/flipclock/libs/prefixfree.min.js")
