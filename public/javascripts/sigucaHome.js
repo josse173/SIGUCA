@@ -10,3 +10,14 @@ function ListController($scope, $http) {
     //handle error
   });
 }
+var empleados = document.getElementById('empleados');
+var tipHorarios = document.getElementById('tipHorarios');
+var areas = document.getElementById('areas');
+var roles = document.getElementById('roles');
+
+
+
+function changeElemt(elemento){
+	document.getElementById("pressElmnt").innerHTML =  'elemento' ;
+
+}

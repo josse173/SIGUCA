@@ -20,19 +20,22 @@ block content
     .col-xs-8
 
       div#containerCentral
-        form(method="post")#login-form.well.span4
-          h1 Configuraciones
-          p.subheading Seleccione el elemento
-          button#ingreso.btn.btn-success(name='agregar', href='#addArea', data-toggle='modal') Empleados
-          button#modificar.btn.btn-success(name='modificar') Tipos de Horarios
-          button#cancelar.btn.btn-success(name='eliminar') Áreas
-          button#cancelar.btn.btn-success(name='eliminar') Roles
-          div.form-group
+        h3  Seleccione el elemento
+        div#contBotones
+          button#empleados.btn.btn-success(name='agregar', onclick="changeElemt()") Empleados
+          button#tipHorarios.btn.btn-success(name='modificar') Tipos de Horarios
+          button#areas.btn.btn-success(name='eliminar') Áreas
+          button#roles.btn.btn-success(name='eliminar') Roles
+
+        div#busqueda
             label(for="codInput")
-              |Código:
-            .input-prepend
-            span.add-on
-            input#inputIcon.span2(type='text', placeholder='Ingrese Código', ng-model='query')
+                |Digite el código de 
+                span#pressElmnt 
+                |:
+              .input-prepend
+              span.add-on
+              input#inputIcon.span2(type='text', placeholder='Ingrese Código', ng-model='query')
+        div#irBusqueda
           button(type="submit")#btn-buscar.btn.btn-primary
             i.icon-search.icon-white
             | Buscar
@@ -48,6 +51,5 @@ block sigucaNavbarItems
 
 block sigucaJS
   script(src="/javascripts/flipclock/libs/prefixfree.min.js")
-  script(src="/javascripts/flipclock/flipclock.min.js")
   script(src="/javascripts/sigucaHome.js")
   script(src="/javascripts/angular-1.0.8/angular.min.js")
