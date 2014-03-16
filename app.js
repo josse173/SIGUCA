@@ -17,6 +17,15 @@ var path = require('path');
 LocalStrategy = require('passport-local').Strategy;
 //var apiEmpleado = require('../controllers');
 
+//crea o conecta a base de datos 
+mongoose.connect('mongodb://localhost/sigucadb',function(err){
+	if(!err){
+		console.log('conectado a sigucadb');
+	}else{
+	 throw err;
+	}
+});
+
 var app = express();
 
 /*Configuración de ambientes.s

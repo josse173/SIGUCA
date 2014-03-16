@@ -42,6 +42,9 @@ module.exports = function(app) {
 	app.get('/escritorioEmpl', function(req, res){
 		res.render('escritorioEmpl', {title: 'Empleado escritorio | SIGUCA'});
 	});
+	app.get('/escritorioAdmin', function(req, res){
+		res.render('escritorioAdmin', {title: 'Administrador escritorio | SIGUCA'});
+	});
 	app.get('/graficos', function(req, res){
 		res.render('graficos', {title: 'Graficos | SIGUCA'});
 	});
@@ -59,6 +62,9 @@ module.exports = function(app) {
 	});
 	app.get('/justificaciones', function(req, res){
 		res.render('justificaciones', {title: 'Justificaciones/Permisos | SIGUCA'});
+	});
+	app.get('/justificacionesAdmin', function(req, res){
+		res.render('justificacionesAdmin', {title: 'Administrador justificaciones| Permisos'});
 	});
 	app.get('/justEmpl', function(req, res){
 		res.render('justEmpl', {title: 'Solicitudes/Justificaciones | SIGUCA'});
