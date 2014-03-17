@@ -19,138 +19,53 @@ block sigucaNavbarItems
 
 block content  
   .container
-    .grids
-        .grid-16.grid.green
-          div#wrappConf
-           h2 Justificaciones
-          table
-             tbody(align="center")
-               tr
-                 td
-                   b CÓDIGO
-                  td
-                   b NOMBRE
-                  td
-                   b TIPO
-                  td
-                   b DETALLES
-                  td
-                   b FECHA
-                  td
-                   b Estado                                        
-             
-               tr
-                 td 
-                   b 114520031
-                 td 
-                   |  Gabriel Martínez Barboza
-                 td 
-                   |  Vacaciones
-                 td
-                   |  Vacaciones 
-                 td 
-                   |  20-12-2013 al 05-01-2014
-                 td 
-                   |  Aceptado
-               tr
-                 td 
-                   b 402110092
-                 td 
-                   |  Tatiana Moreira Beita
-                 td
-                   | Tardía
-                 td 
-                   | Retraso de 15 minutos hora de entrada
-                 td 
-                   |  05-10-2013
-                 td 
-                   |  Aceptado
-               tr
-                 td 
-                   label.checkbox(for='codigoEmp')
+    h1 Justificaciones
+    br
+    .table-responsive
+    table.table
+        thead
+          tr
+            th Selección
+            th Código
+            th Nombre
+            th Tipo
+            th Detalles
+            th Fecha
+            th Estado
+        tbody
+          tr
+            td 
+              label.checkbox(for='codigoEmp')
                      input#codigoEmp3(name='codigo3', type='checkbox')
-                     | 113970119
-                 td 
-                   |  Carlos Solano Morales
-                 td 
-                   |  Tardía 
-                 td 
-                   | Retraso de 30 minutos hora de entrada
-                 td 
-                   |  20-10-2013
-                 td 
-                   b  Pendiente
-               tr
-                 td 
-                   b 402110092
-                 td 
-                   |  Tatiana Moreira Beita
-                 td 
-                   |  Tardía
-                 td 
-                   | Retraso de 15 minutos hora de almuerzo
-                 td 
-                   |  05-10-2013
-                 td 
-                   |  Rechazado
-               tr
-                 td 
-                   label.checkbox(for='codigoEmp')
-                     input#codigoEmp5(name='codigo5', type='checkbox')
-                     | 114520031
-                 td 
-                   |  Gabriel Martínez Barboza
-                 td 
-                   |  Ausencia
-                 td
-                   b Sin Justificar
-                 td 
-                   b Sin Justificar
-                 td 
-                   b Sin Justificar
-               tr
-                 td 
-                   label.checkbox(for='codigoEmp')
-                     input#codigoEmp6(name='codigo6', type='checkbox')
-                     | 206240769
-                 td 
-                   |  Alexander Picado Jiménez
-                 td 
-                   |  Incapacidad
-                 td
-                   |  Incapacidad de la CCSS
-                 td 
-                   |  05-10-2013
-                 td 
-                   b  Pendiente
-               tr
-                 td 
-                   b 113970119
-                 td 
-                   |  Carlos Solano Morales
-                 td 
-                   |  Vacaciones
-                 td
-                   |  Vacaciones
-                 td 
-                   |  10-12-2013 al 15-12-2014
-                 td 
-                   |  Rechazado
-               tr
-                 td 
-                   b 206240769
-                 td 
-                   |  Alexander Picado Jiménez
-                 td 
-                   |  Tardía 
-                 td 
-                   |  Tardía 15 minutos
-                 td 
-                   |  05-10-2013
-                 td 
-                   |  Aceptado				   
+            td 1111
+            td Ma Diya
+            td Vacaciones
+            td Vacaciones
+            td 20-12-2013 al 05-01-2014
+            td Aceptado
+          tr
+            td 
+              label.checkbox(for='codigoEmp')
+                     input#codigoEmp3(name='codigo3', type='checkbox')
+            td 402110092
+            td Tatiana Moreira Beita
+            td Tardía
+            td Retraso de 15 minutos hora de entrada
+            td  05-10-2013
+            td Aceptado
+          tr
+           td 
+              label.checkbox(for='codigoEmp')
+                     input#codigoEmp3(name='codigo3', type='checkbox')
+           td 113970119
+           td Carlos Solano Morales
+           td Tardía 
+           td Retraso de 30 minutos hora de entrada
+           td 20-10-2013
+           td Pendiente
 
-          .control-group
+   
+      .control-group
           label.control-laber(for='accion')
             .controls
               button#accion.btn.btn-success(name='aceptar') Aceptar

@@ -15,210 +15,31 @@ block imgSession
                    a(href='/') Cerrar Sesión
 block content
   .container 
-    .grids 
-        .grid-8.grid.green
-          div#wrappConf
-           h2 Empleados
-           ul.inline
-              li Usted tiene a cargo 3 empleados.
-              li
-                .input-prepend
-                  span.add-on
-                    i.icon-search
-                  input#inputIcon.span2(type='text', placeholder='Search...', ng-model='query')
-              li
-                p Ordenar por: Nombre
+    .col-xs-2
+    .col-xs-8
 
-          table.table.table-hover
-                thead
-                  tr
-                    th
-                      | Nombre empleado
-                    th
-                      | Área
-                tbody
-                  tr
-                    td 
-                      label.checkbox(for='empleados-0')
-                        input#empleados-0(name='empleados', value='1empleado', type='checkbox')
-                        | Gabriel Martinez Barboza
-                    td S. Técnico
-                  tr
-                    td 
-                      label.checkbox(for='empleados-1')
-                        input#empleados-0(name='empleados', value='2empleado', type='checkbox')
-                        | Tatiana Moreira Beita
-                    td Innovacion
-                  tr
-                    td 
-                      label.checkbox(for='empleados-2')
-                        input#empleados-0(name='empleados', value='3empleado', type='checkbox')
-                        | Carlos Solano Arias
-                    td S. Técnico
-
-            button#ingreso.btn.btn-success(name='agregar', href='#addEmpleado', data-toggle='modal') Agregar
-            button#modificar.btn.btn-warning(name='modificar') Modificar
-            button#cancelar.btn.btn-danger(name='eliminar') Eliminar
-            #addEmpleado.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
-             .modal-dialog
-              .modal-content
-                .modal-header
-                  button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-                  h4.modal-title Agregar Empleado
-                .modal-body
-                   form.form-horizontal
-                    fieldset
-                        div.form-group.gcsContainer
-                          label.col-lg-4(for="Nombre")
-                            |Nombre:
-                          div.col-lg-6.col-md-6.col-sm-6
-                            input.form-control(type="text" name="nombre" id="#email" placeholder="Nombre")
-                        div.form-group.gcsContainer
-                          label.col-lg-4.col-md-6.col-sm-6(for="1apellido")
-                            |Primer Apellido:
-                          div.col-lg-6.col-md-6.col-sm-6
-                            input.form-control(type="text" name="1apellido" id="#1apellido" placeholder="Primer Apellido")
-                        div.form-group.gcsContainer
-                          label.col-lg-4.col-md-6.col-sm-6(for="2apellido")
-                            |Segundo Apellido:
-                          div.col-lg-6.col-md-6.col-sm-6
-                            input.form-control(type="text" name="2apellido" id="#2apellido" placeholder="Segundo Apellido")
-                        div.form-group.gcsContainer
-                          label.col-lg-4.col-md-6.col-sm-6(for="cedula")
-                            |Cédula:
-                          div.col-lg-6.col-md-6.col-sm-6
-                            input.form-control(type="text" name="cedula" id="#cedula" placeholder="Cédula")
-                        div.form-group.gcsContainer
-                          label.col-lg-4.col-md-6.col-sm-6(for="password")
-                            |Código Tarjeta:
-                          div.col-lg-6.col-md-6.col-sm-6
-                            input.form-control(type="password" name="password" id="#password" placeholder="Contraseña")
-                        div.form-group.gcsContainer
-                          label.col-lg-4.col-md-6.col-sm-6(for="area")
-                            |Área:
-                          div.col-lg-6.col-md-6.col-sm-6
-                            select#area.input-xlarge(name='area')
-                                  option S. Técnico
-                                  option Innovación
-                        div.form-group.gcsContainer
-                          label.col-lg-4.col-md-6.col-sm-6(for="tHorario")
-                            |Tipo de Horario:
-                          div.col-lg-6.col-md-6.col-sm-6
-                            select#area.input-xlarge(name='tHorario')
-                                  option Diurno
-                                  option Nocturno
-
-                        div.form-group.gcsContainer
-                          label.col-lg-4.col-md-6.col-sm-6(for="infoextra")
-                            |Información Adicional
-                            textarea.form-control(name='infoextra')
-
-                        //
-                           Button (Double) 
-                        .control-group
-                          label.control-label(for='ingreso')
-                            .controls
-                            button#ingreso.btn.btn-success(name='ingreso') Ingresar
-                            button#cancelar.btn.btn-danger(name='cancelar') Cancelar
-
-                
-        .grid-8.grid.green
-          div#wrappConf
-             h2 Tipo de Horario
-             ul.inline
-                li Hay 2 tipos de horarios.
-                li
-                  .input-prepend
-                    span.add-on
-                      i.icon-search
-                    input#inputIcon.span2(type='text', placeholder='Search...', ng-model='query')
-                li
-                  p Ordenar por: Nombre
-            table.table.table-hover
-                  thead
-                    tr
-                      th
-                        | Nombre de horario
-                      th
-                        | Empleados asignados
-                  tbody
-                    tr
-                      td 
-                        label.checkbox(for='tHorario-0')
-                          input#empleados-0(name='tHorario', value='1tHorario', type='checkbox')
-                          | Diurno
-                      td 
-                        ul
-                          li Gabriel Martinez Barboza
-                          li Carlos Solano Arias
-                    tr
-                      td 
-                        label.checkbox(for='tHorario-1')
-                          input#empleados-0(name='tHorario', value='2tHorario', type='checkbox')
-                          | 1 día-casa
-                      td 
-                        ul
-                          li Tatiana Moreira Beita
-                          
-            button#ingreso.btn.btn-success(name='agregar', href='#addtipoH', data-toggle='modal') Agregar
-            button#modificar.btn.btn-warning(name='modificar') Modificar
-            button#cancelar.btn.btn-danger(name='eliminar') Eliminar
-            #addtipoH.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
-             .modal-dialog
-              .modal-content
-                .modal-header
-                  button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-                  h4.modal-title Agregar Tipo Horario
-                .modal-body
-                   form.form-horizontal
-                    fieldset
-                        div.form-group.gcsContainer
-                          label.col-lg-4(for="Nombre")
-                            |Nombre horario:
-                          div.col-lg-6.col-md-6.col-sm-6
-                            input.form-control(type="text" name="nombre" id="#email" placeholder="Nombre")
-                         div.form-group.gcsContainer
-                          label.col-lg-4.col-md-6.col-sm-6(for="areaAso")
-                            |Área asociada:
-                          div.col-lg-6.col-md-6.col-sm-6
-                            select#area.input-xlarge(name='areaAso')
-                                  option S. Técnico
-                                  option Innovación
-                        div.form-group.gcsContainer
-                          label.col-lg-4.col-md-6.col-sm-6(for="clasificacion")
-                            |Clasificación:
-                          div.col-lg-6.col-md-6.col-sm-6
-                            select#area.input-xlarge(name='clasificacion')
-                                  option Jornada
-                                  option Rango Semanal
-                        div.form-group.gcsContainer
-                          label.col-lg-4(for="entrada")
-                            |Hora Salida:
-                          div.col-lg-6.col-md-6.col-sm-6
-                            input.form-control(type="text" name="entrada" placeholder="8 a.m")
-                        div.form-group.gcsContainer
-                          label.col-lg-4(for="salida")
-                            |Hora Salida:
-                          div.col-lg-6.col-md-6.col-sm-6
-                            input.form-control(type="text" name="salida"  placeholder="5 p.m")
-                        div.form-group.gcsContainer
-                          label.col-lg-4(for="almuerzo")
-                            |Hora Almuerzo:
-                          div.col-lg-6.col-md-6.col-sm-6
-                            input.form-control(type="text" name="almuerzo"  placeholder="12 m.d")
-                        div.form-group.gcsContainer
-                          label.col-lg-4(for="descanso")
-                            |Tiempo de descanso:
-                          div.col-lg-6.col-md-6.col-sm-6
-                            input.form-control(type="text" name="descanso"  placeholder="30 min")
-                        
-                        //
-                           Button (Double) 
-                        .control-group
-                          label.control-label(for='ingreso')
-                          .controls
-                            button#ingreso.btn.btn-success(name='ingreso') Ingresar
-                            button#cancelar.btn.btn-danger(name='cancelar') Cancelar
+      div#containerCentral
+        h3  Seleccione el elemento
+        div#contBotones
+          button#empleados.btn.btn-success(name='agregar', onclick="changeElemt('empleado')") Empleados
+          button#tipHorarios.btn.btn-success(name='modificar') Tipos de Horarios
+        div#busqueda
+            label(for="codInput")
+                |Digite el código de 
+                span#pressElmnt 
+                |:
+              .input-prepend
+              span.add-on
+              input#inputIcon.span2(type='text', placeholder='Ingrese Código', ng-model='query')
+        div#irBusqueda
+          button(type="submit")#btn-buscar.btn.btn-primary
+            i.icon-search.icon-white
+            | Buscar
+          button(type="submit")#btn-busquedaAva.btn.btn-primary
+            i.icon-filter.icon-white
+            | Búsqueda Avanzada
+    
+    .col-xs-2
                     
    
 block sigucaNavbarItems
