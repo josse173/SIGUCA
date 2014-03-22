@@ -6,11 +6,11 @@
  */
 require('../models/roles');
 require('../models/Empleado');
-var dbRol = mongoose.model('Rol');
-var Empleado = mongoose.model('Empleado');
+//var dbRol = mongoose.model('Rol');
+//var Empleado = mongoose.model('Empleado');
 
 var passport = require('passport');
-var Usuario = require('./models/usuario');
+var Usuario = require('../models/usuario');
 
 module.exports = function(app) {
 	
@@ -91,7 +91,7 @@ module.exports = function(app) {
 	app.get('/roles', function(req, res){
 		res.render('roles', {title: 'SIGUCA - Administración de Roles', rol: req.rol, nombre: req.nombre});
 	});
-	app.post('/roles', function(req, res){
+	/*app.post('/roles', function(req, res){
 		console.log('Recibimos rol:'+req.body.rol+' y nombre:'+req.body.nombre);
 		var newRol = new dbRol (req.body)
 		newRol.save(function(err){
@@ -105,13 +105,15 @@ module.exports = function(app) {
 			};
 		});
 		res.redirect('/');
-	});
+	}); */
+	
 	app.get('/dispositivos', function(req, res){
 		res.render('dispositivos', {title: 'Dispositivos | SIGUCA'});
 	});	
 
 };
 
+/*
 
 // Crea nuevo Empleado
 exports.crea = function(req, res) {
@@ -156,4 +158,9 @@ exports.indexAng = function (req, res){
       console.log(err);
     }
   });
+ 
+
+  
 }
+
+ */

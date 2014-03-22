@@ -11,17 +11,17 @@ block content
  
   div.container#login-container
     //svg( version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="500px" height="500px" viewBox="0 0 500 500" enable-background="new 0 0 500 500" xml:space="preserve")
-    form(method="post")#login-form.well.span4
+    form(action='/login', method='post')#login-form.well.span4
       h1 SIGUCA
       p.subheading Sistema de Gestión de Usuarios y Control de Asistencia
       div.form-group
         label(for="usernameInput")
-          |Correo:
-        input.form-control#emailInput(type="text"  placeholder="Correo")
+          |Usuario:
+        input.form-control#textInput(type="text", name="username", placeholder="Usuario")
       div.form-group
         label(for="passwordInput")
           |Contraseña:
-        input.form-control#passInput(type="password"  placeholder="Contraseña")
+        input.form-control#passInput(type="password", name="password", placeholder="Contraseña")
       button(type="submit")#btn-login.btn.btn-primary
         i.icon-lock.icon-white
         | Ingresar
