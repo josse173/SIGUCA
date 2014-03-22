@@ -4,37 +4,44 @@
  * Aqui deben crear un exports para cada página que llamen desde el router, pueden agregar los datos dinámicos a través de objetos JS
   y pasarlos a la vista con res.render('<vista>', <objeto>)
  */
-var mongoose    = require('mongoose');
 require('../models/roles');
 require('../models/Empleado');
 var dbRol = mongoose.model('Rol');
 var Empleado = mongoose.model('Empleado');
-var AM = require('../models/cuentas-admin');
-var passport    = require('passport');
+
+var passport = require('passport');
+var Usuario = require('./models/usuario');
 
 module.exports = function(app) {
-
-	app.get('/', function(req, res){
+	
+	app.get('/', function(req, res) {
 		res.render('index', { user : req.user });
+	});	
+	
+	app.post('/login', passport.authenticate('local'), function(req, res) {
+		res.redirect('/escritorio');
 	});
-	 app.post('/', passport.authenticate('local'), function(req, res) {
-        res.redirect('/');
-    });
-	app.get('/register', function(req, res) {
-      res.render('register', { });
+	
+	app.get('/logout', function(req, res) {
+		req.logout();
+		res.redirect('/');
+	});
+	
+	app.get('/registro', function(req, res) { // Crear página con formulario para Registrar Usuario nuevo.
+      res.render('registro', { });
   	});
+	
+	app.post('/registro', function(req, res) {
+      Usuario.register(new Usuario({ username : req.body.username }), req.body.password, function(err, usuario) {
+          if (err) {
+            return res.render("registro", {info: "Disculpe, el usuario ya existe. Intente de nuevo."});
+          }
 
-  	app.post('/register', function(req, res) {
-    Account.register(new Account({ username : req.body.username }), req.body.password, function(err, account) {
-        if (err) {
-            return res.render('register', { account : account });
-        }
-
-        passport.authenticate('local')(req, res, function () {
-          res.redirect('/');
-        });
-    });
-  });
+          passport.authenticate('local')(req, res, function () {
+            res.redirect('/');
+          });
+      });
+	});
 
 	app.get('/escritorio', function(req, res){
 		res.render('escritorio', {title: 'Supervisor escritorio | SIGUCA'});
@@ -101,9 +108,7 @@ module.exports = function(app) {
 	});
 	app.get('/dispositivos', function(req, res){
 		res.render('dispositivos', {title: 'Dispositivos | SIGUCA'});
-	});
-
-	
+	});	
 
 };
 
