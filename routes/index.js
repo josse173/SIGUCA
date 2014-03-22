@@ -47,46 +47,46 @@ module.exports = function(app) {
 		res.render('escritorio', { usuario : req.user });
 	});
 	app.get('/escritorioEmpl', function(req, res){
-		res.render('escritorioEmpl', {title: 'Empleado escritorio | SIGUCA'});
+		res.render('escritorioEmpl', {title: 'Empleado escritorio | SIGUCA', usuario : req.user});
 	});
 	app.get('/escritorioAdmin', function(req, res){
-		res.render('escritorioAdmin', {title: 'Administrador escritorio | SIGUCA'});
+		res.render('escritorioAdmin', {title: 'Administrador escritorio | SIGUCA', usuario : req.user});
 	});
 	app.get('/graficos', function(req, res){
-		res.render('graficos', {title: 'Graficos | SIGUCA'});
+		res.render('graficos', {title: 'Graficos | SIGUCA', usuario : req.user});
 	});
 	app.get('/graficoAdmin', function(req, res){
-		res.render('graficoAdmin', {title: 'Graficos Administrador | SIGUCA'});
+		res.render('graficoAdmin', {title: 'Graficos Administrador | SIGUCA', usuario : req.user});
 	});
 	app.get('/ayuda', function(req, res){
-		res.render('ayuda', {title: 'Ayuda | SIGUCA'});
+		res.render('ayuda', {title: 'Ayuda | SIGUCA', usuario : req.user});
 	});
 	app.get('/configuracion', function(req, res){
-		res.render('configuracion',{title: 'Configuración | SIGUCA'});
+		res.render('configuracion',{title: 'Configuración | SIGUCA', usuario : req.user});
 	});
 	app.get('/confAdmin', function(req, res){
-		res.render('confAdmin',{title: 'Configuración Administrador| SIGUCA'});
+		res.render('confAdmin',{title: 'Configuración Administrador| SIGUCA', usuario : req.user});
 	});
 	app.get('/justificaciones', function(req, res){
-		res.render('justificaciones', {title: 'Justificaciones/Permisos | SIGUCA'});
+		res.render('justificaciones', {title: 'Justificaciones/Permisos | SIGUCA', usuario : req.user});
 	});
 	app.get('/justificacionesAdmin', function(req, res){
-		res.render('justificacionesAdmin', {title: 'Administrador justificaciones| Permisos'});
+		res.render('justificacionesAdmin', {title: 'Administrador justificaciones| Permisos', usuario : req.user});
 	});
 	app.get('/justEmpl', function(req, res){
-		res.render('justEmpl', {title: 'Solicitudes/Justificaciones | SIGUCA'});
+		res.render('justEmpl', {title: 'Solicitudes/Justificaciones | SIGUCA', usuario : req.user});
 	});
 	app.get('/justificacion_nueva', function(req, res){
-		res.render('justificacion_nueva', {title: 'Nueva Justificacion | SIGUCA'});
+		res.render('justificacion_nueva', {title: 'Nueva Justificacion | SIGUCA', usuario : req.user});
 	});
 	app.get('/solicitud_extra', function(req, res){
-		res.render('solicitud_extra', {title: 'Solicitud Tiempo Extra | SIGUCA'});
+		res.render('solicitud_extra', {title: 'Solicitud Tiempo Extra | SIGUCA', usuario : req.user});
 	});
 	app.get('/autoriza_extra', function(req, res){
-		res.render('autoriza_extra', {title: 'Autorizacion Tiempo Extra | SIGUCA'});
+		res.render('autoriza_extra', {title: 'Autorizacion Tiempo Extra | SIGUCA', usuario : req.user});
 	});
 	app.get('/autoriza_justificacion', function(req, res){
-		res.render('autoriza_justificacion', {title: 'Autorizacion Justificacion | SIGUCA'});
+		res.render('autoriza_justificacion', {title: 'Autorizacion Justificacion | SIGUCA', usuario : req.user});
 	});
 	app.get('/roles', function(req, res){
 		res.render('roles', {title: 'SIGUCA - Administración de Roles', rol: req.rol, nombre: req.nombre});
@@ -108,7 +108,7 @@ module.exports = function(app) {
 	}); */
 	
 	app.get('/dispositivos', function(req, res){
-		res.render('dispositivos', {title: 'Dispositivos | SIGUCA'});
+		res.render('dispositivos', {title: 'Dispositivos | SIGUCA', usuario : req.user});
 	});	
 
 };
