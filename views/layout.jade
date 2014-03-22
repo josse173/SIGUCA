@@ -27,30 +27,47 @@ html
         span.icon-bar
     img(alt='something', src='images/logo-siguca.png',  href="#")#sigucaLogo		
     // Collect the nav links, forms, and other content for toggling
-    #bs-example-navbar-collapse-1.collapse.navbar-collapse
-      ul.nav.navbar-nav
-        li.active
-          a.active(href="/escritorio")
-            i.icon-home.icon-large
-            |&nbsp;Escritorio
-        li
-          a(href='/graficos')
-            i.icon-bar-chart.icon-large
-            |&nbsp;Gráficos
-        li
-          a(href="/justificaciones")
-            i.icon-edit.icon-large  
-            |&nbsp;Justificaciones
-        li
-          a(href="/configuracion")
-            i.icon-cogs.icon-large
-            |&nbsp;Configuracion
-        li
-          a(href='/Ayuda')
-            i.icon-question-sign.icon-large			
-            |&nbsp;Ayuda        
-       img(src='images/logo-greencore.png', alt='something',  href="#")#grcSLogo			
-    // /.navbar-collapse
+    if (usuario)
+      #bs-example-navbar-collapse-1.collapse.navbar-collapse
+        ul.nav.navbar-nav
+          li.active
+            a.active(href="/escritorio")
+              i.icon-home.icon-large
+              |&nbsp;Escritorio
+          li
+            a(href='/graficos')
+              i.icon-bar-chart.icon-large
+              |&nbsp;Gráficos
+          li
+            a(href="/justificaciones")
+              i.icon-edit.icon-large  
+              |&nbsp;Justificaciones
+          li
+            a(href="/configuracion")
+              i.icon-cogs.icon-large
+              |&nbsp;Configuracion
+          li
+            a(href='/Ayuda')
+              i.icon-question-sign.icon-large			
+              |&nbsp;Ayuda   
+          li
+            a(href='/registro')
+              i.icon-question-sign.icon-large			
+              |&nbsp;Registro 	
+          li
+            a(href='/logout')
+              i.icon-question-sign.icon-large			
+              |&nbsp;Salida de: #{usuario.username} 			
+         img(src='images/logo-greencore.png', alt='something',  href="#")#grcSLogo			
+      // /.navbar-collapse
+    // /.if
+    if (!usuario)
+      #bs-example-navbar-collapse-1.collapse.navbar-collapse
+        ul.nav.navbar-nav
+          li.active
+            a.active(href="/registro")
+              i.icon-home.icon-large
+              |&nbsp;Registro
   // /.container-fluid
 
  

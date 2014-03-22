@@ -15,7 +15,7 @@ var Usuario = require('../models/usuario');
 module.exports = function(app) {
 	
 	app.get('/', function(req, res) {
-		res.render('index', { user : req.user });
+		res.render('index', { usuario : req.user });
 	});	
 	
 	app.post('/login', passport.authenticate('local'), function(req, res) {
@@ -38,13 +38,13 @@ module.exports = function(app) {
           }
 
           passport.authenticate('local')(req, res, function () {
-            res.redirect('/');
+            res.redirect('/escritorio');
           });
       });
 	});
 
 	app.get('/escritorio', function(req, res){
-		res.render('escritorio', {title: 'Supervisor escritorio | SIGUCA'});
+		res.render('escritorio', { usuario : req.user });
 	});
 	app.get('/escritorioEmpl', function(req, res){
 		res.render('escritorioEmpl', {title: 'Empleado escritorio | SIGUCA'});
