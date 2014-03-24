@@ -6,11 +6,12 @@
  */
 require('../models/roles');
 require('../models/Empleado');
+require('../models/Usuario');
 //var dbRol = mongoose.model('Rol');
 //var Empleado = mongoose.model('Empleado');
 
 var passport = require('passport');
-var Usuario = require('../models/usuario');
+var Usuario = require('../models/Usuario');
 
 module.exports = function(app) {
 	

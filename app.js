@@ -55,7 +55,7 @@ app.configure('production', function(){
  *
  */
 
-var Usuario = require('./models/usuario');
+var Usuario = require('./models/Usuario');
 passport.use(new LocalStrategy(Usuario.authenticate()));
 passport.serializeUser(Usuario.serializeUser());
 passport.deserializeUser(Usuario.deserializeUser());
