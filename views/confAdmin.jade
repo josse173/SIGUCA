@@ -1,4 +1,4 @@
-extends layoutAdmin
+extends layout
 
 block sigucaCSS
   link(rel='stylesheet', href='/stylesheets/flipclock.css')
@@ -13,16 +13,28 @@ block imgSession
                 ul.dropdown-menu
                   li 
                    a(href='/') Cerrar Sesión
+block sigucaNavbarItems
+  ul.nav.navbar-nav
+     li
+      a(href='/graficoAdmin')
+        i.icon-bar-chart.icon-large
+        |&nbsp;Gráficos
+      li.active
+        a.active(href="/confAdmin")
+          i.icon-cogs.icon-large
+          |&nbsp;Configuracion
+      li
+        a(href='/Ayuda')
+          |Ayuda 
+          i.icon-question-sign.icon-large 
 block content
-
   div.container
     .col-xs-2
     .col-xs-8
-
       div#containerCentral
         h3  Seleccione el elemento
         div#contBotones
-          button#empleados.btn.btn-success(name='agregar', onclick="changeElemt()") Empleados
+          button#empleados.btn.btn-success(name='agregar', onclick="changeElemt('empleado')") Empleados
           button#tipHorarios.btn.btn-success(name='modificar') Tipos de Horarios
           button#areas.btn.btn-success(name='eliminar') Áreas
           button#roles.btn.btn-success(name='eliminar') Roles
@@ -46,8 +58,8 @@ block content
     .col-xs-2
 
    
-block sigucaNavbarItems
- 
+
+  
 
 block sigucaJS
   script(src="/javascripts/flipclock/libs/prefixfree.min.js")
