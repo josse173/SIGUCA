@@ -20,7 +20,28 @@ module.exports = function(app) {
 	});	
 	
 	app.post('/login', passport.authenticate('local'), function(req, res) {
-		res.redirect('/escritorio');
+		console.log("ingreso correcto"+req.user.tipo);
+		if(req.user.tipo=="Administrador"){
+	         passport.authenticate('local')(req, res, function () {
+	           res.redirect('/escritorioAdmin');
+	         });
+	      }
+          else{
+          	if(req.user.tipo=="Supervisor"){
+	          passport.authenticate('local')(req, res, function () {
+	            res.redirect('/escritorio');
+	          });
+	        }
+	        else{
+	        	if(req.user.tipo=="Empleado"){
+		          passport.authenticate('local')(req, res, function () {
+		            res.redirect('/escritorioEmpl');
+		          });
+		        }
+
+	        }  
+
+          }
 	});
 	
 	app.get('/logout', function(req, res) {
@@ -33,14 +54,33 @@ module.exports = function(app) {
   	});
 	
 	app.post('/registro', function(req, res) {
-      Usuario.register(new Usuario({ username : req.body.username }), req.body.password, function(err, usuario) {
+      Usuario.register(new Usuario({ username : req.body.username, tipo : req.body.tipo  }), req.body.password, function(err, usuario) {
+          console.log('Recibimos nuevo usuario:'+req.body.username+' de tipo:'+req.body.tipo);
           if (err) {
             return res.render("registro", {info: "Disculpe, el usuario ya existe. Intente de nuevo."});
           }
+          if(req.body.tipo=="Administrador"){
+	         passport.authenticate('local')(req, res, function () {
+	           res.redirect('/escritorioAdmin');
+	         });
+	      }
+          else{
+          	if(req.body.tipo=="Supervisor"){
+	          passport.authenticate('local')(req, res, function () {
+	            res.redirect('/escritorio');
+	          });
+	        }
+	        else{
+	        	if(req.body.tipo=="Empleado"){
+		          passport.authenticate('local')(req, res, function () {
+		            res.redirect('/escritorioEmpl');
+		          });
+		        }
 
-          passport.authenticate('local')(req, res, function () {
-            res.redirect('/escritorio');
-          });
+	        }  
+
+          }
+
       });
 	});
 
@@ -56,8 +96,11 @@ module.exports = function(app) {
 	app.get('/graficos', function(req, res){
 		res.render('graficos', {title: 'Graficos | SIGUCA', usuario : req.user});
 	});
-	app.get('/graficoAdmin', function(req, res){
-		res.render('graficoAdmin', {title: 'Graficos Administrador | SIGUCA', usuario : req.user});
+	app.get('/graficosAdmin', function(req, res){
+		res.render('graficosAdmin', {title: 'Graficos Administrador | SIGUCA', usuario : req.user});
+	});
+	app.get('/graficosEmpl', function(req, res){
+		res.render('graficosEmpl', {title: 'Graficos Administrador | SIGUCA', usuario : req.user});
 	});
 	app.get('/ayuda', function(req, res){
 		res.render('ayuda', {title: 'Ayuda | SIGUCA', usuario : req.user});
@@ -74,8 +117,8 @@ module.exports = function(app) {
 	app.get('/justificacionesAdmin', function(req, res){
 		res.render('justificacionesAdmin', {title: 'Administrador justificaciones| Permisos', usuario : req.user});
 	});
-	app.get('/justEmpl', function(req, res){
-		res.render('justEmpl', {title: 'Solicitudes/Justificaciones | SIGUCA', usuario : req.user});
+	app.get('/justificacionesEmpl', function(req, res){
+		res.render('justificacionesEmpl', {title: 'Solicitudes/Justificaciones | SIGUCA', usuario : req.user});
 	});
 	app.get('/justificacion_nueva', function(req, res){
 		res.render('justificacion_nueva', {title: 'Nueva Justificacion | SIGUCA', usuario : req.user});

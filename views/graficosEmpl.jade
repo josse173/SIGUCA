@@ -1,0 +1,85 @@
+extends layoutEmpl
+
+block sigucaCSS
+  link(rel='stylesheet', href='/stylesheets/flipclock.css')
+  link(rel='stylesheet', href='/stylesheets/sigucaGraficos.css')
+  link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
+block imgSession
+  .divSession#divSession
+    img#imgSessionPers(src='images/marito.jpg', alt='something') 
+    .btn-group.dropup
+                button.btn.btn-default.dropdown-toggle#cSession(type='button', data-toggle='dropdown')
+                  span.caret
+                ul.dropdown-menu
+                  li 
+                   a(href='/') Cerrar Sesión
+block sigucaNavbarItems
+ 
+block content  
+  .container
+        .col-xs-8
+          h2 Marcas
+          img.img-responsive#grafico(src='/images/todos.PNG', alt='Responsive image')
+
+
+        .col-xs-4#filtros
+             div.filter
+                 label#tHorario(for='horario') 
+                   |Soporte Técnico
+             div.filter
+                 label#tGrafico(for='grafico') 
+                   |Tipo de Gráfico: 
+                 .btn-group
+                     button.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown')
+                      | Marcas
+                      span.caret
+                     ul.dropdown-menu
+                      li
+                       a(href='#') Porcentajes
+             div.filter
+                  label#empleados(for='empleados') 
+                   |Empleados: 
+                  .btn-group
+                     button#empleadosSelec.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown')
+                      | Todos
+                      span.caret
+                     ul.dropdown-menu
+                      li
+                       a#alex(href="#", onclick= 'changeImageAlex()') Alexander Picado 
+                      li
+                       a(href='#', onclick= 'changeImageCar()') Carlos Solano
+                      li
+                       a(href='#', onclick='changeImageTa()') Tatiana Moreira
+                      li
+                       a(href='#', onclick='changeImageGa()') Gabriel Martinez
+                      li
+                       a(href='#', onclick='changeImageRi()') Rita Cortés
+
+             div.filter
+                  label#fInicio(for='fInicio') 
+                   |Fecha de Inicio: 
+                  .btn-group
+                     button.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown')
+                      | 21/10/13
+                      span.caret
+                     ul.dropdown-menu
+                      li
+                       a(href='#') Insert datePicker
+             div.filter
+                  label#fFinal(for='fFinal') 
+                   |Fecha Final: 
+                  .btn-group
+                     button.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown')
+                      | 21/10/13
+                      span.caret
+                     ul.dropdown-menu
+                      li
+                       a(href='#') Insert datePicker 
+  
+
+                    
+block sigucaJS
+  script(src="/javascripts/graficos.js")
+  script(src="/javascripts/flipclock/libs/prefixfree.min.js")
+  script(src="/javascripts/flipclock/flipclock.min.js")
+  script(src="/javascripts/sigucaMain.js")

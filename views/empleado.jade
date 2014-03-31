@@ -1,48 +1,35 @@
-extend layout
+extends layout
 
-//-Cualquier cosa dentro del bloque sigucaCSS va a ser insertado en el head del layout
 block sigucaCSS
-	link(rel='stylesheet', href='/stylesheets/sigucaRoles.css')
-	//Este es un comentario que va a salir en el HTML
-	//-Y este es un comentario que solo jade ve.
+  link(rel='stylesheet', href='/stylesheets/sigucaInicio.css')
+ 
+
+block sigucaNavbarItems
+  
 
 block content
-	h1 SIGUCA
-	form.form-horizontal(action="/empleado" method="post")
-		div.control-group
-			label.control-label(for="nombre")
-				|Nombre
-			div.controls
-				input(type="text", name="nombre", placeholder="Nombre", value=empleado.nombre)
-		div.control-group
-			label.control-label(for="apellido1")
-				|Primer Apellido
-			div.controls
-				input(type="text", name="apellido1", placeholder="Primer Apellido", value=empleado.apellido1)
-		div.control-group
-			label.control-label(for="apellido2")
-				|Segundo Apellido
-			div.controls
-				input(type="text", name="apellido2", placeholder="Segundo Apellido", value=empleado.apellido2)
-		div.control-group
-			label.control-label(for="email")
-				|Correo electrónico
-			div.controls
-				input(type="text", name="email", placeholder="Correo electrónico", value=empleado.email)
-		div.control-group
-			label.control-label(for="cedula")
-				|Cédula
-			div.controls
-				input(type="text", name="cedula", placeholder="Cédula", value=empleado.cedula)
-		div.control-group
-			label.control-label(for="idCategoria")
-				|Id Categoría
-			div.controls
-				input(type="text", name="idCategoria", placeholder="ID de Categoría", value=empleado.idCategoria)
-		div.control-group
-			label.control-label(for="codTarjeta")
-				|Código de Tarjeta
-			div.controls
-				input(type="text", name="codTarjeta", placeholder="Código de Tarjeta", value=empleado.codTarjeta)
-		button.btn.btn-primary(type="submit")
-			|Crear
+ 
+  div.container#login-container
+    //svg( version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="500px" height="500px" viewBox="0 0 500 500" enable-background="new 0 0 500 500" xml:space="preserve")
+    form(action='/empleado', method='post')#login-form.well.span4
+      h1 SIGUCA
+      p.subheading Ingreso de Datos del Empleado:
+      div.form-group
+        label(for="nombreInput")
+          |Nombre:
+        input.form-control#textInput(type="text", name="nombre", placeholder="Nombre")
+      div.form-group
+        label(for="tipoInput")
+          |Tipo de Usuario:
+        input.form-control#textInput(type="text", name="tipo", placeholder="Tipo")        
+      button(type="submit")#btn-login.btn.btn-primary
+        i.icon-lock.icon-white
+        | Ingresar
+
+
+block sigucaJS
+  
+  script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js')
+  script(src='/twitter-bootstrap/twitter-bootstrap-v2/js/bootstrap-modal.js')
+  script(src= '/javascripts/svg.js')
+  script(src="javascripts/snap.svg-min.js")

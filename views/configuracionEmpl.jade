@@ -1,4 +1,4 @@
-extends layout
+extends layoutEmpl
 
 block sigucaCSS
   link(rel='stylesheet', href='/stylesheets/flipclock.css')
@@ -6,39 +6,23 @@ block sigucaCSS
   link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
 block imgSession
   .divSession#divSession
-    img#imgSessionPers(src='images/mercury.jpg', alt='something')  
+    img#imgSessionPers(src='images/marito.jpg', alt='something') 
     .btn-group.dropup
                 button.btn.btn-default.dropdown-toggle#cSession(type='button', data-toggle='dropdown')
                   span.caret
                 ul.dropdown-menu
                   li 
                    a(href='/') Cerrar Sesión
-block sigucaNavbarItems
-  ul.nav.navbar-nav
-     li
-      a(href='/graficoAdmin')
-        i.icon-bar-chart.icon-large
-        |&nbsp;Gráficos
-      li.active
-        a.active(href="/confAdmin")
-          i.icon-cogs.icon-large
-          |&nbsp;Configuracion
-      li
-        a(href='/Ayuda')
-          |Ayuda 
-          i.icon-question-sign.icon-large 
 block content
-  div.container
+  .container 
     .col-xs-2
     .col-xs-8
+
       div#containerCentral
         h3  Seleccione el elemento
         div#contBotones
-          button#empleados.btn.btn-success(name='agregar', onclick="changeElemt('empleado')") Empleados
+          button#empleados.btn.btn-success(name='agregar', onclick="a(href='/empleado')") Empleados
           button#tipHorarios.btn.btn-success(name='modificar') Tipos de Horarios
-          button#areas.btn.btn-success(name='eliminar') Áreas
-          button#roles.btn.btn-success(name='eliminar') Roles
-
         div#busqueda
             label(for="codInput")
                 |Digite el código de 
@@ -56,12 +40,13 @@ block content
             | Búsqueda Avanzada
     
     .col-xs-2
-
+                    
    
-
-  
+block sigucaNavbarItems
+          
 
 block sigucaJS
   script(src="/javascripts/flipclock/libs/prefixfree.min.js")
+  script(src="/javascripts/flipclock/flipclock.min.js")
   script(src="/javascripts/sigucaHome.js")
   script(src="/javascripts/angular-1.0.8/angular.min.js")

@@ -11,7 +11,8 @@ var mongoose = require('mongoose'),
 
 var SchemaUsuario = new Schema({
     usuario: String,
-    fecha: Date
+    fecha: Date,
+    tipo: String
 });
 
 SchemaUsuario.plugin(passportLocalMongoose);

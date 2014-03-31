@@ -1,0 +1,32 @@
+extends layout
+
+block sigucaCSS
+  link(rel='stylesheet', href='/stylesheets/flipclock.css')
+  link(rel='stylesheet', href='/stylesheets/sigucaAyuda.css')
+  link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
+block imgSession
+  .divSession#divSession
+    img#imgSessionPers(src='images/marito.jpg', alt='something') 
+    .btn-group.dropup
+                button.btn.btn-default.dropdown-toggle#cSession(type='button', data-toggle='dropdown')
+                  span.caret
+                ul.dropdown-menu
+                  li 
+                   a(href='/') Cerrar Sesión
+   
+block content
+  .container
+    .col-xs-12
+        h1 SIGUCA: Sistema de Gestión de Usuarios y Control de Asistencia
+        p Es un sistema para la gestión de la jornada laboral de los empleados de GreenCore Solutions SRL, con el fin de tener un control preciso del uso del tiempo de cada colaborador. La implementación de éste sistema es parte del programa de la Cátedra de Ingeniería de Sistemas de la Universidad Nacional (UNA).
+        br          
+        p - José Gabriel Martínez Barboza
+        p - Tatiana Moreira Beita
+        p - Carlos Solanos Morales
+        p - Alexander Picado Jiménez
+          
+        
+block sigucaJS
+  script(src="/javascripts/flipclock/libs/prefixfree.min.js")
+  script(src="/javascripts/flipclock/flipclock.min.js")
+  script(src="/javascripts/reloj.js")

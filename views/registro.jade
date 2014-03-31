@@ -19,6 +19,13 @@ block content
           |Usuario:
         input.form-control#textInput(type="text", name="username", placeholder="Usuario")
       div.form-group
+        label(for="tipoInput")
+          |Tipo de Usuario:
+        select.form-control#textInput(type="text", name="tipo") 
+          option Empleado
+          option Supervisor
+          option Administrador
+      div.form-group
         label(for="passwordInput")
           |Contraseña:
         input.form-control#passInput(type="password", name="password", placeholder="Contraseña")
