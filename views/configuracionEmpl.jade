@@ -5,40 +5,54 @@ block sigucaCSS
   link(rel='stylesheet', href='/stylesheets/sigucaConfiguraciones.css')
   link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
 block imgSession
-  .divSession#divSession
-    img#imgSessionPers(src='images/marito.jpg', alt='something') 
-    .btn-group.dropup
-                button.btn.btn-default.dropdown-toggle#cSession(type='button', data-toggle='dropdown')
-                  span.caret
-                ul.dropdown-menu
-                  li 
-                   a(href='/') Cerrar Sesión
+ 
 block content
   .container 
     .col-xs-2
     .col-xs-8
 
       div#containerCentral
-        h3  Seleccione el elemento
-        div#contBotones
-          button#empleados.btn.btn-success(name='agregar', onclick="a(href='/empleado')") Empleados
-          button#tipHorarios.btn.btn-success(name='modificar') Tipos de Horarios
-        div#busqueda
-            label(for="codInput")
-                |Digite el código de 
-                span#pressElmnt 
-                |:
-              .input-prepend
-              span.add-on
-              input#inputIcon.span2(type='text', placeholder='Ingrese Código', ng-model='query')
-        div#irBusqueda
-          button(type="submit")#btn-buscar.btn.btn-primary
-            i.icon-search.icon-white
-            | Buscar
-          button(type="submit")#btn-busquedaAva.btn.btn-primary
-            i.icon-filter.icon-white
-            | Búsqueda Avanzada
-    
+        h3  Configuracion Empleado
+        
+        div#confEmpl
+          
+          .control-group
+            label.control-laber(for='accion')
+              .controls
+                button#accion.btn.btn-primary(name='passwordChange', href='#passwordChange', data-toggle='modal') Cambiar Contraseña    
+                #passwordChange.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+                 .modal-dialog
+                  .modal-content
+                    .modal-header
+                      button.close(type='button', data-dismiss='modal', aria-hidden='true') X Cerrar
+                      h4.modal-title SIGUCA Cambio de Contraseña
+                    .modal-body
+                      form.form-horizontal()
+                       fieldset
+                            label(for="currentpassword")
+                                 |Contraseña Actual
+                                 span#pressElmnt 
+                                 |:
+                              .input-prepend
+                              span.add-on
+                              input#inputIcon.span2(type='password', placeholder='Contraseña Actual', ng-model='query', name=currentPassword)
+                            label(for="newPassword")
+                                 |Nueva Contraseña
+                                 span#pressElmnt 
+                                 |:
+                              .input-prepend
+                              span.add-on
+                              input#inputIcon.span2(type='password', placeholder='Nueva Contraseña', ng-model='query', name=newPassword)
+                            label(for="repeatNewPassword")
+                                 |Nueva Contraseña
+                                 span#pressElmnt 
+                                 |:
+                              .input-prepend
+                              span.add-on
+                              input#inputIcon.span2(type='password', placeholder='Nueva Contraseña', ng-model='query', name=repeatNewPassword)
+                            .controls
+                               button#ingreso.btn.btn-success(name='ingreso') Ingresar
+                               button#cancelar.btn.btn-danger(name='cancelar') Cancelar   
     .col-xs-2
                     
    
@@ -50,3 +64,6 @@ block sigucaJS
   script(src="/javascripts/flipclock/flipclock.min.js")
   script(src="/javascripts/sigucaHome.js")
   script(src="/javascripts/angular-1.0.8/angular.min.js")
+  script(src="/javascripts/jquery-2.0.3.min.js")
+  script(src="/javascripts/bootstrap.min.js")
+

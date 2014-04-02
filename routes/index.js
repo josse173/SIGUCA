@@ -105,12 +105,24 @@ module.exports = function(app) {
 	app.get('/ayuda', function(req, res){
 		res.render('ayuda', {title: 'Ayuda | SIGUCA', usuario : req.user});
 	});
+	app.get('/ayudaAdmin', function(req, res){
+		res.render('ayudaAdmin', {title: 'Ayuda | SIGUCA', usuario : req.user});
+	});
+	app.get('/ayudaEmpl', function(req, res){
+		res.render('ayudaEmpl', {title: 'Ayuda | SIGUCA', usuario : req.user});
+	});
 	app.get('/configuracion', function(req, res){
 		res.render('configuracion',{title: 'Configuración | SIGUCA', usuario : req.user});
 	});
-	app.get('/confAdmin', function(req, res){
-		res.render('confAdmin',{title: 'Configuración Administrador| SIGUCA', usuario : req.user});
+	app.get('/configuracionEmpl', function(req, res){
+		res.render('configuracionEmpl',{title: 'Configuración | SIGUCA', usuario : req.user});
 	});
+	app.get('/configuracionAdmin', function(req, res){
+		res.render('configuracionAdmin',{title: 'Configuración | SIGUCA', usuario : req.user});
+	});	
+	/*app.get('/configAdmin', function(req, res){
+		res.render('configAdmin',{title: 'Configuración | SIGUCA', usuario : req.user});
+	});	*/ //se cambio por configuracionAdmin
 	app.get('/justificaciones', function(req, res){
 		res.render('justificaciones', {title: 'Justificaciones/Permisos | SIGUCA', usuario : req.user});
 	});

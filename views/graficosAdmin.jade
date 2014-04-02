@@ -7,16 +7,18 @@ block sigucaCSS
 block imgSession
  
 block sigucaNavbarItems
-  
+ 
 block content  
   .container
-    .grids
-        .grid-12.grid.green
+        .col-xs-8
           h2 Marcas
           img.img-responsive#grafico(src='/images/todos.PNG', alt='Responsive image')
 
 
-        .grid-4.grid.grey
+        .col-xs-4#filtros
+             div.filter
+                 label#tHorario(for='horario') 
+                   |Soporte Técnico
              div.filter
                  label#tGrafico(for='grafico') 
                    |Tipo de Gráfico: 
@@ -28,18 +30,6 @@ block content
                       li
                        a(href='#') Porcentajes
              div.filter
-                 label#tHorario(for='horario') 
-                   |Área: 
-                 .btn-group
-                     button.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown')
-                      | S. técnico
-                      span.caret
-                     ul.dropdown-menu
-                      li
-                       a(href='#') Todos
-                      li
-                       a(href='#') Innovación 
-             div.filter
                   label#empleados(for='empleados') 
                    |Empleados: 
                   .btn-group
@@ -48,7 +38,7 @@ block content
                       span.caret
                      ul.dropdown-menu
                       li
-                       a#alex(href="#", onclick= 'changeImageAlex()') Alexander Picado 
+                       a(href="#", onclick= 'changeImageAlex()') Alexander Picado 
                       li
                        a(href='#', onclick= 'changeImageCar()') Carlos Solano
                       li
@@ -86,3 +76,6 @@ block sigucaJS
   script(src="/javascripts/flipclock/libs/prefixfree.min.js")
   script(src="/javascripts/flipclock/flipclock.min.js")
   script(src="/javascripts/sigucaMain.js")
+  script(src="/javascripts/jquery-2.0.3.min.js")
+  script(src="/javascripts/bootstrap.min.js")
+  

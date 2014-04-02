@@ -1,4 +1,4 @@
-extend layout
+extend layoutEmpl
 
 //-Cualquier cosa dentro del bloque sigucaCSS va a ser insertado en el head del layout
 block sigucaCSS
@@ -16,10 +16,15 @@ block content
 				div.controls
 					input(type="text" name="Empleado" placeholder="123456789")
 			div.control-group
-				label.control-label(for="Fecha")
-					|Fecha
+				label.control-label(for="FechaInicio")
+					|Fecha Inicio
 				div.controls
-					input(type="text" name="Fecha" placeholder="20-10-2013")
+					input(type="text" name="FechaInicio" placeholder="20-10-2013")
+			div.control-group
+				label.control-label(for="FechaFinal")
+					|Fecha Final
+				div.controls
+					input(type="text" name="FechaFinal" placeholder="20-10-2013")		
 			div.control-group
 				label.control-label(for="Motivo")
 					|Motivo

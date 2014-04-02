@@ -1,21 +1,20 @@
-extends layoutAdmin 
+extends layoutAdmin
 
 block sigucaCSS
   link(rel='stylesheet', href='/stylesheets/flipclock.css')
   link(rel='stylesheet', href='/stylesheets/sigucaEscritorio.css')
   link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
 block imgSession
- 
+  
 block sigucaNavbarItems
   
 
 block content
   .container
-   .grids
-    .grid-10.grid.green
+    .col-xs-8
       h3 Marcas Personales
       img.img-responsive#grafico(src='/images/tati.PNG', alt='Responsive image') 
-    .grid-6.grid.green
+    .col-xs-4
      h3 Eventos Pendientes   
      ul.list-group
         li.list-group-item
@@ -30,11 +29,12 @@ block content
       
 
 
-</div>
-
     
         
 block sigucaJS
   script(src="/javascripts/flipclock/libs/prefixfree.min.js")
   script(src="/javascripts/flipclock/flipclock.min.js")
   script(src="/javascripts/reloj.js")
+  script(src="/javascripts/jquery-2.0.3.min.js")
+  script(src="/javascripts/bootstrap.min.js")
+
