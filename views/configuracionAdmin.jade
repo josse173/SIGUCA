@@ -22,37 +22,102 @@ block content
       div#containerCentral
         h3  Seleccione el elemento
         div#contBotones
-          button#empleados.btn.btn-success(name='agregar', onclick="changeElemt('empleado')") Empleados
-          button#tipHorarios.btn.btn-success(name='modificar') Tipos de Horarios
-          button#areas.btn.btn-success(name='eliminar') Áreas
-          button#roles.btn.btn-success(name='eliminar') Roles
+          div#empl
+            label(for="Departamento")
+              |Departamento:
+          button#empleados.btn.btn-success(name='agregar', onclick= "changeElemt('departamento')", data-toggle="modal" data-target="#addDep") Nuevo       
+          button#areas.btn.btn-success(name='eliminar') Modificar o Eliminar
+          div#horario
+            label(for="horario")
+              |Horario:
+          button#empleados.btn.btn-success(name='agregar', onclick= "changeElemt('departamento')", data-toggle="modal" data-target="#addHorario") Nuevo       
+          button#areas.btn.btn-success(name='eliminar') Modificar o Eliminar
+          div#empleado
+            label(for="empleado")
+              |Empleado:
+          button#empleados.btn.btn-success(name='agregar', onclick= "changeElemt('departamento')", data-toggle="modal" data-target="#addDep") Nuevo       
+          button#areas.btn.btn-success(name='eliminar') Modificar o Eliminar
+          div#roles
+            label(for="roles")
+              |Rol:
+          button#empleados.btn.btn-success(name='agregar', onclick= "changeElemt('departamento')", data-toggle="modal" data-target="#addDep") Nuevo       
+          button#areas.btn.btn-success(name='eliminar') Modificar o Eliminar
 
-        div#busqueda
-            label(for="codInput")
-                |Digite el código de 
-                span#pressElmnt 
-                |:
-              .input-prepend
-              span.add-on
-              input#inputIcon.span2(type='text', placeholder='Ingrese Código', ng-model='query')
-        div#irBusqueda
-          button(type="submit")#btn-buscar.btn.btn-primary
-            i.icon-search.icon-white
-            | Buscar
-          button(type="submit")#btn-busquedaAva.btn.btn-primary
-            i.icon-filter.icon-white
-            | Búsqueda Avanzada
-    
+        //- div#busqueda
+        //-     label(for="codInput")
+        //-         |Digite el código de 
+        //-         span#pressElmnt 
+        //-         |:
+        //-       .input-prepend
+        //-       span.add-on
+        //-       input#inputIcon.span2(type='text', placeholder='Ingrese Código', ng-model='query')
+        //- div#irBusqueda
+        //-   button(type="submit")#btn-buscar.btn.btn-primary
+        //-     i.icon-search.icon-white
+        //-     | Buscar
+        //-   button(type="submit")#btn-busquedaAva.btn.btn-primary
+        //-     i.icon-filter.icon-white
+        //-     | Búsqueda Avanzada  
     .col-xs-2
+      #addHorario.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+        .modal-dialog
+            .modal-content
+              .modal-header
+                button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+                h4#myModalLabel.modal-title Añadir nuevo departamento
+              .modal-body
+                form(role='form')
+                      .checkbox
+                        label
+                            input(type='checkbox')
+                            | Jornada fija
+                      .checkbox
+                        label
+                            input(type='checkbox')
+                            | Jornada libre
+                    .form-group
+                      label(for='hEntrada') Hora de entrada:
+                      input#idSup.form-control( placeholder='Hora de entrada')
+                    .form-group
+                      label(for='hSalida') Hora de salida:
+                      input#horario.form-control( placeholder='Hora de salida')   
+                      label(for='iAlmuerzo') Inicio de almuerzo:
+                      input#horario.form-control( placeholder='Inicio de Almuerzo')   
+                      label(for='fAlmuerzo') Final de almuerzo:
+                      input#horario.form-control( placeholder='Final de Almuerzo')
+                      label(for='tReceso') Tiempo de receso:
+                      input#horario.form-control( placeholder='numero de horas + h  numero de minutos + m')    
+
+              .modal-footer
+                button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
+                button.btn.btn-default(type='submit') Ingresar
+      #addDep.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+        .modal-dialog
+            .modal-content
+              .modal-header
+                button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+                h4#myModalLabel.modal-title Añadir nuevo departamento
+              .modal-body
+                form(role='form')
+                  .form-group
+                      label(for='nombreArea') Nombre:
+                      input#group.form-control( placeholder='Nombre del area')
+                    .form-group
+                      label(for='idSup') Código del supervisor:
+                      input#idSup.form-control( placeholder='Código del supervidor')
+                    .form-group
+                      label(for='horario') Horario:
+                      input#horario.form-control( placeholder='Horario asociado')      
+              .modal-footer
+                button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
+                button.btn.btn-default(type='submit') Ingresar
 
    
 
   
 
 block sigucaJS
-  script(src="/javascripts/flipclock/libs/prefixfree.min.js")
   script(src="/javascripts/sigucaHome.js")
-  script(src="/javascripts/angular-1.0.8/angular.min.js")
   script(src="/javascripts/jquery-2.0.3.min.js")
   script(src="/javascripts/bootstrap.min.js")
 

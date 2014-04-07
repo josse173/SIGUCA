@@ -17,8 +17,11 @@ var roles = document.getElementById('roles');
 
 
 
-function changeElemt(elemento){
-	
-	document.getElementById("pressElmnt").innerHTML =  'elemento' ;
-
+function changeElemt(elemento){	
+	document.getElementById("pressElmnt").innerHTML =  elemento ;
 }
+function addElmnt(elemento){
+	//if elemento is empleado
+	//despliega modal de empleado
+
+}	
