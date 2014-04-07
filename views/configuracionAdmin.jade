@@ -67,11 +67,14 @@ block content
                 h4#myModalLabel.modal-title Añadir nuevo departamento
               .modal-body
                 form(role='form')
-                      .checkbox
+                    .form-group
+                      label(for='nombre') NOmbre del Horario:
+                      input#nombre.form-control( placeholder='Nombre del horario')
+                      .checkbox-inline
                         label
                             input(type='checkbox')
                             | Jornada fija
-                      .checkbox
+                      .checkbox-inline
                         label
                             input(type='checkbox')
                             | Jornada libre
