@@ -7,6 +7,7 @@
 require('../models/roles');
 require('../models/Empleado');
 require('../models/Usuario');
+require('../models/Horario');
 //var dbRol = mongoose.model('Rol');
 //var Empleado = mongoose.model('Empleado');
 
@@ -93,6 +94,7 @@ module.exports = function(app) {
 	app.get('/escritorioAdmin', function(req, res){
 		res.render('escritorioAdmin', {title: 'Administrador escritorio | SIGUCA', usuario : req.user});
 	});
+
 	app.get('/graficos', function(req, res){
 		res.render('graficos', {title: 'Graficos | SIGUCA', usuario : req.user});
 	});
@@ -120,6 +122,8 @@ module.exports = function(app) {
 	app.get('/configuracionAdmin', function(req, res){
 		res.render('configuracionAdmin',{title: 'Configuración | SIGUCA', usuario : req.user});
 	});	
+	//Ingresa nuevo horario
+
 	/*app.get('/configAdmin', function(req, res){
 		res.render('configAdmin',{title: 'Configuración | SIGUCA', usuario : req.user});
 	});	*/ //se cambio por configuracionAdmin

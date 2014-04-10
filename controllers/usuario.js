@@ -81,6 +81,7 @@ exports.crea = function (req, res) {
         title: 'Registro'
       })
     }
+    console.log("si se mete aqui");
 
     // Login manual del usuario una vez que se haya registrado.
     req.logIn(usuario, function(err) {

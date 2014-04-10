@@ -15,4 +15,6 @@ var SchemaHorario = new Schema({
 		horaInAlmuerzo: {type: String, default: '12:00'},
 		horaFnAlmuerzo: {type: String, default: '13:00'},
 		rangoReceso: {type: String, default: '45m'}
-}
+});
+
+module.exports = mongoose.model('Horario', SchemaHorario);
