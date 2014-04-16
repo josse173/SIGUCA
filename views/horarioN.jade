@@ -9,28 +9,30 @@ block sigucaNavbarItems
 block content
  
   div.container#login-container
+    h1 Ingreso de horario
+    br
     form(role='form')
       .form-group
         h4 Información Básica
         label(for='nombre') Nombre del Horario:
           input#nombre.form-control( placeholder='Nombre del horario')
-        .checkbox-inline
+        .checkbox-inline#jFija
           label
             input(type='checkbox')
             | Jornada fija
-        .checkbox-inline
+        .checkbox-inline#jLibre
           label
             input(type='checkbox')
             | Jornada libre
                     
       .form-group
-        h4 Información entrada/salida
+        h4 Información de jornada
         label(for='hEntrada') Hora de entrada:
-          input#idSup.form-control( placeholder='Hora de entrada')
+          input#hEntrada.form-control( placeholder='Hora de entrada', disabled = 'false')
         label(for='hSalida') Hora de salida:
-          input#horario.form-control( placeholder='Hora de salida')
+          input#hSalida.form-control( placeholder='Hora de salida')
       .form-group
-        h4 Tiempo de receso
+        h4 Información de receso
         label(for='iAlmuerzo') Inicio de almuerzo:
           input#horario.form-control( placeholder='Inicio de Almuerzo')   
         label(for='fAlmuerzo') Final de almuerzo:
@@ -47,3 +49,4 @@ block sigucaJS
   script(src='/twitter-bootstrap/twitter-bootstrap-v2/js/bootstrap-modal.js')
   script(src="/javascripts/jquery-2.0.3.min.js")
   script(src="/javascripts/bootstrap.min.js")
+  script(src="/javascripts/horarioN.js")
