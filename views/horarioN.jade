@@ -1,0 +1,49 @@
+extends layout
+
+block sigucaCSS
+ 
+
+block sigucaNavbarItems
+  
+
+block content
+ 
+  div.container#login-container
+    form(role='form')
+      .form-group
+        h4 Información Básica
+        label(for='nombre') Nombre del Horario:
+          input#nombre.form-control( placeholder='Nombre del horario')
+        .checkbox-inline
+          label
+            input(type='checkbox')
+            | Jornada fija
+        .checkbox-inline
+          label
+            input(type='checkbox')
+            | Jornada libre
+                    
+      .form-group
+        h4 Información entrada/salida
+        label(for='hEntrada') Hora de entrada:
+          input#idSup.form-control( placeholder='Hora de entrada')
+        label(for='hSalida') Hora de salida:
+          input#horario.form-control( placeholder='Hora de salida')
+      .form-group
+        h4 Tiempo de receso
+        label(for='iAlmuerzo') Inicio de almuerzo:
+          input#horario.form-control( placeholder='Inicio de Almuerzo')   
+        label(for='fAlmuerzo') Final de almuerzo:
+          input#horario.form-control( placeholder='Final de Almuerzo')
+        label(for='tReceso') Rango de receso (Exceptuando hora de almuerzo):
+          input#horario.form-control( placeholder='numero de horas + h  numero de minutos + m')
+    button.btn.btn-default(type='submit') Ingresar
+               
+
+
+block sigucaJS
+  
+  script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js')
+  script(src='/twitter-bootstrap/twitter-bootstrap-v2/js/bootstrap-modal.js')
+  script(src="/javascripts/jquery-2.0.3.min.js")
+  script(src="/javascripts/bootstrap.min.js")

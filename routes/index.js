@@ -151,6 +151,9 @@ module.exports = function(app) {
 	app.get('/roles', function(req, res){
 		res.render('roles', {title: 'SIGUCA - Administración de Roles', rol: req.rol, nombre: req.nombre});
 	});
+	app.get('/horarioN', function(req, res){
+		res.render('horarioN', {title: 'SIGUCA - Nuevo Horario', usuario : req.user});
+	});
 	/*app.post('/roles', function(req, res){
 		console.log('Recibimos rol:'+req.body.rol+' y nombre:'+req.body.nombre);
 		var newRol = new dbRol (req.body)
