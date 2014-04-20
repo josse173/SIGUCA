@@ -52,8 +52,21 @@ module.exports = function(app) {
 	app.get('/registro', function(req, res) { 
       res.render('registro', { });
   	});
+  	
   	app.post('/horarioN', function(req,res){
-		console.log('Al menos entra:');
+  		var horarioN = new Horario ({nombre : req.body.nombreHorario, horaEntrada: req.body.horaEntrada, 
+  			horaSalida: req.body.horaSalida, horaInAlmuerzo: req.body.horaInAlmuerzo, 
+  			horaFnAlmuerzo: req.body.horaFnAlmuerzo, rangoReceso : req.body.rangoReceso});
+		console.log(req.body);
+		horarioN.save(function(err){
+			if (err) {
+				return res.render('horarioN', {
+					errors: utils.errors(err.errors),
+					nombre: horarioN,
+					title: 'SIGUCA - Nuevo H- Intente nuevamente'
+				});
+			};
+		});
 
 	});
 	

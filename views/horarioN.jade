@@ -28,17 +28,17 @@ block content
       .form-group
         h4 Información de jornada
         label(for='hEntrada') Hora de entrada:
-          input#hEntrada.form-control( placeholder='Hora de entrada', disabled = 'false')
+          input.form-control#textInput( type="text", name= "horaEntrada", placeholder='Hora de entrada')
         label(for='hSalida') Hora de salida:
-          input#hSalida.form-control( placeholder='Hora de salida')
+          input.form-control#textInput(type="text", name="horaSalida", placeholder='Hora de salida')
       .form-group
         h4 Información de receso
         label(for='iAlmuerzo') Inicio de almuerzo:
-          input#horario.form-control( placeholder='Inicio de Almuerzo')   
+          input.form-control#textInput( type="text", name="horaInAlmuerzo", placeholder='Inicio de Almuerzo')   
         label(for='fAlmuerzo') Final de almuerzo:
-          input#horario.form-control( placeholder='Final de Almuerzo')
+          input.form-control#textInput(type="text", name="horaFnAlmuerzo", placeholder='Final de Almuerzo')
         label(for='tReceso') Rango de receso (Exceptuando hora de almuerzo):
-          input#horario.form-control( placeholder='numero de horas + h  numero de minutos + m')
+          input.form-control#textInput( type="text", name="rangoReceso", placeholder='numero de horas + h  numero de minutos + m')
       button(type='submit')#btn-login.btn.btn-primary
        | Ingresar
                
