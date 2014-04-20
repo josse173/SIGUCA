@@ -11,18 +11,18 @@ block content
   div.container#login-container
     h1 Ingreso de horario
     br
-    form(role='form')
+    form(action='/horarioN', method='post')#login-form.well.span4
       .form-group
         h4 Información Básica
         label(for='nombre') Nombre del Horario:
-          input#nombre.form-control( placeholder='Nombre del horario')
+          input.form-control#textInput( type="text", name="nombreHorario", placeholder='Nombre del horario')
         .checkbox-inline#jFija
           label
-            input(type='checkbox')
+            input(type='checkbox', name="jornada")
             | Jornada fija
         .checkbox-inline#jLibre
           label
-            input(type='checkbox')
+            input(type='checkbox', name= "jornada")
             | Jornada libre
                     
       .form-group
@@ -39,7 +39,8 @@ block content
           input#horario.form-control( placeholder='Final de Almuerzo')
         label(for='tReceso') Rango de receso (Exceptuando hora de almuerzo):
           input#horario.form-control( placeholder='numero de horas + h  numero de minutos + m')
-    button.btn.btn-default(type='submit') Ingresar
+      button(type='submit')#btn-login.btn.btn-primary
+       | Ingresar
                
 
 

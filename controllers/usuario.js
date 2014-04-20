@@ -36,6 +36,7 @@ exports.authCallback = login
 */
 
 exports.login = function (req, res) {
+  console.log("si se mete aqui exports Login");
   res.render('usuario/login', {
     title: 'Login',
     message: req.flash('error')
@@ -47,6 +48,7 @@ exports.login = function (req, res) {
 */
 
 exports.registro = function (req, res) {
+  console.log("si se mete aqui exports Registro");
   res.render('usuario/registro', {
     title: 'Registro',
     user: new Usuario()

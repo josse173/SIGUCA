@@ -1,18 +1,17 @@
 
 /*
  * GET home page.
- * Aqui deben crear un exports para cada página que llamen desde el router, pueden agregar los datos dinámicos a través de objetos JS
-  y pasarlos a la vista con res.render('<vista>', <objeto>)
+ * Rutas
  */
 require('../models/roles');
 require('../models/Empleado');
 require('../models/Usuario');
 require('../models/Horario');
-//var dbRol = mongoose.model('Rol');
-//var Empleado = mongoose.model('Empleado');
+
 
 var passport = require('passport');
 var Usuario = require('../models/Usuario');
+var Horario = require('../models/Horario');
 
 module.exports = function(app) {
 	
@@ -50,13 +49,18 @@ module.exports = function(app) {
 		res.redirect('/');
 	});
 	
-	app.get('/registro', function(req, res) { // Crear página con formulario para Registrar Usuario nuevo.
+	app.get('/registro', function(req, res) { 
       res.render('registro', { });
   	});
+  	app.post('/horarioN', function(req,res){
+		console.log('Al menos entra:');
+
+	});
 	
 	app.post('/registro', function(req, res) {
       Usuario.register(new Usuario({ username : req.body.username, tipo : req.body.tipo  }), req.body.password, function(err, usuario) {
           console.log('Recibimos nuevo usuario:'+req.body.username+' de tipo:'+req.body.tipo);
+          console.log(req.body);
           if (err) {
             return res.render("registro", {info: "Disculpe, el usuario ya existe. Intente de nuevo."});
           }
@@ -122,11 +126,6 @@ module.exports = function(app) {
 	app.get('/configuracionAdmin', function(req, res){
 		res.render('configuracionAdmin',{title: 'Configuración | SIGUCA', usuario : req.user});
 	});	
-	//Ingresa nuevo horario
-
-	/*app.get('/configAdmin', function(req, res){
-		res.render('configAdmin',{title: 'Configuración | SIGUCA', usuario : req.user});
-	});	*/ //se cambio por configuracionAdmin
 	app.get('/justificaciones', function(req, res){
 		res.render('justificaciones', {title: 'Justificaciones/Permisos | SIGUCA', usuario : req.user});
 	});
@@ -154,6 +153,8 @@ module.exports = function(app) {
 	app.get('/horarioN', function(req, res){
 		res.render('horarioN', {title: 'SIGUCA - Nuevo Horario', usuario : req.user});
 	});
+	
+	
 	/*app.post('/roles', function(req, res){
 		console.log('Recibimos rol:'+req.body.rol+' y nombre:'+req.body.nombre);
 		var newRol = new dbRol (req.body)
