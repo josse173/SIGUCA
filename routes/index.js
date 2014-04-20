@@ -4,7 +4,7 @@
  * Rutas
  */
 require('../models/roles');
-require('../models/Empleado');
+var Empleado= require('../models/Empleado');
 require('../models/Usuario');
 require('../models/Horario');
 
@@ -167,7 +167,34 @@ module.exports = function(app) {
 		res.render('horarioN', {title: 'SIGUCA - Nuevo Horario', usuario : req.user});
 	});
 	
-	
+	app.get('/empleado', function(req, res){
+		res.render('empleado', {title: 'Nuevo Empleado | SIGUCA', usuario : req.user});
+	});
+
+	app.post('/empleado', function(request, response) {
+ 
+        var e = request.body;
+ 
+  
+        var newEmpleado = Empleado({
+	        nombre: e.nombre,
+	        apellido1: e.apellido1,
+	        apellido2: e.apellido2,cedula: e.cedula,
+	        email:e.email,
+	        cedula: e.cedula,
+	        codTarjeta: e.codTarjeta
+        });
+ 
+  
+        newEmpleado.save(function(error, user) {
+    
+        if (error) response.json(error);
+ 
+           response.redirect('/configuracionAdmin');
+        });
+  
+  
+    });
 	/*app.post('/roles', function(req, res){
 		console.log('Recibimos rol:'+req.body.rol+' y nombre:'+req.body.nombre);
 		var newRol = new dbRol (req.body)
