@@ -1,10 +1,10 @@
-
 /*
  * GET home page.
  * Rutas
  */
 require('../models/roles');
 var Empleado= require('../models/Empleado');
+var mongoose = require('mongoose');
 require('../models/Usuario');
 require('../models/Horario');
 
@@ -133,49 +133,55 @@ module.exports = function(app) {
 	app.get('/configuracion', function(req, res){
 		res.render('configuracion',{title: 'Configuración | SIGUCA', usuario : req.user});
 	});
+	
 	app.get('/configuracionEmpl', function(req, res){
 		res.render('configuracionEmpl',{title: 'Configuración | SIGUCA', usuario : req.user});
 	});
+	
 	app.get('/configuracionAdmin', function(req, res){
 		res.render('configuracionAdmin',{title: 'Configuración | SIGUCA', usuario : req.user});
 	});	
+	
 	app.get('/justificaciones', function(req, res){
 		res.render('justificaciones', {title: 'Justificaciones/Permisos | SIGUCA', usuario : req.user});
 	});
+	
 	app.get('/justificacionesAdmin', function(req, res){
 		res.render('justificacionesAdmin', {title: 'Administrador justificaciones| Permisos', usuario : req.user});
 	});
+	
 	app.get('/justificacionesEmpl', function(req, res){
 		res.render('justificacionesEmpl', {title: 'Solicitudes/Justificaciones | SIGUCA', usuario : req.user});
 	});
+	
 	app.get('/justificacion_nueva', function(req, res){
 		res.render('justificacion_nueva', {title: 'Nueva Justificacion | SIGUCA', usuario : req.user});
 	});
+	
 	app.get('/solicitud_extra', function(req, res){
 		res.render('solicitud_extra', {title: 'Solicitud Tiempo Extra | SIGUCA', usuario : req.user});
 	});
+	
 	app.get('/autoriza_extra', function(req, res){
 		res.render('autoriza_extra', {title: 'Autorizacion Tiempo Extra | SIGUCA', usuario : req.user});
 	});
+	
 	app.get('/autoriza_justificacion', function(req, res){
 		res.render('autoriza_justificacion', {title: 'Autorizacion Justificacion | SIGUCA', usuario : req.user});
 	});
+	
 	app.get('/roles', function(req, res){
 		res.render('roles', {title: 'SIGUCA - Administración de Roles', rol: req.rol, nombre: req.nombre});
 	});
+	
 	app.get('/horarioN', function(req, res){
 		res.render('horarioN', {title: 'SIGUCA - Nuevo Horario', usuario : req.user});
 	});
-	
-	app.get('/empleado', function(req, res){
-		res.render('empleado', {title: 'Nuevo Empleado | SIGUCA', usuario : req.user});
-	});
 
+		
 	app.post('/empleado', function(request, response) {
  
         var e = request.body;
- 
-  
         var newEmpleado = Empleado({
 	        nombre: e.nombre,
 	        apellido1: e.apellido1,
@@ -184,17 +190,77 @@ module.exports = function(app) {
 	        cedula: e.cedula,
 	        codTarjeta: e.codTarjeta
         });
- 
-  
         newEmpleado.save(function(error, user) {
     
         if (error) response.json(error);
  
            response.redirect('/configuracionAdmin');
         });
-  
-  
+   
     });
+
+	app.get('/empleado', function(request, response) {
+	 console.log('si entra');
+	 
+	  Empleado.find().exec(function (error, empleados) {
+	    
+	    if (error) return response.json(error);
+	 
+	     return response.render('empleado', {title: 'Nuevo Empleado | SIGUCA', empleados : empleados, usuario : request.user });
+	     	
+	 
+	  });
+	 
+	});
+	  
+	//update
+	app.get('/empleado/edit/:id', function(request, response) {		 
+	  var empleadoId = request.params.id;
+	   
+	  Empleado.findById(empleadoId, function (error, empleado) {
+	 
+	    if (error) return response.json(error);
+	 
+	    response.render('edit', empleado);
+	 
+	  });
+	 
+	});
+
+	app.put('/empleado/:id', function(request, response) {
+	 
+	  var empleado = request.body,
+	      empleadoId = request.params.id;
+	 
+	  delete empleado.id;
+	  delete empleado._id;
+	 
+	  Empleado.findByIdAndUpdate(empleadoId, empleado, function (error, empleados) {
+	 
+	    if (error) return response.json(error);
+	 
+	    response.redirect('/empleado');
+	 
+	  });
+	 
+	});
+
+	//delete
+	app.get('/empleado/delete/:id', function(request, response) {
+	 
+	  var empleadoId = request.params.id;
+	 
+	  
+	   Empleado.findByIdAndRemove(empleadoId, function (error, empleados) {
+	 
+	    if (error) return response.json(error);
+	 
+	    response.redirect('/empleado');
+	 
+	  });
+	 
+	});
+
 	/*app.post('/roles', function(req, res){
 		console.log('Recibimos rol:'+req.body.rol+' y nombre:'+req.body.nombre);
 		var newRol = new dbRol (req.body)

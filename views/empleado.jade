@@ -1,35 +1,37 @@
-extends layout
+extends layoutAdmin
 
 block sigucaCSS
-  link(rel='stylesheet', href='/stylesheets/sigucaInicio.css')
- 
-
+  link(rel='stylesheet', href='/stylesheets/flipclock.css')
+  link(rel='stylesheet', href='/stylesheets/sigucaEscritorio.css')
+  link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
+block imgSession
+  
 block sigucaNavbarItems
   
 
 block content
+  .container
+    
+    h1 Lista de Empleados
  
-  div.container#login-container
-    //svg( version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="500px" height="500px" viewBox="0 0 500 500" enable-background="new 0 0 500 500" xml:space="preserve")
-    form(action='/empleado', method='post')#login-form.well.span4
-      h1 SIGUCA
-      p.subheading Ingreso de Datos del Empleado:
-      div.form-group
-        label(for="nombreInput")
-          |Nombre:
-        input.form-control#textInput(type="text", name="nombre", placeholder="Nombre")
-      div.form-group
-        label(for="tipoInput")
-          |Tipo de Usuario:
-        input.form-control#textInput(type="text", name="tipo", placeholder="Tipo")        
-      button(type="submit")#btn-login.btn.btn-primary
-        i.icon-lock.icon-white
-        | Ingresar
-
-
+      ol
+       table.table.table-hover 
+        each empleado, i in empleados
+          tr
+            td #{empleado.nombre} #{empleado.apellido1} 
+            td
+               a(href="/empleado/edit/"+empleado.id)  editar
+            td
+               a(href="/empleado/delete/"+empleado.id)  eliminar
+    
+        
 block sigucaJS
-  
-  script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js')
-  script(src='/twitter-bootstrap/twitter-bootstrap-v2/js/bootstrap-modal.js')
-  script(src= '/javascripts/svg.js')
-  script(src="javascripts/snap.svg-min.js")
+  script(src="/javascripts/flipclock/libs/prefixfree.min.js")
+  script(src="/javascripts/flipclock/flipclock.min.js")
+  script(src="/javascripts/reloj.js")
+  script(src="/javascripts/jquery-2.0.3.min.js")
+  script(src="/javascripts/bootstrap.min.js")
+
+
+
+
