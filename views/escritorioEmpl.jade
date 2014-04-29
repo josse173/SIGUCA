@@ -3,13 +3,20 @@ extends layoutEmpl
 block sigucaCSS
   link(rel='stylesheet', href='/stylesheets/flipclock.css')
   link(rel='stylesheet', href='/stylesheets/sigucaEscritorio.css')
-  link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
+  link(rel='stylesheet', href='/stylesheets/font-awesome.min.css')
+  link(rel='stylesheet', href='/stylesheets/jquery.tzineClock/jquery.tzineClock.css')
+  link(rel='stylesheet', href='/stylesheets/jquery.tzineClockstyles.css')
+  
+
+
 block imgSession
 
 block sigucaNavbarItems
   
 
 block content
+  .container
+    //- #fancyClock
   .container
     .col-xs-8
       h3 Marcas Personales
@@ -26,15 +33,77 @@ block content
         li.list-group-item
             span.badge 0
             | Solicitudes J.extra
-      
-
+    
+          
+    div.container
+    .col-xs-2
+    .col-xs-8
+      div#containerCentral
+        h3  Marca Mediante el Sistema
+        div#contBotones
+          div#Marca             
+           button#marca.btn.btn-success(name='marcar', onclick= "changeElemt('marca')", data-toggle="modal" data-target="#addMarca") Realizar Marca
+            
+    .col-xs-2      
+      //modal para realizar marcas
+      #addMarca.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+        
+        .modal-dialog
+            .modal-content
+              
+              .modal-header
+                button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+                h1#myModalLabel.modal-title SIGUCA
+                h3#myModalLabel.modal-title Marcar Mediante Sistema
+              .modal-body
+               table.table 
+                tr
+                  modal.group     
+                    form(role='form', method="POST", action="/marca")
+                        td
+                          button.btn.btn-success(type='submit') Entrada
+                  modal.group
+                    form(role='form', method="POST", action="/marca")
+                        td
+                          button.btn.btn-success(type='submit') Salida
+                tr
+                  modal.group     
+                    form(role='form', method="POST", action="/marca")
+                        td
+                          button.btn.btn-warning(type='submit') Salida Receso
+                  modal.group
+                    form(role='form', method="POST", action="/marca")
+                        td
+                          button.btn.btn-warning(type='submit') Entrada Receso          
+                tr
+                  modal.group     
+                    form(role='form', method="POST", action="/marca")
+                        td
+                          button.btn.btn-primary(type='submit') Salida Almuerzo
+                  modal.group
+                    form(role='form', method="POST", action="/marca")
+                        td
+                          button.btn.btn-primary(type='submit') Entrada Almuerzo                    
+                
+                tr   
+                  modal.group
+                    td             
+                        button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
+              .container
+                 #fancyClock    
+              .modal-footer    
+                
 
     
         
 block sigucaJS
-  script(src="/javascripts/flipclock/libs/prefixfree.min.js")
-  script(src="/javascripts/flipclock/flipclock.min.js")
-  script(src="/javascripts/reloj.js")
+  
   script(src="/javascripts/jquery-2.0.3.min.js")
   script(src="/javascripts/bootstrap.min.js")
+  //-script(type='text/javascript', src='http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js')
+  script(type='text/javascript', src='/javascripts/demo/jquery.tzineClock/jquery.tzineClock.js')
+  script(type='text/javascript', src='/javascripts/demo/script.js')
+
+
+
 

@@ -5,6 +5,8 @@
 require('../models/roles');
 var Empleado= require('../models/Empleado');
 var mongoose = require('mongoose');
+var Marca = require('../models/Marca');
+var Supervisor = require('../models/Supervisor');
 require('../models/Usuario');
 require('../models/Horario');
 
@@ -173,7 +175,7 @@ module.exports = function(app) {
 	        horaFnAlmuerzo: h.horaFnAlmuerzo,
 	        rangoReceso: h.rangoReceso
         });
-        console.log(e);
+        console.log(h);
         horarioN.save(function(error, user) {
     
         if (error) response.json(error);
@@ -182,7 +184,35 @@ module.exports = function(app) {
         });
    
     });
-
+    app.post('/marca', function(request, response) {
+		/*var d = new Date();
+        var d = new Date( milliseconds );
+        var d = new Date( dateString );
+        */var d = new Date();
+        var horaActual= "la fecha y hora actual es: " +d.getUTCDate()+"-"+(d.getMonth()+1)+"-"+d.getFullYear()+" "+ d.getHours()+":"+ d.getMinutes()+":"+d.getSeconds();
+		console.log("hora de entrada"+ horaActual); 
+        var m = request.body;
+        var newMarca = Marca({
+        	fecha: ({
+        	    dia: d.getUTCDate(), 
+        	    mes: (d.getMonth()+1), 
+        	    ano: d.getFullYear()
+        	}),
+      		horaEntrada:({
+	        	hora: d.getHours(),
+	        	minutos: d.getMinutes(),
+	        	segundos: d.getSeconds()
+	        }),
+	        codTarjeta: 12345 
+        });
+        newMarca.save(function(error, user) {
+    
+        if (error) response.json(error);
+ 
+           response.redirect('/escritorioEmpl');
+        });
+   
+    });	
 		
 	app.post('/empleado', function(request, response) {
  
@@ -262,6 +292,89 @@ module.exports = function(app) {
 	    if (error) return response.json(error);
 	 
 	    response.redirect('/empleado');
+	 
+	  });
+	 
+	});
+	//supervisor
+	app.post('/supervisor', function(request, response) {
+ 
+        var e = request.body;
+        var newSupervisor = Supervisor({
+	        nombre: e.nombre,
+	        apellido1: e.apellido1,
+	        apellido2: e.apellido2,
+	        email:e.email,
+	        cedula: e.cedula,
+	        codTarjeta: e.codTarjeta,
+	        area: e.area,
+        });
+        newSupervisor.save(function(error, user) {
+    
+        if (error) response.json(error);
+ 
+           response.redirect('/configuracionAdmin');
+        });
+   
+    });
+
+	app.get('/supervisor', function(request, response) {
+	 console.log('si entra');
+	 
+	  Empleado.find().exec(function (error, supervisores) {
+	    
+	    if (error) return response.json(error);
+	 
+	     return response.render('supervisor', {title: 'Lista de Supervisores | SIGUCA', supervisores : supervisores, usuario : request.user });
+	     	
+	 
+	  });
+	 
+	});
+	  
+	//update
+	app.get('/supervisor/editSuper/:id', function(request, response) {		 
+	  var supervisorId = request.params.id;
+	   
+	  Supervisor.findById(supervisorId, function (error, supervisor) {
+	 
+	    if (error) return response.json(error);
+	 
+	    response.render('editSuper', supervisor);
+	 
+	  });
+	 
+	});
+
+	app.put('/supervisor/:id', function(request, response) {
+	 
+	  var supervisor = request.body,
+	      supervisorId = request.params.id;
+	 
+	  delete supervisor.id;
+	  delete supervisor._id;
+	 
+	  Supervisor.findByIdAndUpdate(supervisorId, supervisor, function (error, supervisores) {
+	 
+	    if (error) return response.json(error);
+	 
+	    response.redirect('/supervisor');
+	 
+	  });
+	 
+	});
+
+	//delete
+	app.get('/supervisor/delete/:id', function(request, response) {
+	 
+	  var supervisorId = request.params.id;
+	 
+	  
+	   Supervisor.findByIdAndRemove(supervisorId, function (error, supervisores) {
+	 
+	    if (error) return response.json(error);
+	 
+	    response.redirect('/supervisor');
 	 
 	  });
 	 
