@@ -53,22 +53,7 @@ module.exports = function(app) {
       res.render('registro', { });
   	});
   	
-  	app.post('/horarioN', function(req,res){
-  		var horarioN = new Horario ({nombre : req.body.nombreHorario, horaEntrada: req.body.horaEntrada, 
-  			horaSalida: req.body.horaSalida, horaInAlmuerzo: req.body.horaInAlmuerzo, 
-  			horaFnAlmuerzo: req.body.horaFnAlmuerzo, rangoReceso : req.body.rangoReceso});
-		console.log(req.body);
-		horarioN.save(function(err){
-			if (err) {
-				return res.render('horarioN', {
-					errors: utils.errors(err.errors),
-					nombre: horarioN,
-					title: 'SIGUCA - Nuevo H- Intente nuevamente'
-				});
-			};
-		});
-
-	});
+  
 	
 	app.post('/registro', function(req, res) {
       Usuario.register(new Usuario({ username : req.body.username, tipo : req.body.tipo  }), req.body.password, function(err, usuario) {
@@ -173,10 +158,30 @@ module.exports = function(app) {
 	app.get('/roles', function(req, res){
 		res.render('roles', {title: 'SIGUCA - Administración de Roles', rol: req.rol, nombre: req.nombre});
 	});
-	
-	app.get('/horarioN', function(req, res){
-		res.render('horarioN', {title: 'SIGUCA - Nuevo Horario', usuario : req.user});
-	});
+		
+	//app.get('/horarioN', function(req, res){
+		//res.render('horarioN', {title: 'SIGUCA - Nuevo Horario', usuario : req.user});
+	//});
+	app.post('/horarioN', function(request, response) {
+ 
+        var h = request.body;
+        var horarioN = Horario({
+	        nombre: h.nombreHorario,
+	        horaEntrada: h.horaEntrada,
+	        horaSalida: h.horaSalida,
+	        horaInAlmuerzo: h.horaInAlmuerzo,
+	        horaFnAlmuerzo: h.horaFnAlmuerzo,
+	        rangoReceso: h.rangoReceso
+        });
+        console.log(e);
+        horarioN.save(function(error, user) {
+    
+        if (error) response.json(error);
+ 
+           response.redirect('/configuracionAdmin');
+        });
+   
+    });
 
 		
 	app.post('/empleado', function(request, response) {
@@ -190,6 +195,7 @@ module.exports = function(app) {
 	        cedula: e.cedula,
 	        codTarjeta: e.codTarjeta
         });
+        console.log(e);
         newEmpleado.save(function(error, user) {
     
         if (error) response.json(error);

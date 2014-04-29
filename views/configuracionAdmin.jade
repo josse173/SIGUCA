@@ -66,36 +66,39 @@ block content
             .modal-content
               .modal-header
                 button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-                h4#myModalLabel.modal-title Añadir nuevo departamento
+                h4#myModalLabel.modal-title Añadir nuevo horario
               .modal-body
-                form(role='form')
-                    .form-group
-                      label(for='nombre') Nombre del Horario:
-                      input#nombre.form-control( placeholder='Nombre del horario')
-                      .checkbox-inline
-                        label
-                            input(type='checkbox')
-                            | Jornada fija
-                      .checkbox-inline
-                        label
-                            input(type='checkbox')
-                            | Jornada libre
-                    .form-group
-                      label(for='hEntrada') Hora de entrada:
-                      input#idSup.form-control( placeholder='Hora de entrada')
-                    .form-group
-                      label(for='hSalida') Hora de salida:
-                      input#horario.form-control( placeholder='Hora de salida')   
-                      label(for='iAlmuerzo') Inicio de almuerzo:
-                      input#horario.form-control( placeholder='Inicio de Almuerzo')   
-                      label(for='fAlmuerzo') Final de almuerzo:
-                      input#horario.form-control( placeholder='Final de Almuerzo')
-                      label(for='tReceso') Tiempo de receso:
-                      input#horario.form-control( placeholder='numero de horas + h  numero de minutos + m')    
-
-              .modal-footer
-                button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
-                button.btn.btn-default(type='submit') Ingresar
+                form(action='/horarioN', method='post')#login-form.well.span4
+                  .form-group
+                    h4 Información Básica
+                    label(for='nombre') Nombre del Horario:
+                      input.form-control#textInput( type="text", name="nombreHorario", placeholder='Nombre del horario')
+                    .checkbox-inline#jFija
+                      label
+                        input(type='checkbox', name="jornada")
+                        | Jornada fija
+                    .checkbox-inline#jLibre
+                      label
+                        input(type='checkbox', name= "jornada")
+                        | Jornada libre
+                                
+                  .form-group
+                    h4 Información de jornada
+                    label(for='hEntrada') Hora de entrada:
+                      input.form-control#textInput( type="text", name= "horaEntrada", placeholder='Hora de entrada')
+                    label(for='hSalida') Hora de salida:
+                      input.form-control#textInput(type="text", name="horaSalida", placeholder='Hora de salida')
+                  .form-group
+                    h4 Información de receso
+                    label(for='iAlmuerzo') Inicio de almuerzo:
+                      input.form-control#textInput( type="text", name="horaInAlmuerzo", placeholder='Inicio de Almuerzo')   
+                    label(for='fAlmuerzo') Final de almuerzo:
+                      input.form-control#textInput(type="text", name="horaFnAlmuerzo", placeholder='Final de Almuerzo')
+                    label(for='tReceso') Rango de receso (Exceptuando hora de almuerzo):
+                      input.form-control#textInput( type="text", name="rangoReceso", placeholder='numero de horas + h  numero de minutos + m')  
+                  button.btn.btn-default(type='submit') Ingresar
+                  button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
+                  
       #addDep.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
         .modal-dialog
             .modal-content
@@ -120,12 +123,11 @@ block content
       //agregar empleados
       #addEmpl.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
         .modal-dialog
-            .modal-content
-              .modal-header
-                button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-                h4#myModalLabel.modal-title Añadir nuevo Empleado
+            .modal-content      
               .modal-body
-                form(role='form', method="POST", action="/empleado")
+                button.close(type='button', data-dismiss='modal', aria-hidden='true') × 
+                h4#myModalLabel.modal-title Añadir nuevo Empleado
+                form(role='form', method="POST", action="/empleado")#login-form.well.span4
                   .form-group
                       label(for='nombre') Nombre:
                       input#group.form-control(type= 'text', placeholder='Nombre', name= 'nombre')
@@ -146,8 +148,7 @@ block content
                       input#codTarjeta.form-control(type= 'Number', placeholder='Código de Empleado', name='codTarjeta')            
                     button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
                     button.btn.btn-default(type='submit') Ingresar
-   
-              .modal-footer    
+     
 
   
 
