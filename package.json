@@ -16,6 +16,7 @@
     "mocha": "~1.14.0",
     "chai": "~1.8.1",
     "should": "~2.1.0",
-    "d3": "latest"
+    "d3": "latest", 
+    "node-serial": "latest"
   }
 }
