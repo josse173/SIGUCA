@@ -6,7 +6,7 @@
  *  Copyright 2014 Wan Qi Chen
  */
 
-var CalHeatMap = function() {
+function CalHeatMap () {
 	"use strict";
 
 	var self = this;

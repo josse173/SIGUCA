@@ -32,7 +32,7 @@
 	background-color: #00B060;
 }
 .container{
-  width: 800px;
+  width: 1230px;
   margin: 100px auto;
   border: 1px solid white; 
 
@@ -49,4 +49,7 @@
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#00ffffff',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
 
 
+}
+#containerImgs{
+	margin-top: 60px;
 }

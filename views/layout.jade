@@ -22,8 +22,10 @@ html
     link(rel='stylesheet', href='/stylesheets/sigucaMain.css')
     link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
     link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
+    script(rel='stylesheet',href="/javascripts/cal-heatmap-master/cal-heatmap.css")
     link(rel='stylesheet', href='/stylesheets/bootstrap-theme.min.css')
     link(type="image/x-icon" href='/img/favicon.ico')
+
     title SIGUCA
 
     block sigucaCSS
@@ -46,11 +48,7 @@ html
           span.icon-bar
           span.icon-bar
           span.icon-bar
-        span.navbar-brand(href="#")          
-          span#barLogo
-            img(src="images/g-icon-15x15.png")
-            |greencore solutions
-          //-|DBackup
+        
       div.collapse.navbar-collapse.navbar-ex1-collapse.navbar-right
         block sigucaNavbarItems   
       br     
@@ -61,6 +59,9 @@ html
     
     block sigucaJS
 
+      script(src="/javascripts/d3-master/d3.min.js")
+      
+      script(src="/javascripts/cal-heatmap-master/cal-heatmap.min.js")
       script(src="/javascripts/jquery-2.0.3.min.js")
       script(src="/javascripts/bootstrap.min.js")
       script(src="/javascripts/snap.svg-min.js")

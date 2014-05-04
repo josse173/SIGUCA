@@ -3,9 +3,11 @@ extends layout
 block sigucaCSS
   link(rel='stylesheet', href='/stylesheets/flipclock.css')
   link(rel='stylesheet', href='/stylesheets/sigucaEscritorio.css')
+  link(rel='stylesheet', href='/stylesheets/sigucaAyuda.css')
   link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
 block imgSession
   
+
 block sigucaNavbarItems
         ul.nav.navbar-nav
           li.active
@@ -29,13 +31,16 @@ block sigucaNavbarItems
               i.icon-question-sign.icon-large     
               |&nbsp;Acerca de SIGUCA  
 
-  
-
-block content
+  block content
+  #containerImgs
+    .col-xs-12
+        img(alt='something', src='images/logo-siguca.png',  href="#")#sigucaLogo
+        img(alt='something', src='images//logo-greencore.png',  href="#")#sigucaLogo
   .container
     .col-xs-8
       h3 Marcas Personales
-      img.img-responsive#grafico(src='/images/tati.PNG', alt='Responsive image') 
+      p Meter el topu grafico
+        
     .col-xs-4
      h3 Eventos Pendientes   
      ul.list-group
@@ -54,7 +59,7 @@ block content
     
         
 block sigucaJS
-  
+  script(src="/javascripts/cal-heatmap.js")
   script(src="/javascripts/reloj.js")
   script(src="/javascripts/jquery-2.0.3.min.js")
   script(src="/javascripts/bootstrap.min.js")
