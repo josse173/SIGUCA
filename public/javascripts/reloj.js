@@ -1,15 +1,7 @@
-
-$(document).ready(function (){
-	//Este objeto agrega el reloj al elemento con id = flipClock
-	var clock = $('#flipClock').FlipClock({
-		clockFace: 'TwelveHourClock',
-		autoStart: true
-	});
-
-	var grafico = $('#grafico').CalHeatMap ( {
-		grafico.init({});
-	});
-})
-
+function activaNav(){
+	var elemNav = document.getElementById(escritorio);
+	alert(eleNav);
+	elemNav.active;
+}
 
 

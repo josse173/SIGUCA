@@ -31,65 +31,29 @@ html
     
   .container-fluid
     // Brand and toggle get grouped for better mobile display
-    .navbar-header
-      button.navbar-toggle(type='button', data-toggle='collapse', data-target='#bs-example-navbar-collapse-1')
-        span.sr-only Toggle navigation
-        span.icon-bar
-        span.icon-bar
-        span.icon-bar
-    img(alt='something', src='images/logo-siguca.png',  href="#")#sigucaLogo		
-    // Collect the nav links, forms, and other content for toggling
-    if (usuario)
-      #bs-example-navbar-collapse-1.collapse.navbar-collapse
-        ul.nav.navbar-nav
-          li.active
-            a.active(href="/escritorio")
-              i.icon-home.icon-large
-              |&nbsp;Escritorio
-          li
-            a(href='/graficos')
-              i.icon-bar-chart.icon-large
-              |&nbsp;Gráficos
-          li
-            a(href="/justificaciones")
-              i.icon-edit.icon-large  
-              |&nbsp;Justificaciones
-          li
-            a(href="/configuracion")
-              i.icon-cogs.icon-large
-              |&nbsp;Configuracion
-          li
-            a(href='/Ayuda')
-              i.icon-question-sign.icon-large			
-              |&nbsp;Acerca de SIGUCA   
-          li
-            a(href='/registro')
-              i.icon-question-sign.icon-large			
-              |&nbsp;Registro 	
-          li
-            a(href='/logout')
-              img#imgSessionPers(src='images/cerrar.jpg', alt='something')			
-              |&nbsp; #{usuario.username} Salir			
-         img(src='images/logo-greencore.png', alt='something',  href="#")#grcSLogo			
-      // /.navbar-collapse
-    // /.if
-    if (!usuario)
-      #bs-example-navbar-collapse-1.collapse.navbar-collapse
-        ul.nav.navbar-nav
-          li.active
-            a.active(href="/registro")
-              i.icon-home.icon-large
-              |&nbsp;Registro
+    
+    
   // /.container-fluid
    //- Extend this block in external views to add Navigation Elements to Navbar 
    //- Agregue a este bloque elementos de la barra de navegación en páginas internas
 
  
   body
-    
-    block sigucaNavbarItems 
-                
-  
+    div.navbar.navbar-nav.navbar-fixed-top(role="navigation")
+      div.navbar-header
+        button.navbar-toggle(type="button" data-toggle="collapse" data-target=".navbar-ex1-collapse")
+          span.sr-only
+          span.icon-bar
+          span.icon-bar
+          span.icon-bar
+        span.navbar-brand(href="#")          
+          span#barLogo
+            img(src="images/g-icon-15x15.png")
+            |greencore solutions
+          //-|DBackup
+      div.collapse.navbar-collapse.navbar-ex1-collapse.navbar-right
+        block sigucaNavbarItems   
+      br     
     block content
       
 
@@ -102,5 +66,5 @@ html
       script(src="/javascripts/snap.svg-min.js")
       script(src='javascripts/respond-min.js', type='text/javascript')   
       script(src='http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js', type='text/javascript')
-      script(src="javascripts/svg.js")
+    
       
