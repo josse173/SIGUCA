@@ -8,8 +8,34 @@ block sigucaCSS
 block imgSession
  
 block sigucaNavbarItems
+        ul.nav.navbar-nav
+          li
+            a(href="/escritorio")
+              i.icon-home.icon-large
+              |&nbsp;Escritorio
+          li.active
+            a(href='/graficos')
+              i.icon-bar-chart.icon-large
+              |&nbsp;Gráficos
+          li
+            a(href="/justificaciones")
+              i.icon-edit.icon-large  
+              |&nbsp;Eventos
+          li
+            a(href="/configuracion")
+              i.icon-cogs.icon-large
+              |&nbsp;Configuracion
+          li
+            a(href='/Ayuda')
+              i.icon-question-sign.icon-large     
+              |&nbsp;Acerca de SIGUCA 
  
-block content  
+ 
+block content
+  #containerImgs
+    .col-xs-12
+        img(alt='something', src='images/logo-siguca.png',  href="#")#sigucaLogo
+        img(alt='something', src='images/logo-greencore.png',  href="#")#sigucaLogo
   .container
         .col-xs-8
           h2 Marcas
