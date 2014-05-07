@@ -18,10 +18,17 @@ block sigucaNavbarItems
             a(href='/graficos')
               i.icon-bar-chart.icon-large
               |&nbsp;Gráficos
-          li
-            a(href="/justificaciones")
+          li.dropdown
+            a.dropdown-toggle( data-toggle='dropdown')
               i.icon-edit.icon-large  
-              |&nbsp;Eventos
+                          |&nbsp;Eventos 
+                          span.caret
+                        ul.dropdown-menu#ba
+                          li
+                            a(href='#') Justificaciones
+                          li.divider
+                          li
+                            a(href='#') Solicitudes
           li
             a(href="/configuracion")
               i.icon-cogs.icon-large
@@ -39,7 +46,8 @@ block sigucaNavbarItems
   .container
     .col-xs-8
       h3 Marcas Personales
-      p Meter el topu grafico
+      div#svg
+
         
     .col-xs-4
      h3 Eventos Pendientes   
@@ -59,7 +67,7 @@ block sigucaNavbarItems
     
         
 block sigucaJS
-  script(src="/javascripts/cal-heatmap.js")
+  script(src="/javascripts/grafico.js")
   script(src="/javascripts/reloj.js")
   script(src="/javascripts/jquery-2.0.3.min.js")
   script(src="/javascripts/bootstrap.min.js")
