@@ -17,10 +17,17 @@ block sigucaNavbarItems
             a(href='/graficos')
               i.icon-bar-chart.icon-large
               |&nbsp;Gráficos
-          li
-            a(href="/justificaciones")
+          li.dropdown
+            a.dropdown-toggle( data-toggle='dropdown')
               i.icon-edit.icon-large  
-              |&nbsp;Eventos
+                          |&nbsp;Eventos 
+                          span.caret
+                        ul.dropdown-menu#ba
+                          li
+                            a(href='#') Justificaciones
+                          li.divider
+                          li
+                            a(href='#') Solicitudes
           li
             a(href="/configuracion")
               i.icon-cogs.icon-large

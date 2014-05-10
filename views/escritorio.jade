@@ -5,6 +5,7 @@ block sigucaCSS
   link(rel='stylesheet', href='/stylesheets/sigucaEscritorio.css')
   link(rel='stylesheet', href='/stylesheets/sigucaAyuda.css')
   link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
+  link(rel='stylesheet', href='//cdn.jsdelivr.net/cal-heatmap/3.3.10/cal-heatmap.css')
 block imgSession
   
 
@@ -46,29 +47,29 @@ block sigucaNavbarItems
   .container
     .col-xs-8
       h3 Marcas Personales
-      div#svg
-
-        
+      div#cal
+    
     .col-xs-4
      h3 Eventos Pendientes   
      ul.list-group
-        li.list-group-item
-            span.badge 2
-            | Solicitud Ausencias
-        li.list-group-item
-            span.badge 18
-            | Justificaciones
-        li.list-group-item
-            span.badge 0
-            | Solicitudes J.extra
-      
+      li.list-group-item
+        a(href='/Justificaciones')
+          span.badge 2 
+          | Solicitudes
+      li.list-group-item
+        a(href='/Justificaciones')
+          span.badge 3 
+          | Justificaciones
+        
+           
 
 
     
         
 block sigucaJS
-  script(src="/javascripts/grafico.js")
-  script(src="/javascripts/reloj.js")
+  script(src = "/javascripts/reloj.js")
+  script(type='text/javascript', src='/javascripts/d3-masterd3.v3.min.js')
+  script(type='text/javascript', src='/javascripts/cal-heatmap-master/cal-heatmap.js')
   script(src="/javascripts/jquery-2.0.3.min.js")
   script(src="/javascripts/bootstrap.min.js")
 
