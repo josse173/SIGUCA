@@ -1,0 +1,37 @@
+extends layoutAdmin
+
+block sigucaCSS
+  link(rel='stylesheet', href='/stylesheets/flipclock.css')
+  link(rel='stylesheet', href='/stylesheets/sigucaEscritorio.css')
+  link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
+block imgSession
+  
+block sigucaNavbarItems
+  
+
+block content
+  .container
+    
+    h1 Lista de Departamentos
+ 
+      ol
+       table.table.table-hover 
+        each departamento, i in departamentos
+          tr
+            td #{departamento.nombre} 
+            td
+               a(href="/departamento/editDepartamento/"+departamento.id)  editar
+            td
+               a(href="/departamento/deleteDepartamento/"+departamento.id)  eliminar
+    
+        
+block sigucaJS
+  script(src="/javascripts/flipclock/libs/prefixfree.min.js")
+  script(src="/javascripts/flipclock/flipclock.min.js")
+  script(src="/javascripts/reloj.js")
+  script(src="/javascripts/jquery-2.0.3.min.js")
+  script(src="/javascripts/bootstrap.min.js")
+
+
+
+

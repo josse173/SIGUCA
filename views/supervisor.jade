@@ -1,0 +1,40 @@
+extends layoutAdmin
+
+block sigucaCSS
+  link(rel='stylesheet', href='/stylesheets/flipclock.css')
+  link(rel='stylesheet', href='/stylesheets/sigucaEscritorio.css')
+  link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
+block imgSession
+  
+block sigucaNavbarItems
+  
+
+block content
+  .container
+    
+    h1  SIGUCA Lista de Supervisores
+ 
+      ol
+       table.table.table-hover
+          
+        each supervisor, i in supervisors
+          tr
+             td #{supervisor.nombre} 
+             td #{supervisor.apellido1} 
+             td #{supervisor.area} 
+             td 
+              a(href="/supervisor/editSupervisor/"+supervisor.id)  editar
+             td 
+              a(href="/supervisor/deleteSupervisor/"+supervisor.id)  eliminar
+    
+        
+block sigucaJS
+  script(src="/javascripts/flipclock/libs/prefixfree.min.js")
+  script(src="/javascripts/flipclock/flipclock.min.js")
+  script(src="/javascripts/reloj.js")
+  script(src="/javascripts/jquery-2.0.3.min.js")
+  script(src="/javascripts/bootstrap.min.js")
+
+
+
+
