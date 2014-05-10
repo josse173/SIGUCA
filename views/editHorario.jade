@@ -1,0 +1,64 @@
+extends layoutAdmin
+
+block sigucaCSS
+  link(rel='stylesheet', href='/stylesheets/flipclock.css')
+  link(rel='stylesheet', href='/stylesheets/sigucaEscritorio.css')
+  link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
+block imgSession
+  
+block sigucaNavbarItems
+  
+
+block content
+  .container
+    
+    .modal-dialog
+            .modal-content
+              .modal-header
+                h4#myModalLabel.modal-title Actualizar Horario
+              .modal-body
+                form(role='form', method="POST", action="/horarioN/" + _id)#login-form.well.span4
+                  .form-group
+                    h4 Información Básica
+                    label(for='nombre') Nombre del Horario:
+                      input.form-control#textInput( type="text", name="nombre", placeholder='Nombre del horario', value = nombre)
+                    .checkbox-inline#jFija
+                      label
+                        input(type='checkbox', name="jornada", value = jornada)
+                        | Jornada fija
+                    .checkbox-inline#jLibre
+                      label
+                        input(type='checkbox', name= "jornada", value = jornada)
+                        | Jornada libre
+                                
+                  .form-group
+                    h4 Información de jornada
+                    label(for='hEntrada') Hora de entrada:
+                      input.form-control#textInput( type="text", name= "horaEntrada", placeholder='Hora de entrada', value = horaEntrada)
+                    label(for='hSalida') Hora de salida:
+                      input.form-control#textInput(type="text", name="horaSalida", placeholder='Hora de salida', value = horaSalida)
+                  .form-group
+                    h4 Información de receso
+                    label(for='iAlmuerzo') Inicio de almuerzo:
+                      input.form-control#textInput( type="text", name="horaInAlmuerzo", placeholder='Inicio de Almuerzo', value = horaInAlmuerzo)   
+                    label(for='fAlmuerzo') Final de almuerzo:
+                      input.form-control#textInput(type="text", name="horaFnAlmuerzo", placeholder='Final de Almuerzo', value = horaFnAlmuerzo)
+                    label(for='tReceso') Rango de receso (Exceptuando hora de almuerzo):
+                      input.form-control#textInput( type="text", name="rangoReceso", placeholder='numero de horas + h  numero de minutos + m', value = rangoReceso)  
+                      input(type='hidden', name='_method', value='put')               
+                                                  
+                  button.btn.btn-default(type='submit') Actualizar
+   
+              .modal-footer    
+    
+        
+block sigucaJS
+  script(src="/javascripts/flipclock/libs/prefixfree.min.js")
+  script(src="/javascripts/flipclock/flipclock.min.js")
+  script(src="/javascripts/reloj.js")
+  script(src="/javascripts/jquery-2.0.3.min.js")
+  script(src="/javascripts/bootstrap.min.js")
+
+
+
+

@@ -25,20 +25,22 @@ block content
           div#empl
             label(for="Departamento")
               |Departamento:
-          button#empleados.btn.btn-success(name='agregar', onclick= "changeElemt('departamento')", data-toggle="modal" data-target="#addDep") Nuevo       
-          button#areas.btn.btn-success(name='eliminar') Modificar o Eliminar
+          form(action= '/departamento')
+            button#empleados.btn.btn-success(name='agregar', onclick= "changeElemt('departamento')", data-toggle="modal" data-target="#addDep") Nuevo
+            button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/departamento") Modificar o Eliminar       
+          
           div#horario
             label(for="horario")
               |Horario:
-          button#empleados.btn.btn-success(name='agregar', onclick= "changeElemt('departamento')", data-toggle="modal" data-target="#addHorario") Nuevo       
-          button#areas.btn.btn-success(name='eliminar') Modificar o Eliminar
+          form(action= '/horarioN')    
+            button#empleados.btn.btn-success(name='agregar', onclick= "changeElemt('horarioN')", data-toggle="modal" data-target="#addHorario") Nuevo       
+            button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/horarioN") Modificar o Eliminar
           div#empleado
             label(for="empleado")
               |Empleado:
-
           form(action= '/empleado')     
-           button#empleados.btn.btn-success(name='agregar', onclick= "changeElemt('empleado')", data-toggle="modal" data-target="#addEmpl") Nuevo 
-           button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/empleado") Modificar o Eliminar
+            button#empleados.btn.btn-success(name='agregar', onclick= "changeElemt('empleado')", data-toggle="modal" data-target="#addEmpl") Nuevo 
+            button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/empleado") Modificar o Eliminar
           div#roles
             label(for="roles")
               |Rol:
@@ -47,13 +49,13 @@ block content
           div#usuarios
             label(for="usuarios")
               |Usuarios:
-          form(action= '/usuarioEdit')     
+          form(action= '/usuario')     
            button#usuarios.btn.btn-success(name='agregar', onclick= "changeElemt('usuario')", data-toggle="modal" data-target="#addUser") Nuevo 
            button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/usuarioEdit") Modificar o Eliminar
           div#Supervisor
             label(for="supervisor")
               |Supervisor:
-          form(action= '/supervisorEdit')     
+          form(action= '/supervisor')     
            button#supervisor.btn.btn-success(name='agregar', onclick= "changeElemt('supervisor')", data-toggle="modal" data-target="#addSuper") Nuevo 
            button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/supervisorEdit") Modificar o Eliminar
 
@@ -110,7 +112,7 @@ block content
                       input.form-control#textInput( type="text", name="rangoReceso", placeholder='numero de horas + h  numero de minutos + m')  
                   button.btn.btn-default(type='submit') Ingresar
                   button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
-                  
+      //agregar departamento            
       #addDep.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
         .modal-dialog
             .modal-content
@@ -118,29 +120,36 @@ block content
                 button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
                 h4#myModalLabel.modal-title Añadir nuevo departamento
               .modal-body
-                form(role='form')
+                form(role='form', method="POST", action="/departamento")
                   .form-group
-                      label(for='nombreArea') Nombre:
-                      input#group.form-control( placeholder='Nombre del area')
-                    .form-group
-                      label(for='idSup') Código del supervisor:
-                      input#idSup.form-control( placeholder='Código del supervidor')
-                    .form-group
+                      label(for='nombre') Nombre:
+                      input#group.form-control( type="text", placeholder='Nombre del area', name= "nombre")
+                  .form-group
+                      label(for='idSupervisor') Código del supervisor:
+                      input#idSup.form-control( type="Number", placeholder='Código del supervidor', name="idSupervisor")
+                  .form-group
+                      label(for="tipoJornada")
+                        |Tipo de Jornada:
+                      select.form-control#textInput(type="text", name="tipoJornada") 
+                        option Fija
+                        option Horas
+                        option Excepcion    
+                  .form-group
                       label(for='horario') Horario:
-                      input#horario.form-control( placeholder='Horario asociado')      
-              .modal-footer
-                button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
-                button.btn.btn-default(type='submit') Ingresar
+                      input#horario.form-control( placeholder='Horario asociado', name = "horario")      
+                  button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
+                  button.btn.btn-default(type='submit') Ingresar
+                
 
       //agregar empleados
       #addEmpl.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
-        .modal-dialog
-            .modal-content      
+          .modal-dialog
+            .modal-content
               .modal-body
                 button.close(type='button', data-dismiss='modal', aria-hidden='true') × 
                 h4#myModalLabel.modal-title Añadir nuevo Empleado
                 form(role='form', method="POST", action="/empleado")#login-form.well.span4
-                  .form-group
+                    .form-group
                       label(for='nombre') Nombre:
                       input#group.form-control(type= 'text', placeholder='Nombre', name= 'nombre')
                     .form-group
