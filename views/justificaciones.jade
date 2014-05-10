@@ -4,108 +4,82 @@ block sigucaCSS
   link(rel='stylesheet', href='/stylesheets/sigucaJustificaciones.css')
   link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
   link(rel='stylesheet' href='/stylesheets/jquery-ui.css')
-
-block imgSession
-
-block sigucaNavbarItems
-        ul.nav.navbar-nav
-          li
-            a(href="/escritorio")
-              i.icon-home.icon-large
-              |&nbsp;Escritorio
-          li
-            a(href='/graficos')
-              i.icon-bar-chart.icon-large
-              |&nbsp;Gráficos
-          li.active
-            a(href="/justificaciones")
-              i.icon-edit.icon-large  
-              |&nbsp;Eventos
-          li
-            a(href="/configuracion")
-              i.icon-cogs.icon-large
-              |&nbsp;Configuracion
-          li
-            a(href='/Ayuda')
-              i.icon-question-sign.icon-large     
-              |&nbsp;Acerca de SIGUCA
+  link(rel='stylesheet', href='/stylesheets/sigucaAyuda.css')
+block gcsNavbarItems
+  ul.nav.navbar-nav
 
   block content
-  #containerImgs
-    .col-xs-12
-        img(alt='something', src='images/logo-siguca.png',  href="#")#sigucaLogo
-        img(alt='something', src='images/logo-greencore.png',  href="#")#sigucaLogo
-  .container
-    h1 Justificaciones
-    br
-    .table-responsive
-    table.table
-        thead
-          tr
-            th Selección
-            th Código
-            th Nombre
-            th Tipo
-            th Detalles
-            th Fecha
-            th Estado
-        tbody
-          tr
-            td 
-              label.checkbox(for='codigoEmp')
-                     input#codigoEmp3(name='codigo3', type='checkbox')
-            td 1111
-            td Ma Diya
-            td Vacaciones
-            td Vacaciones
-            td 20-12-2013 al 05-01-2014
-            td Aceptado
-          tr
-            td 
-              label.checkbox(for='codigoEmp')
-                     input#codigoEmp3(name='codigo3', type='checkbox')
-            td 402110092
-            td Tatiana Moreira Beita
-            td Tardía
-            td Retraso de 15 minutos hora de entrada
-            td  05-10-2013
-            td Aceptado
-          tr
-           td 
-              label.checkbox(for='codigoEmp')
-                     input#codigoEmp3(name='codigo3', type='checkbox')
-           td 113970119
-           td Carlos Solano Morales
-           td Tardía 
-           td Retraso de 30 minutos hora de entrada
-           td 20-10-2013
-           td Pendiente
+    .container
+      h1 Justificaciones
+      br
+      .table-responsive
+      table.table
+          thead
+            tr
+              th Selección
+              th Código
+              th Nombre
+              th Tipo
+              th Detalles
+              th Fecha
+              th Estado
+          tbody
+            tr
+              td 
+                label.checkbox(for='codigoEmp')
+                       input#codigoEmp3(name='codigo3', type='checkbox')
+              td 1111
+              td Ma Diya
+              td Vacaciones
+              td Vacaciones
+              td 20-12-2013 al 05-01-2014
+              td Aceptado
+            tr
+              td 
+                label.checkbox(for='codigoEmp')
+                       input#codigoEmp3(name='codigo3', type='checkbox')
+              td 402110092
+              td Tatiana Moreira Beita
+              td Tardía
+              td Retraso de 15 minutos hora de entrada
+              td  05-10-2013
+              td Aceptado
+            tr
+             td 
+                label.checkbox(for='codigoEmp')
+                       input#codigoEmp3(name='codigo3', type='checkbox')
+             td 113970119
+             td Carlos Solano Morales
+             td Tardía 
+             td Retraso de 30 minutos hora de entrada
+             td 20-10-2013
+             td Pendiente
 
-   
-      .control-group
-          label.control-laber(for='accion')
-            .controls
-              button#accion.btn.btn-success(name='aceptar') Aceptar
-              button#accion.btn.btn-danger(name='rechazar', href='#justificacionRechazo', data-toggle='modal') Rechazar	    
-              #justificacionRechazo.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
-               .modal-dialog
-                .modal-content
-                  .modal-header
-                    button.close(type='button', data-dismiss='modal', aria-hidden='true') X Cerrar
-                    h4.modal-title Justificación de Rechazo
-                  .modal-body
-                    form.form-horizontal()
-                     fieldset                       
-                         div.form-group.gcsContainer
-                           label.col-lg-4(for='Detalles')
-                             |Detalles
-                           div.col-lg-6.col-md-6.col-sm-6
-                             textarea.form-control(name="Detalles", placeholder="Añada comentario")
-                         .control-group
-                           label.control-label(for='ingreso')
-                             .controls
-                             button#ingreso.btn.btn-success(name='ingreso') Ingresar
-                             button#cancelar.btn.btn-danger(name='cancelar') Cancelar			  
+     
+        .control-group
+            label.control-laber(for='accion')
+              .controls
+                button#accion.btn.btn-success(name='aceptar') Aceptar
+                button#accion.btn.btn-danger(name='rechazar', href='#justificacionRechazo', data-toggle='modal') Rechazar	    
+                #justificacionRechazo.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+                 .modal-dialog
+                  .modal-content
+                    .modal-header
+                      button.close(type='button', data-dismiss='modal', aria-hidden='true') X Cerrar
+                      h4.modal-title Justificación de Rechazo
+                    .modal-body
+                      form.form-horizontal()
+                       fieldset                       
+                           div.form-group.gcsContainer
+                             label.col-lg-4(for='Detalles')
+                               |Detalles
+                             div.col-lg-6.col-md-6.col-sm-6
+                               textarea.form-control(name="Detalles", placeholder="Añada comentario")
+                           .control-group
+                             label.control-label(for='ingreso')
+                               .controls
+                               button#ingreso.btn.btn-success(name='ingreso') Ingresar
+                               button#cancelar.btn.btn-danger(name='cancelar') Cancelar			  
 
     
 block sigucaJS

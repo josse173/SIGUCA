@@ -5,62 +5,35 @@ block sigucaCSS
   link(rel='stylesheet', href='/stylesheets/sigucaAyuda.css')
   link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
 
-block sigucaNavbarItems
-        ul.nav.navbar-nav
-          li
-            a(href="/escritorio")
-              i.icon-home.icon-large
-              |&nbsp;Escritorio
-          li
-            a(href='/graficos')
-              i.icon-bar-chart.icon-large
-              |&nbsp;Gráficos
-          li.dropdown
-            a.dropdown-toggle( data-toggle='dropdown')
-              i.icon-edit.icon-large  
-                          |&nbsp;Eventos 
-                          span.caret
-                        ul.dropdown-menu#ba
-                          li
-                            a(href='#') Justificaciones
-                          li.divider
-                          li
-                            a(href='#') Solicitudes
-          li
-            a(href="/configuracion")
-              i.icon-cogs.icon-large
-              |&nbsp;Configuracion
-          li.active
-            a(href='/Ayuda')
-              i.icon-question-sign.icon-large     
-              |&nbsp;Acerca de SIGUCA  
+block gcsNavbarItems
+  ul.nav.navbar-nav
    
-block content
-  .container
-    br
-    .col-xs-8
-        img(alt='something', src='images/logo-siguca.png',  href="#")#sigucaLogo
-        h1 Acerca de SIGUCA
-        br
-        br
-        p SIGUCA es un sistema de gestión de usuarios y control de asistencia.
-        p Un sistema integrado de bajo costo y novedoso que provee un control de la jornada de los colaboradores en las empresas.
-        p Diseñado y desarrollado por estudiantes de la Universidad Nacional como proyecto de ingeniería en sistemas de información para la empresa GreenCore Solutions.
-        img(src='images/logo-greencore.png', alt='something',  href="#")#sigucaLogo
-        h2 GreenCore Solutions
-        br
-        p GreenCore Solutions, es una empresa costarricense fundada en el año 2005.
-        p Su misión es el de brindar tecnologías basadas en GNU/Linux a un nivel corporativo de manera profesional mediante el respaldo y calidad de sus productos y servicios.
-    .col-xs-4
-        h2 El equipo    
-        img(alt='something', src='images/dali.jpeg',  href="#")    
-        p - José Gabriel Martínez Barboza
-        img(alt='something', src='images/carmen.jpg',  href="#") 
-        p - Tatiana Moreira Beita
-        img(alt='something', src='images/zap.jpg',  href="#") 
-        p - Carlos Solanos Morales
-        img(alt='something', src='images/marito.jpg',  href="#") 
-        p - Alexander Picado Jiménez
+  block content
+    .container
+      br
+      .col-xs-8
+          img(alt='something', src='images/siguca.png',  href="#")#sigucaLogo
+          h1 Acerca de SIGUCA
+          br
+          br
+          p SIGUCA es un sistema de gestión de usuarios y control de asistencia.
+          p Un sistema integrado de bajo costo y novedoso que provee un control de la jornada de los colaboradores en las empresas.
+          p Diseñado y desarrollado por estudiantes de la Universidad Nacional como proyecto de ingeniería en sistemas de información para la empresa GreenCore Solutions.
+          img(src='images/greencore.png', alt='something',  href="#")#sigucaLogo
+          h2 GreenCore Solutions
+          br
+          p GreenCore Solutions, es una empresa costarricense fundada en el año 2005.
+          p Su misión es el de brindar tecnologías basadas en GNU/Linux a un nivel corporativo de manera profesional mediante el respaldo y calidad de sus productos y servicios.
+      .col-xs-4
+          h2 El equipo    
+          img(alt='something', src='images/dali.jpeg',  href="#")    
+          p - José Gabriel Martínez Barboza
+          img(alt='something', src='images/carmen.jpg',  href="#") 
+          p - Tatiana Moreira Beita
+          img(alt='something', src='images/zap.jpg',  href="#") 
+          p - Carlos Solanos Morales
+          img(alt='something', src='images/marito.jpg',  href="#") 
+          p - Alexander Picado Jiménez
           
         
 block sigucaJS

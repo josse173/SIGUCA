@@ -26,6 +26,7 @@ html
     link(rel='stylesheet', href='/stylesheets/bootstrap-theme.min.css')
     link(type="image/x-icon" href='/img/favicon.ico')
     link(rel='stylesheet', href='/stylesheets/sigucaAyuda.css')
+    link(rel='stylesheet', href='/stylesheets/sigucaEscritorio.css')
 
     title SIGUCA
 
@@ -34,10 +35,8 @@ html
     
   .container-fluid
     // Brand and toggle get grouped for better mobile display
-    
-    
-  // /.container-fluid
-   //- Extend this block in external views to add Navigation Elements to Navbar 
+
+   //- Extend block sigucaNavbarItems in external views to add Navigation Elements to Navbar 
    //- Agregue a este bloque elementos de la barra de navegación en páginas internas
 
  
@@ -49,15 +48,56 @@ html
           span.icon-bar
           span.icon-bar
           span.icon-bar
+        span.navbar-brand(href="#")          
+          span#barLogo
+            img(src='images/logo-siguca.png',  href="/Ayuda")#sigucaLogo
+            img(src='images/logo-greencore.png',  href="/Ayuda")#sigucaLogo
+         
         
       div.collapse.navbar-collapse.navbar-ex1-collapse.navbar-right
-        block sigucaNavbarItems   
+        block sigucaNavbarItems 
+          if (usuario)
+            ul.nav.navbar-nav
+              li
+                a(href="/escritorio")
+                  i.icon-home.icon-large
+                  |&nbsp;Escritorio
+              li
+                a(href='/graficos')
+                  i.icon-bar-chart.icon-large
+                  |&nbsp;Gráficos
+              li.dropdown
+                a.dropdown-toggle( data-toggle='dropdown')
+                  i.icon-edit.icon-large  
+                              |&nbsp;Eventos 
+                              span.caret
+                            ul.dropdown-menu#ba
+                              li
+                                a(href='/Justificaciones') Justificaciones
+                              li.divider
+                              li
+                                a(href='/Justificaciones') Solicitudes
+              li
+                a(href="/configuracion")
+                  i.icon-cogs.icon-large
+                  |&nbsp;Configuracion
+              li
+                a(href='/Ayuda')
+                  i.icon-question-sign.icon-large     
+                  |&nbsp;Acerca de SIGUCA  
+              li
+                a(href='/logout')
+                  img(src='images/cerrar.jpg', alt='something')      
+                  |&nbsp;Supervisor: #{usuario.username}  
+          if (!usuario)
+            ul.nav.navbar-nav
+              li.active
+                a.active(href="/registro")
+                  i.icon-home.icon-large
+                  |&nbsp;Registro   
       br     
     block content
-      
 
-
-    
     block sigucaJS
 
       script(src="/javascripts/d3-master/d3.min.js")

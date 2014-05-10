@@ -6,66 +6,29 @@ block sigucaCSS
   link(rel='stylesheet', href='/stylesheets/sigucaAyuda.css')
   link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
   link(rel='stylesheet', href='//cdn.jsdelivr.net/cal-heatmap/3.3.10/cal-heatmap.css')
-block imgSession
-  
 
-block sigucaNavbarItems
-        ul.nav.navbar-nav
-          li.active
-            a(href="/escritorio")
-              i.icon-home.icon-large
-              |&nbsp;Escritorio
-          li
-            a(href='/graficos')
-              i.icon-bar-chart.icon-large
-              |&nbsp;Gráficos
-          li.dropdown
-            a.dropdown-toggle( data-toggle='dropdown')
-              i.icon-edit.icon-large  
-                          |&nbsp;Eventos 
-                          span.caret
-                        ul.dropdown-menu#ba
-                          li
-                            a(href='#') Justificaciones
-                          li.divider
-                          li
-                            a(href='#') Solicitudes
-          li
-            a(href="/configuracion")
-              i.icon-cogs.icon-large
-              |&nbsp;Configuracion
-          li
-            a(href='/Ayuda')
-              i.icon-question-sign.icon-large     
-              |&nbsp;Acerca de SIGUCA  
+block gcsNavbarItems
+  ul.nav.navbar-nav
 
-  block content
-  #containerImgs
-    .col-xs-12
-        img(alt='something', src='images/logo-siguca.png',  href="#")#sigucaLogo
-        img(alt='something', src='images/logo-greencore.png',  href="#")#sigucaLogo
-  .container
-    .col-xs-8
-      h3 Marcas Personales
-      div#cal
-    
-    .col-xs-4
-     h3 Eventos Pendientes   
-     ul.list-group
-      li.list-group-item
-        a(href='/Justificaciones')
-          span.badge 2 
-          | Solicitudes
-      li.list-group-item
-        a(href='/Justificaciones')
-          span.badge 3 
-          | Justificaciones
-        
+  block content   
+    .container
+      .col-xs-8
+        h3 Marcas Personales
+        div#cal
+      
+      .col-xs-4
+       h3 Eventos Pendientes   
+       ul.list-group
+        li.list-group-item
+          a(href='/Justificaciones')
+            span.badge 2 
+            | Solicitudes
+        li.list-group-item
+          a(href='/Justificaciones')
+            span.badge 3 
+            | Justificaciones
+
            
-
-
-    
-        
 block sigucaJS
   script(src = "/javascripts/reloj.js")
   script(type='text/javascript', src='/javascripts/d3-masterd3.v3.min.js')

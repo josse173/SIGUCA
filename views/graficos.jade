@@ -5,44 +5,13 @@ block sigucaCSS
   link(rel='stylesheet', href='/stylesheets/sigucaGraficos.css')
   link(rel='stylesheet', href='/stylesheets/sigucaAyuda.css')
   link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
-block imgSession
- 
-block sigucaNavbarItems
-        ul.nav.navbar-nav
-          li
-            a(href="/escritorio")
-              i.icon-home.icon-large
-              |&nbsp;Escritorio
-          li.active
-            a(href='/graficos')
-              i.icon-bar-chart.icon-large
-              |&nbsp;Gráficos
-          li.dropdown
-            a.dropdown-toggle( data-toggle='dropdown')
-              i.icon-edit.icon-large  
-                          |&nbsp;Eventos 
-                          span.caret
-                        ul.dropdown-menu#ba
-                          li
-                            a(href='#') Justificaciones
-                          li.divider
-                          li
-                            a(href='#') Solicitudes
-          li
-            a(href="/configuracion")
-              i.icon-cogs.icon-large
-              |&nbsp;Configuracion
-          li
-            a(href='/Ayuda')
-              i.icon-question-sign.icon-large     
-              |&nbsp;Acerca de SIGUCA 
- 
+
+block gcsNavbarItems
+  ul.nav.navbar-nav
+
+         
  
 block content
-  #containerImgs
-    .col-xs-12
-        img(alt='something', src='images/logo-siguca.png',  href="#")#sigucaLogo
-        img(alt='something', src='images/logo-greencore.png',  href="#")#sigucaLogo
   .container
         .col-xs-8
           h2 Marcas
