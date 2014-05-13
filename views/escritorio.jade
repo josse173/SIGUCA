@@ -5,7 +5,7 @@ block sigucaCSS
   link(rel='stylesheet', href='/stylesheets/sigucaEscritorio.css')
   link(rel='stylesheet', href='/stylesheets/sigucaAyuda.css')
   link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
-  link(rel='stylesheet', href='//cdn.jsdelivr.net/cal-heatmap/3.3.10/cal-heatmap.css')
+  link(rel='stylesheet', href='/stylesheets/cal-heatmap.css')
 
 block gcsNavbarItems
   ul.nav.navbar-nav
@@ -30,9 +30,10 @@ block gcsNavbarItems
 
            
 block sigucaJS
-  script(src = "/javascripts/reloj.js")
-  script(type='text/javascript', src='/javascripts/d3-masterd3.v3.min.js')
-  script(type='text/javascript', src='/javascripts/cal-heatmap-master/cal-heatmap.js')
+  script(src="/stylesheets/d3.min.js")
+  script(src="/stylesheets/cal-heatmap.min.js")
   script(src="/javascripts/jquery-2.0.3.min.js")
   script(src="/javascripts/bootstrap.min.js")
+  script( src='/stylesheets/sigucaHome.js')
+ 
 
