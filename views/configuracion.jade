@@ -13,222 +13,246 @@ block gcsNavbarItems
         div#flipClock
       .col-xs-4
         
-          h3  Seleccione el elemento
-          div#contBotones
-            div#empl
-              label(for="Departamento")
-                |Departamento:
-            button#empleados.btn.btn-success(name='agregar', onclick= "changeElemt('departamento')", data-toggle="modal" data-target="#addDep") Nuevo       
-            button#areas.btn.btn-success(name='eliminar') Modificar o Eliminar
-            div#horario
-              label(for="horario")
-                |Horario:
-            button#empleados.btn.btn-success(name='agregar', onclick= "changeElemt('departamento')", data-toggle="modal" data-target="#addHorario") Nuevo       
-            button#areas.btn.btn-success(name='eliminar') Modificar o Eliminar
-            div#empleado
-              label(for="empleado")
-                |Empleado:
+        h3  Seleccione el elemento
+        div#contBotones
+          div#empl
+            label(for="Departamento")
+              |Departamento:
+          form(action= '/departamento')
+            button#empleados.btn.btn-success(name='agregar', onclick= "changeElemt('departamento')", data-toggle="modal" data-target="#addDep") Nuevo
+            button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/departamento") Modificar o Eliminar      
+          
+          div#horario
+            label(for="horario")
+              |Horario:
+          form(action= '/horarioN')    
+            button#empleados.btn.btn-success(name='agregar', onclick= "changeElemt('horarioN')", data-toggle="modal" data-target="#addHorario") Nuevo       
+            button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/horarioN") Modificar o Eliminar
+          div#empleado
+            label(for="empleado")
+              |Empleado:
+          form(action= '/empleado')     
+            button#empleados.btn.btn-success(name='agregar', onclick= "changeElemt('empleado')", data-toggle="modal" data-target="#addEmpl") Nuevo 
+            button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/empleado") Modificar o Eliminar
+          //-div#roles
+            label(for="roles")
+              |Rol:
+          //-button#empleados.btn.btn-success(name='agregar', onclick= "changeElemt('departamento')", data-toggle="modal" data-target="#addDep") Nuevo       
+          //-button#areas.btn.btn-success(name='eliminar') Modificar o Eliminar
+          //-div#usuarios
+            label(for="usuarios")
+              |Usuarios:
+          //-form(action= '/usuario')     
+           button#usuarios.btn.btn-success(name='agregar', onclick= "changeElemt('usuario')", data-toggle="modal" data-target="#addUser") Nuevo 
+           button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/usuarioEdit") Modificar o Eliminar
+          //-div#Supervisor
+            label(for="supervisor")
+              |Supervisor:
+          //-form(action= '/supervisor')     
+           button#supervisor.btn.btn-success(name='agregar', onclick= "changeElemt('supervisor')", data-toggle="modal" data-target="#addSuper") Nuevo 
+           button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/supervisorEdit") Modificar o Eliminar
 
-            form(action= '/empleado')     
-             button#empleados.btn.btn-success(name='agregar', onclick= "changeElemt('empleado')", data-toggle="modal" data-target="#addEmpl") Nuevo 
-             button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/empleado") Modificar o Eliminar
-            div#roles
-              label(for="roles")
-                |Rol:
-            button#empleados.btn.btn-success(name='agregar', onclick= "changeElemt('departamento')", data-toggle="modal" data-target="#addDep") Nuevo       
-            button#areas.btn.btn-success(name='eliminar') Modificar o Eliminar
-            div#usuarios
-              label(for="usuarios")
-                |Usuarios:
-            form(action= '/usuarioEdit')     
-             button#usuarios.btn.btn-success(name='agregar', onclick= "changeElemt('usuario')", data-toggle="modal" data-target="#addUser") Nuevo 
-             button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/usuarioEdit") Modificar o Eliminar
-            div#Supervisor
-              label(for="supervisor")
-                |Supervisor:
-            form(action= '/supervisorEdit')     
-             button#supervisor.btn.btn-success(name='agregar', onclick= "changeElemt('supervisor')", data-toggle="modal" data-target="#addSuper") Nuevo 
-             button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/supervisorEdit") Modificar o Eliminar
-
-          //- div#busqueda
-          //-     label(for="codInput")
-          //-         |Digite el código de 
-          //-         span#pressElmnt 
-          //-         |:
-          //-       .input-prepend
-          //-       span.add-on
-          //-       input#inputIcon.span2(type='text', placeholder='Ingrese Código', ng-model='query')
-          //- div#irBusqueda
-          //-   button(type="submit")#btn-buscar.btn.btn-primary
-          //-     i.icon-search.icon-white
-          //-     | Buscar
-          //-   button(type="submit")#btn-busquedaAva.btn.btn-primary
-          //-     i.icon-filter.icon-white
-          //-     | Búsqueda Avanzada  
-      .col-xs-2
-        #addHorario.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
-          .modal-dialog
-              .modal-content
-                .modal-header
-                  button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-                  h4#myModalLabel.modal-title Añadir nuevo horario
-                .modal-body
-                  form(action='/horarioN', method='post')#login-form.well.span4
-                    .form-group
-                      h4 Información Básica
-                      label(for='nombre') Nombre del Horario:
-                        input.form-control#textInput( type="text", name="nombreHorario", placeholder='Nombre del horario')
-                      .checkbox-inline#jFija
-                        label
-                          input(type='checkbox', name="jornada")
-                          | Jornada fija
-                      .checkbox-inline#jLibre
-                        label
-                          input(type='checkbox', name= "jornada")
-                          | Jornada libre
-                                  
-                    .form-group
-                      h4 Información de jornada
-                      label(for='hEntrada') Hora de entrada:
-                        input.form-control#textInput( type="text", name= "horaEntrada", placeholder='Hora de entrada')
-                      label(for='hSalida') Hora de salida:
-                        input.form-control#textInput(type="text", name="horaSalida", placeholder='Hora de salida')
-                    .form-group
-                      h4 Información de receso
-                      label(for='iAlmuerzo') Inicio de almuerzo:
-                        input.form-control#textInput( type="text", name="horaInAlmuerzo", placeholder='Inicio de Almuerzo')   
-                      label(for='fAlmuerzo') Final de almuerzo:
-                        input.form-control#textInput(type="text", name="horaFnAlmuerzo", placeholder='Final de Almuerzo')
-                      label(for='tReceso') Rango de receso (Exceptuando hora de almuerzo):
-                        input.form-control#textInput( type="text", name="rangoReceso", placeholder='numero de horas + h  numero de minutos + m')  
-                    button.btn.btn-default(type='submit') Ingresar
-                    button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
-                    
-        #addDep.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
-          .modal-dialog
-              .modal-content
-                .modal-header
-                  button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-                  h4#myModalLabel.modal-title Añadir nuevo departamento
-                .modal-body
-                  form(role='form')
-                    .form-group
-                        label(for='nombreArea') Nombre:
-                        input#group.form-control( placeholder='Nombre del area')
-                      .form-group
-                        label(for='idSup') Código del supervisor:
-                        input#idSup.form-control( placeholder='Código del supervidor')
-                      .form-group
-                        label(for='horario') Horario:
-                        input#horario.form-control( placeholder='Horario asociado')      
-                .modal-footer
+        //- div#busqueda
+        //-     label(for="codInput")
+        //-         |Digite el código de 
+        //-         span#pressElmnt 
+        //-         |:
+        //-       .input-prepend
+        //-       span.add-on
+        //-       input#inputIcon.span2(type='text', placeholder='Ingrese Código', ng-model='query')
+        //- div#irBusqueda
+        //-   button(type="submit")#btn-buscar.btn.btn-primary
+        //-     i.icon-search.icon-white
+        //-     | Buscar
+        //-   button(type="submit")#btn-busquedaAva.btn.btn-primary
+        //-     i.icon-filter.icon-white
+        //-     | Búsqueda Avanzada  
+    .col-xs-2
+      #addHorario.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+        .modal-dialog
+            .modal-content
+              .modal-header
+                button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+                h4#myModalLabel.modal-title Añadir nuevo horario
+              .modal-body
+                form(action='/horarioN', method='post')#login-form.well.span4
+                  .form-group
+                    h4 Información Básica
+                    label(for='nombre') Nombre del Horario:
+                      input.form-control#textInput( type="text", name="nombreHorario", placeholder='Nombre del horario')
+                    .checkbox-inline#jFija
+                      label
+                        input(type='checkbox', name="jornada")
+                        | Jornada fija
+                    .checkbox-inline#jLibre
+                      label
+                        input(type='checkbox', name= "jornada")
+                        | Jornada libre
+                                
+                  .form-group
+                    h4 Información de jornada
+                    label(for='hEntrada') Hora de entrada:
+                      input.form-control#textInput( type="text", name= "horaEntrada", placeholder='Hora de entrada')
+                    label(for='hSalida') Hora de salida:
+                      input.form-control#textInput(type="text", name="horaSalida", placeholder='Hora de salida')
+                  .form-group
+                    h4 Información de receso
+                    label(for='iAlmuerzo') Inicio de almuerzo:
+                      input.form-control#textInput( type="text", name="horaInAlmuerzo", placeholder='Inicio de Almuerzo')   
+                    label(for='fAlmuerzo') Final de almuerzo:
+                      input.form-control#textInput(type="text", name="horaFnAlmuerzo", placeholder='Final de Almuerzo')
+                    label(for='tReceso') Rango de receso (Exceptuando hora de almuerzo):
+                      input.form-control#textInput( type="text", name="rangoReceso", placeholder='numero de horas + h  numero de minutos + m')  
+                  button.btn.btn-default(type='submit') Ingresar
+                  button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
+      //agregar departamento            
+      #addDep.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+        .modal-dialog
+            .modal-content
+              .modal-header
+                button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+                h4#myModalLabel.modal-title Añadir nuevo departamento
+              .modal-body
+                form(role='form', method="POST", action="/departamento")
+                  .form-group
+                      label(for='nombre') Nombre:
+                      input#group.form-control( type="text", placeholder='Nombre del area', name= "nombre")
+                  .form-group
+                      label(for='idSupervisor') Código del supervisor:
+                      input#idSup.form-control( type="Number", placeholder='Código del supervidor', name="idSupervisor")
+                  .form-group
+                      label(for="tipoJornada")
+                        |Tipo de Jornada:
+                      select.form-control#textInput(type="text", name="tipoJornada") 
+                        option Fija
+                        option Horas
+                        option Excepcion    
+                  .form-group
+                      label(for='horario') Horario:
+                      input#horario.form-control( placeholder='Horario asociado', name = "horario")      
                   button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
                   button.btn.btn-default(type='submit') Ingresar
+                
 
-        //agregar empleados
-        #addEmpl.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+      //agregar empleados
+      #addEmpl.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
           .modal-dialog
-              .modal-content      
-                .modal-body
-                  button.close(type='button', data-dismiss='modal', aria-hidden='true') × 
-                  h4#myModalLabel.modal-title Añadir nuevo Empleado
-                  form(role='form', method="POST", action="/empleado")#login-form.well.span4
+            .modal-content
+              .modal-body
+                button.close(type='button', data-dismiss='modal', aria-hidden='true') × 
+                h4#myModalLabel.modal-title Añadir nuevo Empleado
+                form(role='form', method="POST", action="/empleado")#login-form.well.span4
                     .form-group
-                        label(for='nombre') Nombre:
-                        input#group.form-control(type= 'text', placeholder='Nombre', name= 'nombre')
-                      .form-group
-                        label(for='apellido1') Primer Apellido:
-                        input#apellido1.form-control(type= 'text', placeholder='Primer Apellido', name= 'apellido1')
-                      .form-group
-                        label(for='apellido2') Segundo Apellido:
-                        input#apellido2.form-control(type= 'text', placeholder='Segundo Apellido', name='apellido2')
-                      .form-group
-                        label(for='email') Correo Eléctronico:
-                        input#email.form-control(type= 'email', placeholder='Correo Electronico', name='email')
-                      .form-group
-                        label(for='cedula') Cédula:
-                        input#cedula.form-control(type= 'Number', placeholder='Cédula', name='cedula')
-                      .form-group
-                        label(for='codTarjeta') Código de Empleado:
-                        input#codTarjeta.form-control(type= 'Number', placeholder='Código de Empleado', name='codTarjeta')            
-                      button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
-                      button.btn.btn-default(type='submit') Ingresar
-        
-        //agregar usuarios
-        #addUser.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
-          .modal-dialog
-              .modal-content
-                .modal-header
-                  button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-                  h4#myModalLabel.modal-title Añadir nuevo Usuario del Sistema
-                .modal-body
-                  div.container#login-container
-     
-                    form(action='/registro', method='post')#login-form.well.span4
-                      h1 SIGUCA
-                      p.subheading Registre un usuario nuevo:
-                      div.form-group
-                        label(for="usernameInput")
-                          |Usuario:
-                        input.form-control#textInput(type="text", name="username", placeholder="Usuario")
-                      div.form-group
-                        label(for="tipoInput")
-                          |Tipo de Usuario:
-                        select.form-control#textInput(type="text", name="tipo") 
-                          option Empleado
-                          option Supervisor
-                          option Administrador
-                      div.form-group
-                        label(for="codTarjeta")
-                          |Código de Empleado:
-                        input.form-control#textInput(type="number", name="codTarjeta", placeholder="Código de Empleado")    
-                      div.form-group
-                        label(for="passwordInput")
-                          |Contraseña:
-                        input.form-control#passInput(type="password", name="password", placeholder="Contraseña")
-                      button(type="submit")#btn-login.btn.btn-primary
-                        i.icon-lock.icon-white
-                        | Ingresar
-                .modal-footer    
-        //agregar Supervisor
-        #addSuper.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
-          .modal-dialog
-              .modal-content
-                .modal-header
-                  button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-                  h4#myModalLabel.modal-title Añadir nuevo Supervisor
-                .modal-body
-                  form(role='form', method="POST", action="/supervisor")
+                      label(for='nombre') Nombre:
+                      input#group.form-control(type= 'text', placeholder='Nombre', name= 'nombre')
                     .form-group
-                        label(for='nombre') Nombre:
-                        input#group.form-control(type= 'text', placeholder='Nombre', name= 'nombre')
-                      .form-group
-                        label(for='apellido1') Primer Apellido:
-                        input#apellido1.form-control(type= 'text', placeholder='Primer Apellido', name= 'apellido1')
-                      .form-group
-                        label(for='apellido2') Segundo Apellido:
-                        input#apellido2.form-control(type= 'text', placeholder='Segundo Apellido', name='apellido2')
-                      .form-group
-                        label(for='email') Correo Eléctronico:
-                        input#email.form-control(type= 'email', placeholder='Correo Electronico', name='email')
-                      .form-group
-                        label(for='cedula') Cédula:
-                        input#cedula.form-control(type= 'Number', placeholder='Cédula', name='cedula')
-                      .form-group
-                        label(for='codTarjeta') Código de Empleado:
-                        input#codTarjeta.form-control(type= 'Number', placeholder='Código de Empleado', name='codTarjeta')
-                      .form-group
-                        label(for="area")
-                          |Area a Cargo:
-                        select.form-control#textInput(type="text", name="area") 
-                          option Soporte
-                          option Recursos Humanos
-                          option Contabilidad            
-                      button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
-                      button.btn.btn-default(type='submit') Ingresar
-     
-                .modal-footer    
-
+                      label(for='apellido1') Primer Apellido:
+                      input#apellido1.form-control(type= 'text', placeholder='Primer Apellido', name= 'apellido1')
+                    .form-group
+                      label(for='apellido2') Segundo Apellido:
+                      input#apellido2.form-control(type= 'text', placeholder='Segundo Apellido', name='apellido2')
+                    .form-group
+                      label(for='email') Correo Eléctronico:
+                      input#email.form-control(type= 'email', placeholder='Correo Electronico', name='email')
+                    .form-group
+                      label(for='cedula') Cédula:
+                      input#cedula.form-control(type= 'Number', placeholder='Cédula', name='cedula')
+                    .form-group
+                      label(for='codTarjeta') Código de Empleado:
+                      input#codTarjeta.form-control(type= 'Number', placeholder='Código de Empleado', name='codTarjeta')
+                    .form-group
+                      label(for="usernameInput")
+                        |Usuario:
+                      input.form-control#textInput(type="text", name="username", placeholder="Usuario")
+                    .form-group
+                      label(for="tipoInput")
+                        |Tipo de Usuario:
+                      select.form-control#textInput(type="text", name="tipo") 
+                        option Empleado
+                        option Supervisor
+                        option Administrador                    
+                    .form-group
+                      label(for="passwordInput")
+                        |Contraseña:
+                      input.form-control#passInput(type="password", name="password", placeholder="Contraseña")              
+                    button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
+                    button.btn.btn-default(type='submit') Ingresar
+      
+      //agregar usuarios
+      #addUser.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+        .modal-dialog
+            .modal-content
+              .modal-header
+                button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+                h4#myModalLabel.modal-title Añadir nuevo Usuario del Sistema
+              .modal-body
+                div.container#login-container
+   
+                  form(action='/registro', method='post')#login-form.well.span4
+                    h1 SIGUCA
+                    p.subheading Registre un usuario nuevo:
+                    div.form-group
+                      label(for="usernameInput")
+                        |Usuario:
+                      input.form-control#textInput(type="text", name="username", placeholder="Usuario")
+                    div.form-group
+                      label(for="tipoInput")
+                        |Tipo de Usuario:
+                      select.form-control#textInput(type="text", name="tipo") 
+                        option Empleado
+                        option Supervisor
+                        option Administrador
+                    div.form-group
+                      label(for="codTarjeta")
+                        |Código de Empleado:
+                      input.form-control#textInput(type="number", name="codTarjeta", placeholder="Código de Empleado")    
+                    div.form-group
+                      label(for="passwordInput")
+                        |Contraseña:
+                      input.form-control#passInput(type="password", name="password", placeholder="Contraseña")
+                    button(type="submit")#btn-login.btn.btn-primary
+                      i.icon-lock.icon-white
+                      | Ingresar
+              .modal-footer    
+      //agregar Supervisor
+      #addSuper.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+        .modal-dialog
+            .modal-content
+              .modal-header
+                button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+                h4#myModalLabel.modal-title Añadir nuevo Supervisor
+              .modal-body
+                form(role='form', method="POST", action="/supervisor")
+                  .form-group
+                      label(for='nombre') Nombre:
+                      input#group.form-control(type= 'text', placeholder='Nombre', name= 'nombre')
+                    .form-group
+                      label(for='apellido1') Primer Apellido:
+                      input#apellido1.form-control(type= 'text', placeholder='Primer Apellido', name= 'apellido1')
+                    .form-group
+                      label(for='apellido2') Segundo Apellido:
+                      input#apellido2.form-control(type= 'text', placeholder='Segundo Apellido', name='apellido2')
+                    .form-group
+                      label(for='email') Correo Eléctronico:
+                      input#email.form-control(type= 'email', placeholder='Correo Electronico', name='email')
+                    .form-group
+                      label(for='cedula') Cédula:
+                      input#cedula.form-control(type= 'Number', placeholder='Cédula', name='cedula')
+                    .form-group
+                      label(for='codTarjeta') Código de Empleado:
+                      input#codTarjeta.form-control(type= 'Number', placeholder='Código de Empleado', name='codTarjeta')
+                    .form-group
+                      label(for="area")
+                        |Area a Cargo:
+                      select.form-control#textInput(type="text", name="area") 
+                        option Soporte
+                        option Recursos Humanos
+                        option Contabilidad            
+                    button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
+                    button.btn.btn-default(type='submit') Ingresar
+   
+              .modal-footer    
+  
 block sigucaJS
   script(src="/javascripts/flipclock/libs/prefixfree.min.js")
   script(src="/javascripts/flipclock/flipclock.min.js")

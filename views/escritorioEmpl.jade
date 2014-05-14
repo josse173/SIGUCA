@@ -15,12 +15,37 @@ block sigucaNavbarItems
   
 
 block content
-  .container
-    //- #fancyClock
+
+  
   .container
     .col-xs-8
       h3 Marcas Personales
-      img.img-responsive#grafico(src='/images/tati.PNG', alt='Responsive image') 
+      
+      ol
+       
+       table.table.table-hover 
+
+        tr
+            td #Empl 
+            td Dia
+            td Mes
+            td Año
+            td Hora
+            td Minutos
+            td Segundos
+                        
+        each marca, i in marcas
+
+         if (marca.codTarjeta = usuario.codTarjeta) 
+          tr
+            td #{marca.codTarjeta}
+            td #{marca.fecha.dia}
+            td #{marca.fecha.mes}
+            td #{marca.fecha.ano}  
+            td #{marca.horaEntrada.hora}
+            td #{marca.horaEntrada.minutos}
+            td #{marca.horaEntrada.segundos}  
+            
     .col-xs-4
      h3 Eventos Pendientes   
      ul.list-group
@@ -55,55 +80,47 @@ block content
                 button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
                 h1#myModalLabel.modal-title SIGUCA
                 h3#myModalLabel.modal-title Marcar Mediante Sistema
+
               .modal-body
                table.table 
-                tr
-                  modal.group     
-                    form(role='form', method="POST", action="/marca")
-                        td
-                          button.btn.btn-success(type='submit') Entrada
-                  modal.group
-                    form(role='form', method="POST", action="/marca")
-                        td
-                          button.btn.btn-success(type='submit') Salida
-                tr
-                  modal.group     
-                    form(role='form', method="POST", action="/marca")
-                        td
-                          button.btn.btn-warning(type='submit') Salida Receso
-                  modal.group
-                    form(role='form', method="POST", action="/marca")
-                        td
-                          button.btn.btn-warning(type='submit') Entrada Receso          
-                tr
-                  modal.group     
-                    form(role='form', method="POST", action="/marca")
-                        td
-                          button.btn.btn-primary(type='submit') Salida Almuerzo
-                  modal.group
-                    form(role='form', method="POST", action="/marca")
-                        td
-                          button.btn.btn-primary(type='submit') Entrada Almuerzo                    
-                
-                tr   
-                  modal.group
-                    td             
-                        button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
-              .container
-                 #fancyClock    
+                 form.marcas(role='form', method="POST", action="/marca")
+                  tr
+                    modal.group     
+                       label-info( name= codTarjeta)  Empleado # #{usuario.codTarjeta}
+                  tr
+                    modal.group     
+                          td
+                            button.btn.btn-success(type='submit', name ='entrada') Entrada
+                    modal.group
+                          td
+                            button.btn.btn-success(type='submit' , name ='salida') Salida
+                  tr
+                    modal.group     
+                          td
+                            button.btn.btn-warning(type='submit', name ='salidaReceso') Salida Receso
+                    modal.group
+                          td
+                            button.btn.btn-warning(type='submit', name ='entradaReceso') Entrada Receso          
+                  tr
+                    modal.group     
+                          td
+                            button.btn.btn-primary(type='submit', name ='salidaAlmuerzo') Salida Almuerzo
+                    modal.group
+                          td
+                            button.btn.btn-primary(type='submit', , name ='entradaAlmuerzo') Entrada Almuerzo                    
+                  tr   
+                    modal.group
+                      td             
+                          button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
+                .container
+                   #fancyClock    
               .modal-footer    
-                
-
-    
+   
         
 block sigucaJS
   
   script(src="/javascripts/jquery-2.0.3.min.js")
   script(src="/javascripts/bootstrap.min.js")
-  //-script(type='text/javascript', src='http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js')
   script(type='text/javascript', src='/javascripts/demo/jquery.tzineClock/jquery.tzineClock.js')
   script(type='text/javascript', src='/javascripts/demo/script.js')
-
-
-
-
+ 
