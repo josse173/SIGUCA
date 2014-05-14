@@ -21,25 +21,15 @@ module.exports = function(app) {
     });
 
     app.post('/login', passport.authenticate('local'), function(req, res) {
-        console.log("ingreso correcto" + req.user.tipo);
-        if (req.user.tipo == "Administrador") {
-            passport.authenticate('local')(req, res, function() {
-                res.redirect('/escritorioAdmin');
-            });
-        } else {
-            if (req.user.tipo == "Supervisor") {
-                passport.authenticate('local')(req, res, function() {
-                    res.redirect('/escritorio');
-                });
-            } else {
-                if (req.user.tipo == "Empleado") {
-                    passport.authenticate('local')(req, res, function() {
-                        res.redirect('/escritorioEmpl');
-                    });
-                }
-
-            }
-
+		req.session.name = req.user.tipo; // Setea el tipo de Usuario (No lo mas conveniente, cuestion de tiempo, funciona).
+        if (req.session.name == "Administrador") {
+            res.redirect('/escritorioAdmin');
+        } 
+        if (req.session.name == "Supervisor") {
+            res.redirect('/escritorio');
+        } 
+        if (req.session.name == "Empleado") {
+            res.redirect('/escritorioEmpl');
         }
     });
 
@@ -88,106 +78,177 @@ module.exports = function(app) {
     });
 
     app.get('/escritorio', autentificado, function(req, res) {
-        res.render('escritorio', {
-            usuario: req.user
-        });
+		if (req.session.name == "Supervisor") {
+			res.render('escritorio', {
+				usuario: req.user
+			});
+		}else{
+			req.logout();
+			res.redirect('/');
+		}
     });
     app.get('/escritorioEmpl', autentificado, function(req, res) {
-        Marca.find().exec(function(error, marcas) {
+	    if (req.session.name == "Empleado") {
+            Marca.find().exec(function(error, marcas) {
 
-            if (error) return res.json(error);
-
-            return res.render('escritorioEmpl', {
+				if (error) return res.json(error);
+					return res.render('escritorioEmpl', {
                 title: 'Escritorio Empleado | SIGUCA',
                 marcas: marcas,
                 usuario: req.user
-            });
-
-
-        });
-
+				});
+			});
+        }else{
+			req.logout();
+			res.redirect('/');
+		}
         /*res.render('escritorioEmpl', {
             title: 'Empleado escritorio | SIGUCA',
             usuario: req.user
         });*/
     });
     app.get('/escritorioAdmin', autentificado, function(req, res) {
-        res.render('escritorioAdmin', {
-            title: 'Administrador escritorio | SIGUCA',
-            usuario: req.user
-        });
+		if (req.session.name == "Administrador") {
+			res.render('escritorioAdmin', {
+				title: 'Administrador escritorio | SIGUCA',
+				usuario: req.user
+			});
+		}else{
+			req.logout();
+			res.redirect('/');
+		}
     });
     app.get('/graficos', autentificado, function(req, res) {
-        res.render('graficos', {
-            title: 'Graficos | SIGUCA',
-            usuario: req.user
-        });
+		if (req.session.name == "Supervisor") {
+			res.render('graficos', {
+				title: 'Graficos | SIGUCA',
+				usuario: req.user
+			});
+		}else{
+			req.logout();
+			res.redirect('/');		
+		}
     });
     app.get('/graficosAdmin', autentificado, function(req, res) {
-        res.render('graficosAdmin', {
-            title: 'Graficos Administrador | SIGUCA',
-            usuario: req.user
-        });
+		if (req.session.name == "Administrador") {
+			res.render('graficosAdmin', {
+				title: 'Graficos Administrador | SIGUCA',
+				usuario: req.user
+			});
+		}else{
+			req.logout();
+			res.redirect('/');			
+		}
     });
     app.get('/graficosEmpl', autentificado, function(req, res) {
-        res.render('graficosEmpl', {
-            title: 'Graficos Administrador | SIGUCA',
-            usuario: req.user
-        });
+		if (req.session.name == "Empleado") {
+			res.render('graficosEmpl', {
+				title: 'Graficos Administrador | SIGUCA',
+				usuario: req.user
+			});
+		}else{
+			req.logout();
+			res.redirect('/');			
+		}
     });
     app.get('/ayuda', autentificado, function(req, res) {
-        res.render('ayuda', {
-            title: 'Ayuda | SIGUCA',
-            usuario: req.user
-        });
+		if (req.session.name == "Supervisor") {
+			res.render('ayuda', {
+				title: 'Ayuda | SIGUCA',
+				usuario: req.user
+			});
+		}else{
+			req.logout();
+			res.redirect('/');			
+		}
     });
     app.get('/ayudaAdmin', autentificado, function(req, res) {
-        res.render('ayudaAdmin', {
-            title: 'Ayuda | SIGUCA',
-            usuario: req.user
-        });
+		if (req.session.name == "Administrador") {
+			res.render('ayudaAdmin', {
+				title: 'Ayuda | SIGUCA',
+				usuario: req.user
+			});
+		}else{
+			req.logout();
+			res.redirect('/');					
+		}
     });
     app.get('/ayudaEmpl', autentificado, function(req, res) {
-        res.render('ayudaEmpl', {
-            title: 'Ayuda | SIGUCA',
-            usuario: req.user
-        });
+		if (req.session.name == "Empleado") {
+			res.render('ayudaEmpl', {
+				title: 'Ayuda | SIGUCA',
+				usuario: req.user
+			});
+		}else{
+			req.logout();
+			res.redirect('/');				
+		}
     });
     app.get('/configuracion', autentificado, function(req, res) {
-        res.render('configuracion', {
-            title: 'Configuración | SIGUCA',
-            usuario: req.user
-        });
+		if (req.session.name == "Supervisor") {
+			res.render('configuracion', {
+				title: 'Configuración | SIGUCA',
+				usuario: req.user
+			});
+		}else{
+			req.logout();
+			res.redirect('/');			
+		}
     });
     app.get('/configuracionEmpl', autentificado, function(req, res) {
-        res.render('configuracionEmpl', {
-            title: 'Configuración | SIGUCA',
-            usuario: req.user
-        });
+		if (req.session.name == "Empleado") {
+			res.render('configuracionEmpl', {
+				title: 'Configuración | SIGUCA',
+				usuario: req.user
+			});
+		}else{
+			req.logout();
+			res.redirect('/');			
+		}
     });
     app.get('/configuracionAdmin', autentificado, function(req, res) {
-        res.render('configuracionAdmin', {
-            title: 'Configuración | SIGUCA',
-            usuario: req.user
-        });
+		if (req.session.name == "Administrador") {
+			res.render('configuracionAdmin', {
+				title: 'Configuración | SIGUCA',
+				usuario: req.user
+			});
+		}else{
+			req.logout();
+			res.redirect('/');			
+		}
     });
     app.get('/justificaciones', autentificado, function(req, res) {
-        res.render('justificaciones', {
-            title: 'Justificaciones/Permisos | SIGUCA',
-            usuario: req.user
-        });
+		if (req.session.name == "Supervisor") {
+			res.render('justificaciones', {
+				title: 'Justificaciones/Permisos | SIGUCA',
+				usuario: req.user
+			});
+		}else{
+			req.logout();
+			res.redirect('/');			
+		}
     });
     app.get('/justificacionesAdmin', autentificado, function(req, res) {
-        res.render('justificacionesAdmin', {
-            title: 'Administrador justificaciones| Permisos',
-            usuario: req.user
-        });
+		if (req.session.name == "Administrador") {
+			res.render('justificacionesAdmin', {
+				title: 'Administrador justificaciones| Permisos',
+				usuario: req.user
+			});
+		}else{
+			req.logout();
+			res.redirect('/');				
+		}
     });
     app.get('/justificacionesEmpl', autentificado, function(req, res) {
-        res.render('justificacionesEmpl', {
-            title: 'Solicitudes/Justificaciones | SIGUCA',
-            usuario: req.user
-        });
+		if (req.session.name == "Empleado") {
+			res.render('justificacionesEmpl', {
+				title: 'Solicitudes/Justificaciones | SIGUCA',
+				usuario: req.user
+			});
+		}else{
+			req.logout();
+			res.redirect('/');				
+		}
     });
     app.get('/justificacion_nueva', autentificado, function(req, res) {
         res.render('justificacion_nueva', {
@@ -382,20 +443,25 @@ module.exports = function(app) {
     });
     //read empleado
     app.get('/empleado', autentificado, function(request, response) {
-        console.log('si entra');
+		if (req.session.name == "Empleado") {
+			console.log('si entra');
 
-        Usuario.find().exec(function(error, empleados) { //cambie Empleado por Usuario segun nuevo CRUD
+			Usuario.find().exec(function(error, empleados) { //cambie Empleado por Usuario segun nuevo CRUD
 
-            if (error) return response.json(error);
+				if (error) return response.json(error);
 
-            return response.render('empleado', {
-                title: 'Nuevo Empleado | SIGUCA',
-                empleados: empleados,
-                usuario: request.user
-            });
+				return response.render('empleado', {
+					title: 'Nuevo Empleado | SIGUCA',
+					empleados: empleados,
+					usuario: request.user
+				});
 
 
-        });
+			});
+		}else{
+			req.logout();
+			res.redirect('/');
+		}
     });
     //update empleado
     app.get('/empleado/edit/:id', autentificado, function(request, response) {
