@@ -1,11 +1,11 @@
 
 
 $(document).ready(function(){
-  
+  alert("entra");
 
   var cal = new CalHeatMap();
   cal.init({
-    itemSelector: "#cal",
+    itemSelector: "#graf",
     cellSize: 3,
     range: 7,
     cellSize: 20,
@@ -31,4 +31,3 @@ cal.highlight(new Date(2014, 5, 18));
 // Add January 5th to already highlighted dates
 cal.highlight(cal.options.highlight.push(new Date(2014, 5, 14)));
 });
-

@@ -1,10 +1,9 @@
 extends layout
 
 block sigucaCSS
-  link(rel='stylesheet', href='/stylesheets/flipclock.css')
   link(rel='stylesheet', href='/stylesheets/sigucaGraficos.css')
-  link(rel='stylesheet', href='/stylesheets/sigucaAyuda.css')
   link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
+  link(rel='stylesheet', href='/stylesheets/cal-heatmap.css')
 
 block gcsNavbarItems
   ul.nav.navbar-nav
@@ -15,23 +14,12 @@ block content
   .container
         .col-xs-8
           h2 Marcas
-          img.img-responsive#grafico(src='/images/todos.PNG', alt='Responsive image')
-
-
-        .col-xs-4#filtros
+          div#graf
+        .col-xs-4
              div.filter
                  label#tHorario(for='horario') 
                    |Soporte Técnico
-             div.filter
-                 label#tGrafico(for='grafico') 
-                   |Tipo de Gráfico: 
-                 .btn-group
-                     button.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown')
-                      | Marcas
-                      span.caret
-                     ul.dropdown-menu
-                      li
-                       a(href='#') Porcentajes
+            
              div.filter
                   label#empleados(for='empleados') 
                    |Empleados: 
@@ -65,10 +53,9 @@ block content
 
                     
 block sigucaJS
-  script(src="/javascripts/graficos.js")
-  script(src="/javascripts/flipclock/libs/prefixfree.min.js")
-  script(src="/javascripts/flipclock/flipclock.min.js")
-  script(src="/javascripts/sigucaMain.js")
+  script(src="/stylesheets/d3.min.js")
+  script(src="/stylesheets/cal-heatmap.min.js")
+  script(src='/stylesheets/graficos.js')
   script(src="/javascripts/jquery-2.0.3.min.js")
   script(src="/javascripts/bootstrap.min.js")
   
