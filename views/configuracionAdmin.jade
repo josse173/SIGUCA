@@ -1,20 +1,14 @@
-extends layoutAdmin
+extends layout
 
 block sigucaCSS
   link(rel='stylesheet', href='/stylesheets/flipclock.css')
   link(rel='stylesheet', href='/stylesheets/sigucaConfiguraciones.css')
   link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
 block imgSession
-  .divSession#divSession
-    img#imgSessionPers(src='images/mercury.jpg', alt='something')  
-    .btn-group.dropup
-                button.btn.btn-default.dropdown-toggle#cSession(type='button', data-toggle='dropdown')
-                  span.caret
-                ul.dropdown-menu
-                  li 
-                   a(href='/') Cerrar Sesión
-block sigucaNavbarItems
- 
+  
+
+block gcsNavbarItems
+  ul.nav.navbar-nav 
 block content
   div.container
     .col-xs-2
@@ -27,7 +21,7 @@ block content
               |Departamento:
           form(action= '/departamento')
             button#empleados.btn.btn-success(name='agregar', onclick= "changeElemt('departamento')", data-toggle="modal" data-target="#addDep") Nuevo
-            button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/departamento") Modificar o Eliminar       
+            button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/departamento") Modificar o Eliminar      
           
           div#horario
             label(for="horario")
@@ -41,39 +35,7 @@ block content
           form(action= '/empleado')     
             button#empleados.btn.btn-success(name='agregar', onclick= "changeElemt('empleado')", data-toggle="modal" data-target="#addEmpl") Nuevo 
             button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/empleado") Modificar o Eliminar
-          //-div#roles
-            label(for="roles")
-              |Rol:
-          //-button#empleados.btn.btn-success(name='agregar', onclick= "changeElemt('departamento')", data-toggle="modal" data-target="#addDep") Nuevo       
-          //-button#areas.btn.btn-success(name='eliminar') Modificar o Eliminar
-          //-div#usuarios
-            label(for="usuarios")
-              |Usuarios:
-          //-form(action= '/usuario')     
-           button#usuarios.btn.btn-success(name='agregar', onclick= "changeElemt('usuario')", data-toggle="modal" data-target="#addUser") Nuevo 
-           button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/usuarioEdit") Modificar o Eliminar
-          //-div#Supervisor
-            label(for="supervisor")
-              |Supervisor:
-          //-form(action= '/supervisor')     
-           button#supervisor.btn.btn-success(name='agregar', onclick= "changeElemt('supervisor')", data-toggle="modal" data-target="#addSuper") Nuevo 
-           button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/supervisorEdit") Modificar o Eliminar
-
-        //- div#busqueda
-        //-     label(for="codInput")
-        //-         |Digite el código de 
-        //-         span#pressElmnt 
-        //-         |:
-        //-       .input-prepend
-        //-       span.add-on
-        //-       input#inputIcon.span2(type='text', placeholder='Ingrese Código', ng-model='query')
-        //- div#irBusqueda
-        //-   button(type="submit")#btn-buscar.btn.btn-primary
-        //-     i.icon-search.icon-white
-        //-     | Buscar
-        //-   button(type="submit")#btn-busquedaAva.btn.btn-primary
-        //-     i.icon-filter.icon-white
-        //-     | Búsqueda Avanzada  
+          
     .col-xs-2
       #addHorario.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
         .modal-dialog
@@ -185,84 +147,10 @@ block content
                     button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
                     button.btn.btn-default(type='submit') Ingresar
       
-      //agregar usuarios
-      #addUser.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
-        .modal-dialog
-            .modal-content
-              .modal-header
-                button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-                h4#myModalLabel.modal-title Añadir nuevo Usuario del Sistema
-              .modal-body
-                div.container#login-container
-   
-                  form(action='/registro', method='post')#login-form.well.span4
-                    h1 SIGUCA
-                    p.subheading Registre un usuario nuevo:
-                    div.form-group
-                      label(for="usernameInput")
-                        |Usuario:
-                      input.form-control#textInput(type="text", name="username", placeholder="Usuario")
-                    div.form-group
-                      label(for="tipoInput")
-                        |Tipo de Usuario:
-                      select.form-control#textInput(type="text", name="tipo") 
-                        option Empleado
-                        option Supervisor
-                        option Administrador
-                    div.form-group
-                      label(for="codTarjeta")
-                        |Código de Empleado:
-                      input.form-control#textInput(type="number", name="codTarjeta", placeholder="Código de Empleado")    
-                    div.form-group
-                      label(for="passwordInput")
-                        |Contraseña:
-                      input.form-control#passInput(type="password", name="password", placeholder="Contraseña")
-                    button(type="submit")#btn-login.btn.btn-primary
-                      i.icon-lock.icon-white
-                      | Ingresar
-              .modal-footer    
-      //agregar Supervisor
-      #addSuper.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
-        .modal-dialog
-            .modal-content
-              .modal-header
-                button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-                h4#myModalLabel.modal-title Añadir nuevo Supervisor
-              .modal-body
-                form(role='form', method="POST", action="/supervisor")
-                  .form-group
-                      label(for='nombre') Nombre:
-                      input#group.form-control(type= 'text', placeholder='Nombre', name= 'nombre')
-                    .form-group
-                      label(for='apellido1') Primer Apellido:
-                      input#apellido1.form-control(type= 'text', placeholder='Primer Apellido', name= 'apellido1')
-                    .form-group
-                      label(for='apellido2') Segundo Apellido:
-                      input#apellido2.form-control(type= 'text', placeholder='Segundo Apellido', name='apellido2')
-                    .form-group
-                      label(for='email') Correo Eléctronico:
-                      input#email.form-control(type= 'email', placeholder='Correo Electronico', name='email')
-                    .form-group
-                      label(for='cedula') Cédula:
-                      input#cedula.form-control(type= 'Number', placeholder='Cédula', name='cedula')
-                    .form-group
-                      label(for='codTarjeta') Código de Empleado:
-                      input#codTarjeta.form-control(type= 'Number', placeholder='Código de Empleado', name='codTarjeta')
-                    .form-group
-                      label(for="area")
-                        |Area a Cargo:
-                      select.form-control#textInput(type="text", name="area") 
-                        option Soporte
-                        option Recursos Humanos
-                        option Contabilidad            
-                    button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
-                    button.btn.btn-default(type='submit') Ingresar
-   
-              .modal-footer    
-  
-
 block sigucaJS
+  script(src="/javascripts/flipclock/libs/prefixfree.min.js")
+  script(src="/javascripts/flipclock/flipclock.min.js")
   script(src="/javascripts/sigucaHome.js")
+  script(src="/javascripts/angular-1.0.8/angular.min.js")
   script(src="/javascripts/jquery-2.0.3.min.js")
   script(src="/javascripts/bootstrap.min.js")
-

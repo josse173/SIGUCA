@@ -10,10 +10,8 @@ block sigucaCSS
 
 
 block imgSession
-
-block sigucaNavbarItems
-  
-
+block gcsNavbarItems
+  ul.nav.navbar-nav
 block content
 
   
@@ -22,29 +20,31 @@ block content
       h3 Marcas Personales
       
       ol
-       
-       table.table.table-hover 
+        if (!marca)
+         table.table.table-hover 
 
-        tr
-            td #Empl 
-            td Dia
-            td Mes
-            td Año
-            td Hora
-            td Minutos
-            td Segundos
-                        
-        each marca, i in marcas
-
-         if (marca.codTarjeta = usuario.codTarjeta) 
           tr
-            td #{marca.codTarjeta}
-            td #{marca.fecha.dia}
-            td #{marca.fecha.mes}
-            td #{marca.fecha.ano}  
-            td #{marca.horaEntrada.hora}
-            td #{marca.horaEntrada.minutos}
-            td #{marca.horaEntrada.segundos}  
+              td #Empl 
+              td Dia
+              td Mes
+              td Año
+              td Hora
+              td Minutos
+              td Segundos
+                          
+          each marca, i in marcas
+
+           if (marca.codTarjeta == usuario.codTarjeta) 
+            tr
+              td #{marca.codTarjeta}
+              td #{marca.fecha.dia}
+              td #{marca.fecha.mes}
+              td #{marca.fecha.ano}  
+              td #{marca.horaEntrada.hora}
+              td #{marca.horaEntrada.minutos}
+              td #{marca.horaEntrada.segundos}
+        else 
+          h1 no hay marcas registradas
             
     .col-xs-4
      h3 Eventos Pendientes   

@@ -87,7 +87,7 @@ html
               li
                 a(href='/logout')
                   img(src='images/cerrar.jpg', alt='something')      
-                  |&nbsp;Supervisor: #{usuario.username}  
+                  |&nbsp;#{usuario.tipo}: #{usuario.username}  
           if (!usuario)
             ul.nav.navbar-nav
               li.active

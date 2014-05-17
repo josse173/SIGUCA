@@ -1,3 +1,15 @@
+//-
+//-SIGUCA Main Jade Layout
+//-SIGUCA principal Jade
+//-
+//-Use block content to include the body of derivated pages
+//-Use block content para incluír el cuerpo de páginas derivadas
+//-
+//-Use block sigucaCSS to include extra css from derivated pages
+//-Use block sigucaCSS para incluír hojas de estilo extra de páginas derivadas
+//-
+//-Use block sigucaJS to add extra javascript from derivated pages
+//-Use block sigucaJS para incluír javascripts extra de páginas derivadas
 doctype 
 html 
   head
@@ -7,11 +19,14 @@ html
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
 
     //Style sheets used
-    link(rel='stylesheet', href='/stylesheets/sigucaMain.css')
+    //link(rel='stylesheet', href='/stylesheets/sigucaMain.css')
     link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
     link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
     link(rel='stylesheet', href='/stylesheets/bootstrap-theme.min.css')
     link(type="image/x-icon" href='/img/favicon.ico')
+    link(rel='stylesheet', href='/stylesheets/sigucaAyuda.css')
+    link(rel='stylesheet', href='/stylesheets/sigucaEscritorio.css')
+
     title SIGUCA
 
     block sigucaCSS
@@ -19,73 +34,80 @@ html
     
   .container-fluid
     // Brand and toggle get grouped for better mobile display
-    .navbar-header
-      button.navbar-toggle(type='button', data-toggle='collapse', data-target='#bs-example-navbar-collapse-1')
-        span.sr-only Toggle navigation
-        span.icon-bar
-        span.icon-bar
-        span.icon-bar
-    img(alt='something', src='images/logo-siguca.png',  href="#")#sigucaLogo    
-    // Collect the nav links, forms, and other content for toggling
-    if (usuario)
-      #bs-example-navbar-collapse-1.collapse.navbar-collapse
-        ul.nav.navbar-nav
-          li.active
-            a.active(href="/escritorioEmpl")
-              i.icon-home.icon-large
-              |&nbsp;Escritorio
-          li
-            a(href='/graficosEmpl')
-              i.icon-bar-chart.icon-large
-              |&nbsp;Gráficos
-          li
-            a(href="/justificacionesEmpl")
-              i.icon-edit.icon-large  
-              |&nbsp;Justificaciones
-          li
-            a(href="/configuracionEmpl")
-              i.icon-cogs.icon-large
-              |&nbsp;Configuracion
-          li
-            a(href='/AyudaEmpl')
-              i.icon-question-sign.icon-large     
-              |&nbsp;Ayuda   
-          li
-            a(href='/registro')
-              i.icon-question-sign.icon-large     
-              |&nbsp;Registro   
-          li
-            a(href='/logout')
-              img#imgSessionPers(src='images/cerrar.jpg', alt='something')      
-              |&nbsp; #{usuario.username} Salir     
-         img(src='images/logo-greencore.png', alt='something',  href="#")#grcSLogo      
-      // /.navbar-collapse
-    // /.if
-    if (!usuario)
-      #bs-example-navbar-collapse-1.collapse.navbar-collapse
-        ul.nav.navbar-nav
-          li.active
-            a.active(href="/registro")
-              i.icon-home.icon-large
-              |&nbsp;Registro
-  // /.container-fluid
+
+   //- Extend block sigucaNavbarItems in external views to add Navigation Elements to Navbar 
+   //- Agregue a este bloque elementos de la barra de navegación en páginas internas
 
  
   body
-    
-    block sigucaNavbarItems 
-                
-  
+    div.navbar.navbar-nav.navbar-fixed-top(role="navigation")
+      div.navbar-header
+        button.navbar-toggle(type="button" data-toggle="collapse" data-target=".navbar-ex1-collapse")
+          span.sr-only
+          span.icon-bar
+          span.icon-bar
+          span.icon-bar
+        span.navbar-brand(href="#")          
+          span#barLogo
+            img(src='images/logo-siguca.png',  href="/Ayuda")#sigucaLogo
+            img(src='images/logo-greencore.png',  href="/Ayuda")#sigucaLogo
+         
+        
+      div.collapse.navbar-collapse.navbar-ex1-collapse.navbar-right
+        block sigucaNavbarItems 
+          if (usuario)
+            ul.nav.navbar-nav
+              li
+                a(href="/escritorioEmpl")
+                  i.icon-home.icon-large
+                  |&nbsp;Escritorio
+              li
+                a(href='/graficosEmpl')
+                  i.icon-bar-chart.icon-large
+                  |&nbsp;Gráficos
+              li.dropdown
+                a.dropdown-toggle( data-toggle='dropdown')
+                  i.icon-edit.icon-large  
+                              |&nbsp;Eventos 
+                              span.caret
+                            ul.dropdown-menu#ba
+                              li
+                                a(href='/justificacionesEmpl') Justificaciones
+                              li.divider
+                              li
+                                a(href='/solicitudes') Solicitudes
+              li
+                a(href="/configuracionEmpl")
+                  i.icon-cogs.icon-large
+                  |&nbsp;Configuracion
+              li
+                a(href='/AyudaEmpl')
+                  i.icon-question-sign.icon-large     
+                  |&nbsp;Acerca de SIGUCA  
+              li
+                a(href='/logout')
+                  img(src='images/cerrar.jpg', alt='something')      
+                  |&nbsp;#{usuario.tipo}: #{usuario.username}  
+          if (!usuario)
+            ul.nav.navbar-nav
+              li.active
+                a.active(href="/registro")
+                  i.icon-home.icon-large
+                  |&nbsp;Registro   
+      br     
     block content
-      
-
-
-    
     block sigucaJS
+    script(src="/js/d3.min.js")
+    script(src="/js/cal-heatmap.min.js")
+    script(src="/js/jquery-2.0.3.min.js")
+    script(src="/js/bootstrap.min.js")
+    script( src='/js/sigucaHome.js')
+    script(src='js/respond-min.js', type='text/javascript')   
+   // script(src='http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js', type='text/javascript')
+    
 
-      script(src="/javascripts/jquery-2.0.3.min.js")
-      script(src="/javascripts/bootstrap.min.js")
-      script(src="/javascripts/snap.svg-min.js")
-      script(src='javascripts/respond-min.js', type='text/javascript')   
-      script(src='http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js', type='text/javascript')
-      script(src="javascripts/svg.js")
+
+      
+      
+    
+      
