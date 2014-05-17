@@ -30,20 +30,6 @@ cal.highlight(new Date(2014, 5, 18));
 
 // Add January 5th to already highlighted dates
 cal.highlight(cal.options.highlight.push(new Date(2014, 5, 14)));
-$('#cal').mousedown(function(event) {
-    switch (event.which) {
-        case 1:
-            alert('Left Mouse button pressed.');
-            break;
-        case 2:
-            alert('Middle Mouse button pressed.');
-            break;
-        case 3:
-            alert('Right Mouse button pressed.');
-            break;
-        default:
-            alert('You have a strange Mouse!');
-    }
-});
+
 });
 

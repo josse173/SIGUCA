@@ -16,23 +16,98 @@ block gcsNavbarItems
         div#cal
       
       .col-xs-4
-       h3 Eventos Pendientes   
-       ul.list-group
-        li.list-group-item
-          a(href='/Justificaciones')
-            span.badge 2 
-            | Solicitudes
-        li.list-group-item
-          a(href='/Justificaciones')
-            span.badge 3 
-            | Justificaciones
+       h3 Filtros   
+       div.filter
+                 label#tHorario(for='horario') 
+                   |Soporte Técnico
+            
+             div.filter
+                  label#empleados(for='empleados') 
+                   |Empleados: 
+                  .btn-group
+                     button#empleadosSelec.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown')
+                      | Todos
+                      span.caret
+                     ul.dropdown-menu
+                      li
+                       a(href="#", onclick= 'changeImageAlex()') Alexander Picado 
+                      li
+                       a(href='#', onclick= 'changeImageCar()') Carlos Solano
+                      li
+                       a(href='#', onclick='changeImageTa()') Tatiana Moreira
+                      li
+                       a(href='#', onclick='changeImageGa()') Gabriel Martinez
+                      li
+                       a(href='#', onclick='changeImageRi()') Rita Cortés
 
-           
+             div.filter
+                  label#fInicio(for='fInicio') 
+                   |Fecha de Inicio: 
+                  .btn-group
+                    input(type = 'date', name = 'fechaInicio', placeholder = '20-10-2013')
+             div.filter
+                  label#fFinal(for='fFinal') 
+                   |Fecha Final: 
+                  .btn-group
+                    input(type = 'date', name = 'fechaFinal', placeholder = '20-10-2013') 
+      .col-xs-4
+      .col-xs-4
+        //- h3 
+        //- ul.list-group
+        //-   li.list-group-item
+        //-     a(href='/Justificaciones')
+        //-       span.badge 2 
+        //-       | Solicitudes
+        //-   li.list-group-item
+        //-     a(href='/Justificaciones')
+        //-       span.badge 3 
+        //-       | Justificaciones
+      .col-xs-4
+        h3 Solicitudes 
+        ul.list-group
+          li.list-group-item
+            a(data-toggle="modal" data-target="#horaExtra")
+              | Solicitud de hora extraordinaria
+          li.list-group-item
+            a(href='/Justificaciones')
+              | Solicitud de permiso antisipado
+        
+      .col-xs-4
+        h3 Pendientes de revisar 
+        ul.list-group
+          li.list-group-item
+            a(href='/Justificaciones')
+              span.badge 2 
+              | Solicitudes
+          li.list-group-item
+            a(href='/Justificaciones')
+              span.badge 3 
+              | Justificaciones
+      #horaExtra.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+          .modal-dialog
+              .modal-content
+                .modal-header
+                  button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+                  h4#myModalLabel.modal-title Solicitar hora extraordinaria
+                .modal-body
+                  form(role='form', method="POST", action="/horasExtra")
+                    .form-group
+                        label(for='fecha') Día:
+                        input#fecha.form-control.clsDatePicker(type='text', name='fecha', placeholder='Fecha')
+                        
+                      .form-group
+                        label(for='apellido1') Hora inicial:
+                        input#apellido1.form-control(type= 'text', placeholder='Hora inicio de horas extras', name= 'apellido1')
+                      .form-group
+                        label(for='apellido2') Hora final:
+                        input#apellido2.form-control(type= 'text', placeholder='Hora final de horas extras', name='apellido2')
+                             
+                      button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
+                      button.btn.btn-default(type='submit') Ingresar
+     
+                .modal-footer  
+
 block sigucaJS
-  script(src="/stylesheets/d3.min.js")
-  script(src="/stylesheets/cal-heatmap.min.js")
-  script(src="/javascripts/jquery-2.0.3.min.js")
-  script(src="/javascripts/bootstrap.min.js")
-  script( src='/stylesheets/sigucaHome.js')
- 
+  //script(src='/js/horasExtras.js')
+  
 
