@@ -183,9 +183,18 @@ module.exports = function(app) {
     });
     app.get('/configuracion', autentificado, function(req, res) {
         if (req.session.name == "Supervisor") {
-            res.render('configuracion', {
-                title: 'Configuración | SIGUCA',
-                usuario: req.user
+            Usuario.find().exec(function(error, empleados) {
+
+                Horario.find().exec(function(error, horarios) {
+
+                    if (error) return res.json(error);
+                    return res.render('configuracion', {
+                        title: 'Configuración Supervisor | SIGUCA',
+                        empleados: empleados,
+                        usuario: req.user,
+                        horarios: horarios
+                    });
+                });
             });
         } else {
             req.logout();
@@ -205,9 +214,20 @@ module.exports = function(app) {
     });
     app.get('/configuracionAdmin', autentificado, function(req, res) {
         if (req.session.name == "Administrador") {
-            res.render('configuracionAdmin', {
-                title: 'Configuración | SIGUCA',
-                usuario: req.user
+
+
+            Usuario.find().exec(function(error, empleados) {
+
+                Horario.find().exec(function(error, horarios) {
+
+                    if (error) return res.json(error);
+                    return res.render('configuracionAdmin', {
+                        title: 'Configuración Administrador | SIGUCA',
+                        empleados: empleados,
+                        usuario: req.user,
+                        horarios: horarios
+                    });
+                });
             });
         } else {
             req.logout();
@@ -288,7 +308,7 @@ module.exports = function(app) {
             horaSalida: h.horaSalida,
             horaInAlmuerzo: h.horaInAlmuerzo,
             horaFnAlmuerzo: h.horaFnAlmuerzo,
-            rangoReceso: h.rangoReceso
+            rangoReceso: h.rangoReceso,
         });
         console.log(h);
         horarioN.save(function(error, user) {
@@ -495,6 +515,8 @@ module.exports = function(app) {
         var newDepartamento = Departamento({
             nombre: e.nombre,
             tipoJornada: e.tipoJornada,
+            idSupervisor: e.idSupervisor,
+            idHorario: e.idHorario,
         });
         newDepartamento.save(function(error, user) {
 

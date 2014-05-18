@@ -18,24 +18,16 @@
           type: Schema.ObjectId,
           ref: 'Usuario'
       },
+      idHorario: {
+          type: Schema.ObjectId,
+          ref: 'Horario'
+      },
       tipoJornada: {
           type: String,
           default: 'Fija'
       }, // Fija - Horas - Excepción
-      horario: {
-          tipo: {
-              type: String,
-              default: 'Diurna'
-          }, // Diurna - Mixta - Nocturna - Excepción
-          horaEntrada: {
-              type: Number,
-              default: 7
-          },
-          horaSalida: {
-              type: Number,
-              default: 3
-          },
-      }
+
+
   });
   SchemaDepartamento.plugin(passportLocalMongoose);
   module.exports = mongoose.model('Departamento', SchemaDepartamento);

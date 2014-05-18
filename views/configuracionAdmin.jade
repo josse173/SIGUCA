@@ -87,8 +87,12 @@ block content
                       label(for='nombre') Nombre:
                       input#group.form-control( type="text", placeholder='Nombre del area', name= "nombre")
                   .form-group
-                      label(for='idSupervisor') Código del supervisor:
-                      input#idSup.form-control( type="Number", placeholder='Código del supervidor', name="idSupervisor")
+                      label(for='idSupervisor') 
+                        |Elija Supervisor:
+                      select.form-control#textInput(type="text", name="idSupervisor") 
+                        each empleado, i in empleados
+                          if (empleado.tipo == "Supervisor")
+                            option(value= empleado.id) #{empleado.nombre} #{empleado.apellido1}
                   .form-group
                       label(for="tipoJornada")
                         |Tipo de Jornada:
@@ -98,7 +102,9 @@ block content
                         option Excepcion    
                   .form-group
                       label(for='horario') Horario:
-                      input#horario.form-control( placeholder='Horario asociado', name = "horario")      
+                      select.form-control#textInput(type="text", name="idHorario") 
+                        each horario, i in horarios
+                            option(value= horario.id) #{horario.nombre} de #{horario.horaEntrada} a #{horario.horaSalida}                
                   button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
                   button.btn.btn-default(type='submit') Ingresar
                 
