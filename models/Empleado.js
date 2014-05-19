@@ -17,12 +17,14 @@ var SchemaEmpleado = new Schema({
 		cedula: { type: Number, default: 0 },
 		codTarjeta: { type: String, default: '' },
 		departamento: {type : Schema.ObjectId, ref : 'Departamento'},
+		horario: {type : Schema.ObjectId, ref : 'Horario'},
 		justificaciones: [{
 			fecha: Date,
 			comentario: { type: String, default: '' },
 			estado: { type: Number, default: 0 }, // Pendiente - Aceptado - Rechazado
 			resolucionPor: {type : Schema.ObjectId, ref : 'Usuario'},
 		}],
+		
 		jornadas: [{
 			horaEntrada: Date,
 			horaSalida: Date,

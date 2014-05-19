@@ -1,7 +1,6 @@
 
 
 $(document).ready(function(){
-  
 
   var cal = new CalHeatMap();
   cal.init({
@@ -32,4 +31,5 @@ cal.highlight(new Date(2014, 5, 18));
 cal.highlight(cal.options.highlight.push(new Date(2014, 5, 14)));
 
 });
+
 

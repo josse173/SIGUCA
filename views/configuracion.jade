@@ -2,15 +2,13 @@ extends layout
 
 block sigucaCSS
   link(rel='stylesheet', href='/stylesheets/sigucaConfiguraciones.css')
-  link(rel='stylesheet', href='/stylesheets/flipclock.css')
-
 
 block gcsNavbarItems
   ul.nav.navbar-nav
   block content
     div.container
       .col-xs-8
-        div#flipClock
+
       .col-xs-4
         
         h3  Seleccione el elemento
@@ -114,12 +112,12 @@ block gcsNavbarItems
               .modal-body
                 button.close(type='button', data-dismiss='modal', aria-hidden='true') × 
                 h4#myModalLabel.modal-title Añadir nuevo Empleado
-                form(role='form', method="POST", action="/empleado")#login-form.well.span4
+                form(role='form', method="POST", action="/empleado")#login-form.well.form-horizontal
                     .form-group
                       label(for='nombre') Nombre:
                       input#group.form-control(type= 'text', placeholder='Nombre', name= 'nombre')
                     .form-group
-                      label(for='apellido1') Primer Apellido:
+                      label(for='apellido1') Primer apellido:
                       input#apellido1.form-control(type= 'text', placeholder='Primer Apellido', name= 'apellido1')
                     .form-group
                       label(for='apellido2') Segundo Apellido:
@@ -127,6 +125,7 @@ block gcsNavbarItems
                     .form-group
                       label(for='email') Correo Eléctronico:
                       input#email.form-control(type= 'email', placeholder='Correo Electronico', name='email')
+                      div#status
                     .form-group
                       label(for='cedula') Cédula:
                       input#cedula.form-control(type= 'Number', placeholder='Cédula', name='cedula')
@@ -152,9 +151,6 @@ block gcsNavbarItems
                     button.btn.btn-default(type='submit') Ingresar
       
 block sigucaJS
-  script(src="/javascripts/flipclock/libs/prefixfree.min.js")
-  script(src="/javascripts/flipclock/flipclock.min.js")
-  script(src="/javascripts/sigucaHome.js")
-  script(src="/javascripts/angular-1.0.8/angular.min.js")
-  script(src="/javascripts/jquery-2.0.3.min.js")
-  script(src="/javascripts/bootstrap.min.js")
+  script(src="/js/mailgun_validator.js")
+  script(src= " /js/configuracionSupervisor.js")
+
