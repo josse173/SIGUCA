@@ -145,7 +145,12 @@ block content
                       select.form-control#textInput(type="text", name="tipo") 
                         option Empleado
                         option Supervisor
-                        option Administrador                    
+                        option Administrador
+                    .form-group
+                      label(for='horario') Departamento:
+                      select.form-control#textInput(type="text", name="idDepartamento") 
+                        each departamento, i in departamentos
+                            option(value= departamento.id) #{departamento.nombre}                        
                     .form-group
                       label(for="passwordInput")
                         |Contraseña:

@@ -11,6 +11,8 @@ var Departamento = require('../models/Departamento');
 var passport = require('passport');
 var Usuario = require('../models/Usuario');
 var Horario = require('../models/Horario');
+var Justificacion = require('../models/Justificaciones');
+var Extra = require('../models/horasExtras');
 
 module.exports = function(app) {
 
@@ -186,13 +188,16 @@ module.exports = function(app) {
             Usuario.find().exec(function(error, empleados) {
 
                 Horario.find().exec(function(error, horarios) {
+                    Departamento.find().exec(function(error, departamentos) {
 
-                    if (error) return res.json(error);
-                    return res.render('configuracion', {
-                        title: 'Configuración Supervisor | SIGUCA',
-                        empleados: empleados,
-                        usuario: req.user,
-                        horarios: horarios
+                        if (error) return res.json(error);
+                        return res.render('configuracionAdmin', {
+                            title: 'Configuración Administrador | SIGUCA',
+                            empleados: empleados,
+                            usuario: req.user,
+                            horarios: horarios,
+                            departamentos: departamentos
+                        });
                     });
                 });
             });
@@ -215,17 +220,19 @@ module.exports = function(app) {
     app.get('/configuracionAdmin', autentificado, function(req, res) {
         if (req.session.name == "Administrador") {
 
-
             Usuario.find().exec(function(error, empleados) {
 
                 Horario.find().exec(function(error, horarios) {
+                    Departamento.find().exec(function(error, departamentos) {
 
-                    if (error) return res.json(error);
-                    return res.render('configuracionAdmin', {
-                        title: 'Configuración Administrador | SIGUCA',
-                        empleados: empleados,
-                        usuario: req.user,
-                        horarios: horarios
+                        if (error) return res.json(error);
+                        return res.render('configuracionAdmin', {
+                            title: 'Configuración Administrador | SIGUCA',
+                            empleados: empleados,
+                            usuario: req.user,
+                            horarios: horarios,
+                            departamentos: departamentos
+                        });
                     });
                 });
             });
@@ -409,6 +416,57 @@ module.exports = function(app) {
             res.redirect('/escritorioEmpl');
         });
     });
+    //create Justificacion
+    app.post('/justificacion', function(req, res) {
+
+        var d = new Date();
+        var j = req.body;
+        var newJustificacion = Justificacion({
+            fecha: ({
+                dia: d.getUTCDate(),
+                mes: (d.getMonth() + 1),
+                ano: d.getFullYear()
+            }),
+            comentario: j.comentario,
+            estado: "Pendiente", //Pendiente, Aceptado, Rechazado
+            comentarioSupervisor: j.comentarioSupervisor,
+            codTarjeta: req.user.codTarjeta,
+            idSupervisor: req.user.idSupervisor,
+        });
+        newJustificacion.save(function(error, user) {
+
+            if (error) res.json(error);
+
+            res.redirect('/justificacionesEmpl');
+        });
+    });
+    //create Horas Extras
+    app.post('/extra', function(req, res) {
+
+        var d = new Date();
+        var j = req.body;
+        var newExtra = Extra({
+            fecha: ({
+                dia: d.getUTCDate(),
+                mes: (d.getMonth() + 1),
+                ano: d.getFullYear()
+            }),
+            comentario: j.comentario,
+            estado: "Pendiente", //Pendiente, Aceptado, Rechazado
+            comentarioSupervisor: j.comentarioSupervisor,
+            codTarjeta: req.user.codTarjeta,
+            idSupervisor: req.user.idSupervisor,
+        });
+        newExtra.save(function(error, user) {
+
+            if (error) res.json(error);
+            if (req.user.tipo == "Empleado") {
+                res.redirect('/justificacionesEmpl');
+            } else {
+                res.redirect('/justificaciones');
+            }
+        });
+    });
     //create empleado
     app.post('/empleado', function(req, res) {
         var e = req.body;
@@ -424,6 +482,7 @@ module.exports = function(app) {
                 email: e.email,
                 cedula: e.cedula,
                 codTarjeta: e.codTarjeta,
+                departamento: e.idDepartamento,
             }), e.password, function(err, usuario) {
                 console.log('Recibimos nuevo usuario:' + e.username + ' de tipo:' + e.tipo);
                 console.log(e);
