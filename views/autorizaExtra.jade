@@ -1,10 +1,8 @@
 extends layout
 
 block sigucaCSS
-    link(rel='stylesheet', href='/stylesheets/flipclock.css')
     link(rel='stylesheet', href='/stylesheets/sigucaEscritorio.css')
     link(rel='stylesheet', href='/stylesheets/sigucaAyuda.css')
-    link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
 block imgSession
   
 
@@ -37,9 +35,3 @@ block content
 					input(type = 'Number', name='TiempoA', placeholder = 'Tiempo a Autorizar')		
 			button.btn.btn-primary(type = 'submit' value='rechazar') |Rechazar
 			button.btn.btn-primary(type = 'submit', value = 'autorizar') |Autorizar	
-            
-block sigucaJS
-    script(src="/javascripts/grafico.js")
-    script(src="/javascripts/reloj.js")
-    script(src="/javascripts/jquery-2.0.3.min.js")
-    script(src="/javascripts/bootstrap.min.js")
