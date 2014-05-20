@@ -1,9 +1,7 @@
 extends layoutEmpl
 
 block sigucaCSS
-  link(rel='stylesheet', href='/stylesheets/flipclock.css')
   link(rel='stylesheet', href='/stylesheets/sigucaConfiguraciones.css')
-  link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
 block imgSession
 
 block gcsNavbarItems
@@ -56,13 +54,4 @@ block content
                                button#ingreso.btn.btn-success(name='ingreso') Ingresar
                                button#cancelar.btn.btn-danger(name='cancelar') Cancelar   
     .col-xs-2
-                    
-   
-block sigucaJS
-  script(src="/javascripts/flipclock/libs/prefixfree.min.js")
-  script(src="/javascripts/flipclock/flipclock.min.js")
-  script(src="/javascripts/sigucaHome.js")
-  script(src="/javascripts/angular-1.0.8/angular.min.js")
-  script(src="/javascripts/jquery-2.0.3.min.js")
-  script(src="/javascripts/bootstrap.min.js")
 
