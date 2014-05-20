@@ -13,12 +13,11 @@ block content
   .container
     
     h1 Lista de Empleados
- 
-      ol
-       table.table.table-hover 
+    ol
+      table.table.table-hover 
         each empleado, i in empleados
           tr
-            td #{empleado.nombre} #{empleado.apellido1} 
+            td #{empleado.username} #{empleado.apellido1} 
             td
                a(href="/empleado/edit/"+empleado.id)  editar
             td
