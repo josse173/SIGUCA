@@ -1,8 +1,6 @@
 
 
 $(document).ready(function(){
-  alert("entra");
-
   var cal = new CalHeatMap();
   cal.init({
     itemSelector: "#graf",
