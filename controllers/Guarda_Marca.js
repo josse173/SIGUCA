@@ -24,53 +24,46 @@ serialPort.open(function () {
     subcod = data.substr(5,6); // Toma desde la posición 5 del código, 6 elementos: 590040155458 -> 401554
     subcod = parseInt(subcod,16); // Convierte el código de Hexadecimal a Decimal:  401554 -> 4199764
     console.log('Codigo: 000'  + subcod); // Se imprime el código anteponiendo 3 ceros al inicio para que se muestre igual que en el llavero
-    guarda();
+    guarda(subcod);
   }); 
 });
 
 // Guarda nueva marca
-exports.guarda = function(req, res) {
+exports.guarda = function(codigo) {
+// function guarda(codigo) {
 	var date = new Date();
-	var marca = new Marca({    
-							dia: {
-						        type: Number,
-						        default: 0
-						    },
-						    mes: {
-						        type: Number,
-						        default: 0
-						    },
-						    ano: {
-						        type: Number,
-						        default: 0
-						    },
-						    tipoMarca: {
-						        type: String,
-						        default: "Entrada" //Entrada-salida-salidaReceso-EntradaReceso-salidaAlmuerzo-entradaAlmuerzo
-						    },
-						    estado: {
-						        type: String,
-						        default: "Normal" //Normal-Omision-Tardia
-						    },
-						    hora: {
-						        type: Number,
-						        default: 0
-						    },
-						    minutos: {
-						        type: Number,
-						        default: 0
-						    },
-						    segundos: {
-						        type: Number,
-						        default: 0
-						    },
-
-						    codTarjeta: { 
-						    	serialPort.subcod 
-						    }
+	var marca = Marca({    
+			dia: ({
+		        date.getUTCDate()    
+		    }),
+		    mes: ({
+		        date.getMonth()
+		    }),
+		    ano: ({
+		        date.getFullYear()
+		    }),
+		    hora: ({
+		        date.getHours()
+		    }),
+		    minutos: ({
+		        date.getMinutes()
+		    }),
+		    segundos: ({
+		        date.getSeconds()
+		    }),
+		    tipoMarca: ({
+				type: String,
+				default: "Entrada" //Entrada-salida-salidaReceso-EntradaReceso-salidaAlmuerzo-entradaAlmuerzo
+			}),
+			estado: ({
+				type: String,
+				default: "Normal" //Normal-Omision-Tardia
+			}),
+			codTarjeta: ({ 
+				codigo
+			})
 	});				 
 	marca.save(function (err) {
 		if (err) throw err;
 	});				
 }
-								
