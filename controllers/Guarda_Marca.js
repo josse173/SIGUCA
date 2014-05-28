@@ -29,26 +29,51 @@ serialPort.open(function () {
     subcod = data.substr(5,6); // De posición 5, agarra 6 espacios
     subcod = parseInt(subcod,16); // de hexa a deci
     console.log('Codigo: 000'  + subcod);
-    guarda()
-
+    guarda();
   }); 
 });
 
 // Guarda nueva marca
 exports.guarda = function(req, res) {
 	var date = new Date();
-	var marca = new Marca(    
-							fecha: ({
-	      						dia: { date.getDay()},
-	      						mes: { date.getMonth() },
-	      						ano: { date.getFullYear() }
-	    					}), 
-	    					horaMarca: ({
-	      						hora: { date.getHours() },
-	      						minutos: { date.getMinutes() },
-	      						segundos: { date.getSeconds() }
-	    					}),
-							codTarjeta: { serialPort.subcod },    					  )
+	var marca = new Marca({    
+							dia: {
+						        type: Number,
+						        default: 0
+						    },
+						    mes: {
+						        type: Number,
+						        default: 0
+						    },
+						    ano: {
+						        type: Number,
+						        default: 0
+						    },
+						    tipoMarca: {
+						        type: String,
+						        default: "Entrada" //Entrada-salida-salidaReceso-EntradaReceso-salidaAlmuerzo-entradaAlmuerzo
+						    },
+						    estado: {
+						        type: String,
+						        default: "Normal" //Normal-Omision-Tardia
+						    },
+						    hora: {
+						        type: Number,
+						        default: 0
+						    },
+						    minutos: {
+						        type: Number,
+						        default: 0
+						    },
+						    segundos: {
+						        type: Number,
+						        default: 0
+						    },
+
+						    codTarjeta: { 
+						    	serialPort.subcod 
+						    }
+	});				 
 	marca.save(function (err) {
 		if (err) throw err;
 	});				
