@@ -1,11 +1,6 @@
 /** SIGUCA  
- *
- *		API del Empleado
- *				crea - Crea nuevo Empleado
- *				registra - Registra Empleado
- *				buscaPorCedula - Busca a un Empleado por cédula
- *				lista - Lista a todos los Empleados
- *
+* Registro de Marca en la Base de Datos
+*
 **/
 
 var Marca = require('../models/Marca.js');
@@ -26,9 +21,9 @@ serialPort.open(function () {
   console.log(current);
   serialPort.on("data", function(data) {
     //sleep.sleep(5); // 5 segundos
-    subcod = data.substr(5,6); // De posición 5, agarra 6 espacios
-    subcod = parseInt(subcod,16); // de hexa a deci
-    console.log('Codigo: 000'  + subcod);
+    subcod = data.substr(5,6); // Toma desde la posición 5 del código, 6 elementos: 590040155458 -> 401554
+    subcod = parseInt(subcod,16); // Convierte el código de Hexadecimal a Decimal:  401554 -> 4199764
+    console.log('Codigo: 000'  + subcod); // Se imprime el código anteponiendo 3 ceros al inicio para que se muestre igual que en el llavero
     guarda();
   }); 
 });
