@@ -385,35 +385,159 @@ module.exports = function(app) {
 
         });
     });
-    //create marca
+    //create marca por sistema
     app.post('/marca', function(req, res) {
 
-        var d = new Date();
-        var horaActual = "la fecha y hora actual es: " + d.getUTCDate() + "-" + (d.getMonth() + 1) + "-" + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
-        console.log("hora de entrada" + horaActual);
-        var usuario = req.user;
         var m = req.body;
-        console.log('el codigo es' + usuario);
-        var newMarca = Marca({
-            fecha: ({
-                dia: d.getUTCDate(),
-                mes: (d.getMonth() + 1),
-                ano: d.getFullYear()
-            }),
-            horaEntrada: ({
-                hora: d.getHours(),
-                minutos: d.getMinutes(),
-                segundos: d.getSeconds()
-            }),
+        var newMarca;
+        var d = new Date();
+        var fechaActual = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + (d.getUTCDate() - 1);
 
-            codTarjeta: req.user.codTarjeta
-        });
-        newMarca.save(function(error, user) {
+        switch (req.body.marca) { //controla el tipo de marca
 
-            if (error) res.json(error);
+            case "entrada":
+                newMarca = Marca({
+                    tipoMarca: "Entrada",
+                    dia: (d.getUTCDate() - 1),
+                    mes: (d.getMonth() + 1),
+                    ano: d.getFullYear(),
+                    hora: d.getHours(),
+                    minutos: d.getMinutes(),
+                    segundos: d.getSeconds(),
+                    codTarjeta: req.user.codTarjeta,
 
-            res.redirect('/escritorioEmpl');
-        });
+                });
+
+                newMarca.save(function(error, user) {
+
+                    if (error) return res.json(error);
+
+                    res.redirect('/escritorioEmpl');
+
+                });
+                console.log("si entro a actualizar entrada");
+
+                break;
+
+            case "salida":
+                newMarca = Marca({
+                    tipoMarca: "Salida",
+                    dia: (d.getUTCDate() - 1),
+                    mes: (d.getMonth() + 1),
+                    ano: d.getFullYear(),
+                    hora: d.getHours(),
+                    minutos: d.getMinutes(),
+                    segundos: d.getSeconds(),
+                    codTarjeta: req.user.codTarjeta,
+
+                });
+
+                newMarca.save(function(error, user) {
+
+                    if (error) return res.json(error);
+
+                    res.redirect('/escritorioEmpl');
+
+                });
+                break;
+
+            case "salidaReceso":
+
+                newMarca = Marca({
+                    tipoMarca: "salidaReceso",
+                    dia: (d.getUTCDate() - 1),
+                    mes: (d.getMonth() + 1),
+                    ano: d.getFullYear(),
+                    hora: d.getHours(),
+                    minutos: d.getMinutes(),
+                    segundos: d.getSeconds(),
+                    codTarjeta: req.user.codTarjeta,
+
+                });
+
+                newMarca.save(function(error, user) {
+
+                    if (error) return res.json(error);
+
+                    res.redirect('/escritorioEmpl');
+
+                });
+                break;
+
+            case "entradaReceso":
+
+                newMarca = Marca({
+                    tipoMarca: "entradaReceso",
+                    dia: (d.getUTCDate() - 1),
+                    mes: (d.getMonth() + 1),
+                    ano: d.getFullYear(),
+                    hora: d.getHours(),
+                    minutos: d.getMinutes(),
+                    segundos: d.getSeconds(),
+                    codTarjeta: req.user.codTarjeta,
+
+                });
+
+                newMarca.save(function(error, user) {
+
+                    if (error) return res.json(error);
+
+                    res.redirect('/escritorioEmpl');
+
+                });
+                break;
+
+            case "salidaAlmuerzo":
+
+                newMarca = Marca({
+                    tipoMarca: "salidaAlmuerzo",
+                    dia: (d.getUTCDate() - 1),
+                    mes: (d.getMonth() + 1),
+                    ano: d.getFullYear(),
+                    hora: d.getHours(),
+                    minutos: d.getMinutes(),
+                    segundos: d.getSeconds(),
+                    codTarjeta: req.user.codTarjeta,
+
+                });
+                newMarca.save(function(error, user) {
+
+                    if (error) return res.json(error);
+
+                    res.redirect('/escritorioEmpl');
+
+                });
+                break;
+
+            case "entradaAlmuerzo":
+
+                newMarca = Marca({
+                    tipoMarca: "entradaAlmuerzo",
+                    dia: (d.getUTCDate() - 1),
+                    mes: (d.getMonth() + 1),
+                    ano: d.getFullYear(),
+                    hora: d.getHours(),
+                    minutos: d.getMinutes(),
+                    segundos: d.getSeconds(),
+                    codTarjeta: req.user.codTarjeta,
+
+                });
+
+                newMarca.save(function(error, user) {
+
+                    if (error) return res.json(error);
+
+                    res.redirect('/escritorioEmpl');
+
+                });
+                break;
+
+            default:
+                console.log("hubo un error");
+                break;
+        }
+
+
     });
     //create Justificacion
     app.post('/justificacion', function(req, res) {

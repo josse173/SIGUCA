@@ -23,8 +23,9 @@ block content
 
           tr
               td #Empl 
+              td Tipo Marca
               td Dia
-              td Mes
+              td mes
               td Año
               td Hora
               td Minutos
@@ -35,12 +36,14 @@ block content
            if (marca.codTarjeta == usuario.codTarjeta) 
             tr
               td #{marca.codTarjeta}
+              td #{marca.tipoMarca}
               td #{marca.dia}
               td #{marca.mes}
-              td #{marca.ano}  
+              td #{marca.ano}
               td #{marca.hora}
               td #{marca.minutos}
               td #{marca.segundos}
+                     
         else 
           h1 no hay marcas registradas
             
@@ -48,10 +51,10 @@ block content
      h3 Eventos Pendientes   
      ul.list-group
         li.list-group-item
-            span.badge 2
+            span.badge 0
             | Solicitud Ausencias
         li.list-group-item
-            span.badge 18
+            span.badge 0
             | Justificaciones
         li.list-group-item
             span.badge 0
@@ -88,24 +91,25 @@ block content
                   tr
                     modal.group     
                           td
-                            button.btn.btn-success(type='submit', name ='entrada') Entrada
+                            
+                            button.btn.btn-success(type='submit', value = 'entrada', name = 'marca') Entrada
                     modal.group
                           td
-                            button.btn.btn-success(type='submit' , name ='salida') Salida
+                            button.btn.btn-success(type='submit' , value = 'salida', name = 'marca') Salida
                   tr
                     modal.group     
                           td
-                            button.btn.btn-warning(type='submit', name ='salidaReceso') Salida Receso
+                            button.btn.btn-warning(type='submit', value = 'salidaReceso', name = 'marca') Salida Receso
                     modal.group
                           td
-                            button.btn.btn-warning(type='submit', name ='entradaReceso') Entrada Receso          
+                            button.btn.btn-warning(type='submit', value = 'entradaReceso', name = 'marca') Entrada Receso          
                   tr
                     modal.group     
                           td
-                            button.btn.btn-primary(type='submit', name ='salidaAlmuerzo') Salida Almuerzo
+                            button.btn.btn-primary(type='submit', value = 'salidaAlmuerzo', name = 'marca') Salida Almuerzo
                     modal.group
                           td
-                            button.btn.btn-primary(type='submit', , name ='entradaAlmuerzo') Entrada Almuerzo                    
+                            button.btn.btn-primary(type='submit', value = 'entradaAlmuerzo', name = 'marca') Entrada Almuerzo                    
                   tr   
                     modal.group
                       td             
