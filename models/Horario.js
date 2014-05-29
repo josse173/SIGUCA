@@ -13,6 +13,10 @@
           type: String,
           default: ''
       },
+      tipo: { //Fijo-Horas
+          type: String,
+          default: 'Fijo'
+      },
       horaEntrada: {
           type: String,
           default: '8:00'
@@ -21,17 +25,21 @@
           type: String,
           default: '17:00'
       },
-      horaInAlmuerzo: {
+      horaInAlmuerzo: { //hora inicio almuerzo
           type: String,
           default: '12:00'
       },
-      horaFnAlmuerzo: {
+      horaFnAlmuerzo: { //hora finaliza almuerzo
           type: String,
           default: '13:00'
       },
       rangoReceso: {
           type: String,
           default: '45m'
+      },
+      rangoJornada: { //horas a trabajar por dia
+          type: Number,
+          default: 6
       }
   });
 

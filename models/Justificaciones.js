@@ -10,20 +10,22 @@ var mongoose = require('mongoose'),
     passportLocalMongoose = require('passport-local-mongoose');
 //Crear el esquema de justificacion
 var SchemaJustificacion = new Schema({
-    fecha: ({
-        dia: {
-            type: Number,
-            default: 0
-        },
-        mes: {
-            type: Number,
-            default: 0
-        },
-        ano: {
-            type: Number,
-            default: 0
-        }
-    }),
+    dia: {
+        type: Number,
+        default: 0
+    },
+    mes: {
+        type: Number,
+        default: 0
+    },
+    ano: {
+        type: Number,
+        default: 0
+    },
+    tipo: {
+        type: String,
+        default: 'Justificacion' //Justificacion-Extra
+    },
     comentario: {
         type: String,
         default: ''
@@ -35,10 +37,6 @@ var SchemaJustificacion = new Schema({
     codTarjeta: {
         type: Number,
         default: 0
-    },
-    idSupervisor: {
-        type: Schema.ObjectId,
-        ref: 'Supervisor'
     },
     comentarioSupervisor: {
         type: String,

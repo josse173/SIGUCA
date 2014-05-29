@@ -81,9 +81,17 @@ module.exports = function(app) {
 
     app.get('/escritorio', autentificado, function(req, res) {
         if (req.session.name == "Supervisor") {
-            res.render('escritorio', {
-                usuario: req.user
+            Usuario.find().exec(function(error, empleados) {
+
+                if (error) return res.json(error);
+                return res.render('escritorio', {
+                    title: 'Escritorio Supervisor | SIGUCA',
+                    empleados: empleados,
+                    usuario: req.user,
+
+                });
             });
+
         } else {
             req.logout();
             res.redirect('/');

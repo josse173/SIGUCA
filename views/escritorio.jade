@@ -24,20 +24,12 @@ block content
                   label#empleados(for='empleados') 
                    |Empleados: 
                   .btn-group
-                     button#empleadosSelec.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown')
-                      | Todos
-                      span.caret
-                     ul.dropdown-menu
-                      li
-                       a(href="#", onclick= 'changeImageAlex()') Alexander Picado 
-                      li
-                       a(href='#', onclick= 'changeImageCar()') Carlos Solano
-                      li
-                       a(href='#', onclick='changeImageTa()') Tatiana Moreira
-                      li
-                       a(href='#', onclick='changeImageGa()') Gabriel Martinez
-                      li
-                       a(href='#', onclick='changeImageRi()') Rita Cortés
+                     .btn-group
+                    select.form-control#textInput(type="text", name="idSupervisor") 
+                        option(value= todos) Todos
+                        each empleado, i in empleados
+                          if (empleado.tipo == "Empleado")
+                            option(value= empleado.id) #{empleado.nombre} #{empleado.apellido1}
 
              div.filter
                   label#fInicio(for='fInicio') 
@@ -138,5 +130,6 @@ block sigucaJS
   script(src="/js/d3.min.js")
   script(src="/js/cal-heatmap.min.js")
   //script(src='/js/horasExtras.js')
+  script(src="/js/bootstrap.min.js")
   
 
