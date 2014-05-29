@@ -2,17 +2,15 @@
  * GET home page.
  * Rutas
  */
-require('../models/roles');
-var Empleado = require('../models/Empleado');
+
 var mongoose = require('mongoose');
 var Marca = require('../models/Marca');
-var Supervisor = require('../models/Supervisor');
 var Departamento = require('../models/Departamento');
 var passport = require('passport');
 var Usuario = require('../models/Usuario');
 var Horario = require('../models/Horario');
 var Justificacion = require('../models/Justificaciones');
-var Extra = require('../models/horasExtras');
+
 
 module.exports = function(app) {
 
@@ -306,13 +304,6 @@ module.exports = function(app) {
             usuario: req.user
         });
     });
-    app.get('/roles', autentificado, function(req, res) {
-        res.render('roles', {
-            title: 'SIGUCA - Administración de Roles',
-            rol: req.rol,
-            nombre: req.nombre
-        });
-    });
     //create Horario
     app.post('/horarioN', function(req, res) {
 
@@ -446,33 +437,6 @@ module.exports = function(app) {
             if (error) res.json(error);
 
             res.redirect('/justificacionesEmpl');
-        });
-    });
-    //create Horas Extras
-    app.post('/extra', function(req, res) {
-
-        var d = new Date();
-        var j = req.body;
-        var newExtra = Extra({
-            fecha: ({
-                dia: d.getUTCDate(),
-                mes: (d.getMonth() + 1),
-                ano: d.getFullYear()
-            }),
-            comentario: j.comentario,
-            estado: "Pendiente", //Pendiente, Aceptado, Rechazado
-            comentarioSupervisor: j.comentarioSupervisor,
-            codTarjeta: req.user.codTarjeta,
-            idSupervisor: req.user.idSupervisor,
-        });
-        newExtra.save(function(error, user) {
-
-            if (error) res.json(error);
-            if (req.user.tipo == "Empleado") {
-                res.redirect('/justificacionesEmpl');
-            } else {
-                res.redirect('/justificaciones');
-            }
         });
     });
     //create empleado
