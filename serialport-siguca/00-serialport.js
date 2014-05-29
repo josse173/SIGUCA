@@ -22,12 +22,12 @@ function getDateTime() {
 
 }
 
-var sleep = require("sleep");
+//var sleep = require("sleep");
 var serialport = require("serialport");
 var SerialPort = serialport.SerialPort;
 var serialPort = new SerialPort("/dev/ttyO1", {
   baudrate: 9600,
-  parser: serialport.parsers.readline()
+  parser: serialport.parsers.readline("\03","ascii")
 }, false); 
 
 serialPort.open(function () {
