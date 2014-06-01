@@ -1,16 +1,16 @@
 
-
 $(document).ready(function(){
 
   var cal = new CalHeatMap();
   cal.init({
     itemSelector: "#cal",
     cellSize: 3,
-    range: 7,
+    range: 14,
     cellSize: 20,
     tooltip: true,
     legendColors: ["gray","green"],
     domain: "day",
+    subDomain: "hour",
     colLimit: 24,
     cellPadding: 8,
     verticalOrientation: true,

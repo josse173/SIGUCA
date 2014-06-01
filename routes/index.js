@@ -567,7 +567,7 @@ module.exports = function(app) {
     //create empleado
     app.post('/empleado', autentificado, function(req, res) {
 	
-	        if (req.session.name == "Administrador" || req.session.name == "Supervisor"  ) {
+	        if (req.session.name == "Administrador" || req.session.name == "Supervisor" ) {
 				var e = req.body;
 
 				Usuario.register(new Usuario({
@@ -594,7 +594,13 @@ module.exports = function(app) {
 						}
 					}
 				);
-				res.redirect('/configuracionAdmin');
+                if (req.session.name == "Administrador"){
+                   res.redirect('/configuracionAdmin'); 
+                }
+                if (req.session.name == "Supervisor"){
+                   res.redirect('/configuracion'); 
+                }
+				
 			} else {
 				req.logout();
 				res.redirect('/');
