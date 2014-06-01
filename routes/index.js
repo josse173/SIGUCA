@@ -21,7 +21,7 @@ module.exports = function(app) {
     });
 
     app.post('/login', passport.authenticate('local'), function(req, res) {
-        req.session.name = req.user.tipo; // Setea el tipo de Usuario (No lo mas conveniente, cuestion de tiempo, funciona).
+        req.session.name = req.user.tipo;
         if (req.session.name == "Administrador") {
             res.redirect('/escritorioAdmin');
         }
@@ -33,7 +33,7 @@ module.exports = function(app) {
         }
     });
 
-    app.get('/logout', function(req, res) {
+    app.get('/logout',autentificado, function(req, res) {
         req.logout();
         res.redirect('/');
     });
@@ -42,7 +42,7 @@ module.exports = function(app) {
         res.render('registro', {});
     });
 
-    app.post('/registro', function(req, res) {
+    app.post('/registro',autentificado, function(req, res) {
         Usuario.register(new Usuario({
             username: req.body.username,
             tipo: req.body.tipo
@@ -305,7 +305,7 @@ module.exports = function(app) {
         });
     });
     //create Horario
-    app.post('/horarioN', function(req, res) {
+    app.post('/horarioN', autentificado, function(req, res) {
 
         var h = req.body;
         var horarioN = Horario({
@@ -355,7 +355,7 @@ module.exports = function(app) {
 
         });
     });
-    app.put('/horarioN/:id', function(req, res) {
+    app.put('/horarioN/:id',autentificado, function(req, res) {
 
         var horario = req.body,
             horarioId = req.params.id;
@@ -386,7 +386,7 @@ module.exports = function(app) {
         });
     });
     //create marca por sistema
-    app.post('/marca', function(req, res) {
+    app.post('/marca', autentificado, function(req, res) {
 
         var m = req.body;
         var newMarca;
@@ -540,7 +540,7 @@ module.exports = function(app) {
 
     });
     //create Justificacion
-    app.post('/justificacion', function(req, res) {
+    app.post('/justificacion', autentificado, function(req, res) {
 
         var d = new Date();
         var j = req.body;
@@ -564,43 +564,40 @@ module.exports = function(app) {
         });
     });
     //create empleado
-    app.post('/empleado', function(req, res) {
-        var e = req.body;
+    app.post('/empleado', autentificado, function(req, res) {
+	
+	        if (req.session.name == "Administrador") {
+				var e = req.body;
 
-        Usuario.register(new Usuario({ //cambie Empleado por Usuario segun nuevo CRUD
+				Usuario.register(new Usuario({
 
-                username: e.username,
-                tipo: e.tipo,
-                estado: "Activo",
-                nombre: e.nombre,
-                apellido1: e.apellido1,
-                apellido2: e.apellido2,
-                email: e.email,
-                cedula: e.cedula,
-                codTarjeta: e.codTarjeta,
-                departamento: e.idDepartamento,
-            }), e.password, function(err, usuario) {
-                console.log('Recibimos nuevo usuario:' + e.username + ' de tipo:' + e.tipo);
-                console.log(e);
-                if (err) {
-                    console.log('usuario ya existe desde error');
-                    res.json(error);
-                    return res.render("registro", {
-                        info: "Disculpe, el usuario ya existe. Intente de nuevo."
-                    });
-                }
-                passport.authenticate('local')(req, res, function() {
-                    if (req.session.name == "Administrador") {
-
-                        res.redirect('/configuracionAdmin');
-                    } else res.redirect('/configuracion');
-                });
-            }
-
-
-        );
-
-        console.log(e);
+					username: e.username,
+					tipo: e.tipo,
+					estado: "Activo",
+					nombre: e.nombre,
+					apellido1: e.apellido1,
+					apellido2: e.apellido2,
+					email: e.email,
+					cedula: e.cedula,
+					codTarjeta: e.codTarjeta,
+					departamento: e.idDepartamento,
+					}), e.password, function(err, usuario) {
+						`console.log('Recibimos nuevo usuario:' + e.username + ' de tipo:' + e.tipo);
+						console.log(e);
+						if (err) {
+							console.log('usuario ya existe desde error');
+							res.json(error);
+							return res.render("registro", {
+								info: "Disculpe, el usuario ya existe. Intente de nuevo."
+							});
+						}
+					}
+				);
+				res.redirect('/configuracionAdmin');
+			} else {
+				req.logout();
+				res.redirect('/');
+			}
     });
     //read empleado
     app.get('/empleado', autentificado, function(req, res) {
@@ -664,7 +661,7 @@ module.exports = function(app) {
         });
     });
     //create Departamento
-    app.post('/departamento', function(req, res) {
+    app.post('/departamento',autentificado, function(req, res) {
 
         var e = req.body;
         var newDepartamento = Departamento({
@@ -710,7 +707,7 @@ module.exports = function(app) {
 
         });
     });
-    app.put('/departamento/:id', function(req, res) {
+    app.put('/departamento/:id',autentificado, function(req, res) {
 
         var departamento = req.body,
             departamentoId = req.params.id;
