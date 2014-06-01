@@ -5,7 +5,7 @@ block sigucaCSS
 
 block gcsNavbarItems
   ul.nav.navbar-nav
-  block content
+block content
     div.container
       .col-xs-8
 
@@ -18,8 +18,7 @@ block gcsNavbarItems
               |Departamento:
           form(action= '/departamento')
             button#empleados.btn.btn-success(name='agregar', onclick= "changeElemt('departamento')", data-toggle="modal" data-target="#addDep") Nuevo
-            button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/departamento") Modificar o Eliminar      
-          
+            button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/departamento") Modificar o Eliminar                
           div#horario
             label(for="horario")
               |Horario:
@@ -112,7 +111,7 @@ block gcsNavbarItems
               .modal-body
                 button.close(type='button', data-dismiss='modal', aria-hidden='true') × 
                 h4#myModalLabel.modal-title Añadir nuevo Empleado
-                form(role='form', method="POST", action="/empleado")#login-form.well.form-horizontal
+                form(role='form', method="POST", action="/empleado")#login-form.well.span4
                     .form-group
                       label(for='nombre') Nombre:
                       input#group.form-control(type= 'text', placeholder='Nombre', name= 'nombre')

@@ -1,3 +1,4 @@
+
 /*
  * GET home page.
  * Rutas
@@ -42,40 +43,40 @@ module.exports = function(app) {
         res.render('registro', {});
     });
 
-    app.post('/registro',autentificado, function(req, res) {
-        Usuario.register(new Usuario({
-            username: req.body.username,
-            tipo: req.body.tipo
-        }), req.body.password, function(err, usuario) {
-            console.log('Recibimos nuevo usuario:' + req.body.username + ' de tipo:' + req.body.tipo);
-            console.log(req.body);
-            if (err) {
-                return res.render("registro", {
-                    info: "Disculpe, el usuario ya existe. Intente de nuevo."
-                });
-            }
-            if (req.body.tipo == "Administrador") {
-                passport.authenticate('local')(req, res, function() {
-                    res.redirect('/escritorioAdmin');
-                });
-            } else {
-                if (req.body.tipo == "Supervisor") {
-                    passport.authenticate('local')(req, res, function() {
-                        res.redirect('/escritorio');
-                    });
-                } else {
-                    if (req.body.tipo == "Empleado") {
-                        passport.authenticate('local')(req, res, function() {
-                            res.redirect('/escritorioEmpl');
-                        });
-                    }
+     app.post('/registro',autentificado, function(req, res) {
+         Usuario.register(new Usuario({
+             username: req.body.username,
+             tipo: req.body.tipo
+         }), req.body.password, function(err, usuario) {
+             //console.log('Recibimos nuevo usuario:' + req.body.username + ' de tipo:' + req.body.tipo);
+             console.log(req.body);
+             if (err) {
+                 return res.render("registro", {
+                     info: "Disculpe, el usuario ya existe. Intente de nuevo."
+                 });
+             }
+             if (req.body.tipo == "Administrador") {
+                 passport.authenticate('local')(req, res, function() {
+                     res.redirect('/escritorioAdmin');
+                 });
+             } else {
+                 if (req.body.tipo == "Supervisor") {
+                     passport.authenticate('local')(req, res, function() {
+                         res.redirect('/escritorio');
+                     });
+                 } else {
+                     if (req.body.tipo == "Empleado") {
+                         passport.authenticate('local')(req, res, function() {
+                             res.redirect('/escritorioEmpl');
+                         });
+                     }
 
-                }
+                 }
 
-            }
+             }
 
-        });
-    });
+         });
+     });
 
     app.get('/escritorio', autentificado, function(req, res) {
         if (req.session.name == "Supervisor") {
@@ -566,7 +567,7 @@ module.exports = function(app) {
     //create empleado
     app.post('/empleado', autentificado, function(req, res) {
 	
-	        if (req.session.name == "Administrador") {
+	        if (req.session.name == "Administrador" || req.session.name == "Supervisor"  ) {
 				var e = req.body;
 
 				Usuario.register(new Usuario({
@@ -582,7 +583,7 @@ module.exports = function(app) {
 					codTarjeta: e.codTarjeta,
 					departamento: e.idDepartamento,
 					}), e.password, function(err, usuario) {
-						`console.log('Recibimos nuevo usuario:' + e.username + ' de tipo:' + e.tipo);
+						console.log('Recibimos nuevo usuario:' + e.username + ' de tipo:' + e.tipo);
 						console.log(e);
 						if (err) {
 							console.log('usuario ya existe desde error');

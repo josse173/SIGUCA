@@ -1,5 +1,4 @@
 
-
 input:not([type=submit]) {
     border: 1px solid white; 
     -webkit-box-shadow: 
@@ -18,8 +17,8 @@ input:not([type=submit]) {
 }
 
 #login-container {
-  width: 423px;
-  margin: 40px auto;
+  width: 404px;
+  margin-top: 117px;
 }
 
 #login-container label {
@@ -38,3 +37,4 @@ input:not([type=submit]) {
   color: #14100C;
   
 }
+.navbar {visibility:hidden;}
