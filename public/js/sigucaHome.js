@@ -5,22 +5,24 @@ $(document).ready(function(){
   cal.init({
     itemSelector: "#cal",
     cellSize: 3,
-    range: 14,
+    range: 2,
     cellSize: 20,
     tooltip: true,
     legendColors: ["gray","green"],
-    domain: "day",
+    domain: "week",
     subDomain: "hour",
     colLimit: 24,
     cellPadding: 8,
     verticalOrientation: true,
-    legend: [1, 2, 3, 4],
+    legend: [2, 4, 6, 8],
 	legendColors: ["#B2E9B2", "#232181"],
     label: {
 		position: "right",
 		width: 500,
 		offset: {x: 10, y: 30}
-	}
+	},
+    previousSelector: "#previous",
+    nextSelector: "#next"
 
    
    });

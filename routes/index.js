@@ -124,17 +124,7 @@ module.exports = function(app) {
             res.redirect('/');
         }
     });
-    app.get('/graficos', autentificado, function(req, res) {
-        if (req.session.name == "Supervisor") {
-            res.render('graficos', {
-                title: 'Graficos | SIGUCA',
-                usuario: req.user
-            });
-        } else {
-            req.logout();
-            res.redirect('/');
-        }
-    });
+  
     app.get('/graficosAdmin', autentificado, function(req, res) {
         if (req.session.name == "Administrador") {
             res.render('graficosAdmin', {

@@ -33,4 +33,8 @@
 .empleadoAu{
 	margin-top: 43px;
 }
+#previous, #next{
+	margin-bottom: 10px;
+}
+
 
