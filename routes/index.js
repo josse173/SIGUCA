@@ -38,46 +38,6 @@ module.exports = function(app) {
         req.logout();
         res.redirect('/');
     });
-
-    app.get('/registro', autentificado, function(req, res) {
-        res.render('registro', {});
-    });
-
-     app.post('/registro',autentificado, function(req, res) {
-         Usuario.register(new Usuario({
-             username: req.body.username,
-             tipo: req.body.tipo
-         }), req.body.password, function(err, usuario) {
-             //console.log('Recibimos nuevo usuario:' + req.body.username + ' de tipo:' + req.body.tipo);
-             console.log(req.body);
-             if (err) {
-                 return res.render("registro", {
-                     info: "Disculpe, el usuario ya existe. Intente de nuevo."
-                 });
-             }
-             if (req.body.tipo == "Administrador") {
-                 passport.authenticate('local')(req, res, function() {
-                     res.redirect('/escritorioAdmin');
-                 });
-             } else {
-                 if (req.body.tipo == "Supervisor") {
-                     passport.authenticate('local')(req, res, function() {
-                         res.redirect('/escritorio');
-                     });
-                 } else {
-                     if (req.body.tipo == "Empleado") {
-                         passport.authenticate('local')(req, res, function() {
-                             res.redirect('/escritorioEmpl');
-                         });
-                     }
-
-                 }
-
-             }
-
-         });
-     });
-
     app.get('/escritorio', autentificado, function(req, res) {
         if (req.session.name == "Supervisor") {
             Usuario.find().exec(function(error, empleados) {
