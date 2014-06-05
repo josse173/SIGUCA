@@ -80,29 +80,27 @@ block content
                 button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
                 h4#myModalLabel.modal-title Añadir nuevo departamento
               .modal-body
-                form(role='form', method="POST", action="/departamento")
+                form(role='form', method="POST", action="/departamento")#login-form.well.span4
                   .form-group
                       label(for='nombre') Nombre:
-                      input#group.form-control( type="text", placeholder='Nombre del area', name= "nombre")
+                        input#group.form-control( type="text", placeholder='Nombre del area', name= "nombre")
                   .form-group
                       label(for='idSupervisor') 
                         |Elija Supervisor:
-                      select.form-control#textInput(type="text", name="idSupervisor") 
-                        each empleado, i in empleados
-                          if (empleado.tipo == "Supervisor")
-                            option(value= empleado.id) #{empleado.nombre} #{empleado.apellido1}
-                  .form-group
+                        select.form-control#textInput(type="text", name="idSupervisor") 
+                          each empleado, i in empleados
+                            if (empleado.tipo == "Supervisor")
+                              option(value= empleado.id) #{empleado.nombre} #{empleado.apellido1}
                       label(for="tipoJornada")
                         |Tipo de Jornada:
-                      select.form-control#textInput(type="text", name="tipoJornada") 
-                        option Fija
-                        option Horas
-                        option Excepcion    
-                  .form-group
+                        select.form-control#textInput(type="text", name="tipoJornada") 
+                          option Fija
+                          option Horas
+                          option Excepcion    
                       label(for='horario') Horario:
-                      select.form-control#textInput(type="text", name="idHorario") 
-                        each horario, i in horarios
-                            option(value= horario.id) #{horario.nombre} de #{horario.horaEntrada} a #{horario.horaSalida}                
+                        select.form-control#textInput(type="text", name="idHorario") 
+                          each horario, i in horarios
+                              option(value= horario.id) #{horario.nombre} de #{horario.horaEntrada} a #{horario.horaSalida}                
                   button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
                   button.btn.btn-default(type='submit') Ingresar
                 
@@ -116,43 +114,39 @@ block content
                 h4#myModalLabel.modal-title Añadir nuevo Empleado
                 form(role='form', method="POST", action="/empleado")#login-form.well.span4
                     .form-group
+                      h4 Información Básica
                       label(for='nombre') Nombre:
-                      input#group.form-control(type= 'text', placeholder='Nombre', name= 'nombre')
+                        input#group.form-control(type= 'text', placeholder='Nombre', name= 'nombre')
                     .form-group
                       label(for='apellido1') Primer Apellido:
-                      input#apellido1.form-control(type= 'text', placeholder='Primer Apellido', name= 'apellido1')
-                    .form-group
+                        input#apellido1.form-control(type= 'text', placeholder='Primer Apellido', name= 'apellido1')
                       label(for='apellido2') Segundo Apellido:
-                      input#apellido2.form-control(type= 'text', placeholder='Segundo Apellido', name='apellido2')
-                    .form-group
-                      label(for='email') Correo Eléctronico:
-                      input#email.form-control(type= 'email', placeholder='Correo Electronico', name='email')
-                    .form-group
+                       input#apellido2.form-control(type= 'text', placeholder='Segundo Apellido', name='apellido2')  
                       label(for='cedula') Cédula:
-                      input#cedula.form-control(type= 'Number', placeholder='Cédula', name='cedula')
-                    .form-group
+                       input#cedula.form-control(type= 'Number', placeholder='Cédula', name='cedula')  
+                      label(for='email') Correo Eléctronico:
+                       input#email.form-control(type= 'email', placeholder='Correo Electronico', name='email')          
+                    .form-group 
+                      h4 Información Laboral
                       label(for='codTarjeta') Código de Empleado:
-                      input#codTarjeta.form-control(type= 'Number', placeholder='Código de Empleado', name='codTarjeta')
-                    .form-group
+                        input#codTarjeta.form-control(type= 'Number', placeholder='Código de Empleado', name='codTarjeta')
                       label(for="usernameInput")
                         |Usuario:
-                      input.form-control#textInput(type="text", name="username", placeholder="Usuario")
-                    .form-group
+                        input.form-control#textInput(type="text", name="username", placeholder="Usuario")
                       label(for="tipoInput")
                         |Tipo de Usuario:
-                      select.form-control#textInput(type="text", name="tipo") 
-                        option Empleado
-                        option Supervisor
-                        option Administrador
-                    .form-group
+                        select.form-control#textInput(type="text", name="tipo") 
+                          option Empleado
+                          option Supervisor
+                          option Administrador
                       label(for='horario') Departamento:
-                      select.form-control#textInput(type="text", name="idDepartamento") 
-                        each departamento, i in departamentos
-                            option(value= departamento.id) #{departamento.nombre}                        
+                        select.form-control#textInput(type="text", name="idDepartamento") 
+                          each departamento, i in departamentos
+                              option(value= departamento.id) #{departamento.nombre}                        
                     .form-group
                       label(for="passwordInput")
                         |Contraseña:
-                      input.form-control#passInput(type="password", name="password", placeholder="Contraseña")              
+                        input.form-control#passInput(type="password", name="password", placeholder="Contraseña")              
                     button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
                     button.btn.btn-default(type='submit') Ingresar
       
