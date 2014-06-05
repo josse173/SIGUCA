@@ -125,28 +125,7 @@ module.exports = function(app) {
         }
     });
   
-    app.get('/graficosAdmin', autentificado, function(req, res) {
-        if (req.session.name == "Administrador") {
-            res.render('graficosAdmin', {
-                title: 'Graficos Administrador | SIGUCA',
-                usuario: req.user
-            });
-        } else {
-            req.logout();
-            res.redirect('/');
-        }
-    });
-    app.get('/graficosEmpl', autentificado, function(req, res) {
-        if (req.session.name == "Empleado") {
-            res.render('graficosEmpl', {
-                title: 'Graficos Administrador | SIGUCA',
-                usuario: req.user
-            });
-        } else {
-            req.logout();
-            res.redirect('/');
-        }
-    });
+
     app.get('/ayuda', autentificado, function(req, res) {
         if (req.session.name == "Supervisor") {
             res.render('ayuda', {
