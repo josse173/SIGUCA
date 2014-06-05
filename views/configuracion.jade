@@ -80,8 +80,9 @@ block content
               .modal-body
                 form(role='form', method="POST", action="/departamento")
                   .form-group
+                      h4 Información Básica
                       label(for='nombre') Nombre:
-                      input#group.form-control( type="text", placeholder='Nombre del area', name= "nombre")
+                        input#group.form-control( type="text", placeholder='Nombre del area', name= "nombre")
                   .form-group
                       label(for='idSupervisor') 
                         |Elija Supervisor:
@@ -113,8 +114,9 @@ block content
                 h4#myModalLabel.modal-title Añadir nuevo Empleado
                 form(role='form', method="POST", action="/empleado")#login-form.well.span4
                     .form-group
+                      h4 Información Básica
                       label(for='nombre') Nombre:
-                      input#group.form-control(type= 'text', placeholder='Nombre', name= 'nombre')
+                        input#group.form-control(type= 'text', placeholder='Nombre', name= 'nombre')
                     .form-group
                       label(for='apellido1') Primer apellido:
                       input#apellido1.form-control(type= 'text', placeholder='Primer Apellido', name= 'apellido1')
