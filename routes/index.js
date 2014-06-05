@@ -127,7 +127,7 @@ module.exports = function(app) {
   
 
     app.get('/ayuda', autentificado, function(req, res) {
-        if (req.session.name == "Supervisor") {
+        if (req.session.name == "Supervisor" || req.session.name == "Administrador"|| req.session.name == "Empleado") {
             res.render('ayuda', {
                 title: 'Ayuda | SIGUCA',
                 usuario: req.user
@@ -137,28 +137,7 @@ module.exports = function(app) {
             res.redirect('/');
         }
     });
-    app.get('/ayudaAdmin', autentificado, function(req, res) {
-        if (req.session.name == "Administrador") {
-            res.render('ayudaAdmin', {
-                title: 'Ayuda | SIGUCA',
-                usuario: req.user
-            });
-        } else {
-            req.logout();
-            res.redirect('/');
-        }
-    });
-    app.get('/ayudaEmpl', autentificado, function(req, res) {
-        if (req.session.name == "Empleado") {
-            res.render('ayudaEmpl', {
-                title: 'Ayuda | SIGUCA',
-                usuario: req.user
-            });
-        } else {
-            req.logout();
-            res.redirect('/');
-        }
-    });
+
     app.get('/configuracion', autentificado, function(req, res) {
         if (req.session.name == "Supervisor") {
             Usuario.find().exec(function(error, empleados) {

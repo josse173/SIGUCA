@@ -17,19 +17,19 @@ block content
             label(for="Departamento")
               |Departamento:
           form(action= '/departamento')
-            button#empleados.btn.btn-success(name='agregar', onclick= "changeElemt('departamento')", data-toggle="modal" data-target="#addDep") Nuevo
+            button#empleados.btn.btn-success(name='agregar', data-toggle="modal" data-target="#addDep") Nuevo
             button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/departamento") Modificar o Eliminar                
           div#horario
             label(for="horario")
               |Horario:
           form(action= '/horarioN')    
-            button#empleados.btn.btn-success(name='agregar', onclick= "changeElemt('horarioN')", data-toggle="modal" data-target="#addHorario") Nuevo       
+            button#empleados.btn.btn-success(name='agregar', data-toggle="modal" data-target="#addDep") Nuevo       
             button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/horarioN") Modificar o Eliminar
           div#empleado
             label(for="empleado")
               |Empleado:
           form(action= '/empleado')     
-            button#empleados.btn.btn-success(name='agregar', onclick= "changeElemt('empleado')", data-toggle="modal" data-target="#addEmpl") Nuevo 
+            button#empleados.btn.btn-success(name='agregar', data-toggle="modal" data-target="#addEmpl") Nuevo 
             button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/empleado") Modificar o Eliminar
           
     .col-xs-2
