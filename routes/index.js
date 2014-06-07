@@ -85,7 +85,6 @@ module.exports = function(app) {
         }
     });
   
-
     app.get('/ayuda', autentificado, function(req, res) {
         if (req.session.name == "Supervisor" || req.session.name == "Administrador"|| req.session.name == "Empleado") {
             res.render('ayuda', {
@@ -106,8 +105,8 @@ module.exports = function(app) {
                     Departamento.find().exec(function(error, departamentos) {
 
                         if (error) return res.json(error);
-                        return res.render('configuracionAdmin', {
-                            title: 'Configuración Administrador | SIGUCA',
+                        return res.render('configuracion', {
+                            title: 'Configuración Supervisor | SIGUCA',
                             empleados: empleados,
                             usuario: req.user,
                             horarios: horarios,

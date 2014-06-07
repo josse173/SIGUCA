@@ -10,10 +10,9 @@ block gcsNavbarItems
 block content
   .container
     
-    h1 Lista de Departamentos
- 
-      ol
-       table.table.table-hover 
+    h3 Lista de Departamentos
+    ol
+      table.table.table-hover 
         each departamento, i in departamentos
           tr
             td #{departamento.nombre} 

@@ -9,10 +9,80 @@ block gcsNavbarItems
   ul.nav.navbar-nav 
 block content
   div.container
-    .col-xs-2
     .col-xs-8
+        h3 Justificaciones
+        br
+        .table-responsive
+        table.table
+            thead
+              tr
+                th Selección
+                th Código
+                th Nombre
+                th Tipo
+                th Detalles
+                th Fecha
+                th Estado
+            tbody
+              tr
+                td 
+                  label.checkbox(for='codigoEmp')
+                         input#codigoEmp3(name='codigo3', type='checkbox')
+                td 1111
+                td Ma Diya
+                td Vacaciones
+                td Vacaciones
+                td 20-12-2013 al 05-01-2014
+                td Aceptado
+              tr
+                td 
+                  label.checkbox(for='codigoEmp')
+                         input#codigoEmp3(name='codigo3', type='checkbox')
+                td 402110092
+                td Tatiana Moreira Beita
+                td Tardía
+                td Retraso de 15 minutos hora de entrada
+                td  05-10-2013
+                td Aceptado
+              tr
+               td 
+                  label.checkbox(for='codigoEmp')
+                         input#codigoEmp3(name='codigo3', type='checkbox')
+               td 113970119
+               td Carlos Solano Morales
+               td Tardía 
+               td Retraso de 30 minutos hora de entrada
+               td 20-10-2013
+               td Pendiente
+
+       
+          .control-group
+              label.control-laber(for='accion')
+                .controls
+                  button#accion.btn.btn-success(name='aceptar') Aceptar
+                  button#accion.btn.btn-danger(name='rechazar', href='#justificacionRechazo', data-toggle='modal') Rechazar     
+                  #justificacionRechazo.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+                   .modal-dialog
+                    .modal-content
+                      .modal-header
+                        button.close(type='button', data-dismiss='modal', aria-hidden='true') X Cerrar
+                        h4.modal-title Justificación de Rechazo
+                      .modal-body
+                        form.form-horizontal()
+                         fieldset                       
+                             div.form-group.gcsContainer
+                               label.col-lg-4(for='Detalles')
+                                 |Detalles
+                               div.col-lg-6.col-md-6.col-sm-6
+                                 textarea.form-control(name="Detalles", placeholder="Añada comentario")
+                             .control-group
+                               label.control-label(for='ingreso')
+                                 .controls
+                                 button#ingreso.btn.btn-success(name='ingreso') Ingresar
+                                 button#cancelar.btn.btn-danger(name='cancelar') Cancelar    
+    .col-xs-4
       div#containerCentral
-        h3  Seleccione el elemento
+        h3  IMEC
         div#contBotones
           div#empl
             label(for="Departamento")
@@ -111,23 +181,25 @@ block content
             .modal-content
               .modal-body
                 button.close(type='button', data-dismiss='modal', aria-hidden='true') × 
-                h4#myModalLabel.modal-title Añadir nuevo Empleado
+                h3#myModalLabel.modal-title Añadir nuevo Empleado
                 form(role='form', method="POST", action="/empleado")#login-form.well.span4
                     .form-group
-                      h4 Información Básica
+                      h3 Información Básica
                       label(for='nombre') Nombre:
                         input#group.form-control(type= 'text', placeholder='Nombre', name= 'nombre')
+                      label(for='cedula') Cédula:
+                       input#cedula.form-control(type= 'Number', placeholder='Cédula', name='cedula') 
                     .form-group
                       label(for='apellido1') Primer Apellido:
                         input#apellido1.form-control(type= 'text', placeholder='Primer Apellido', name= 'apellido1')
                       label(for='apellido2') Segundo Apellido:
-                       input#apellido2.form-control(type= 'text', placeholder='Segundo Apellido', name='apellido2')  
-                      label(for='cedula') Cédula:
-                       input#cedula.form-control(type= 'Number', placeholder='Cédula', name='cedula')  
+                       input#apellido2.form-control(type= 'text', placeholder='Segundo Apellido', name='apellido2')   
                       label(for='email') Correo Eléctronico:
-                       input#email.form-control(type= 'email', placeholder='Correo Electronico', name='email')          
+                        input#email.form-control(type= 'email', placeholder='Correo Electronico', name='email')
+                      div#status    
+
                     .form-group 
-                      h4 Información Laboral
+                      h3 Información Laboral
                       label(for='codTarjeta') Código de Empleado:
                         input#codTarjeta.form-control(type= 'Number', placeholder='Código de Empleado', name='codTarjeta')
                       label(for="usernameInput")
@@ -138,7 +210,6 @@ block content
                         select.form-control#textInput(type="text", name="tipo") 
                           option Empleado
                           option Supervisor
-                          option Administrador
                       label(for='horario') Departamento:
                         select.form-control#textInput(type="text", name="idDepartamento") 
                           each departamento, i in departamentos
@@ -151,4 +222,5 @@ block content
                     button.btn.btn-default(type='submit') Ingresar
       
 block sigucaJS
-  script(src="/javascripts/sigucaHome.js")
+  script(src="/js/mailgun_validator.js")
+  script(src= "/js/configuracionSupervisor.js")

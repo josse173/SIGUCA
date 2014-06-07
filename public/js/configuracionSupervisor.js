@@ -36,8 +36,8 @@ function get_suggestion_str(is_valid, alternate) {
 	if (alternate) {
 		return '<span class="warning">Quieres decir <em>' + alternate + '</em>?</span>';
 	} else if (is_valid) {
-		return '<span class="success">Dirección invalida.</span>';
+		return '<span class="success">Dirección válida.</span>';
 	} else {
-		return '<span class="error">Dirección invalida.</span>';
+		return '<span class="error">Dirección inválida.</span>';
 	}
 } 
