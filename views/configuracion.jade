@@ -8,7 +8,7 @@ block gcsNavbarItems
 block content
     div.container
       .col-xs-8
-        h1 Justificaciones
+        h3 Justificaciones
         br
         .table-responsive
         table.table
@@ -80,28 +80,29 @@ block content
                                  button#cancelar.btn.btn-danger(name='cancelar') Cancelar    
 
       .col-xs-4
-      div#containerCentral
-        h3  IMEC
-        div#contBotones
-          div#empl
-            label(for="Departamento")
-              |Departamento:
-          form(action= '/departamento')
-            button#empleados.btn.btn-success(name='agregar', onclick= "changeElemt('departamento')", data-toggle="modal" data-target="#addDep") Nuevo
-            button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/departamento") Modificar o Eliminar      
-          
-          div#horario
-            label(for="horario")
-              |Horario:
-          form(action= '/horarioN')    
-            button#empleados.btn.btn-success(name='agregar', onclick= "changeElemt('horarioN')", data-toggle="modal" data-target="#addHorario") Nuevo       
-            button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/horarioN") Modificar o Eliminar
-          div#empleado
-            label(for="empleado")
-              |Empleado:
-          form(action= '/empleado')     
-            button#empleados.btn.btn-success(name='agregar', onclick= "changeElemt('empleado')", data-toggle="modal" data-target="#addEmpl") Nuevo 
-            button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/empleado") Modificar o Eliminar
+
+          h3#labelIMEC
+            |IMEC:
+          div#contBotones
+            div#empl
+              label(for="Departamento")
+                |Departamento:
+            form(action= '/departamento')
+              button#empleados.btn.btn-success(name='agregar', onclick= "changeElemt('departamento')", data-toggle="modal" data-target="#addDep") Nuevo
+              button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/departamento") Modificar o Eliminar      
+            
+            div#horario
+              label(for="horario")
+                |Horario:
+            form(action= '/horarioN')    
+              button#empleados.btn.btn-success(name='agregar', onclick= "changeElemt('horarioN')", data-toggle="modal" data-target="#addHorario") Nuevo       
+              button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/horarioN") Modificar o Eliminar
+            div#empleado
+              label(for="empleado")
+                |Empleado:
+            form(action= '/empleado')     
+              button#empleados.btn.btn-success(name='agregar', onclick= "changeElemt('empleado')", data-toggle="modal" data-target="#addEmpl") Nuevo 
+              button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/empleado") Modificar o Eliminar
           
     .col-xs-2
       #addHorario.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
