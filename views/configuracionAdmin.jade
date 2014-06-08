@@ -215,6 +215,8 @@ block content
                           each departamento, i in departamentos
                               option(value= departamento.id) #{departamento.nombre}                        
                     .form-group
+
+                      form (name="pgenerate")
                       label(for="passwordInput")
                         |Contraseña:
                         input.form-control#passInput(type="password", name="password", placeholder="Contraseña")              

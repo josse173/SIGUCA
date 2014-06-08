@@ -212,11 +212,15 @@ block content
                       label(for='horario') Departamento:
                         select.form-control#textInput(type="text", name="idDepartamento") 
                           each departamento, i in departamentos
-                              option(value= departamento.id) #{departamento.nombre}                        
+                              option(value= departamento.id) #{departamento.nombre} 
+
                     .form-group
                       label(for="passwordInput")
                         |Contraseña:
-                        input.form-control#passInput(type="password", name="password", placeholder="Contraseña")              
+                        input.form-control#passInput(type='text', size='18', name="password", placeholder="Contraseña")
+                        button.btn.btn-default(type='button', onclick='generatepass(4)') Generar Contraseña
+                        div#correoMsj 
+                                    
                     button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
                     button.btn.btn-default(type='submit') Ingresar
       
