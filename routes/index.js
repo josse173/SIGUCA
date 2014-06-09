@@ -298,14 +298,14 @@ module.exports = function(app) {
         var m = req.body;
         var newMarca;
         var d = new Date();
-        var epocTime = (d.getTime() - d.getMilliseconds())/1000;         
-        var fechaActual = new Date(epocTime);
+        var epochhTime = (d.getTime() - d.getMilliseconds())/1000;         
+        var fechaActual = new Date(epochTime);
         switch (req.body.marca) { //controla el tipo de marca
 
             case "entrada":
                 newMarca = Marca({
                     tipoMarca: "Entrada",
-                    epoc: epocTime,
+                    epochh: epochTime,
                     codTarjeta: req.user.codTarjeta,
                     fecha: fechaActual,
                 });
@@ -324,7 +324,7 @@ module.exports = function(app) {
             case "salida":
                 newMarca = Marca({
                     tipoMarca: "Salida",
-                    epoc: epocTime,
+                    epochh: epochTime,
                     codTarjeta: req.user.codTarjeta,
                     fecha: fechaActual,
 
@@ -343,7 +343,7 @@ module.exports = function(app) {
 
                 newMarca = Marca({
                     tipoMarca: "salidaReceso",
-                    epoc: epocTime,
+                    epoch: epochTime,
                     codTarjeta: req.user.codTarjeta,
                     fecha: fechaActual,
 
@@ -362,7 +362,7 @@ module.exports = function(app) {
 
                 newMarca = Marca({
                     tipoMarca: "entradaReceso",
-                    epoc: epocTime,
+                    epoch: epochTime,
                     codTarjeta: req.user.codTarjeta,
                     fecha: fechaActual,
 
@@ -381,7 +381,7 @@ module.exports = function(app) {
 
                 newMarca = Marca({
                     tipoMarca: "salidaAlmuerzo",
-                    epoc: epocTime,
+                    epoch: epochTime,
                     codTarjeta: req.user.codTarjeta,
                     fecha: fechaActual,
 
@@ -399,7 +399,7 @@ module.exports = function(app) {
 
                 newMarca = Marca({
                     tipoMarca: "entradaAlmuerzo",
-                    epoc: epocTime,
+                    epoch: epochTime,
                     codTarjeta: req.user.codTarjeta,
                     fecha: fechaActual,
 

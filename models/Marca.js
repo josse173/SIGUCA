@@ -8,7 +8,7 @@ var mongoose = require('mongoose'),
     passportLocalMongoose = require('passport-local-mongoose');
 //Crear el esquema de Marca
 var SchemaMarca = new Schema({
-    epoc: { // Unix Time, es la cantidad de segundos a partir del 01-01-1970
+    epoch: { // Unix Time, es la cantidad de segundos a partir del 01-01-1970
         type: Number,
         default: 0
     },
