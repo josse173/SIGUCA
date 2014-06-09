@@ -24,12 +24,7 @@ block content
           tr
               td #Empl 
               td Tipo Marca
-              td Dia
-              td mes
-              td Año
-              td Hora
-              td Minutos
-              td Segundos
+              td Epoc
                           
           each marca, i in marcas
 
@@ -37,12 +32,8 @@ block content
             tr
               td #{marca.codTarjeta}
               td #{marca.tipoMarca}
-              td #{marca.dia}
-              td #{marca.mes}
-              td #{marca.ano}
-              td #{marca.hora}
-              td #{marca.minutos}
-              td #{marca.segundos}
+              td #{marca.epoc}
+             
                      
         else 
           h1 no hay marcas registradas

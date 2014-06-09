@@ -295,25 +295,19 @@ module.exports = function(app) {
     });
     //create marca por sistema
     app.post('/marca', autentificado, function(req, res) {
-
         var m = req.body;
         var newMarca;
         var d = new Date();
-        var fechaActual = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + (d.getUTCDate() - 1);
-
+        var epocTime = (d.getTime() - d.getMilliseconds())/1000;         
+        var fechaActual = new Date(epocTime);
         switch (req.body.marca) { //controla el tipo de marca
 
             case "entrada":
                 newMarca = Marca({
                     tipoMarca: "Entrada",
-                    dia: (d.getUTCDate() - 1),
-                    mes: (d.getMonth() + 1),
-                    ano: d.getFullYear(),
-                    hora: d.getHours(),
-                    minutos: d.getMinutes(),
-                    segundos: d.getSeconds(),
+                    epoc: epocTime,
                     codTarjeta: req.user.codTarjeta,
-
+                    fecha: fechaActual,
                 });
 
                 newMarca.save(function(error, user) {
@@ -330,13 +324,9 @@ module.exports = function(app) {
             case "salida":
                 newMarca = Marca({
                     tipoMarca: "Salida",
-                    dia: (d.getUTCDate() - 1),
-                    mes: (d.getMonth() + 1),
-                    ano: d.getFullYear(),
-                    hora: d.getHours(),
-                    minutos: d.getMinutes(),
-                    segundos: d.getSeconds(),
+                    epoc: epocTime,
                     codTarjeta: req.user.codTarjeta,
+                    fecha: fechaActual,
 
                 });
 
@@ -353,13 +343,9 @@ module.exports = function(app) {
 
                 newMarca = Marca({
                     tipoMarca: "salidaReceso",
-                    dia: (d.getUTCDate() - 1),
-                    mes: (d.getMonth() + 1),
-                    ano: d.getFullYear(),
-                    hora: d.getHours(),
-                    minutos: d.getMinutes(),
-                    segundos: d.getSeconds(),
+                    epoc: epocTime,
                     codTarjeta: req.user.codTarjeta,
+                    fecha: fechaActual,
 
                 });
 
@@ -376,13 +362,9 @@ module.exports = function(app) {
 
                 newMarca = Marca({
                     tipoMarca: "entradaReceso",
-                    dia: (d.getUTCDate() - 1),
-                    mes: (d.getMonth() + 1),
-                    ano: d.getFullYear(),
-                    hora: d.getHours(),
-                    minutos: d.getMinutes(),
-                    segundos: d.getSeconds(),
+                    epoc: epocTime,
                     codTarjeta: req.user.codTarjeta,
+                    fecha: fechaActual,
 
                 });
 
@@ -399,13 +381,9 @@ module.exports = function(app) {
 
                 newMarca = Marca({
                     tipoMarca: "salidaAlmuerzo",
-                    dia: (d.getUTCDate() - 1),
-                    mes: (d.getMonth() + 1),
-                    ano: d.getFullYear(),
-                    hora: d.getHours(),
-                    minutos: d.getMinutes(),
-                    segundos: d.getSeconds(),
+                    epoc: epocTime,
                     codTarjeta: req.user.codTarjeta,
+                    fecha: fechaActual,
 
                 });
                 newMarca.save(function(error, user) {
@@ -421,13 +399,9 @@ module.exports = function(app) {
 
                 newMarca = Marca({
                     tipoMarca: "entradaAlmuerzo",
-                    dia: (d.getUTCDate() - 1),
-                    mes: (d.getMonth() + 1),
-                    ano: d.getFullYear(),
-                    hora: d.getHours(),
-                    minutos: d.getMinutes(),
-                    segundos: d.getSeconds(),
+                    epoc: epocTime,
                     codTarjeta: req.user.codTarjeta,
+                    fecha: fechaActual,
 
                 });
 

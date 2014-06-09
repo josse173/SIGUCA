@@ -8,26 +8,7 @@ var mongoose = require('mongoose'),
     passportLocalMongoose = require('passport-local-mongoose');
 //Crear el esquema de Marca
 var SchemaMarca = new Schema({
-    // fecha: ({
-    //   dia: { type: Number, default: 0 },
-    //   mes: { type: Number, default: 0 },
-    //   ano: { type: Number, default: 0 }
-    // }), 
-    // horaMarca: ({
-    //   hora: { type: Number, default: 0 },
-    //   minutos: { type: Number, default: 0 },
-    //   segundos: { type: Number, default: 0 }
-    // }),
-    // codTarjeta: { type: String, default: 0 },   
-    dia: {
-        type: Number,
-        default: 0
-    },
-    mes: {
-        type: Number,
-        default: 0
-    },
-    ano: {
+    epoc: { // Unix Time, es la cantidad de segundos a partir del 01-01-1970
         type: Number,
         default: 0
     },
@@ -35,29 +16,14 @@ var SchemaMarca = new Schema({
         type: String,
         default: "Entrada" //Entrada-salida-salidaReceso-EntradaReceso-salidaAlmuerzo-entradaAlmuerzo
     },
-    estado: {
-        type: String,
-        default: "Normal" //Normal-Omision-Tardia
-    },
-    hora: {
-        type: Number,
-        default: 0
-    },
-    minutos: {
-        type: Number,
-        default: 0
-    },
-    segundos: {
-        type: Number,
-        default: 0
-    },
-
     codTarjeta: {
         type: String,
         default: ""
     },
+    fecha:{
+        type: Date,
+        default: ""
+    },
 });
-
-SchemaMarca.plugin(passportLocalMongoose);
 
 module.exports = mongoose.model('Marca', SchemaMarca);
