@@ -10,9 +10,23 @@ cal.init({
     start: new Date(2000, 0, 5),
     cellSize: 24,
     range: 7,
-    previousSelector: "#example-c-PreviousDomain-selector",
-    nextSelector: "#example-c-NextDomain-selector",
-    legend: [2, 4, 6, 8]
+    previousSelector: "#previous",
+    nextSelector: "#next",
+    legendTitleFormat: {
+            lower: "tardía",
+            inner: "solicitud permiso",
+            solExtra: "solicitud horas Extra",
+            upper: "ausencia",
+
+        },
+    legendColors: {
+                min: "#95EE6B",
+                max: "#F66F89",
+                solExtra: "yellow",
+                empty: "gray",
+         },
+    itemName: ["", ""],
+    legend: [2, 4, 6]
 });
 cal.highlight(new Date(2014, 5, 18));
 
