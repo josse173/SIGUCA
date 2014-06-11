@@ -16,74 +16,9 @@ var Justificacion = require('../models/Justificaciones');
 module.exports = function(app) {
 
     app.get('/', function(req, res) {
-        /*res.render('index', {
+        res.render('index', {
             usuario: req.user
-        });*/
-                 Usuario.register(new Usuario({
-
-             username: req.body.username,
-
-             tipo: req.body.tipo
-
-         }), req.body.password, function(err, usuario) {
-
-             console.log('Recibimos nuevo usuario:' + req.body.username + ' de tipo:' + req.body.tipo);
-
-             console.log(req.body);
-
-             if (err) {
-
-                 return res.render("registro", {
-
-                     info: "Disculpe, el usuario ya existe. Intente de nuevo."
-
-                 });
-
-             }
-
-             if (req.body.tipo == "Administrador") {
-
-                 passport.authenticate('local')(req, res, function() {
-
-                     res.redirect('/escritorioAdmin');
-
-                 });
-
-             } else {
-
-                 if (req.body.tipo == "Supervisor") {
-
-                     passport.authenticate('local')(req, res, function() {
-
-                         res.redirect('/escritorio');
-
-                     });
-
-                 } else {
-
-                     if (req.body.tipo == "Empleado") {
-
-                         passport.authenticate('local')(req, res, function() {
-
-                             res.redirect('/escritorioEmpl');
-
-                         });
-
-                     }
-
- 
-
-                 }
-
- 
-
-             }
-
- 
-
-         });
-
-
+        });
     });
 
     app.post('/login', passport.authenticate('local'), function(req, res) {
