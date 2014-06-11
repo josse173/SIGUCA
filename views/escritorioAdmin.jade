@@ -1,7 +1,7 @@
 extends layoutAdmin
 
 block sigucaCSS
-  link(rel='stylesheet', href='/stylesheets/sigucaEscritorio.css')
+  link(rel='stylesheet', href='/stylesheets/cal-heatmap.css')
 block imgSession
   
 block gcsNavbarItems
@@ -10,19 +10,103 @@ block gcsNavbarItems
 block content
   .container
     .col-xs-8
-      h3 Marcas Personales
-      img.img-responsive#grafico(src='/images/tati.PNG', alt='Responsive image') 
+      h3 Gráfico de:  #{usuario.username}
+      button#next.btn
+      button#previous.btn
+      div#cal 
+  
     .col-xs-4
-     h3 Eventos Pendientes   
-     ul.list-group
-        li.list-group-item
-            span.badge 2
-            | Solicitud Ausencias
-        li.list-group-item
-            span.badge 18
-            | Justificaciones
-        li.list-group-item
-            span.badge 0
-            | Solicitudes J.extra
+       h3 Filtros   
+       div.filter
+                 label#tHorario(for='horario') 
+                   |Soporte Técnico
+            
+             div.filter
+                  label#empleados(for='empleados') 
+                   |Empleados: 
+                  .btn-group
+                     .btn-group
+                    select.form-control#textInput(type="text", name="idSupervisor") 
+                        option(value= todos) Mí gráfico
+                        each empleado, i in empleados
+                         
+                            option(value= empleado.id) #{empleado.nombre} #{empleado.apellido1}
+
+    .col-xs-4
+        h3 Solicitudes 
+        ul.list-group
+          li.list-group-item
+            a(data-toggle="modal" data-target="#horaExtra")
+              | Solicitud de hora extraordinaria
+          li.list-group-item
+            a(data-toggle="modal" data-target="#permiso")
+              | Solicitud de permiso anticipado
+        
+    .col-xs-4
+        h3 Pendientes de revisar 
+        ul.list-group
+          li.list-group-item
+            a(href='/ConfiguracionAdmin')
+              span.badge 2 
+              | Solicitudes
+          li.list-group-item
+            a(href='/ConfiguracionAdmin')
+              span.badge 3 
+              | Justificaciones
+      #horaExtra.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+          .modal-dialog
+              .modal-content
+                .modal-header
+                  button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+                  h4#myModalLabel.modal-title Solicitar hora extraordinaria
+                .modal-body
+                  form(role='form', method="POST", action="/horasExtra")
+                    .form-group
+                        label(for='fecha') Día:
+                        input#fecha.form-control.clsDatePicker(type='text', name='fecha', placeholder='Fecha')
+                        
+                      .form-group
+                        label(for='apellido1') Hora inicial:
+                        input#apellido1.form-control(type= 'text', placeholder='Hora inicio de horas extras', name= 'apellido1')
+                      .form-group
+                        label(for='apellido2') Hora final:
+                        input#apellido2.form-control(type= 'text', placeholder='Hora final de horas extras', name='apellido2')
+                             
+                      button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
+                      button.btn.btn-default(type='submit') Ingresar
+     
+                .modal-footer  
+      #permiso.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+          .modal-dialog
+              .modal-content
+                .modal-header
+                  button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+                  h4#myModalLabel.modal-title Solicitar permiso anticipado
+                .modal-body
+                  form(role='form', method="POST", action="/permiso")
+                    .form-group
+                        label(for='diaI') Día inicial:
+                        input#fecha.form-control.clsDatePicker(type='text', name='fecha', placeholder='Día Inicial')
+                      .form-group
+                        label(for='horaI') Hora inicial:
+                        input#apellido1.form-control(type= 'text', placeholder='Hora inicio de permiso anticipado', name= 'apellido1')
+                      .form-group
+                        label(for='diaF') Día final:
+                        input#fecha.form-control.clsDatePicker(type='text', name='fecha', placeholder='Día final')
+                      .form-group
+                        label(for='horaF') Hora final:
+                        input#apellido2.form-control(type= 'text', placeholder='Hora final de permiso anticipado', name='apellido2')
+                      .form-group
+                        label(for='motivo') Motivo:
+                        input#apellido2.form-control(type= 'text', placeholder='Motivo del permiso solicitado', name='apellido2')
+                                    
+                      button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
+                      button.btn.btn-default(type='submit') Ingresar
+     
+                .modal-footer  
+block sigucaJS
+  script( src='/js/sigucaHome.js')
+  script(src="/js/d3.min.js")
+  script(src="/js/cal-heatmap.js")
 
 

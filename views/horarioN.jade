@@ -12,10 +12,10 @@ block gcsNavbarItems
 block content
   .container
     
-    h1 Lista de Horarios
- 
-      ol
+    h3 Lista de Horarios
+    ol
        table.table.table-hover 
+      
         each horario, i in horarios
           tr
             td #{horario.nombre} 

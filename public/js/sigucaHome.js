@@ -39,6 +39,7 @@ cal.highlight(cal.options.highlight.push(new Date(2014, 5, 14)));
 
 
 
+
 //   var cal = new CalHeatMap();
 //   cal.init({
 //     itemSelector: "#cal",

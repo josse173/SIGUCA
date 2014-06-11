@@ -10,8 +10,14 @@
      passportLocalMongoose = require('passport-local-mongoose');
 
  var SchemaUsuario = new Schema({
-     usuario: String,
-     tipo: String,
+     usuario : {
+         type: String,
+         default: ''
+     },
+     tipo : {
+         type: String,
+         default: ''
+     },
      estado: {
          type: String,
          default: 'Activo'

@@ -75,9 +75,15 @@ module.exports = function(app) {
     });
     app.get('/escritorioAdmin', autentificado, function(req, res) {
         if (req.session.name == "Administrador") {
-            res.render('escritorioAdmin', {
-                title: 'Administrador escritorio | SIGUCA',
-                usuario: req.user
+             Usuario.find().exec(function(error, empleados) {
+
+                if (error) return res.json(error);
+                return res.render('escritorioAdmin', {
+                    title: 'Escritorio Administrador | SIGUCA',
+                    empleados: empleados,
+                    usuario: req.user,
+
+                });
             });
         } else {
             req.logout();
@@ -132,7 +138,7 @@ module.exports = function(app) {
         }
     });
     app.get('/configuracionAdmin', autentificado, function(req, res) {
-        if (req.session.name == "Administrador") {
+        if (req.session.name ==="Administrador") {
 
             Usuario.find().exec(function(error, empleados) {
 

@@ -61,21 +61,11 @@ html
                 a(href="/escritorioAdmin")
                   i.icon-home.icon-large
                   |&nbsp;Escritorio
-              li.dropdown
-                a.dropdown-toggle( data-toggle='dropdown')
-                  i.icon-edit.icon-large  
-                              |&nbsp;Eventos 
-                              span.caret
-                            ul.dropdown-menu#ba
-                              li
-                                a(href='/JustificacionesAdmin') Justificaciones
-                              li.divider
-                              li
-                                a(href='/JustificacionesAdmin') Solicitudes
               li
                 a(href="/configuracionAdmin")
                   i.icon-cogs.icon-large
-                  |&nbsp;Configuracion
+                  |&nbsp;Acciones
+            
               li
                 a(href='/Ayuda')
                   i.icon-question-sign.icon-large     
@@ -92,11 +82,8 @@ html
                   |&nbsp;Registro   
       br     
     block content
-    
-    script(src="/js/d3.min.js")
-    script(src="/js/cal-heatmap.min.js")
+
     script(src="/js/jquery-2.0.3.min.js")
     script(src="/js/bootstrap.min.js")
-    script( src='/js/sigucaHome.js')
     script(src='js/respond-min.js', type='text/javascript')   
     block sigucaJS
