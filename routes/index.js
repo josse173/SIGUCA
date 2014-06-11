@@ -472,13 +472,7 @@ module.exports = function(app) {
 					}), e.password, function(err, usuario) {
 						console.log('Recibimos nuevo usuario:' + e.username + ' de tipo:' + e.tipo);
 						console.log(e);
-						if (err) {
-							console.log('usuario ya existe desde error');
-							res.json(error);
-							return res.render("registro", {
-								info: "Disculpe, el usuario ya existe. Intente de nuevo."
-							});
-						}
+						
 					}
 				);
                 if (req.session.name == "Administrador"){
