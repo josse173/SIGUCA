@@ -45,7 +45,7 @@ module.exports = function(app) {
                 if (error) return res.json(error);
                 return res.render('escritorio', {
                     title: 'Escritorio Supervisor | SIGUCA',
-                    empleados: empleados,
+                    empleados: empleados, /* Para que envian los empleados?? - para el calendario?*/
                     usuario: req.user,
 
                 });
@@ -63,7 +63,7 @@ module.exports = function(app) {
                 if (error) return res.json(error);
                 return res.render('escritorioEmpl', {
                     title: 'Escritorio Empleado | SIGUCA',
-                    marcas: marcas,
+                    marcas: marcas, /* Para que envian las marcas?? - para el calendario?*/
                     usuario: req.user
                 });
             });
@@ -80,7 +80,7 @@ module.exports = function(app) {
                 if (error) return res.json(error);
                 return res.render('escritorioAdmin', {
                     title: 'Escritorio Administrador | SIGUCA',
-                    empleados: empleados,
+                    empleados: empleados, /* Para que envian los empleados?? - para el calendario?*/
                     usuario: req.user,
 
                 });
@@ -113,10 +113,10 @@ module.exports = function(app) {
                         if (error) return res.json(error);
                         return res.render('configuracion', {
                             title: 'Configuración Supervisor | SIGUCA',
-                            empleados: empleados,
-                            usuario: req.user,
-                            horarios: horarios,
-                            departamentos: departamentos
+                            empleados: empleados, 
+                            usuario: req.user,    
+                            horarios: horarios,   
+                            departamentos: departamentos 
                         });
                     });
                 });
@@ -148,7 +148,7 @@ module.exports = function(app) {
                         if (error) return res.json(error);
                         return res.render('configuracionAdmin', {
                             title: 'Configuración Administrador | SIGUCA',
-                            empleados: empleados,
+                            empleados: empleados, 
                             usuario: req.user,
                             horarios: horarios,
                             departamentos: departamentos
@@ -161,7 +161,7 @@ module.exports = function(app) {
             res.redirect('/');
         }
     });
-    app.get('/justificaciones', autentificado, function(req, res) {
+    app.get('/justificaciones', autentificado, function(req, res) { /* No hace nada*/
         if (req.session.name == "Supervisor") {
             res.render('justificaciones', {
                 title: 'Justificaciones/Permisos | SIGUCA',
@@ -172,7 +172,7 @@ module.exports = function(app) {
             res.redirect('/');
         }
     });
-    app.get('/justificacionesAdmin', autentificado, function(req, res) {
+    app.get('/justificacionesAdmin', autentificado, function(req, res) {/* No hace nada*/
         if (req.session.name == "Administrador") {
             res.render('justificacionesAdmin', {
                 title: 'Administrador justificaciones| Permisos',
@@ -185,34 +185,59 @@ module.exports = function(app) {
     });
     app.get('/justificacionesEmpl', autentificado, function(req, res) {
         if (req.session.name == "Empleado") {
-            res.render('justificacionesEmpl', {
-                title: 'Solicitudes/Justificaciones | SIGUCA',
-                usuario: req.user
+
+            Justificacion.find().exec(function(error, justificaciones) {
+
+                if (error) return res.json(error);
+
+                return res.render('justificacionesEmpl', {
+                    title: 'Solicitudes/Justificaciones | SIGUCA',
+                    justificaciones: justificaciones,
+                    usuario: req.user
+                });
+
             });
         } else {
             req.logout();
             res.redirect('/');
         }
     });
-    app.get('/justificacion_nueva', autentificado, function(req, res) {
-        res.render('justificacion_nueva', {
-            title: 'Nueva Justificacion | SIGUCA',
-            usuario: req.user
+    //create Justificacion
+    app.post('/justificacion_nueva', autentificado, function(req, res) {
+        var d = new Date();
+        var epochTime = (d.getTime() - d.getMilliseconds())/1000;
+        var fechaActual= new Date(0);
+        var e = req.body; 
+        var newjustificacion = Justificacion({
+            usuario: e.usuario,
+            fechaCreada: fechaActual,
+            motivo: e.motivo,
+            detalle: e.detalle,
+            estado: 0,//0 = pendiente
+            comentarioSupervisor: ""
+        });
+
+        newjustificacion.save(function(error, user) {
+
+            if (error) return res.json(error);
+
+            res.redirect('/justificacionesEmpl');
+
         });
     });
-    app.get('/solicitud_extra', autentificado, function(req, res) {
+    app.get('/solicitud_extra', autentificado, function(req, res) {/* No hace nada*/
         res.render('solicitud_extra', {
             title: 'Solicitud Tiempo Extra | SIGUCA',
             usuario: req.user
         });
     });
-    app.get('/autoriza_extra', autentificado, function(req, res) {
+    app.get('/autoriza_extra', autentificado, function(req, res) {/* No hace nada*/
         res.render('autoriza_extra', {
             title: 'Autorizacion Tiempo Extra | SIGUCA',
             usuario: req.user
         });
     });
-    app.get('/autoriza_justificacion', autentificado, function(req, res) {
+    app.get('/autoriza_justificacion', autentificado, function(req, res) {/* No hace nada*/
         res.render('autoriza_justificacion', {
             title: 'Autorizacion Justificacion | SIGUCA',
             usuario: req.user
@@ -222,13 +247,13 @@ module.exports = function(app) {
     app.post('/horarioN', autentificado, function(req, res) {
 
         var h = req.body;
-        var horarioN = Horario({
+        var horarioN = Horario({ /* No ocupa new (?)*/
             nombre: h.nombre,
             horaEntrada: h.horaEntrada,
             horaSalida: h.horaSalida,
-            horaInAlmuerzo: h.horaInAlmuerzo,
-            horaFnAlmuerzo: h.horaFnAlmuerzo,
-            rangoReceso: h.rangoReceso,
+            rangoJornada: h.rangoJornada,
+            tiempoReceso: h.tiempoReceso,
+            tiempoAlmuerzo: h.tiempoAlmuerzo
         });
         console.log(h);
         horarioN.save(function(error, user) {
@@ -258,7 +283,7 @@ module.exports = function(app) {
         });
     });
     //update Horario
-    app.get('/horarioN/editHorario/:id', autentificado, function(req, res) {
+    app.get('/horarioN/editHorario/:id', autentificado, function(req, res) { 
         var horarioId = req.params.id;
 
         Horario.findById(horarioId, function(error, horario) {
@@ -269,7 +294,7 @@ module.exports = function(app) {
 
         });
     });
-    app.put('/horarioN/:id',autentificado, function(req, res) {
+    app.put('/horarioN/:id',autentificado, function(req, res) { /*No lo entiendo cm se relaciona con edit  delete*/
 
         var horario = req.body,
             horarioId = req.params.id;
@@ -304,8 +329,10 @@ module.exports = function(app) {
         var m = req.body;
         var newMarca;
         var d = new Date();
-        var epochTime = (d.getTime() - d.getMilliseconds())/1000;         
-        var fechaActual = new Date(epochTime);
+        var epochTime = (d.getTime() - d.getMilliseconds())/1000;
+        var fechaActual= new Date(0);
+        fechaActual.setUTCSeconds(epochTime);  
+        console.log(fechaActual);
         switch (req.body.marca) { //controla el tipo de marca
 
             case "entrada":
@@ -313,7 +340,7 @@ module.exports = function(app) {
                     tipoMarca: "Entrada",
                     epoch: epochTime,
                     codTarjeta: req.user.codTarjeta,
-                    fecha: fechaActual,
+                    fecha: fechaActual
                 });
 
                 newMarca.save(function(error, user) {
@@ -323,8 +350,6 @@ module.exports = function(app) {
                     res.redirect('/escritorioEmpl');
 
                 });
-                console.log("si entro a actualizar entrada");
-
                 break;
 
             case "salida":
@@ -332,7 +357,7 @@ module.exports = function(app) {
                     tipoMarca: "Salida",
                     epoch: epochTime,
                     codTarjeta: req.user.codTarjeta,
-                    fecha: fechaActual,
+                    fecha: fechaActual
 
                 });
 
@@ -351,7 +376,7 @@ module.exports = function(app) {
                     tipoMarca: "salidaReceso",
                     epoch: epochTime,
                     codTarjeta: req.user.codTarjeta,
-                    fecha: fechaActual,
+                    fecha: fechaActual
 
                 });
 
@@ -370,7 +395,7 @@ module.exports = function(app) {
                     tipoMarca: "entradaReceso",
                     epoch: epochTime,
                     codTarjeta: req.user.codTarjeta,
-                    fecha: fechaActual,
+                    fecha: fechaActual
 
                 });
 
@@ -389,7 +414,7 @@ module.exports = function(app) {
                     tipoMarca: "salidaAlmuerzo",
                     epoch: epochTime,
                     codTarjeta: req.user.codTarjeta,
-                    fecha: fechaActual,
+                    fecha: fechaActual
 
                 });
                 newMarca.save(function(error, user) {
@@ -407,7 +432,7 @@ module.exports = function(app) {
                     tipoMarca: "entradaAlmuerzo",
                     epoch: epochTime,
                     codTarjeta: req.user.codTarjeta,
-                    fecha: fechaActual,
+                    fecha: fechaActual
 
                 });
 
@@ -424,11 +449,9 @@ module.exports = function(app) {
                 console.log("hubo un error");
                 break;
         }
-
-
     });
     //create Justificacion
-    app.post('/justificacion', autentificado, function(req, res) {
+    app.post('/justificacion', autentificado, function(req, res) { /* No es llamado ---podria servir en justificacion_nueva*/
 
         var d = new Date();
         var j = req.body;
@@ -453,72 +476,78 @@ module.exports = function(app) {
     });
     //create empleado
     app.post('/empleado', autentificado, function(req, res) {
-	
-	        if (req.session.name == "Administrador" || req.session.name == "Supervisor" ) {
-				var e = req.body;
+    
+            if (req.session.name == "Administrador" || req.session.name == "Supervisor" ) {
+                var e = req.body; 
 
-				Usuario.register(new Usuario({
+                Usuario.register(new Usuario({
 
-					username: e.username,
-					tipo: e.tipo,
-					estado: "Activo",
-					nombre: e.nombre,
-					apellido1: e.apellido1,
-					apellido2: e.apellido2,
-					email: e.email,
-					cedula: e.cedula,
-					codTarjeta: e.codTarjeta,
-					departamento: e.idDepartamento,
-					}), e.password, function(err, usuario) {
-						console.log('Recibimos nuevo usuario:' + e.username + ' de tipo:' + e.tipo);
-						console.log(e);
-						
-					}
-				);
+                    username: e.username, 
+                    tipo: e.tipo,
+                    estado: "Activo",
+                    nombre: e.nombre,
+                    apellido1: e.apellido1,
+                    apellido2: e.apellido2,
+                    email: e.email,
+                    cedula: e.cedula,
+                    codTarjeta: e.codTarjeta,
+                    departamento: e.idDepartamento,
+                    horario: e.idHorario,
+                    }), e.password, function(err, usuario) {
+                        console.log('Recibimos nuevo usuario:' + e.username + ' de tipo:' + e.tipo);
+                        console.log(e);
+                        
+                    }
+                );
+
                 if (req.session.name == "Administrador"){
                    res.redirect('/configuracionAdmin'); 
                 }
                 if (req.session.name == "Supervisor"){
                    res.redirect('/configuracion'); 
                 }
-				
-			} else {
-				req.logout();
-				res.redirect('/');
-			}
+                
+            } else {
+                req.logout();
+                res.redirect('/');
+            }
     });
     //read empleado
     app.get('/empleado', autentificado, function(req, res) {
 
         console.log('si entra');
 
-        Usuario.find().exec(function(error, empleados) { //cambie Empleado por Usuario segun nuevo CRUD
+        Usuario.find().exec(function(error, empleados) {
+            Horario.find().exec(function(error, horarios) {
+                Departamento.find().exec(function(error, departamentos) {
 
-            if (error) return res.json(error);
-
-            return res.render('empleado', {
-                title: 'Nuevo Empleado | SIGUCA',
-                empleados: empleados,
-                usuario: req.user
+                    if (error) return res.json(error);
+                    return res.render('empleado', {
+                        title: 'Gestionar empleados | SIGUCA',
+                        empleados: empleados, 
+                        usuario: req.user,
+                        horarios: horarios,
+                        departamentos: departamentos
+                    });
+                });
             });
-
-
         });
-
+        
     });
     //update empleado
     app.get('/empleado/edit/:id', autentificado, function(req, res) {
         var empleadoId = req.params.id;
 
-        Usuario.findById(empleadoId, function(error, empleado) { //cambie Empleado por Usuario segun nuevo CRUD
+        // Usuario.findById(empleadoId, function(error, empleado) { //cambie Empleado por Usuario segun nuevo CRUD
 
-            if (error) return res.json(error);
+        //     if (error) return res.json(error);
 
-            res.render('edit', empleado);
+        //     res.render('edit', empleado);
 
-        });
+        // });
+        
     });
-    app.put('/empleado/:id', function(req, res) {
+    app.put('/empleado/:id', function(req, res) {/*No lo entiendo cm se relaciona con edit  delete*/
 
         var empleado = req.body,
             empleadoId = req.params.id;
@@ -552,11 +581,8 @@ module.exports = function(app) {
     app.post('/departamento',autentificado, function(req, res) {
 
         var e = req.body;
-        var newDepartamento = Departamento({
-            nombre: e.nombre,
-            tipoJornada: e.tipoJornada,
-            idSupervisor: e.idSupervisor,
-            idHorario: e.idHorario,
+        var newDepartamento = Departamento({ /*no necesita new ??*/
+            nombre: e.nombre
         });
         newDepartamento.save(function(error, user) {
 
@@ -595,7 +621,7 @@ module.exports = function(app) {
 
         });
     });
-    app.put('/departamento/:id',autentificado, function(req, res) {
+    app.put('/departamento/:id',autentificado, function(req, res) {/*No lo entiendo cm se relaciona con edit  delete*/
 
         var departamento = req.body,
             departamentoId = req.params.id;
@@ -628,7 +654,7 @@ module.exports = function(app) {
 
 
 
-    app.get('/dispositivos', autentificado, function(req, res) {
+    app.get('/dispositivos', autentificado, function(req, res) { /* No hace nada, para que dispositivos??*/
         res.render('dispositivos', {
             title: 'Dispositivos | SIGUCA',
             usuario: req.user

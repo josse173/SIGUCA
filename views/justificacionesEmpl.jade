@@ -15,57 +15,50 @@ block content
     table.table
         thead
           tr
-            th Selección
-            th Código
-            th Nombre
-            th Tipo
-            th Detalles
             th Fecha
+            th Motivo
+            th Detalle
             th Estado
+            th Comentario Supervisor
         tbody
-          tr
-            td 
-              label.checkbox(for='codigoEmp')
-                     input#codigoEmp3(name='codigo3', type='checkbox')
-            td 1111
-            td Ma Diya
-            td Tardia 
-            td 25 minutos Marca Entrada
-            td 20-12-2013 
-            td Rechazado
-          tr
-            td 
-              label.checkbox(for='codigoEmp')
-                     input#codigoEmp3(name='codigo3', type='checkbox')
-            td 1111
-            td Ma Diya
-            td Tardía
-            td Retraso de 15 minutos hora de entrada
-            td  05-10-2013
-            td Aceptado
-          tr
-           td 
-              label.checkbox(for='codigoEmp')
-                     input#codigoEmp3(name='codigo3', type='checkbox')
-           td 1111
-           td Ma Diya
-           td omisión de Marca
-           td hora de entrada
-           td 20-10-2013
-           td Pendiente
-
+          each justificacion, i in justificaciones
+            tr
+              td #{justificacion.fechaCreada} 
+              td #{justificacion.motivo} 
+              td #{justificacion.detalle} 
+              td #{justificacion.estado} 
+              td #{justificacion.comentarioSupervisor} 
    
       .control-group
          
-            a.btn.btn-primary(href='/justificacion_nueva', role='button', data-toggle='modal') Justificar 
+            //a.btn.btn-primary(href='/justificacion_nueva', role='button', data-toggle='modal') Justificar 
+
+            button#justificacion.btn.btn-success(name='agregar', data-toggle="modal" data-target="#addJustificacion") Justificar  
             a.btn.btn-primary(href='/solicitud_extra', role='button', data-toggle='modal') Solicitar Extras  
 
-    
+  .col-xs-2
+    //agregar justificacion            
+    #addJustificacion.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+      .modal-dialog
+        .modal-content
+          .modal-header
+            button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+            h4#myModalLabel.modal-title Enviar Justificación
+          .modal-body
+            form(role='form', method="POST", action="justificacion_nueva")
+              .form-group
+                  h3 Información Básica
+                  label(for='motivo') Motivo:
+                  input#group.form-control(type= 'text', placeholder='motivo', name= 'motivo', value=motivo)
+              .form-group
+                  label(for='detalles') Detalles:
+                  //input#detalles.form-control(type= 'Number', placeholder='Detalles', name='detalle', value=detalles)
+                  textarea#detalles.form-control(rows="4" cols="50")
+                  input#usuario.form-control(type='hidden', placeholder='', name='usuario', value=usuario.id)
+                     
+              button.btn.btn-default(type='submit') Enviar
+              button.btn.btn-default(type='button', data-dismiss='modal') Cancelar 
+
+          .modal-footer       
 block sigucaJS
   script(src="/javascripts/datepicker.js")
-
-
-
-
-
-

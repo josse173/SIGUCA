@@ -1,4 +1,4 @@
-SIGUCA: TODO -- Agreguen la descripción y demás datos aqui.
+SIGUCA: Todo -- Agreguen la descripción y demás datos aqui.
 
 Estructura de directorios:
 	public

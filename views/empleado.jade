@@ -17,9 +17,61 @@ block content
           tr
             td #{empleado.username} #{empleado.apellido1} 
             td
-               a(href="/empleado/edit/"+empleado.id)  editar
+               button#edit.btn.btn-success(type='submit', name='editar', onclick= "/empleado/edit/"+empleado.id, data-toggle="modal" data-target="#addEdit") Editar
             td
-               a(href="/empleado/delete/"+empleado.id)  eliminar
+               button#eliminar.btn.btn-danger(name='eliminar', onclick= "changeElemt('empleado/edit/'+empleado.id)", data-toggle="modal" data-target="#addDelete") Eliminar
 
+  .col-xs-2
+    //desplegar informacion empleado            
+    #addEdit.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+      .modal-dialog
+        .modal-content
+          .modal-header
+            button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+            h4#myModalLabel.modal-title Actualización de Empleados
+          .modal-body
+            form(role='form', method="POST", action="/empleado/" + _id)
+              .form-group
+                  h3 Información Básica
+                  label(for='nombre') Nombre:
+                  input#group.form-control(type= 'text', placeholder='Nombre', name= 'nombre', value=nombre)
+                  label(for='cedula') Cédula:
+                  input#cedula.form-control(type= 'Number', placeholder='Cédula', name='cedula', value=cedula)
+              .form-group
+                label(for='apellido1') Primer Apellido:
+                input#apellido1.form-control(type= 'text', placeholder='Primer Apellido', name= 'apellido1', value=apellido1)
+                label(for='apellido2') Segundo Apellido:
+                input#apellido2.form-control(type= 'text', placeholder='Segundo Apellido', name='apellido2', value=apellido2)
+              .form-group
+                label(for='email') Correo Eléctronico:
+                input#email.form-control(type= 'email', placeholder='Correo Electronico', name='email', value=email)
+              
+              .form-group 
+                h3 Información Laboral
+                label(for='codTarjeta') Código de Empleado:
+                  input#codTarjeta.form-control(type= 'text', placeholder='Código de Empleado', name='codTarjeta')
 
+                label(for='codTarjeta') Código de Empleado:
+                  input#codTarjeta.form-control(type= 'Number', placeholder='Código de Empleado', name='codTarjeta', value=codTarjeta)
+                  input(type='hidden', name='_method', value='put') 
 
+                label(for="tipoInput")
+                  |Tipo de Usuario:
+                  select.form-control#textInput(type="text", name="tipo") 
+                    option Empleado
+                    option Supervisor
+                    option Administrador
+                label(for='departamento') Departamento:
+                  select.form-control#textInput(type="text", name="idDepartamento") 
+                    each departamento, i in departamentos
+                       option(value= departamento.id) #{departamento.nombre}                
+
+                label(for='horario') Horario:
+                  select.form-control#textInput(type="text", name="idHorario") 
+                    each horario, i in horarios
+                        option(value= horario.id) #{horario.nombre} 
+                         
+              button.btn.btn-default(type='submit') Actualizar
+              button.btn.btn-default(type='button', data-dismiss='modal') Cancelar 
+
+          .modal-footer       

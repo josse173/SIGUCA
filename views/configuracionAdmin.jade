@@ -2,6 +2,7 @@ extends layoutAdmin
 
 block sigucaCSS
   link(rel='stylesheet', href='/stylesheets/sigucaConfiguraciones.css')
+  //link(rel='stylesheet', href='/stylesheets/bootstrap-timepicker.min.css')
 
 block gcsNavbarItems
   ul.nav.navbar-nav
@@ -116,12 +117,12 @@ block content
                   .form-group
                     h4 Información Básica
                     label(for='nombre') Nombre del Horario:
-                      input.form-control#textInput( type="text", name="nombreHorario", placeholder='Nombre del horario')
-                    .checkbox-inline#jFija
+                      input.form-control#textInput( type="text", name="nombre", placeholder='Nombre del horario')
+                    //.checkbox-inline#jFija
                       label
                         input(type='checkbox', name="jornada")
                         | Jornada fija
-                    .checkbox-inline#jLibre
+                    //.checkbox-inline#jLibre
                       label
                         input(type='checkbox', name= "jornada")
                         | Jornada libre
@@ -130,18 +131,26 @@ block content
                     h4 Información de jornada
                     label(for='hEntrada') Hora de entrada:
                       input.form-control#textInput( type="text", name= "horaEntrada", placeholder='Hora de entrada')
+                    //div.input-append.bootstrap-timepicker
+                    //  input#timepicker1.input-small(type="text")
+                    //  span.add-on
+                    //    img.icon-time// Esto comentado no funciona es de bootstrap-timepicker-min
+    
                     label(for='hSalida') Hora de salida:
                       input.form-control#textInput(type="text", name="horaSalida", placeholder='Hora de salida')
+                    label(for='rJornada') Rango de jornada:
+                      input.form-control#textInput(type="text", name="rangoJornada", placeholder='6 (horas diarias)')
                   .form-group
-                    h4 Información de receso
-                    label(for='iAlmuerzo') Inicio de almuerzo:
-                      input.form-control#textInput( type="text", name="horaInAlmuerzo", placeholder='Inicio de Almuerzo')   
-                    label(for='fAlmuerzo') Final de almuerzo:
-                      input.form-control#textInput(type="text", name="horaFnAlmuerzo", placeholder='Final de Almuerzo')
-                    label(for='tReceso') Rango de receso (Exceptuando hora de almuerzo):
-                      input.form-control#textInput( type="text", name="rangoReceso", placeholder='numero de horas + h  numero de minutos + m')  
+                    h4 Información de descansos
+                    label(for='tReceso') Rango de receso:
+                      input.form-control#textInput( type="text", name="tiempoReceso", placeholder='45m')   
+                    label(for='tAlmuerzo') Rango de almuerzo:
+                      input.form-control#textInput(type="text", name="tiempoAlmuerzo", placeholder='1h30m')
+                     
                   button.btn.btn-default(type='submit') Ingresar
                   button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
+      
+
       //agregar departamento            
       #addDep.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
         .modal-dialog
@@ -154,26 +163,8 @@ block content
                   .form-group
                       label(for='nombre') Nombre:
                         input#group.form-control( type="text", placeholder='Nombre del area', name= "nombre")
-                  .form-group
-                      label(for='idSupervisor') 
-                        |Elija Supervisor:
-                        select.form-control#textInput(type="text", name="idSupervisor") 
-                          each empleado, i in empleados
-                            if (empleado.tipo == "Supervisor")
-                              option(value= empleado.id) #{empleado.nombre} #{empleado.apellido1}
-                      label(for="tipoJornada")
-                        |Tipo de Jornada:
-                        select.form-control#textInput(type="text", name="tipoJornada") 
-                          option Fija
-                          option Horas
-                          option Excepcion    
-                      label(for='horario') Horario:
-                        select.form-control#textInput(type="text", name="idHorario") 
-                          each horario, i in horarios
-                              option(value= horario.id) #{horario.nombre} de #{horario.horaEntrada} a #{horario.horaSalida}                
-                  button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
                   button.btn.btn-default(type='submit') Ingresar
-                
+                  button.btn.btn-default(type='button', data-dismiss='modal') Cancelar                
 
       //agregar empleados
       #addEmpl.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
@@ -186,22 +177,22 @@ block content
                     .form-group
                       h3 Información Básica
                       label(for='nombre') Nombre:
-                        input#group.form-control(type= 'text', placeholder='Nombre', name= 'nombre')
+                        input#group.form-control(type= 'text', placeholder='Carlos', name= 'nombre')
                       label(for='cedula') Cédula:
-                       input#cedula.form-control(type= 'Number', placeholder='Cédula', name='cedula') 
+                       input#cedula.form-control(type= 'text', placeholder='110459625', name='cedula') 
                     .form-group
                       label(for='apellido1') Primer Apellido:
-                        input#apellido1.form-control(type= 'text', placeholder='Primer Apellido', name= 'apellido1')
+                        input#apellido1.form-control(type= 'text', placeholder='Corella', name= 'apellido1')
                       label(for='apellido2') Segundo Apellido:
-                       input#apellido2.form-control(type= 'text', placeholder='Segundo Apellido', name='apellido2')   
+                       input#apellido2.form-control(type= 'text', placeholder='Sandi', name='apellido2')   
                       label(for='email') Correo Eléctronico:
-                        input#email.form-control(type= 'email', placeholder='Correo Electronico', name='email')
-                      div#status    
+                        input#email.form-control(type= 'email', placeholder='alguien@ejemplo.com', name='email')
+                       
 
                     .form-group 
                       h3 Información Laboral
                       label(for='codTarjeta') Código de Empleado:
-                        input#codTarjeta.form-control(type= 'Number', placeholder='Código de Empleado', name='codTarjeta')
+                        input#codTarjeta.form-control(type= 'text', placeholder='Código de Empleado', name='codTarjeta')
                       label(for="usernameInput")
                         |Usuario:
                         input.form-control#textInput(type="text", name="username", placeholder="Usuario")
@@ -211,10 +202,17 @@ block content
                           option Empleado
                           option Supervisor
                           option Administrador
-                      label(for='horario') Departamento:
+                      label(for='departamento') Departamento:
                         select.form-control#textInput(type="text", name="idDepartamento") 
                           each departamento, i in departamentos
                               option(value= departamento.id) #{departamento.nombre} 
+
+                      /////////Verificar eso... seguramente hay que cambiarlo para que se cree un horario, ya que pueden variar por cada usuario.
+
+                      label(for='horario') Horario:
+                        select.form-control#textInput(type="text", name="idHorario") 
+                          each horario, i in horarios
+                              option(value= horario.id) #{horario.nombre} 
 
                     .form-group
                       label(for="passwordInput")
@@ -223,10 +221,10 @@ block content
                         button.btn.btn-default(type='button', onclick='generatepass(4)') Generar Contraseña
                         div#correoMsj 
                                     
-                    button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
                     button.btn.btn-default(type='submit') Ingresar
+                    button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
       
 block sigucaJS
+  //script(src= "/js/bootstrap-timepicker.min.js) // Error al descomentarlo
   script(src="/js/mailgun_validator.js")
   script(src= " /js/configuracionSupervisor.js")
-

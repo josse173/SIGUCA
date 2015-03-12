@@ -1,6 +1,6 @@
  /**
   *
-  *		SIGUCA:
+  *     SIGUCA:
   * Esquema de Usuario
   *
   **/
@@ -10,6 +10,10 @@
      passportLocalMongoose = require('passport-local-mongoose');
 
  var SchemaUsuario = new Schema({
+     codTarjeta: {
+         type: Number,
+         default: 0
+     },
      usuario : {
          type: String,
          default: ''
@@ -42,10 +46,6 @@
          type: Number,
          default: 0
      },
-     codTarjeta: {
-         type: Number,
-         default: 0
-     },
      fechaCreacion: {
          type: Date,
          default: Date.now()
@@ -53,6 +53,10 @@
      departamento: {
          type: Schema.ObjectId,
          ref: 'Departamento'
+     },
+     horario: {
+         type: Schema.ObjectId,
+         ref: 'Horario'
      },
  });
 
