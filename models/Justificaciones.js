@@ -15,7 +15,7 @@ var SchemaJustificacion = new Schema({
         ref: 'Usuario'
     },
     fechaCreada: { // epoch
-        type: Date,
+        type: Number,
         default: 0
     },
     motivo: {

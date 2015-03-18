@@ -228,12 +228,10 @@ module.exports = function(app, io) {
     app.post('/justificacion_nueva', autentificado, function(req, res) {
         var d = new Date();
         var epochTime = (d.getTime() - d.getMilliseconds())/1000;
-        var fechaActual= new Date(0);
-        fechaActual.setUTCSeconds(epochTime); 
         var e = req.body; 
         var newjustificacion = Justificaciones({
             usuario: req.user.id,
-            fechaCreada: fechaActual,
+            fechaCreada: epochTime,
             motivo: e.motivo,
             detalle: e.detalle,
             estado: 0,//0 = pendiente
@@ -249,17 +247,17 @@ module.exports = function(app, io) {
     });
     //create solicitud hora extra
     app.post('/solicitud_extra', autentificado, function(req, res) {
-        var fechaActual= new Date();
+        var d = new Date();
+        var epochTime = (d.getTime() - d.getMilliseconds())/1000; 
         var e = req.body; 
         var newSolicitud = Solicitudes({
-            fechaCreada: fechaActual,
+            fechaCreada: epochTime,
             tipoSolicitudes: "Extras",
             diaInicio: e.diaInicio,
             horaFinal: e.horaFinal,
             motivo: e.motivo,
             usuario: req.user.id
         });
-        console.log(newSolicitud);
         newSolicitud.save(function(error, user) {
 
             if (error) return res.json(error);
@@ -273,17 +271,17 @@ module.exports = function(app, io) {
     });
     //create solicitud de permisos
     app.post('/solicitud_permisos', autentificado, function(req, res) {
-        var fechaActual= new Date();
+        var d = new Date();
+        var epochTime = (d.getTime() - d.getMilliseconds())/1000; 
         var e = req.body; 
         var newSolicitud = Solicitudes({
-            fechaCreada: fechaActual,
+            fechaCreada: epochTime,
             tipoSolicitudes: "Permisos",
             diaInicio: e.diaInicio,
             diaFinal: e.diaFinal,
             motivo: e.motivo,
             usuario: req.user.id
         });
-        console.log(newSolicitud);
         newSolicitud.save(function(error, user) {
 
             if (error) return res.json(error);
@@ -748,18 +746,19 @@ module.exports = function(app, io) {
     });
 
     var job = new CronJob({
-        cronTime: '00 02 12 * * 0-6',//'00 00 23 * * 0-6',
+        cronTime: '00 04 16 * * 0-6',//'00 00 23 * * 0-6',
         onTick: function() {
             // Runs every weekday
             // at 12:00:00 AM.
             var today = new Date()
                 yesterday = new Date(today);
             yesterday.setDate(today.getDate()-1);
-            console.log(today);
-            console.log(yesterday);
-            // Marca.find({fecha:{"$gte":yesterday,"$lt":today}}).sort({usuario:1}).exec(function(error, marcas) {  
+            // Marca.find({epoch:{"$gte":(yesterday.getTime() - yesterday.getMilliseconds())/1000,"$lt":(today.getTime() - today.getMilliseconds())/1000}}).sort({usuario:1}).exec(function(error, marcas) {  
+            //     console.log(marcas);
+            //     if (error) return res.json(error);
             // });
-            var estad = 4;//Math.floor(Math.random()*10);
+
+            var estad = 3;//Math.floor(Math.random()*10);
             var epochTime = (today.getTime() - today.getMilliseconds())/1000;
             var newCierre = Cierre({
                             estado: estad,
@@ -781,17 +780,21 @@ module.exports = function(app, io) {
     });
     job.start();
 
+    //Iniciamos la conexión.
+    io.sockets.on('connection', function(socket){
+        //Emitimos nuestro evento connected
+        //socket.emit('connected');
+        console.log('connected');
 
-    io.on('connection', function(socket){
-        console.log('a user connected');
-        socket.on('solicitaCierre', function (cierre) {
-            Cierre.find().exec(function(err, cierre) {
-                if (err) {
-                    console.log('error saving user prefs '+err);
-                }
-                socket.emit('listaCierre', cierre);
-            })
+        Cierre.find().exec(function(err, cierre) {
+            if (err) {
+                console.log('error saving user prefs '+err);
+            }
+            console.log('consulta sin errores');
+            //console.log(cierre);
+            socket.emit('listaCierre', cierre);
         });
+
     });
 
 };

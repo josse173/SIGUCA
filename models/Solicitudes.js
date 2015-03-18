@@ -30,8 +30,8 @@ var SchemaSolicitudes = new Schema({
         type: String,
         default: ''
     },
-    fechaCreada: { 
-        type: Date,
+    fechaCreada: { //epoch
+        type: Number,
         default: ''
     },
     motivo: {

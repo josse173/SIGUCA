@@ -3,9 +3,6 @@ extends layout
 block sigucaCSS
   link(rel='stylesheet', href='/stylesheets/cal-heatmap.css')
 
-block gcsNavbarItems
-  ul.nav.navbar-nav
-
 block content   
     .container
       .col-xs-8
@@ -31,6 +28,8 @@ block content
                   td #{cierre.fecha} 
                   td #{cierre.epoch} 
                   td #{cierre.estado} 
+              
+              
       .col-xs-4
        h3 Filtros   
        div.filter
@@ -59,7 +58,7 @@ block content
               | Solicitud de hora extraordinaria
           li.list-group-item
             a(data-toggle="modal" data-target="#permiso")
-              | Solicitud de permiso antisipado
+              | Solicitud de permiso anticipado
         
       .col-xs-4
         h3 Pendientes de revisar 

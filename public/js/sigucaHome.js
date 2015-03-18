@@ -1,20 +1,30 @@
 
-var socket = require('socket.io-client')('http://localhost');;
+    //#1 Declaramos el objeto socket que se conectará en este caso a localhost
+    var socket = io.connect('http://localhost:3000');
 
-    socket.emit('solicitaCierre', {a:"1"});
 
-    socket.on('listaCierre', function(cierre){
-        console.log("Obtuve los cierres: "+ JSON.stringify(cierre));
+    //#3 Si estamos conectados, muestra el log y cambia el mensaje
+    socket.on('connected', function () {
+        console.log('Conectado!');
     });
 
-$(document).ready(function(){
+    socket.on('listaCierre', function(cierre){
+        var stats = {};
+        for (var d in cierre) {
+            stats[cierre[d].epoch] = cierre[d].estado;
+        }
+        calendario(stats);
+    });
 
-    var dd = {"1426710016":7,"1426450814":3};
 
-    // var stats = {};
-    // for (var d in estadoCierre) {
-    //     stats[estadoCierre[d].fecha] = estadoCierre[d].estado;
-    // }
+    //#6 Si nos desconectamos, muestra el log y cambia el mensaje.
+    socket.on('disconnect', function () {
+        console.log('Desconectado!');
+    });
+
+
+function calendario(stats){
+
     var cal = new CalHeatMap();
     cal.init({
         itemSelector: "#cal",
@@ -26,11 +36,11 @@ $(document).ready(function(){
         domainGutter:   5, // separa los dias
         tooltip: true, // muestra el fecha y hora de cada cuadro
         //start: new Date(2015, 0, 2), //default es el día de hoy
-        data: dd,//"/js/datas-years.json",
+        data: stats,//"/js/datas-years.json",
         previousSelector: "#previous",
         nextSelector: "#next",
         highlight: "now", //se puede quitar mas adelante, señala la hora actual.
-        legend: [2, 4, 6],
+        legend: [2, 5, 10],
         legendCellSize: 15,
         legendColors: {
             min: "#95EE6B",//"#74D943",//"#00C322",
@@ -39,10 +49,10 @@ $(document).ready(function(){
             empty: "gray",
         },
         legendTitleFormat: {
-            lower: "Tardía",
+            lower: "Normal",
             inner: "Permiso",
             solExtra: "Horas Extra",
-            upper: "Ausencia",
+            upper: "10-*",
         },
         itemName: ["", ""]
     });
@@ -51,44 +61,4 @@ $(document).ready(function(){
     // // // Add January 5th to already highlighted dates
     // cal.highlight(cal.options.highlight.push(new Date(2014, 5, 14)));
 
-});
-
-
-// $(document).ready(function(estadoCierre){
-//     $.getJSON( "/escritorio", function( estadoCierre ) {
-
-//         for(i in estadoCierre){
-//            alert(i.fecha+i.estado);
-//         }
-//     });
-// });
-
-//   var cal = new CalHeatMap();
-//   cal.init({
-//     itemSelector: "#cal",
-//     cellSize: 3,
-//     range: 2,
-//     cellSize: 20,
-//     tooltip: true,
-//     legendColors: ["gray","green"],
-//     domain: "week",
-//     subDomain: "hour",
-//     colLimit: 24,
-//     cellPadding: 8,
-//     verticalOrientation: true,
-//     legend: [2, 4, 6, 8],
-// 	legendColors: ["#B2E9B2", "#232181"],
-//     label: {
-// 		position: "right",
-// 		width: 500,
-// 		offset: {x: 10, y: 30}
-// 	},
-//     previousSelector: "#previous",
-//     nextSelector: "#next"
-
-   
-//    });
-
-
-
-
+};
