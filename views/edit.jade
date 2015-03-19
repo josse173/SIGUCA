@@ -11,35 +11,58 @@ block content
   .container
     
     .modal-dialog
-            .modal-content
-              .modal-header
-                button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-                h4#myModalLabel.modal-title Actualización de Empleados
-              .modal-body
-                form(role='form', method="POST", action="/empleado/" + _id)
-                  .form-group
-                      label(for='nombre') Nombre:
-                      input#group.form-control(type= 'text', placeholder='Nombre', name= 'nombre', value=nombre)
-                    .form-group
-                      label(for='apellido1') Primer Apellido:
-                      input#apellido1.form-control(type= 'text', placeholder='Primer Apellido', name= 'apellido1', value=apellido1)
-                    .form-group
-                      label(for='apellido2') Segundo Apellido:
-                      input#apellido2.form-control(type= 'text', placeholder='Segundo Apellido', name='apellido2', value=apellido2)
-                    .form-group
-                      label(for='email') Correo Eléctronico:
-                      input#email.form-control(type= 'email', placeholder='Correo Electronico', name='email', value=email)
-                    .form-group
-                      label(for='cedula') Cédula:
-                      input#cedula.form-control(type= 'Number', placeholder='Cédula', name='cedula', value=cedula)
-                    .form-group
-                      label(for='codTarjeta') Código de Empleado:
-                      input#codTarjeta.form-control(type= 'Number', placeholder='Código de Empleado', name='codTarjeta', value=codTarjeta)
-                      input(type='hidden', name='_method', value='put')               
-                                                  
-                    button.btn.btn-default(type='submit') Actualizar
-   
-              .modal-footer    
-   
+        .modal-content
+          .modal-body
+            button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+            h4#myModalLabel.modal-title Actualización de Empleados
+            form(role='form', method="POST", action="/empleado/" + usuario.id)#login-form.well.span4
+              .form-group
+                  h3 Información Básica
+                  label(for='nombre') Nombre: 
+                    input#group.form-control(type= 'text', placeholder='Nombre', name= 'nombre', value=empleado.nombre)
+                  label(for='cedula') Cédula:
+                    input#cedula.form-control(type= 'Number', placeholder='Cédula', name='cedula', value=empleado.cedula)
+              .form-group
+                label(for='apellido1') Primer Apellido:
+                  input#apellido1.form-control(type= 'text', placeholder='Primer Apellido', name= 'apellido1', value=empleado.apellido1)
+                label(for='apellido2') Segundo Apellido:
+                  input#apellido2.form-control(type= 'text', placeholder='Segundo Apellido', name='apellido2', value=empleado.apellido2)
+              .form-group
+                label(for='email') Correo Eléctronico:
+                  input#email.form-control(type= 'email', placeholder='Correo Electronico', name='email', value=empleado.email)
+              
+              .form-group 
+                h3 Información Laboral
+                label(for='codTarjeta') Código de Empleado:
+                  input#codTarjeta.form-control(type= 'text', placeholder='Código de Empleado', name='codTarjeta',  value=empleado.codTarjeta)
+                //label(for='codTarjeta') Código de Empleado:
+                  input#codTarjeta.form-control(type= 'Number', placeholder='Código de Empleado', name='codTarjeta', value=empleado.codTarjeta)
+                  //input(type='hidden', name='_method', value='put') 
+              .form-group 
+                label(for="tipoInput")
+                  |Tipo de Usuario:
+                  select.form-control#tipoEmpleado(type="text", name="tipo") 
+                    option(value='Empleado') Empleado
+                    option(value='Supervisor') Supervisor
+                    option(value='Administrador') Administrador
+                label(for='departamento') Departamento:
+                  select.form-control#idDepartamento(type="text", name="departamento") 
+                    each departamento, i in departamentos
+                      if(empleado.departamento == departamento.id)
+                       option(value= departamento.id selected='true') #{departamento.nombre} 
+                      else
+                       option(value= departamento.id) #{departamento.nombre} 
 
 
+                label(for='horario') Horario:
+                  select.form-control#idHorario(type="text", name="horario") 
+                    each horario, i in horarios
+                      if(empleado.horario == horario.id)
+                        option(value= horario.id selected='true') #{horario.nombre} 
+                      else
+                       option(value= horario.id) #{horario.nombre}
+                         
+              button.btn.btn-default(type='submit') Actualizar
+              button.btn.btn-default(type='button', data-dismiss='modal') Cancelar 
+
+          .modal-footer       

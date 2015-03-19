@@ -7,226 +7,97 @@ block gcsNavbarItems
   ul.nav.navbar-nav
 block content
     div.container
-      .col-xs-8
+      .col-xs-12
         h3 Justificaciones
         br
         .table-responsive
         table.table
             thead
               tr
-                th Selección
-                th Código
-                th Nombre
-                th Tipo
-                th Detalles
                 th Fecha
+                th Usuario
+                th Motivo
+                th Detalle
                 th Estado
-            tbody
+                th Comentario
+            tbody 
+              each justificacion, i in justificaciones
+                tr
+                  td #{justificacion.fechaCreada} 
+                  td #{justificacion.usuario} 
+                  td #{justificacion.motivo} 
+                  td #{justificacion.detalle} 
+                  td #{justificacion.estado} 
+                  form(role='form', method="POST", action="/getionarJustificacion/"+justificacion.id)
+                    td
+                      textarea.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
+                    td
+                      select.selectpicker.show-tick(name='estado')
+                        option(value='1') Aceptar
+                        option(value='2') Rechazar
+                        option(value='0') Pendiente
+                    td
+                      button.btn.btn-success(type='submit', name='gestionar') Gestionar                 
+ 
+
+
+
+        h3 Solicitudes Horas Extras
+        br
+        .table-responsive
+        table.table
+            thead
               tr
-                td 
-                  label.checkbox(for='codigoEmp')
-                         input#codigoEmp3(name='codigo3', type='checkbox')
-                td 1111
-                td Ma Diya
-                td Vacaciones
-                td Vacaciones
-                td 20-12-2013 al 05-01-2014
-                td Aceptado
+                th Fecha
+                th Usuario
+                th Dia
+                th Horas 
+                th Motivo
+            tbody 
+              each extra, i in extras
+                tr
+                  td #{extra.fechaCreada} 
+                  td #{extra.usuario} 
+                  td #{extra.diaInicio} 
+                  td #{extra.horaFinal} 
+                  td #{extra.motivo} 
+                  form(role='form', method="POST", action="/getionarSolicitud/"+extra.id)
+                    td
+                      select.selectpicker.show-tick(name='estado')
+                        option(value='Aceptada') Aceptar
+                        option(value='Rechazada') Rechazar
+                        option(value='Pendiente') Pendiente
+                    td
+                      button.btn.btn-success(type='submit', name='gestionar') Gestionar
+
+        h3 Solicitudes Permisos
+        br
+        .table-responsive
+        table.table
+            thead
               tr
-                td 
-                  label.checkbox(for='codigoEmp')
-                         input#codigoEmp3(name='codigo3', type='checkbox')
-                td 402110092
-                td Tatiana Moreira Beita
-                td Tardía
-                td Retraso de 15 minutos hora de entrada
-                td  05-10-2013
-                td Aceptado
-              tr
-               td 
-                  label.checkbox(for='codigoEmp')
-                         input#codigoEmp3(name='codigo3', type='checkbox')
-               td 113970119
-               td Carlos Solano Morales
-               td Tardía 
-               td Retraso de 30 minutos hora de entrada
-               td 20-10-2013
-               td Pendiente
-
-       
-          .control-group
-              label.control-laber(for='accion')
-                .controls
-                  button#accion.btn.btn-success(name='aceptar') Aceptar
-                  button#accion.btn.btn-danger(name='rechazar', href='#justificacionRechazo', data-toggle='modal') Rechazar     
-                  #justificacionRechazo.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
-                   .modal-dialog
-                    .modal-content
-                      .modal-header
-                        button.close(type='button', data-dismiss='modal', aria-hidden='true') X Cerrar
-                        h4.modal-title Justificación de Rechazo
-                      .modal-body
-                        form.form-horizontal()
-                         fieldset                       
-                             div.form-group.gcsContainer
-                               label.col-lg-4(for='Detalles')
-                                 |Detalles
-                               div.col-lg-6.col-md-6.col-sm-6
-                                 textarea.form-control(name="Detalles", placeholder="Añada comentario")
-                             .control-group
-                               label.control-label(for='ingreso')
-                                 .controls
-                                 button#ingreso.btn.btn-success(name='ingreso') Ingresar
-                                 button#cancelar.btn.btn-danger(name='cancelar') Cancelar    
-
-      .col-xs-4
-
-          h3#labelIMEC
-            |IMEC:
-          div#contBotones
-            div#empl
-              label(for="Departamento")
-                |Departamento:
-            form(action= '/departamento')
-              button#empleados.btn.btn-success(name='agregar', onclick= "changeElemt('departamento')", data-toggle="modal" data-target="#addDep") Nuevo
-              button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/departamento") Modificar o Eliminar      
-            
-            div#horario
-              label(for="horario")
-                |Horario:
-            form(action= '/horarioN')    
-              button#empleados.btn.btn-success(name='agregar', onclick= "changeElemt('horarioN')", data-toggle="modal" data-target="#addHorario") Nuevo       
-              button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/horarioN") Modificar o Eliminar
-            div#empleado
-              label(for="empleado")
-                |Empleado:
-            form(action= '/empleado')     
-              button#empleados.btn.btn-success(name='agregar', onclick= "changeElemt('empleado')", data-toggle="modal" data-target="#addEmpl") Nuevo 
-              button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/empleado") Modificar o Eliminar
-          
-    .col-xs-2
-      #addHorario.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
-        .modal-dialog
-            .modal-content
-              .modal-header
-                button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-                h4#myModalLabel.modal-title Añadir nuevo horario
-              .modal-body
-                form(action='/horarioN', method='post')#login-form.well.span4
-                  .form-group
-                    h4 Información Básica
-                    label(for='nombre') Nombre del Horario:
-                      input.form-control#textInput( type="text", name="nombreHorario", placeholder='Nombre del horario')
-                    .checkbox-inline#jFija
-                      label
-                        input(type='checkbox', name="jornada")
-                        | Jornada fija
-                    .checkbox-inline#jLibre
-                      label
-                        input(type='checkbox', name= "jornada")
-                        | Jornada libre
-                                
-                  .form-group
-                    h4 Información de jornada
-                    label(for='hEntrada') Hora de entrada:
-                      input.form-control#textInput( type="text", name= "horaEntrada", placeholder='Hora de entrada')
-                    label(for='hSalida') Hora de salida:
-                      input.form-control#textInput(type="text", name="horaSalida", placeholder='Hora de salida')
-                  .form-group
-                    h4 Información de receso
-                    label(for='iAlmuerzo') Inicio de almuerzo:
-                      input.form-control#textInput( type="text", name="horaInAlmuerzo", placeholder='Inicio de Almuerzo')   
-                    label(for='fAlmuerzo') Final de almuerzo:
-                      input.form-control#textInput(type="text", name="horaFnAlmuerzo", placeholder='Final de Almuerzo')
-                    label(for='tReceso') Rango de receso (Exceptuando hora de almuerzo):
-                      input.form-control#textInput( type="text", name="rangoReceso", placeholder='numero de horas + h  numero de minutos + m')  
-                  button.btn.btn-default(type='submit') Ingresar
-                  button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
-      //agregar departamento            
-      #addDep.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
-        .modal-dialog
-            .modal-content
-              .modal-header
-                button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-                h4#myModalLabel.modal-title Añadir nuevo departamento
-              .modal-body
-                form(role='form', method="POST", action="/departamento")#login-form.well.span4
-                  .form-group
-                      label(for='nombre') Nombre:
-                        input#group.form-control( type="text", placeholder='Nombre del area', name= "nombre")
-                  .form-group
-                      label(for='idSupervisor') 
-                        |Elija Supervisor:
-                        select.form-control#textInput(type="text", name="idSupervisor") 
-                          each empleado, i in empleados
-                            if (empleado.tipo == "Supervisor")
-                              option(value= empleado.id) #{empleado.nombre} #{empleado.apellido1}
-                      label(for="tipoJornada")
-                        |Tipo de Jornada:
-                        select.form-control#textInput(type="text", name="tipoJornada") 
-                          option Fija
-                          option Horas
-                          option Excepcion    
-                      label(for='horario') Horario:
-                        select.form-control#textInput(type="text", name="idHorario") 
-                          each horario, i in horarios
-                              option(value= horario.id) #{horario.nombre} de #{horario.horaEntrada} a #{horario.horaSalida}                
-                  button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
-                  button.btn.btn-default(type='submit') Ingresar
-                
-
-      //agregar empleados
-      #addEmpl.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
-          .modal-dialog
-            .modal-content
-              .modal-body
-                button.close(type='button', data-dismiss='modal', aria-hidden='true') × 
-                h3#myModalLabel.modal-title Añadir nuevo Empleado
-                form(role='form', method="POST", action="/empleado")#login-form.well.span4
-                    .form-group
-                      h3 Información Básica
-                      label(for='nombre') Nombre:
-                        input#group.form-control(type= 'text', placeholder='Nombre', name= 'nombre')
-                      label(for='cedula') Cédula:
-                       input#cedula.form-control(type= 'Number', placeholder='Cédula', name='cedula') 
-                    .form-group
-                      label(for='apellido1') Primer Apellido:
-                        input#apellido1.form-control(type= 'text', placeholder='Primer Apellido', name= 'apellido1')
-                      label(for='apellido2') Segundo Apellido:
-                       input#apellido2.form-control(type= 'text', placeholder='Segundo Apellido', name='apellido2')   
-                      label(for='email') Correo Eléctronico:
-                        input#email.form-control(type= 'email', placeholder='Correo Electronico', name='email')
-                      div#status    
-
-                    .form-group 
-                      h3 Información Laboral
-                      label(for='codTarjeta') Código de Empleado:
-                        input#codTarjeta.form-control(type= 'Number', placeholder='Código de Empleado', name='codTarjeta')
-                      label(for="usernameInput")
-                        |Usuario:
-                        input.form-control#textInput(type="text", name="username", placeholder="Usuario")
-                      label(for="tipoInput")
-                        |Tipo de Usuario:
-                        select.form-control#textInput(type="text", name="tipo") 
-                          option Empleado
-                          option Supervisor
-                          option Administrador
-                      label(for='horario') Departamento:
-                        select.form-control#textInput(type="text", name="idDepartamento") 
-                          each departamento, i in departamentos
-                              option(value= departamento.id) #{departamento.nombre} 
-
-                    .form-group
-                      label(for="passwordInput")
-                        |Contraseña:
-                        input.form-control#passInput(type='text', size='18', name="password", placeholder="Contraseña")
-                        //- button.btn.btn-default(type='button', onclick='generatepass(4)') Generar Contraseña
-                        //- div#correoMsj 
-                                    
-                    button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
-                    button.btn.btn-default(type='submit') Ingresar
-      
+                th Fecha
+                th Usuario
+                th Dia Inicial
+                th Dia Final 
+                th Motivo
+            tbody 
+              each permiso, i in permisos
+                tr
+                  td #{permiso.fechaCreada} 
+                  td #{permiso.usuario} 
+                  td #{permiso.diaInicio} 
+                  td #{permiso.diaFinal} 
+                  td #{permiso.motivo} 
+                  form(role='form', method="POST", action="/getionarSolicitud/"+permiso.id)
+                    td
+                      select.selectpicker.show-tick(name='estado')
+                        option(value='Aceptada') Aceptar
+                        option(value='Rechazada') Rechazar
+                        option(value='Pendiente') Pendiente
+                    td
+                      button.btn.btn-success(type='submit', name='gestionar') Gestionar
+                                 
 block sigucaJS
   script(src="/js/mailgun_validator.js")
   script(src= " /js/configuracionSupervisor.js")
-

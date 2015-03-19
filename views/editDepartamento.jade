@@ -11,30 +11,18 @@ block content
   .container
     
     .modal-dialog
-            .modal-content
-              .modal-header
-                h4#myModalLabel.modal-title Actualización de Departamentos
-              .modal-body
-                form(role='form', method="POST", action="/departamento/" + _id)
-                  .form-group
-                      label(for='nombre') Nombre:
-                      input#group.form-control( placeholder='Nombre del area', name ='nombre', value = nombre)
-                    .form-group
-                      label(for='idSupervisor') Código del supervisor:
-                      input#idSup.form-control( placeholder='Código del supervidor', name = 'idSupervisor',  value = idSupervisor)
-                    div.form-group
-                      label(for="tipoJornada")
-                        |Tipo de Jornada:
-                      select.form-control#textInput(type="text", name="tipoJornada", value = tipoJornada ) 
-                        option Fija
-                        option Horas
-                        option Excepcion    
-                    .form-group
-                      label(for='horario') Horario:
-                      input#horario.form-control( placeholder='Horario asociado', name= horario, value= horario)      
-                      input(type='hidden', name='_method', value='put')               
-                                                  
-                    button.btn.btn-default(type='submit') Actualizar
-   
-              .modal-footer    
+      .modal-content
+        .modal-header
+          button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+          h4#myModalLabel.modal-title Actualizar Departamentos
+        .modal-body
+          form(role='form', method="POST", action="/departamento/" + _id)#login-form.well.span4
+            .form-group
+                label(for='nombre') Nombre:
+                  input#group.form-control( placeholder='Nombre del area', name ='nombre', value = nombre)
+                                                          
+            button.btn.btn-default(type='submit') Actualizar
+            button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
+
+        .modal-footer    
     

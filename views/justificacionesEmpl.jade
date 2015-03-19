@@ -45,7 +45,7 @@ block content
             button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
             h4#myModalLabel.modal-title Enviar Justificación
           .modal-body
-            form(role='form', method="POST", action="justificacion_nueva")
+            form(role='form', method="POST", action="justificacion_nueva")#login-form.well.span4
               .form-group
                   h3 Información Básica
                   label(for='motivo') Motivo:
@@ -53,8 +53,7 @@ block content
               .form-group
                   label(for='detalles') Detalles:
                   //input#detalles.form-control(type= 'Number', placeholder='Detalles', name='detalle', value=detalles)
-                  textarea#detalles.form-control(rows="4" cols="50")
-                  input#usuario.form-control(type='hidden', placeholder='', name='usuario', value=usuario.id)
+                  textarea#detalles.form-control(rows="4" cols="50" name='detalle')
                      
               button.btn.btn-default(type='submit') Enviar
               button.btn.btn-default(type='button', data-dismiss='modal') Cancelar 

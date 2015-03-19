@@ -38,4 +38,4 @@ var SchemaJustificacion = new Schema({
 
 SchemaJustificacion.plugin(passportLocalMongoose);
 
-module.exports = mongoose.model('Justificacion', SchemaJustificacion);
+module.exports = mongoose.model('Justificaciones', SchemaJustificacion);

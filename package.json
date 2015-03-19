@@ -9,7 +9,7 @@
   "dependencies": {
     "express": "3.1.0",
     "jade": "latest",
-	 "passport": "latest",
+	  "passport": "latest",
   	"passport-local": "latest",
     "mongoose": "latest",
     "passport-local-mongoose": "latest",
@@ -19,6 +19,8 @@
     "d3": "latest", 
     "serialport": "latest",
     "event-stream": "3.1.5",
-    "hanson": "1.1.1"
+    "hanson": "1.1.1",
+    "socket.io": "*",
+    "cron": "latest"
   }
 }

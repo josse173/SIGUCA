@@ -1,7 +1,7 @@
 extends layoutEmpl
 
 block sigucaCSS
-  link(rel='stylesheet', href='/stylesheets/sigucaEscritorio.css')
+  //link(rel='stylesheet', href='/stylesheets/sigucaEscritorio.css')
   link(rel='stylesheet', href='/stylesheets/jquery.tzineClock/jquery.tzineClock.css')
   link(rel='stylesheet', href='/stylesheets/jquery.tzineClockstyles.css')
   link(rel='stylesheet', href='/stylesheets/cal-heatmap.css')
@@ -15,8 +15,10 @@ block content
   .container
     .col-xs-8
       h3 Marcas Personales
-      button#next.btn
-      button#previous.btn
+      button#previous.btn.btn-default
+        i.icon.icon-chevron-left
+      button#next.btn.btn-default 
+        i.icon.icon-chevron-right
       div#cal
       //- ol
       //-   if (!marca)
@@ -111,20 +113,18 @@ block content
                   button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
                   h4#myModalLabel.modal-title Solicitar hora extraordinaria
                 .modal-body
-                  form(role='form', method="POST", action="/horasExtra")
+                  form(role='form', method="POST", action="/solicitud_extra")#login-form.well.span4
                     .form-group
-                        label(for='fecha') Día:
-                        input#fecha.form-control.clsDatePicker(type='text', name='fecha', placeholder='Fecha')
-                        
-                      .form-group
-                        label(for='apellido1') Hora inicial:
-                        input#apellido1.form-control(type= 'text', placeholder='Hora inicio de horas extras', name= 'apellido1')
-                      .form-group
-                        label(for='apellido2') Hora final:
-                        input#apellido2.form-control(type= 'text', placeholder='Hora final de horas extras', name='apellido2')
-                             
-                      button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
-                      button.btn.btn-default(type='submit') Ingresar
+                      label(for='fecha') Día:
+                        input#fecha.form-control(type='text', name='diaInicio', placeholder='Fecha')
+                      label(for='horaFinal') Hora de Salida:
+                        input#horaFinal.form-control(type= 'text', placeholder='Hora de salida de horas extras', name= 'horaFinal')
+                    .form-group
+                      label(for='motivo') Motivo:
+                      textarea#motivo.form-control(rows="4" cols="50" name='motivo')
+                                                   
+                    button.btn.btn-default(type='submit') Ingresar
+                    button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
      
                 .modal-footer  
       #permiso.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
@@ -134,25 +134,18 @@ block content
                   button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
                   h4#myModalLabel.modal-title Solicitar permiso anticipado
                 .modal-body
-                  form(role='form', method="POST", action="/permiso")
+                  form(role='form', method="POST", action="/solicitud_permisos")#login-form.well.span4
                     .form-group
-                        label(for='diaI') Día inicial:
-                        input#fecha.form-control.clsDatePicker(type='text', name='fecha', placeholder='Día Inicial')
-                      .form-group
-                        label(for='horaI') Hora inicial:
-                        input#apellido1.form-control(type= 'text', placeholder='Hora inicio de permiso anticipado', name= 'apellido1')
-                      .form-group
-                        label(for='diaF') Día final:
-                        input#fecha.form-control.clsDatePicker(type='text', name='fecha', placeholder='Día final')
-                      .form-group
-                        label(for='horaF') Hora final:
-                        input#apellido2.form-control(type= 'text', placeholder='Hora final de permiso anticipado', name='apellido2')
-                      .form-group
-                        label(for='motivo') Motivo:
-                        input#apellido2.form-control(type= 'text', placeholder='Motivo del permiso solicitado', name='apellido2')
-                                    
-                      button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
-                      button.btn.btn-default(type='submit') Ingresar
+                      label(for='diaInicio') Día Inicial:
+                        input#diaInicio.form-control(type='text', name='diaInicio', placeholder='Fecha Inicial')
+                      label(for='diaFinal') Día Final:
+                        input#diaFinal.form-control(type= 'text', placeholder='Fecha Final', name= 'diaFinal')
+                    .form-group
+                      label(for='motivo') Motivo:
+                      textarea#motivo.form-control(rows="4" cols="50" name='motivo')
+                                                   
+                    button.btn.btn-default(type='submit') Ingresar
+                    button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
      
                 .modal-footer  
         

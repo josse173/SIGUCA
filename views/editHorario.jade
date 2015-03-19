@@ -13,41 +13,45 @@ block content
   .container
     
     .modal-dialog
-            .modal-content
-              .modal-header
-                h4#myModalLabel.modal-title Actualizar Horario
-              .modal-body
-                form(role='form', method="POST", action="/horarioN/" + _id)#login-form.well.span4
-                  .form-group
-                    h4 Información Básica
-                    label(for='nombre') Nombre del Horario:
-                      input.form-control#textInput( type="text", name="nombre", placeholder='Nombre del horario', value = nombre)
-                    .checkbox-inline#jFija
-                      label
-                        input(type='checkbox', name="jornada", value = jornada)
-                        | Jornada fija
-                    .checkbox-inline#jLibre
-                      label
-                        input(type='checkbox', name= "jornada", value = jornada)
-                        | Jornada libre
-                                
-                  .form-group
-                    h4 Información de jornada
-                    label(for='hEntrada') Hora de entrada:
-                      input.form-control#textInput( type="text", name= "horaEntrada", placeholder='Hora de entrada', value = horaEntrada)
-                    label(for='hSalida') Hora de salida:
-                      input.form-control#textInput(type="text", name="horaSalida", placeholder='Hora de salida', value = horaSalida)
-                  .form-group
-                    h4 Información de receso
-                    label(for='iAlmuerzo') Inicio de almuerzo:
-                      input.form-control#textInput( type="text", name="horaInAlmuerzo", placeholder='Inicio de Almuerzo', value = horaInAlmuerzo)   
-                    label(for='fAlmuerzo') Final de almuerzo:
-                      input.form-control#textInput(type="text", name="horaFnAlmuerzo", placeholder='Final de Almuerzo', value = horaFnAlmuerzo)
-                    label(for='tReceso') Rango de receso (Exceptuando hora de almuerzo):
-                      input.form-control#textInput( type="text", name="rangoReceso", placeholder='numero de horas + h  numero de minutos + m', value = rangoReceso)  
-                      input(type='hidden', name='_method', value='put')               
-                                                  
-                  button.btn.btn-default(type='submit') Actualizar
-   
-              .modal-footer    
+      .modal-content
+        .modal-header
+          button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+          h4#myModalLabel.modal-title Actualizar Horarios
+        .modal-body
+          form(method="post", action="/horarioN/" + _id)#login-form.well.span4
+            .form-group
+              h4 Información Básica
+              label(for='nombre') Nombre del Horario:
+                input.form-control#textInput( type="text", name="nombre", value=nombre, placeholder='Nombre del horario')
+              //.checkbox-inline#jFija
+                label
+                  input(type='checkbox', name="jornada")
+                  | Jornada fija
+              //.checkbox-inline#jLibre
+                label
+                  input(type='checkbox', name= "jornada")
+                  | Jornada libre
+                          
+            .form-group
+              h4 Información de jornada
+              label(for='hEntrada') Hora de entrada:
+                input.form-control#textInput( type="text", name= "horaEntrada", value=horaEntrada, placeholder='Hora de entrada')
+              //div.input-append.bootstrap-timepicker
+              //  input#timepicker1.input-small(type="text")
+              //  span.add-on
+              //    img.icon-time// Esto comentado no funciona es de bootstrap-timepicker-min
+
+              label(for='hSalida') Hora de salida:
+                input.form-control#textInput(type="text", name="horaSalida", value=horaSalida,placeholder='Hora de salida')
+              label(for='rJornada') Rango de jornada:
+                input.form-control#textInput(type="text", name="rangoJornada", value=rangoJornada ,placeholder='6 (horas diarias)')
+            .form-group
+              h4 Información de descansos
+              label(for='tReceso') Rango de receso:
+                input.form-control#textInput( type="text", name="tiempoReceso", value= tiempoReceso,placeholder='45m')   
+              label(for='tAlmuerzo') Rango de almuerzo:
+                input.form-control#textInput(type="text", name="tiempoAlmuerzo", value= tiempoAlmuerzo,placeholder='1h30m')
+               
+            button.btn.btn-default(type='submit') Actualizar
+            button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
   

@@ -87,8 +87,10 @@ if ('development' == app.get('env')) {
  *	Rutas
  *
  */
- 
-require('./routes/index')(app);
+var server = http.createServer(app);
+var io = require('socket.io').listen(server);
+
+require('./routes/index')(app,io);
 
 app.listen(app.get('port'), function(){
   console.log(("Servidor escuchando en puerto: " + app.get('port')))

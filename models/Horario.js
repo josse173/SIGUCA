@@ -6,7 +6,8 @@
  */
 
 var mongoose = require('mongoose'),
-    Schema = mongoose.Schema;
+    Schema = mongoose.Schema,
+    passportLocalMongoose = require('passport-local-mongoose');
 
 var SchemaHorario = new Schema({
     nombre: {

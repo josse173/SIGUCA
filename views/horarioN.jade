@@ -13,18 +13,31 @@ block content
   .container
     
     h3 Lista de Horarios
-    ol
-       table.table.table-hover 
-      
-        each horario, i in horarios
+    br
+    .table-responsive
+    table.table
+        thead
           tr
-            td #{horario.nombre} 
-            td #{horario.horaEntrada} 
-            td #{horario.horaSalida} 
-            td
-               a(href="/horarioN/editHorario/"+horario.id)  editar
-            td
-               a(href="/horarioN/deleteHorario/"+horario.id)  eliminar
+            th Nombre
+            th Hora Entrada
+            th Hora Salida
+            th Rango Jornada
+            th Tiempo Receso
+            th Tiempo Almuerzo
+
+        tbody 
+          each horario, i in horarios
+            tr
+              td #{horario.nombre} 
+              td #{horario.horaEntrada} 
+              td #{horario.horaSalida} 
+              td #{horario.rangoJornada} 
+              td #{horario.tiempoReceso} 
+              td #{horario.tiempoAlmuerzo} 
+              td
+                 a#edit.btn.btn-success(href="/horarioN/editHorario/"+horario.id)  editar
+              td
+                 a#delete.btn.btn-danger(href="/horarioN/deleteHorario/"+horario.id)  eliminar
     
         
 block sigucaJS

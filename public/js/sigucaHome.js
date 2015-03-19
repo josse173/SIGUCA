@@ -1,44 +1,67 @@
+
+var socket = require('socket.io-client')('http://localhost');;
+
+    socket.emit('solicitaCierre', {a:"1"});
+
+    socket.on('listaCierre', function(cierre){
+        console.log("Obtuve los cierres: "+ JSON.stringify(cierre));
+    });
+
 $(document).ready(function(){
 
+    var dd = {"1426710016":7,"1426450814":3};
 
-var cal = new CalHeatMap();
-cal.init({
-    itemSelector: "#cal",
-    domain: "day",
-    subDomain: "hour",
-    data: "/js/datas-years.json",
-    start: new Date(2000, 0, 5),
-    cellSize: 24,
-    range: 7,
-    previousSelector: "#previous",
-    nextSelector: "#next",
-    legendTitleFormat: {
-            lower: "tardía",
-            inner: "solicitud permiso",
-            solExtra: "solicitud horas Extra",
-            upper: "ausencia",
-
+    // var stats = {};
+    // for (var d in estadoCierre) {
+    //     stats[estadoCierre[d].fecha] = estadoCierre[d].estado;
+    // }
+    var cal = new CalHeatMap();
+    cal.init({
+        itemSelector: "#cal",
+        domain: "month",
+        subDomain: "x_day", //"x_hour",
+        subDomainTextFormat: "%d",
+        range: 4,
+        cellSize: 24,
+        domainGutter:   5, // separa los dias
+        tooltip: true, // muestra el fecha y hora de cada cuadro
+        //start: new Date(2015, 0, 2), //default es el día de hoy
+        data: dd,//"/js/datas-years.json",
+        previousSelector: "#previous",
+        nextSelector: "#next",
+        highlight: "now", //se puede quitar mas adelante, señala la hora actual.
+        legend: [2, 4, 6],
+        legendCellSize: 15,
+        legendColors: {
+            min: "#95EE6B",//"#74D943",//"#00C322",
+            max: "#F66F89",//"#EA4868",//"#FF0D00",
+            solExtra: "yellow",
+            empty: "gray",
         },
-    legendColors: {
-                min: "#95EE6B",
-                max: "#F66F89",
-                solExtra: "yellow",
-                empty: "gray",
-         },
-    itemName: ["", ""],
-    legend: [2, 4, 6]
+        legendTitleFormat: {
+            lower: "Tardía",
+            inner: "Permiso",
+            solExtra: "Horas Extra",
+            upper: "Ausencia",
+        },
+        itemName: ["", ""]
+    });
+    // cal.highlight(new Date(2014, 5, 18));
+
+    // // // Add January 5th to already highlighted dates
+    // cal.highlight(cal.options.highlight.push(new Date(2014, 5, 14)));
+
 });
-cal.highlight(new Date(2014, 5, 18));
-
-// // Add January 5th to already highlighted dates
-cal.highlight(cal.options.highlight.push(new Date(2014, 5, 14)));
-
-});
 
 
+// $(document).ready(function(estadoCierre){
+//     $.getJSON( "/escritorio", function( estadoCierre ) {
 
-
-
+//         for(i in estadoCierre){
+//            alert(i.fecha+i.estado);
+//         }
+//     });
+// });
 
 //   var cal = new CalHeatMap();
 //   cal.init({

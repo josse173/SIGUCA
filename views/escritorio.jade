@@ -10,10 +10,27 @@ block content
     .container
       .col-xs-8
         h3 Gráfico de:  #{usuario.username}
-        button#next.btn
-        button#previous.btn
+        button#previous.btn.btn-default
+          i.icon.icon-chevron-left
+        button#next.btn.btn-default 
+          i.icon.icon-chevron-right
         div#cal
- 
+        texarea#estadoCierre(type="hidden", value=cierre)
+        h3 Lista de Estados de Cierre
+        br
+        .table-responsive
+        table.table
+            thead
+              tr
+                th fecha
+                th epoch
+                th estado
+            tbody 
+              each cierre, i in cierres
+                tr
+                  td #{cierre.fecha} 
+                  td #{cierre.epoch} 
+                  td #{cierre.estado} 
       .col-xs-4
        h3 Filtros   
        div.filter
@@ -33,16 +50,7 @@ block content
 
       .col-xs-4
       .col-xs-4
-        //- h3 
-        //- ul.list-group
-        //-   li.list-group-item
-        //-     a(href='/Justificaciones')
-        //-       span.badge 2 
-        //-       | Solicitudes
-        //-   li.list-group-item
-        //-     a(href='/Justificaciones')
-        //-       span.badge 3 
-        //-       | Justificaciones
+        
       .col-xs-4
         h3 Solicitudes 
         ul.list-group
@@ -58,12 +66,12 @@ block content
         ul.list-group
           li.list-group-item
             a(href='/Configuracion')
-              span.badge 2 
-              | Solicitudes
+              span.badge #{solicitudes}
+              |   Solicitudes
           li.list-group-item
             a(href='/Configuracion')
-              span.badge 3 
-              | Justificaciones
+              span.badge #{justificaciones} 
+              |   Justificaciones
       #horaExtra.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
           .modal-dialog
               .modal-content
@@ -71,20 +79,19 @@ block content
                   button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
                   h4#myModalLabel.modal-title Solicitar hora extraordinaria
                 .modal-body
-                  form(role='form', method="POST", action="/horasExtra")
+                  form(role='form', method="POST", action="/solicitud_extra")#login-form.well.span4
                     .form-group
-                        label(for='fecha') Día:
-                        input#fecha.form-control.clsDatePicker(type='text', name='fecha', placeholder='Fecha')
-                        
-                      .form-group
-                        label(for='apellido1') Hora inicial:
-                        input#apellido1.form-control(type= 'text', placeholder='Hora inicio de horas extras', name= 'apellido1')
-                      .form-group
-                        label(for='apellido2') Hora final:
-                        input#apellido2.form-control(type= 'text', placeholder='Hora final de horas extras', name='apellido2')
-                             
-                      button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
-                      button.btn.btn-default(type='submit') Ingresar
+                      label(for='fecha') Día:
+                        input#fecha.form-control(type='text', name='diaInicio', placeholder='Fecha')
+                      label(for='horaFinal') Hora de Salida:
+                        input#horaFinal.form-control(type= 'text', placeholder='Hora de salida de horas extras', name= 'horaFinal')
+                    .form-group
+                      label(for='motivo') Motivo:
+                      textarea#motivo.form-control(rows="4" cols="50" name='motivo')
+                      input#usuario.form-control(type='hidden', placeholder='', name='usuario', value=usuario.id)
+                                                   
+                    button.btn.btn-default(type='submit') Ingresar
+                    button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
      
                 .modal-footer  
       #permiso.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
@@ -94,31 +101,25 @@ block content
                   button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
                   h4#myModalLabel.modal-title Solicitar permiso anticipado
                 .modal-body
-                  form(role='form', method="POST", action="/permiso")
+                  form(role='form', method="POST", action="/solicitud_permisos")#login-form.well.span4
                     .form-group
-                        label(for='diaI') Día inicial:
-                        input#fecha.form-control.clsDatePicker(type='text', name='fecha', placeholder='Día Inicial')
-                      .form-group
-                        label(for='horaI') Hora inicial:
-                        input#apellido1.form-control(type= 'text', placeholder='Hora inicio de permiso anticipado', name= 'apellido1')
-                      .form-group
-                        label(for='diaF') Día final:
-                        input#fecha.form-control.clsDatePicker(type='text', name='fecha', placeholder='Día final')
-                      .form-group
-                        label(for='horaF') Hora final:
-                        input#apellido2.form-control(type= 'text', placeholder='Hora final de permiso anticipado', name='apellido2')
-                      .form-group
-                        label(for='motivo') Motivo:
-                        input#apellido2.form-control(type= 'text', placeholder='Motivo del permiso solicitado', name='apellido2')
-                                    
-                      button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
-                      button.btn.btn-default(type='submit') Ingresar
+                      label(for='diaInicio') Día Inicial:
+                        input#diaInicio.form-control(type='text', name='diaInicio', placeholder='Fecha Inicial')
+                      label(for='diaFinal') Día Final:
+                        input#diaFinal.form-control(type= 'text', placeholder='Fecha Final', name= 'diaFinal')
+                    .form-group
+                      label(for='motivo') Motivo:
+                      textarea#motivo.form-control(rows="4" cols="50" name='motivo')
+                      input#usuario.form-control(type='hidden', placeholder='', name='usuario', value=usuario.id)
+                                                   
+                    button.btn.btn-default(type='submit') Ingresar
+                    button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
      
                 .modal-footer  
+                
 block sigucaJS
+  script(src="/socket.io/socket.io.js")
   script( src='/js/sigucaHome.js')
   script(src="/js/d3.min.js")
   script(src="/js/cal-heatmap.js")
   //script(src='/js/horasExtras.js')
-
-

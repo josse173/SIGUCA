@@ -20,38 +20,25 @@ block content
             label.control-laber(for='accion')
               .controls
                 button#accion.btn.btn-primary(name='passwordChange', href='#passwordChange', data-toggle='modal') Cambiar Contraseña    
-                #passwordChange.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
-                 .modal-dialog
-                  .modal-content
-                    .modal-header
-                      button.close(type='button', data-dismiss='modal', aria-hidden='true') X Cerrar
-                      h4.modal-title SIGUCA Cambio de Contraseña
-                    .modal-body
-                      form.form-horizontal()
-                       fieldset
-                            label(for="currentpassword")
-                                 |Contraseña Actual
-                                 span#pressElmnt 
-                                 |:
-                              .input-prepend
-                              span.add-on
-                              input#inputIcon.span2(type='password', placeholder='Contraseña Actual', ng-model='query', name=currentPassword)
-                            label(for="newPassword")
-                                 |Nueva Contraseña
-                                 span#pressElmnt 
-                                 |:
-                              .input-prepend
-                              span.add-on
-                              input#inputIcon.span2(type='password', placeholder='Nueva Contraseña', ng-model='query', name=newPassword)
-                            label(for="repeatNewPassword")
-                                 |Nueva Contraseña
-                                 span#pressElmnt 
-                                 |:
-                              .input-prepend
-                              span.add-on
-                              input#inputIcon.span2(type='password', placeholder='Nueva Contraseña', ng-model='query', name=repeatNewPassword)
-                            .controls
-                               button#ingreso.btn.btn-success(name='ingreso') Ingresar
-                               button#cancelar.btn.btn-danger(name='cancelar') Cancelar   
+          #passwordChange.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+           .modal-dialog
+            .modal-content
+              .modal-header
+                button.close(type='button', data-dismiss='modal', aria-hidden='true') x
+                h4.modal-title SIGUCA Cambio de Contraseña
+              .modal-body
+                form(role='form', method="POST"/*, action="/cambioPassword"*/)#login-form.well.span4
+                  .form-group
+                    label(for='currentpassword') Contraseña Actual
+                      input.form-control(type='password', placeholder='Contraseña Actual', ng-model='query', name='currentPassword')
+                  .form-group
+                    label(for='newPassword') Nueva Contraseña
+                      input.form-control(type='password', placeholder='Nueva Contraseña', ng-model='query', name='newPassword')
+                    label(for='repeatNewPassword') Repita Nueva Contraseña
+                      input.form-control(type='password', placeholder='Repetir Nueva Contraseña', ng-model='query', name='repeatNewPassword')
+                  .form-group
+                    .controls
+                     button#ingreso.btn.btn-success(name='ingreso') Ingresar
+                     button#cancelar.btn.btn-danger(name='cancelar') Cancelar   
     .col-xs-2
 

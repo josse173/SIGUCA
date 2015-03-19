@@ -50,10 +50,12 @@
          type: Date,
          default: Date.now()
      },
-     departamento: {
-         type: Schema.ObjectId,
-         ref: 'Departamento'
-     },
+     departamentos: [{
+         departamento: {
+            type: Schema.ObjectId,
+            ref: 'Departamento'
+        }
+     },{_id:false}],
      horario: {
          type: Schema.ObjectId,
          ref: 'Horario'

@@ -10,10 +10,14 @@ var Departamento = require('../models/Departamento');
 var passport = require('passport');
 var Usuario = require('../models/Usuario');
 var Horario = require('../models/Horario');
-var Justificacion = require('../models/Justificaciones');
+var Justificaciones = require('../models/Justificaciones');
+var Solicitudes = require('../models/Solicitudes');
+var Cierre = require('../models/Cierre');
+var CronJob = require('cron').CronJob;
 
 
-module.exports = function(app) {
+module.exports = function(app, io) {
+
 
     app.get('/', function(req, res) {
         res.render('index', {
@@ -38,16 +42,24 @@ module.exports = function(app) {
         req.logout();
         res.redirect('/');
     });
+
     app.get('/escritorio', autentificado, function(req, res) {
         if (req.session.name == "Supervisor") {
             Usuario.find().exec(function(error, empleados) {
-
-                if (error) return res.json(error);
-                return res.render('escritorio', {
-                    title: 'Escritorio Supervisor | SIGUCA',
-                    empleados: empleados, /* Para que envian los empleados?? - para el calendario?*/
-                    usuario: req.user,
-
+                Justificaciones.find({estado:0}).count().exec(function(error, justificaciones) {
+                    Solicitudes.find({estado:'Pendiente'}).count().exec(function(error, solicitudes) {
+                        Cierre.find().exec(function(err, cierres) {
+                            if (error) return res.json(error);
+                            return res.render('escritorio', {
+                                title: 'Escritorio Supervisor | SIGUCA',
+                                empleados: empleados, 
+                                justificaciones: justificaciones, 
+                                solicitudes: solicitudes,
+                                cierres: cierres,
+                                usuario: req.user
+                            });
+                        });
+                    });
                 });
             });
 
@@ -63,7 +75,7 @@ module.exports = function(app) {
                 if (error) return res.json(error);
                 return res.render('escritorioEmpl', {
                     title: 'Escritorio Empleado | SIGUCA',
-                    marcas: marcas, /* Para que envian las marcas?? - para el calendario?*/
+                    marcas: marcas, 
                     usuario: req.user
                 });
             });
@@ -109,14 +121,23 @@ module.exports = function(app) {
 
                 Horario.find().exec(function(error, horarios) {
                     Departamento.find().exec(function(error, departamentos) {
+                        Justificaciones.find({estado:0}).exec(function(error, justificaciones) {
+                            Solicitudes.find({tipoSolicitudes:'Extras', estado:'Pendiente'}).exec(function(error, extras) {
+                                Solicitudes.find({tipoSolicitudes:'Permisos', estado:'Pendiente'}).exec(function(error, permisos) {
 
-                        if (error) return res.json(error);
-                        return res.render('configuracion', {
-                            title: 'Configuración Supervisor | SIGUCA',
-                            empleados: empleados, 
-                            usuario: req.user,    
-                            horarios: horarios,   
-                            departamentos: departamentos 
+                                    if (error) return res.json(error);
+                                    return res.render('configuracion', {
+                                        title: 'Configuración | SIGUCA',
+                                        empleados: empleados, 
+                                        usuario: req.user,
+                                        horarios: horarios,
+                                        departamentos: departamentos,
+                                        justificaciones: justificaciones,
+                                        extras: extras,
+                                        permisos: permisos
+                                    });
+                                });
+                            });
                         });
                     });
                 });
@@ -126,7 +147,7 @@ module.exports = function(app) {
             res.redirect('/');
         }
     });
-    app.get('/configuracionEmpl', autentificado, function(req, res) {
+    app.get('/configuracionEmpl', autentificado, function(req, res) /* Redirecciona*/{
         if (req.session.name == "Empleado") {
             res.render('configuracionEmpl', {
                 title: 'Configuración | SIGUCA',
@@ -161,7 +182,7 @@ module.exports = function(app) {
             res.redirect('/');
         }
     });
-    app.get('/justificaciones', autentificado, function(req, res) { /* No hace nada*/
+    app.get('/justificaciones', autentificado, function(req, res) { /* Redirecciona*/
         if (req.session.name == "Supervisor") {
             res.render('justificaciones', {
                 title: 'Justificaciones/Permisos | SIGUCA',
@@ -183,10 +204,11 @@ module.exports = function(app) {
             res.redirect('/');
         }
     });
+    //Lista justificaciones a empleado
     app.get('/justificacionesEmpl', autentificado, function(req, res) {
         if (req.session.name == "Empleado") {
 
-            Justificacion.find().exec(function(error, justificaciones) {
+            Justificaciones.find().exec(function(error, justificaciones) {
 
                 if (error) return res.json(error);
 
@@ -207,16 +229,16 @@ module.exports = function(app) {
         var d = new Date();
         var epochTime = (d.getTime() - d.getMilliseconds())/1000;
         var fechaActual= new Date(0);
+        fechaActual.setUTCSeconds(epochTime); 
         var e = req.body; 
-        var newjustificacion = Justificacion({
-            usuario: e.usuario,
+        var newjustificacion = Justificaciones({
+            usuario: req.user.id,
             fechaCreada: fechaActual,
             motivo: e.motivo,
             detalle: e.detalle,
             estado: 0,//0 = pendiente
             comentarioSupervisor: ""
         });
-
         newjustificacion.save(function(error, user) {
 
             if (error) return res.json(error);
@@ -225,22 +247,84 @@ module.exports = function(app) {
 
         });
     });
-    app.get('/solicitud_extra', autentificado, function(req, res) {/* No hace nada*/
-        res.render('solicitud_extra', {
-            title: 'Solicitud Tiempo Extra | SIGUCA',
-            usuario: req.user
+    //create solicitud hora extra
+    app.post('/solicitud_extra', autentificado, function(req, res) {
+        var fechaActual= new Date();
+        var e = req.body; 
+        var newSolicitud = Solicitudes({
+            fechaCreada: fechaActual,
+            tipoSolicitudes: "Extras",
+            diaInicio: e.diaInicio,
+            horaFinal: e.horaFinal,
+            motivo: e.motivo,
+            usuario: req.user.id
+        });
+        console.log(newSolicitud);
+        newSolicitud.save(function(error, user) {
+
+            if (error) return res.json(error);
+
+            if (req.session.name == "Empleado") {
+
+                res.redirect('/escritorioEmpl');
+            } else res.redirect('/escritorio');
+
         });
     });
-    app.get('/autoriza_extra', autentificado, function(req, res) {/* No hace nada*/
-        res.render('autoriza_extra', {
-            title: 'Autorizacion Tiempo Extra | SIGUCA',
-            usuario: req.user
+    //create solicitud de permisos
+    app.post('/solicitud_permisos', autentificado, function(req, res) {
+        var fechaActual= new Date();
+        var e = req.body; 
+        var newSolicitud = Solicitudes({
+            fechaCreada: fechaActual,
+            tipoSolicitudes: "Permisos",
+            diaInicio: e.diaInicio,
+            diaFinal: e.diaFinal,
+            motivo: e.motivo,
+            usuario: req.user.id
+        });
+        console.log(newSolicitud);
+        newSolicitud.save(function(error, user) {
+
+            if (error) return res.json(error);
+
+            if (req.session.name == "Empleado") {
+
+                res.redirect('/escritorioEmpl');
+            } else res.redirect('/escritorio');
+
         });
     });
-    app.get('/autoriza_justificacion', autentificado, function(req, res) {/* No hace nada*/
-        res.render('autoriza_justificacion', {
-            title: 'Autorizacion Justificacion | SIGUCA',
-            usuario: req.user
+    //update solicitud
+    app.post('/getionarSolicitud/:id', autentificado, function(req, res) {
+        var solicitud = req.body,
+            solicitudId = req.params.id;
+
+        delete solicitud.id;
+        delete solicitud._id;
+
+        Solicitudes.findByIdAndUpdate(solicitudId, {estado: solicitud.estado}, function(error, solicitudes) { //cambie Empleado por Usuario segun nuevo CRUD
+
+            if (error) return res.json(error);
+
+            res.redirect('/configuracion');
+
+        });
+    });
+    //update justificación
+    app.post('/getionarJustificacion/:id', autentificado, function(req, res) {
+        var justificacion = req.body,
+            justificacionId = req.params.id;
+
+        delete justificacion.id;
+        delete justificacion._id;
+
+        Justificaciones.findByIdAndUpdate(justificacionId, {estado: justificacion.estado, comentarioSupervisor: justificacion.comentarioSupervisor}, function(error, justificaciones) { //cambie Empleado por Usuario segun nuevo CRUD
+
+            if (error) return res.json(error);
+
+            res.redirect('/configuracion');
+
         });
     });
     //create Horario
@@ -282,7 +366,7 @@ module.exports = function(app) {
 
         });
     });
-    //update Horario
+    //fill form to update Horario
     app.get('/horarioN/editHorario/:id', autentificado, function(req, res) { 
         var horarioId = req.params.id;
 
@@ -294,13 +378,17 @@ module.exports = function(app) {
 
         });
     });
-    app.put('/horarioN/:id',autentificado, function(req, res) { /*No lo entiendo cm se relaciona con edit  delete*/
+    //update Horario
+    app.post('/horarioN/:id',autentificado, function(req, res) { 
 
         var horario = req.body,
             horarioId = req.params.id;
 
         delete horario.id;
         delete horario._id;
+
+        console.log(horario);
+        console.log(horarioId);
 
         Horario.findByIdAndUpdate(horarioId, horario, function(error, horarios) {
 
@@ -339,7 +427,7 @@ module.exports = function(app) {
                 newMarca = Marca({
                     tipoMarca: "Entrada",
                     epoch: epochTime,
-                    codTarjeta: req.user.codTarjeta,
+                    usuario: req.user.id,
                     fecha: fechaActual
                 });
 
@@ -356,7 +444,7 @@ module.exports = function(app) {
                 newMarca = Marca({
                     tipoMarca: "Salida",
                     epoch: epochTime,
-                    codTarjeta: req.user.codTarjeta,
+                    usuario: req.user.id,
                     fecha: fechaActual
 
                 });
@@ -375,7 +463,7 @@ module.exports = function(app) {
                 newMarca = Marca({
                     tipoMarca: "salidaReceso",
                     epoch: epochTime,
-                    codTarjeta: req.user.codTarjeta,
+                    usuario: req.user.id,
                     fecha: fechaActual
 
                 });
@@ -394,7 +482,7 @@ module.exports = function(app) {
                 newMarca = Marca({
                     tipoMarca: "entradaReceso",
                     epoch: epochTime,
-                    codTarjeta: req.user.codTarjeta,
+                    usuario: req.user.id,
                     fecha: fechaActual
 
                 });
@@ -413,7 +501,7 @@ module.exports = function(app) {
                 newMarca = Marca({
                     tipoMarca: "salidaAlmuerzo",
                     epoch: epochTime,
-                    codTarjeta: req.user.codTarjeta,
+                    usuario: req.user.id,
                     fecha: fechaActual
 
                 });
@@ -431,7 +519,7 @@ module.exports = function(app) {
                 newMarca = Marca({
                     tipoMarca: "entradaAlmuerzo",
                     epoch: epochTime,
-                    codTarjeta: req.user.codTarjeta,
+                    usuario: req.user.id,
                     fecha: fechaActual
 
                 });
@@ -450,72 +538,45 @@ module.exports = function(app) {
                 break;
         }
     });
-    //create Justificacion
-    app.post('/justificacion', autentificado, function(req, res) { /* No es llamado ---podria servir en justificacion_nueva*/
-
-        var d = new Date();
-        var j = req.body;
-        var newJustificacion = Justificacion({
-            fecha: ({
-                dia: d.getUTCDate(),
-                mes: (d.getMonth() + 1),
-                ano: d.getFullYear()
-            }),
-            comentario: j.comentario,
-            estado: "Pendiente", //Pendiente, Aceptado, Rechazado
-            comentarioSupervisor: j.comentarioSupervisor,
-            codTarjeta: req.user.codTarjeta,
-            idSupervisor: req.user.idSupervisor,
-        });
-        newJustificacion.save(function(error, user) {
-
-            if (error) res.json(error);
-
-            res.redirect('/justificacionesEmpl');
-        });
-    });
     //create empleado
     app.post('/empleado', autentificado, function(req, res) {
     
-            if (req.session.name == "Administrador" || req.session.name == "Supervisor" ) {
-                var e = req.body; 
-
-                Usuario.register(new Usuario({
-
-                    username: e.username, 
-                    tipo: e.tipo,
-                    estado: "Activo",
-                    nombre: e.nombre,
-                    apellido1: e.apellido1,
-                    apellido2: e.apellido2,
-                    email: e.email,
-                    cedula: e.cedula,
-                    codTarjeta: e.codTarjeta,
-                    departamento: e.idDepartamento,
-                    horario: e.idHorario,
-                    }), e.password, function(err, usuario) {
-                        console.log('Recibimos nuevo usuario:' + e.username + ' de tipo:' + e.tipo);
-                        console.log(e);
-                        
-                    }
-                );
-
-                if (req.session.name == "Administrador"){
-                   res.redirect('/configuracionAdmin'); 
-                }
-                if (req.session.name == "Supervisor"){
-                   res.redirect('/configuracion'); 
-                }
-                
-            } else {
-                req.logout();
-                res.redirect('/');
+        if (req.session.name == "Administrador") {
+            var e = req.body; 
+            var array = [];
+            var d = e.idDepartamento;
+            
+            for( var i in d){
+                array.push({departamento:d[i]}); 
             }
+            Usuario.register(new Usuario({
+
+                username: e.username, 
+                tipo: e.tipo,
+                estado: "Activo",
+                nombre: e.nombre,
+                apellido1: e.apellido1,
+                apellido2: e.apellido2,
+                email: e.email,
+                cedula: e.cedula,
+                codTarjeta: e.codTarjeta,
+                departamentos: array,
+                horario: e.idHorario,
+                }), e.password, function(err, usuario) {
+                    console.log('Recibimos nuevo usuario:' + e.username + ' de tipo:' + e.tipo);
+                }
+            );
+
+            if (req.session.name == "Administrador"){
+               res.redirect('/configuracionAdmin'); 
+            }
+        } else {
+            req.logout();
+            res.redirect('/');
+        }
     });
     //read empleado
     app.get('/empleado', autentificado, function(req, res) {
-
-        console.log('si entra');
 
         Usuario.find().exec(function(error, empleados) {
             Horario.find().exec(function(error, horarios) {
@@ -534,20 +595,29 @@ module.exports = function(app) {
         });
         
     });
-    //update empleado
+    //fill form to update empleado
     app.get('/empleado/edit/:id', autentificado, function(req, res) {
         var empleadoId = req.params.id;
 
-        // Usuario.findById(empleadoId, function(error, empleado) { //cambie Empleado por Usuario segun nuevo CRUD
+        Usuario.findById(empleadoId, function(error, empleado) { //cambie Empleado por Usuario segun nuevo CRUD
+            Horario.find().exec(function(error, horarios) {
+                Departamento.find().exec(function(error, departamentos) {
+                    if (error) return res.json(error);
 
-        //     if (error) return res.json(error);
+                    res.render('edit', {
+                        empleado: empleado, 
+                        usuario: req.user,
+                        horarios: horarios,
+                        departamentos: departamentos
+                    });
 
-        //     res.render('edit', empleado);
-
-        // });
+                });
+            });
+        });
         
     });
-    app.put('/empleado/:id', function(req, res) {/*No lo entiendo cm se relaciona con edit  delete*/
+    //update empleado
+    app.post('/empleado/:id', function(req, res) {
 
         var empleado = req.body,
             empleadoId = req.params.id;
@@ -568,8 +638,7 @@ module.exports = function(app) {
 
         var empleadoId = req.params.id;
 
-
-        Usuario.findByIdAndRemove(empleadoId, function(error, empleados) { //cambie Empleado por Usuario segun nuevo CRUD
+        Usuario.findByIdAndUpdate(empleadoId, {estado:'Inactivo'}, function(error, empleados) { //cambie Empleado por Usuario segun nuevo CRUD
 
             if (error) return res.json(error);
 
@@ -605,11 +674,9 @@ module.exports = function(app) {
                 departamentos: departamentos,
                 usuario: req.user
             });
-
-
         });
     });
-    //update departamento
+    //fill form to update departamento
     app.get('/departamento/editDepartamento/:id', autentificado, function(req, res) {
         var departamentoId = req.params.id;
 
@@ -621,8 +688,8 @@ module.exports = function(app) {
 
         });
     });
-    app.put('/departamento/:id',autentificado, function(req, res) {/*No lo entiendo cm se relaciona con edit  delete*/
-
+    //update departamento
+    app.post('/departamento/:id',autentificado, function(req, res) {
         var departamento = req.body,
             departamentoId = req.params.id;
 
@@ -669,5 +736,62 @@ module.exports = function(app) {
         // redireccionar al home en caso de que no
         res.redirect('/');
     }
+
+    app.post('/cambioPassword', function(req, res) {
+        Usuario.virtual('password').set(function(password) {
+            this._password = password;
+            this.salt = this.makeSalt();
+            this.hashed_password = this.encryptPassword(password);
+        }).get(function() {
+            return this._password;
+        });
+    });
+
+    var job = new CronJob({
+        cronTime: '00 02 12 * * 0-6',//'00 00 23 * * 0-6',
+        onTick: function() {
+            // Runs every weekday
+            // at 12:00:00 AM.
+            var today = new Date()
+                yesterday = new Date(today);
+            yesterday.setDate(today.getDate()-1);
+            console.log(today);
+            console.log(yesterday);
+            // Marca.find({fecha:{"$gte":yesterday,"$lt":today}}).sort({usuario:1}).exec(function(error, marcas) {  
+            // });
+            var estad = 4;//Math.floor(Math.random()*10);
+            var epochTime = (today.getTime() - today.getMilliseconds())/1000;
+            var newCierre = Cierre({
+                            estado: estad,
+                            epoch: epochTime,
+                            fecha: today
+                        });
+
+            newCierre.save(function(error, user) {
+
+                if (error) return res.json(error);
+                console.log("exito al guardar");
+
+                //res.redirect('/escritorioEmpl');
+
+            });
+        },
+        start: false,
+        timeZone: "America/Costa_Rica"
+    });
+    job.start();
+
+
+    io.on('connection', function(socket){
+        console.log('a user connected');
+        socket.on('solicitaCierre', function (cierre) {
+            Cierre.find().exec(function(err, cierre) {
+                if (err) {
+                    console.log('error saving user prefs '+err);
+                }
+                socket.emit('listaCierre', cierre);
+            })
+        });
+    });
 
 };

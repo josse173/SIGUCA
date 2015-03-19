@@ -17,7 +17,7 @@ var SchemaMarca = new Schema({
         type: String,
         default: "Entrada" //Entrada-salida-salidaReceso-EntradaReceso-salidaAlmuerzo-entradaAlmuerzo
     },
-    codTarjeta: {
+    usuario: {
         type: Schema.Types.ObjectId,
         ref: 'Usuario'
     },

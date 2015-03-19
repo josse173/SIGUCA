@@ -11,17 +11,17 @@ block content
   .container
     
     h3 Lista de Departamentos
-    ol
-      table.table.table-hover 
-        each departamento, i in departamentos
+    br
+    .table-responsive
+    table.table
+        thead
           tr
-            td #{departamento.nombre} 
-            td
-               a(href="/departamento/editDepartamento/"+departamento.id)  editar
-            td
-               a(href="/departamento/deleteDepartamento/"+departamento.id)  eliminar
-    
-    
-
-
-
+            th Nombre
+        tbody 
+          each departamento, i in departamentos
+            tr
+              td #{departamento.nombre} 
+              td
+                 a#edit.btn.btn-success(href="/departamento/editDepartamento/"+departamento.id)  editar
+              td
+                 a#delete.btn.btn-danger(href="/departamento/deleteDepartamento/"+departamento.id)  eliminar
