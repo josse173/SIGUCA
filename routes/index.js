@@ -48,16 +48,14 @@ module.exports = function(app, io) {
             Usuario.find().exec(function(error, empleados) {
                 Justificaciones.find({estado:0}).count().exec(function(error, justificaciones) {
                     Solicitudes.find({estado:'Pendiente'}).count().exec(function(error, solicitudes) {
-                        Cierre.find().exec(function(err, cierres) {
-                            if (error) return res.json(error);
-                            return res.render('escritorio', {
-                                title: 'Escritorio Supervisor | SIGUCA',
-                                empleados: empleados, 
-                                justificaciones: justificaciones, 
-                                solicitudes: solicitudes,
-                                cierres: cierres,
-                                usuario: req.user
-                            });
+                       
+                        if (error) return res.json(error);
+                        return res.render('escritorio', {
+                            title: 'Escritorio Supervisor | SIGUCA',
+                            empleados: empleados, 
+                            justificaciones: justificaciones, 
+                            solicitudes: solicitudes,
+                            usuario: req.user
                         });
                     });
                 });
@@ -746,35 +744,50 @@ module.exports = function(app, io) {
     });
 
     var job = new CronJob({
-        cronTime: '00 04 16 * * 0-6',//'00 00 23 * * 0-6',
+        cronTime: '00 49 15 * * 0-6',//'00 00 23 * * 0-6',
         onTick: function() {
             // Runs every weekday
             // at 12:00:00 AM.
             var today = new Date()
                 yesterday = new Date(today);
             yesterday.setDate(today.getDate()-1);
-            // Marca.find({epoch:{"$gte":(yesterday.getTime() - yesterday.getMilliseconds())/1000,"$lt":(today.getTime() - today.getMilliseconds())/1000}}).sort({usuario:1}).exec(function(error, marcas) {  
-            //     console.log(marcas);
-            //     if (error) return res.json(error);
-            // });
 
-            var estad = 3;//Math.floor(Math.random()*10);
-            var epochTime = (today.getTime() - today.getMilliseconds())/1000;
-            var newCierre = Cierre({
-                            estado: estad,
-                            epoch: epochTime,
-                            fecha: today
-                        });
+            var estad = 0;//Math.floor(Math.random()*10);
+            Justificaciones.find({estado:0}).count().exec(function(error, justificaciones) {
+                estad += justificaciones;
+                Solicitudes.find({estado:'Pendiente'}).count().exec(function(error, solicitudes) {
+                    estad += (solicitudes * 2);
+                    Marca.find({epoch:{"$gte":(yesterday.getTime() - yesterday.getMilliseconds())/1000,
+                        "$lt":(today.getTime() - today.getMilliseconds())/1000}, tipoMarca:"Entrada"})
+                    .deepPopulate('usuario.horario').exec(function(error, marcaHorario) {
+                        marcaHorario.forEach(function(marca){
+                            debugger;
+                            var epochTime = marca.epoch;
+                            var fechaActual= new Date(0);
+                            fechaActual.setUTCSeconds(epochTime);  
+                            var hora = fechaActual.getHours();
+                            if(marca.usuario.horario.horaEntrada - hora < 0){
+                                debugger;
+                                estad -= 1;
+                            }//if
+                        });//each
+                        debugger;
+                        var epochTime = (today.getTime() - today.getMilliseconds())/1000;
+                        var newCierre = Cierre({
+                                        estado: estad,
+                                        epoch: epochTime,
+                                        fecha: today
+                                    });
 
-            newCierre.save(function(error, user) {
+                        newCierre.save(function(error, user) {
 
-                if (error) return res.json(error);
-                console.log("exito al guardar");
-
-                //res.redirect('/escritorioEmpl');
-
-            });
-        },
+                            if (error) return res.json(error);
+                            console.log("exito al guardar");
+                        });//cierre
+                    });//marcas
+                });//solicitudes
+            }); //justificaciones
+        }, //funcion
         start: false,
         timeZone: "America/Costa_Rica"
     });

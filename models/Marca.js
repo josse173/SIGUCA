@@ -5,12 +5,13 @@
  */
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
-    passportLocalMongoose = require('passport-local-mongoose');
+    passportLocalMongoose = require('passport-local-mongoose'),
+    deepPopulate = require('mongoose-deep-populate');
 
 //Crear el esquema de Marca
 var SchemaMarca = new Schema({
     fechaHora:{
-        type: Date,
+        type: Number,
         default: ""
     },
     tipoMarca: {
@@ -26,5 +27,7 @@ var SchemaMarca = new Schema({
         default: 0
     },
 });
+
+SchemaMarca.plugin(deepPopulate, {whitelist: ['usuario.horario']});
 
 module.exports = mongoose.model('Marca', SchemaMarca);

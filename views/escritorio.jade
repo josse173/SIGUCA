@@ -12,23 +12,6 @@ block content
         button#next.btn.btn-default 
           i.icon.icon-chevron-right
         div#cal
-        texarea#estadoCierre(type="hidden", value=cierre)
-        h3 Lista de Estados de Cierre
-        br
-        .table-responsive
-        table.table
-            thead
-              tr
-                th fecha
-                th epoch
-                th estado
-            tbody 
-              each cierre, i in cierres
-                tr
-                  td #{cierre.fecha} 
-                  td #{cierre.epoch} 
-                  td #{cierre.estado} 
-              
               
       .col-xs-4
        h3 Filtros   

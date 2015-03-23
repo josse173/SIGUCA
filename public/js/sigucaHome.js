@@ -46,14 +46,14 @@ function calendario(stats){
             min: "#95EE6B",//"#74D943",//"#00C322",
             max: "#F66F89",//"#EA4868",//"#FF0D00",
             solExtra: "yellow",
-            empty: "gray",
+            empty: "#620CAC",
         },
-        legendTitleFormat: {
+        /*legendTitleFormat: {
             lower: "Normal",
             inner: "Permiso",
             solExtra: "Horas Extra",
             upper: "10-*",
-        },
+        },*/
         itemName: ["", ""]
     });
     // cal.highlight(new Date(2014, 5, 18));

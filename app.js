@@ -87,11 +87,6 @@ if ('development' == app.get('env')) {
  *	Rutas
  *
  */
-// var server = http.createServer(app);
-// var io = require('socket.io').listen(server);
-
-//var server = require('http').Server(app);
-//var io = require('socket.io')(server);
 //Asignamos a server la creación del servidor http.
 var server = http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
