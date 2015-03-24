@@ -16,24 +16,22 @@ block content
                 th Usuario
                 th Motivo
                 th Detalle
-                th Estado
                 th Comentario
             tbody 
               each justificacion, i in justificaciones
                 tr
-                  td #{justificacion.fechaCreada} 
-                  td #{justificacion.usuario} 
+                  td #{justificacion.usuario.fechaCreacion} 
+                  td #{justificacion.usuario.nombre} #{justificacion.usuario.apellido1}
                   td #{justificacion.motivo} 
                   td #{justificacion.detalle} 
-                  td #{justificacion.estado} 
                   form(role='form', method="POST", action="/getionarJustificacion/"+justificacion.id)
                     td
                       textarea.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
                     td
                       select.selectpicker.show-tick(name='estado')
-                        option(value='1') Aceptar
-                        option(value='2') Rechazar
-                        option(value='0') Pendiente
+                        option(value='Aceptada') Aceptar
+                        option(value='Rechazada') Rechazar
+                        option(value='Pendiente') Pendiente
                     td
                       button.btn.btn-success(type='submit', name='gestionar') Gestionar                 
  
@@ -54,8 +52,8 @@ block content
             tbody 
               each extra, i in extras
                 tr
-                  td #{extra.fechaCreada} 
-                  td #{extra.usuario} 
+                  td #{extra.usuario.fechaCreacion} 
+                  td #{extra.usuario.nombre} #{extra.usuario.apellido1} 
                   td #{extra.diaInicio} 
                   td #{extra.horaFinal} 
                   td #{extra.motivo} 
@@ -82,8 +80,8 @@ block content
             tbody 
               each permiso, i in permisos
                 tr
-                  td #{permiso.fechaCreada} 
-                  td #{permiso.usuario} 
+                  td #{permiso.usuario.fechaCreacion} 
+                  td #{permiso.usuario.nombre} #{permiso.usuario.apellido1} 
                   td #{permiso.diaInicio} 
                   td #{permiso.diaFinal} 
                   td #{permiso.motivo} 

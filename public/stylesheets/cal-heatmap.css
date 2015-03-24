@@ -11,7 +11,7 @@
 
 .graph-label
 {
-	fill: #999;
+	fill: #000;
 	font-size: 10px
 }
 
@@ -32,7 +32,7 @@
 
 .subdomain-text {
 	font-size: 8px;
-	fill: #999;
+	fill: #333;
 	pointer-events: none
 }
 

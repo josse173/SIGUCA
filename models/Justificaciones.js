@@ -27,8 +27,8 @@ var SchemaJustificacion = new Schema({
         default: ''
     },
     estado: {
-        type: Number,
-        enum: ['Pendiente', 'Aceptado', 'Rechazado']
+        type: String,
+        default: 'Pendiente'
     }, // Pendiente - Aceptado - Rechazado    
     comentarioSupervisor: {
         type: String,

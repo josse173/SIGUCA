@@ -31,30 +31,31 @@ function calendario(stats){
         domain: "month",
         subDomain: "x_day", //"x_hour",
         subDomainTextFormat: "%d",
+        weekStartOnMonday: false,
         range: 4,
         cellSize: 24,
-        domainGutter:   5, // separa los dias
+        domainGutter:   5, // separa los meses
         tooltip: true, // muestra el fecha y hora de cada cuadro
-        //start: new Date(2015, 0, 2), //default es el día de hoy
-        data: stats,//"/js/datas-years.json",
+        data: stats,
         previousSelector: "#previous",
         nextSelector: "#next",
-        highlight: "now", //se puede quitar mas adelante, señala la hora actual.
-        legend: [2, 5, 10],
+        highlight: "now", //señala la hora actual.
+        legend: [2, 5, 10, 15, 20],
         legendCellSize: 15,
         legendColors: {
-            min: "#95EE6B",//"#74D943",//"#00C322",
+            min: "#00C322",//"#74D943",//"#00C322",
             max: "#F66F89",//"#EA4868",//"#FF0D00",
-            solExtra: "yellow",
-            empty: "#620CAC",
+            empty: "#95EE6B",//en caso de que sea 0
+            base: "#95EE6B",
+            overflowing: "#EA4868"
         },
-        /*legendTitleFormat: {
-            lower: "Normal",
-            inner: "Permiso",
-            solExtra: "Horas Extra",
-            upper: "10-*",
-        },*/
-        itemName: ["", ""]
+        legendTitleFormat: {
+            lower: "menos de {min} {name}",
+            inner: "entre {down} y {up} {name}",
+            upper: "mas de {max} {name}",
+            overflowing: "Tardias"
+        },
+        itemName: "Evento"
     });
     // cal.highlight(new Date(2014, 5, 18));
 

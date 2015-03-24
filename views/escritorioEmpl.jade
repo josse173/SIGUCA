@@ -18,36 +18,19 @@ block content
       button#next.btn.btn-default 
         i.icon.icon-chevron-right
       div#cal
-      //- ol
-      //-   if (!marca)
-      //-    table.table.table-hover 
-
-      //-     tr
-      //-         td #Empl 
-      //-         td Tipo Marca
-      //-         td epoch
-                          
-      //-     each marca, i in marcas
-
-      //-      if (marca.codTarjeta == usuario.codTarjeta) 
-      //-       tr
-      //-         td #{marca.codTarjeta}
-      //-         td #{marca.tipoMarca}
-      //-         td #{marca.epoch}
-             
-                     
-      //-   else 
-      //-     h1 no hay marcas registradas
             
     .col-xs-4
-        h3 Solicitudes 
+        h3 Acciones 
         ul.list-group
           li.list-group-item
             a(data-toggle="modal" data-target="#horaExtra")
-              | Solicitud de hora extraordinaria
+              | Solicitar de hora extraordinaria
           li.list-group-item
             a(data-toggle="modal" data-target="#permiso")
-              | Solicitud de permiso anticipado
+              | Solicitar de permiso anticipado
+          li.list-group-item
+            a(data-toggle="modal" data-target="#addJustificacion")
+              | Justificaciones
  
     .col-xs-2
     .col-xs-8
@@ -146,8 +129,31 @@ block content
                     button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
      
                 .modal-footer  
-        
+      //agregar justificacion            
+      #addJustificacion.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+        .modal-dialog
+          .modal-content
+            .modal-header
+              button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+              h4#myModalLabel.modal-title Enviar Justificación
+            .modal-body
+              form(role='form', method="POST", action="justificacion_nueva")#login-form.well.span4
+                .form-group
+                    h3 Información Básica
+                    label(for='motivo') Motivo:
+                    input#group.form-control(type= 'text', placeholder='motivo', name= 'motivo', value=motivo)
+                .form-group
+                    label(for='detalles') Detalles:
+                    //input#detalles.form-control(type= 'Number', placeholder='Detalles', name='detalle', value=detalles)
+                    textarea#detalles.form-control(rows="4" cols="50" name='detalle')
+                       
+                button.btn.btn-default(type='submit') Enviar
+                button.btn.btn-default(type='button', data-dismiss='modal') Cancelar 
+
+            .modal-footer  
+
 block sigucaJS
+  script(src="/socket.io/socket.io.js")
   script( src='/js/sigucaHome.js')
   script(src="/js/d3.min.js")
   script(src="/js/cal-heatmap.js")

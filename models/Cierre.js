@@ -10,10 +10,6 @@ var mongoose = require('mongoose'),
     passportLocalMongoose = require('passport-local-mongoose');
 
 var SchemaCierre = new Schema({
-    fecha: { 
-        type: Date,
-        default: ''
-    },
     epoch: { 
         type: Number,
         default: 0
@@ -21,7 +17,17 @@ var SchemaCierre = new Schema({
     estado: {
         type: Number,
         default: '0'
-    }
+    },
+    departamento: {
+        type: Schema.ObjectId,
+        ref: 'Departamento'
+    },
+    usuarios: [{
+        usuario: {
+            type: Schema.ObjectId,
+            ref: 'Usuario'
+        }
+    },{_id:false}],
 });
 
 module.exports = mongoose.model('Cierre', SchemaCierre);

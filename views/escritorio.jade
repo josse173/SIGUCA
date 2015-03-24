@@ -12,7 +12,7 @@ block content
         button#next.btn.btn-default 
           i.icon.icon-chevron-right
         div#cal
-              
+        input#usuario(type='hidden', value=usuario.id)      
       .col-xs-4
        h3 Filtros   
        div.filter
@@ -24,7 +24,7 @@ block content
                    |Empleados: 
                   .btn-group
                      .btn-group
-                    select.form-control#textInput(type="text", name="idSupervisor") 
+                    select.form-control#selectFiltro(type="text", name="idSupervisor") 
                         option(value= todos) Mí gráfico
                         each empleado, i in empleados
                           if (empleado.tipo == "Empleado")
@@ -70,7 +70,7 @@ block content
                     .form-group
                       label(for='motivo') Motivo:
                       textarea#motivo.form-control(rows="4" cols="50" name='motivo')
-                      input#usuario.form-control(type='hidden', placeholder='', name='usuario', value=usuario.id)
+                      
                                                    
                     button.btn.btn-default(type='submit') Ingresar
                     button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
@@ -92,8 +92,7 @@ block content
                     .form-group
                       label(for='motivo') Motivo:
                       textarea#motivo.form-control(rows="4" cols="50" name='motivo')
-                      input#usuario.form-control(type='hidden', placeholder='', name='usuario', value=usuario.id)
-                                                   
+                                                                         
                     button.btn.btn-default(type='submit') Ingresar
                     button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
      

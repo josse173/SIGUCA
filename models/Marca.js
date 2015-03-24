@@ -9,11 +9,7 @@ var mongoose = require('mongoose'),
     deepPopulate = require('mongoose-deep-populate');
 
 //Crear el esquema de Marca
-var SchemaMarca = new Schema({
-    fechaHora:{
-        type: Number,
-        default: ""
-    },
+var SchemaMarca = new Schema({ 
     tipoMarca: {
         type: String,
         default: "Entrada" //Entrada-salida-salidaReceso-EntradaReceso-salidaAlmuerzo-entradaAlmuerzo

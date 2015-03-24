@@ -46,7 +46,7 @@ module.exports = function(app, io) {
     app.get('/escritorio', autentificado, function(req, res) {
         if (req.session.name == "Supervisor") {
             Usuario.find().exec(function(error, empleados) {
-                Justificaciones.find({estado:0}).count().exec(function(error, justificaciones) {
+                Justificaciones.find({estado:'Pendiente'}).count().exec(function(error, justificaciones) {
                     Solicitudes.find({estado:'Pendiente'}).count().exec(function(error, solicitudes) {
                        
                         if (error) return res.json(error);
@@ -115,27 +115,36 @@ module.exports = function(app, io) {
 
     app.get('/configuracion', autentificado, function(req, res) {
         if (req.session.name == "Supervisor") {
-            Usuario.find().exec(function(error, empleados) {
+            Justificaciones.find({estado:'Pendiente'}).populate('usuario').exec(function(error, justificaciones) {
+                Solicitudes.find({tipoSolicitudes:'Extras', estado:'Pendiente'}).populate('usuario').exec(function(error, extras) {
+                    Solicitudes.find({tipoSolicitudes:'Permisos', estado:'Pendiente'}).populate('usuario').exec(function(error, permisos) {
 
-                Horario.find().exec(function(error, horarios) {
-                    Departamento.find().exec(function(error, departamentos) {
-                        Justificaciones.find({estado:0}).exec(function(error, justificaciones) {
-                            Solicitudes.find({tipoSolicitudes:'Extras', estado:'Pendiente'}).exec(function(error, extras) {
-                                Solicitudes.find({tipoSolicitudes:'Permisos', estado:'Pendiente'}).exec(function(error, permisos) {
-
-                                    if (error) return res.json(error);
-                                    return res.render('configuracion', {
-                                        title: 'Configuración | SIGUCA',
-                                        empleados: empleados, 
-                                        usuario: req.user,
-                                        horarios: horarios,
-                                        departamentos: departamentos,
-                                        justificaciones: justificaciones,
-                                        extras: extras,
-                                        permisos: permisos
-                                    });
-                                });
-                            });
+                        justificaciones.forEach(function(justificacion){
+                            var epochTime = justificacion.fechaCreada;
+                            var fecha= new Date(0);
+                            fecha.setUTCSeconds(epochTime); 
+                            justificacion.usuario.fechaCreacion = fecha;
+                        });//each
+                        extras.forEach(function(extra){
+                            var epochTime = extra.fechaCreada;
+                            var fecha= new Date(0);
+                            fecha.setUTCSeconds(epochTime); 
+                            extra.usuario.fechaCreacion = fecha;
+                        });//each
+                        permisos.forEach(function(permiso){
+                            var epochTime = permiso.fechaCreada;
+                            var fecha= new Date(0);
+                            fecha.setUTCSeconds(epochTime); 
+                            permiso.usuario.fechaCreacion = fecha;
+                        });//each
+                        //console.log(justificaciones);
+                        if (error) return res.json(error);
+                        return res.render('configuracion', {
+                            title: 'Configuración | SIGUCA',
+                            usuario: req.user,
+                            justificaciones: justificaciones,
+                            extras: extras,
+                            permisos: permisos
                         });
                     });
                 });
@@ -205,18 +214,42 @@ module.exports = function(app, io) {
     //Lista justificaciones a empleado
     app.get('/justificacionesEmpl', autentificado, function(req, res) {
         if (req.session.name == "Empleado") {
+            
+            Justificaciones.find({usuario: req.user.id}).populate('usuario').exec(function(error, justificaciones) {
+                Solicitudes.find({usuario: req.user.id, tipoSolicitudes:'Extras'}).populate('usuario').exec(function(error, extras) {
+                    Solicitudes.find({usuario: req.user.id, tipoSolicitudes:'Permisos'}).populate('usuario').exec(function(error, permisos) {
 
-            Justificaciones.find().exec(function(error, justificaciones) {
-
-                if (error) return res.json(error);
-
-                return res.render('justificacionesEmpl', {
-                    title: 'Solicitudes/Justificaciones | SIGUCA',
-                    justificaciones: justificaciones,
-                    usuario: req.user
+                        justificaciones.forEach(function(justificacion){
+                            var epochTime = justificacion.fechaCreada;
+                            var fecha= new Date(0);
+                            fecha.setUTCSeconds(epochTime); 
+                            justificacion.usuario.fechaCreacion = fecha;
+                        });//each
+                        extras.forEach(function(extra){
+                            var epochTime = extra.fechaCreada;
+                            var fecha= new Date(0);
+                            fecha.setUTCSeconds(epochTime); 
+                            extra.usuario.fechaCreacion = fecha;
+                        });//each
+                        permisos.forEach(function(permiso){
+                            var epochTime = permiso.fechaCreada;
+                            var fecha= new Date(0);
+                            fecha.setUTCSeconds(epochTime); 
+                            permiso.usuario.fechaCreacion = fecha;
+                        });//each
+                        //console.log(justificaciones);
+                        if (error) return res.json(error);
+                        return res.render('justificacionesEmpl', {
+                            title: 'Solicitudes/Justificaciones | SIGUCA',
+                            usuario: req.user,
+                            justificaciones: justificaciones,
+                            extras: extras,
+                            permisos: permisos
+                        });
+                    });
                 });
-
             });
+            
         } else {
             req.logout();
             res.redirect('/');
@@ -232,7 +265,6 @@ module.exports = function(app, io) {
             fechaCreada: epochTime,
             motivo: e.motivo,
             detalle: e.detalle,
-            estado: 0,//0 = pendiente
             comentarioSupervisor: ""
         });
         newjustificacion.save(function(error, user) {
@@ -744,7 +776,7 @@ module.exports = function(app, io) {
     });
 
     var job = new CronJob({
-        cronTime: '00 49 15 * * 0-6',//'00 00 23 * * 0-6',
+        cronTime: '00 48 15 * * 0-6',//'00 00 23 * * 0-6',
         onTick: function() {
             // Runs every weekday
             // at 12:00:00 AM.
@@ -752,37 +784,34 @@ module.exports = function(app, io) {
                 yesterday = new Date(today);
             yesterday.setDate(today.getDate()-1);
 
+            var epochToday = (today.getTime() - today.getMilliseconds())/1000;
+            var epochYesterday = (yesterday.getTime() - yesterday.getMilliseconds())/1000;
+            
             var estad = 0;//Math.floor(Math.random()*10);
-            Justificaciones.find({estado:0}).count().exec(function(error, justificaciones) {
+            Justificaciones.find({fechaCreada:{"$gte": epochYesterday, "$lt": epochToday}, estado:{"$nin": ['Aceptada']}}).count().exec(function(error, justificaciones) {
                 estad += justificaciones;
-                Solicitudes.find({estado:'Pendiente'}).count().exec(function(error, solicitudes) {
+                Solicitudes.find({fechaCreada:{"$gte": epochYesterday, "$lt": epochToday}, estado:{"$nin": ['Aceptada']}}).count().exec(function(error, solicitudes) {
                     estad += (solicitudes * 2);
-                    Marca.find({epoch:{"$gte":(yesterday.getTime() - yesterday.getMilliseconds())/1000,
-                        "$lt":(today.getTime() - today.getMilliseconds())/1000}, tipoMarca:"Entrada"})
+                    Marca.find({epoch:{"$gte": epochYesterday, "$lt": epochToday}, tipoMarca:"Entrada"})
                     .deepPopulate('usuario.horario').exec(function(error, marcaHorario) {
                         marcaHorario.forEach(function(marca){
-                            debugger;
                             var epochTime = marca.epoch;
                             var fechaActual= new Date(0);
                             fechaActual.setUTCSeconds(epochTime);  
                             var hora = fechaActual.getHours();
                             if(marca.usuario.horario.horaEntrada - hora < 0){
-                                debugger;
-                                estad -= 1;
+                                estad -= 1;     
                             }//if
                         });//each
-                        debugger;
-                        var epochTime = (today.getTime() - today.getMilliseconds())/1000;
                         var newCierre = Cierre({
                                         estado: estad,
-                                        epoch: epochTime,
-                                        fecha: today
+                                        epoch: epochToday
                                     });
 
                         newCierre.save(function(error, user) {
 
-                            if (error) return res.json(error);
-                            console.log("exito al guardar");
+                            if (error) console.log(error);
+                            else console.log("exito al guardar");
                         });//cierre
                     });//marcas
                 });//solicitudes
