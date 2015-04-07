@@ -1,44 +1,80 @@
-SIGUCA: Sistema de Gestión de Usuarios y Control de Asistencia
 
-Se utiliza node.js y mongodb de base de datos para su instalación ingrese a este link: https://github.com/rodrigopolo/node-mongo-demo/tree/master/install_instructions
+SIGUCA
+=========
 
-Modulos de Node.js
-	- Express
-		Es un framework de node.js se comunica con otros modulos y se realizan HTTP request del lado del servidor.
-		Para aprender más visite el sitio http://expressjs.com/starter/hello-world.html
+SIGUCA is an acronym for User Managnent and Assistance Control System, in spanish (Sistema de Gestion de Usuarios y Control de Asistencia). The based aplications are [MongoDB][mongodb], [Node.js][nodejs], [Express][express], and [Jade][jade]. 
 
-	- Passport
-		Es el Middleware encargado de la autenticación en node.js. En siguca es utilizado para autentificar el usuario y su contraseña.
-		Para aprender más visite el sitio http://passportjs.org/guide/
+************************ ACA PONER LO DE LOS DOCUMENTOS DE INGE ***********************
 
-	- Mongoose
-		Es el modulo que se encarga de comunicarse con la base de datos mongodb desde node.js
-		Para aprender más visite el sitio http://mongoosejs.com/
+## Prerequisite Technologies
 
-	- Jade
-		Es un lenguaje para escribir plantillas html.
-		Para aprender más visite el sitio http://jade-lang.com/tutorial/
+### Linux
+	* *Node.js* - <a href="http://nodejs.org/download/">Download</a> and Install Node.js, nodeschool has free <a href=" http://nodeschool.io/#workshoppers">node tutorials</a> to get you started.
+	* *MongoDB* - <a href="http://www.mongodb.org/downloads">Download</a> and Install mongodb - <a href="http://docs.mongodb.org/manual">Checkout their manual</a> if you're just starting.
 
-Para iniciar la aplicación, desde la terminal se ubica en la carpeta de siguca. Se instalan las dependencias antes de iniciar la aplicación por primera vez (sudo apt-get npm install), internamente se lee el package.json de SIGUCA, donde estan definidas las dependencias que se utilizarán. Se corre la aplicación (node app.js).
-	Comandos:
-		- sudo apt-get npm install
-		- node app.js
+If you don't know how to install them, here is a guide [NodeJS and MongoDB][guide]
 
-MongoDB
-	Es una base de datos no relacional la cual no utiliza SQL.
-	Este link explica ampliamente la direncia entre SQL y noSQL http://code.tutsplus.com/articles/mapping-relational-databases-and-sql-to-mongodb--net-35650
-	Esta es la lista de métodos que posee MongoDB http://docs.mongodb.org/manual/reference/method/
+## Technologies 
+==
+	* *[Node.js][nodejs]* 
+		Node.js is a platform built on Chrome's JavaScript runtime for easily building fast, scalable network applications. 
+	* *[Express][express]*
+		Express is a minimal and flexible Node.js web application framework that provides a robust set of features for web and mobile applications. 
+	* *[MongoDB][mongodb]*
+		MongoDB is a NoSQL database, go through MongoDB Official Website and learn more about it. As an additional help, here is a guide than widely explain the differences betweend [SQL and NoSQL ][guideSQL]
+	* *[JadeJS][jade]* 
+		Jade is a templating engine,designed primarily for server side templating in node.js .
 
----------------------------------------------------------------------------------
+### Additional Tools
+=
+	* [MongooseJS][mongoose] - The mongodb node.js driver in charge of providing elegant mongodb object modeling for node.js. Provides a straight-forward, schema-based solution to modeling your application data and includes built-in type casting, validation, query building, business logic hooks and more, out of the box
+	* [PassportJS][passport] - Passport is authentication middleware for Node.js. Extremely flexible and modular, Passport can be unobtrusively dropped in to any Express-based web application.
+	* [Bootstrap][bootstrap] - The most popular HTML, CSS, and JS framework for developing responsive, mobile first projects.
+	* [Node-cron][cron] - Is an openSource project for Timed tasks.
 
-Estructura de directorios:
-	config
-		Contiene las configuraciones principales de SIGUCA como las rutas y sesiones. 
-	models
-		Contiene los modelos de la base de datos
-	public
-		Contiene los archivos estáticos que serán entregados al cliente
-	routes
-		Contiene las clases generadoras de contenido
-	views
-		Contiene las plantillas Jade de cada vista
+Install
+==========
+
+    From source: `npm install`
+    Started: `node app.js`
+
+### Files structure
+
+**Server**
+
+Packages are registered in the **app.js** 
+Defines package name, version, `start=node app.js` and dependencies in the **package.json**   
+
+All of the Server side code resides in the `/server` directory.
+
+    Server
+    --- config        # Configuration files
+    --- models        # Database Schema Models
+    --- routes        # Rest api endpoints for routing
+    --- views         # Jade templates for html
+
+**Client**
+
+All of the Client side code resides in the `/public` directory.
+
+    public            
+    --- font          # All the fonts used
+    --- images        # Images used
+    --- js            # JavaScript
+    --- stylesheets   # CSS
+
+License
+==========
+
+MIT
+
+[nodejs]:http://www.nodejs.org/
+[mongodb]:http://www.mongodb.org/
+[express]:http://expressjs.com/starter/hello-world.html
+[jade]:http://jade-lang.com/tutorial/
+[guide]:https://github.com/rodrigopolo/node-mongo-demo/tree/master/install_instructions
+[guideSQL]:http://code.tutsplus.com/articles/mapping-relational-databases-and-sql-to-mongodb--net-35650
+[passport]:http://passportjs.org/guide/
+[mongoose]:http://mongoosejs.com/
+[bootstrap]:http://getbootstrap.com/
+[cron]:https://github.com/Mireya538/node-cron

@@ -21,13 +21,7 @@ var SchemaCierre = new Schema({
     departamento: {
         type: Schema.ObjectId,
         ref: 'Departamento'
-    },
-    usuarios: [{
-        usuario: {
-            type: Schema.ObjectId,
-            ref: 'Usuario'
-        }
-    },{_id:false}],
+    }
 });
 
 module.exports = mongoose.model('Cierre', SchemaCierre);

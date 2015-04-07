@@ -14,7 +14,7 @@
          type: Number,
          default: 0
      },
-     usuario : {
+     username : {
          type: String,
          default: ''
      },

@@ -577,6 +577,9 @@ module.exports = function(app, io) {
             for( var i in d){
                 array.push({departamento:d[i]}); 
             }
+            console.log(e);
+            console.log(array);
+            //no esta creando
             Usuario.register(new Usuario({
 
                 username: e.username, 
@@ -591,7 +594,7 @@ module.exports = function(app, io) {
                 departamentos: array,
                 horario: e.idHorario,
                 }), e.password, function(err, usuario) {
-                    console.log('Recibimos nuevo usuario:' + e.username + ' de tipo:' + e.tipo);
+                    console.log('Recibimos nuevo usuario:' + e.username + ' de tipo: ' + e.tipo);
                 }
             );
 
@@ -776,46 +779,146 @@ module.exports = function(app, io) {
     });
 
     var job = new CronJob({
-        cronTime: '00 48 15 * * 0-6',//'00 00 23 * * 0-6',
+        cronTime: '00 20 12 * * 0-6',//'00 00 23 * * 0-6',
         onTick: function() {
             // Runs every weekday
             // at 12:00:00 AM.
-            var today = new Date()
+            var today = new Date(),
                 yesterday = new Date(today);
             yesterday.setDate(today.getDate()-1);
 
-            var epochToday = (today.getTime() - today.getMilliseconds())/1000;
-            var epochYesterday = (yesterday.getTime() - yesterday.getMilliseconds())/1000;
-            
-            var estad = 0;//Math.floor(Math.random()*10);
-            Justificaciones.find({fechaCreada:{"$gte": epochYesterday, "$lt": epochToday}, estado:{"$nin": ['Aceptada']}}).count().exec(function(error, justificaciones) {
-                estad += justificaciones;
-                Solicitudes.find({fechaCreada:{"$gte": epochYesterday, "$lt": epochToday}, estado:{"$nin": ['Aceptada']}}).count().exec(function(error, solicitudes) {
-                    estad += (solicitudes * 2);
-                    Marca.find({epoch:{"$gte": epochYesterday, "$lt": epochToday}, tipoMarca:"Entrada"})
-                    .deepPopulate('usuario.horario').exec(function(error, marcaHorario) {
-                        marcaHorario.forEach(function(marca){
-                            var epochTime = marca.epoch;
+            var epochToday = (today.getTime() - today.getMilliseconds())/1000,
+                epochYesterday = (yesterday.getTime() - yesterday.getMilliseconds())/1000;
+                       
+            var mapJustificacion = function () {
+               var output= {
+                    detalle:this.detalle
+               }
+               emit(this.usuario, output);
+            };
+            var mapSolicitud = function () {
+                var output= {
+                    motivo: this.motivo
+               }
+               emit(this.usuario, output);
+            };
+            var mapMarca = function () {
+                var output= {
+                    epoch: this.epoch
+               }
+               emit(this.usuario, output);
+            };
+            var mapUsuario = function() {
+                var values = {
+                    departamento: this.departamento,
+                    horario: this.horario
+                };
+                emit(this._id, values);
+            };
+            var reduceJustUsuario =  function(k, values) {
+                var result = {};
+                values.forEach(function(value) {
+                var field;
+                    if ("detalle" in value) {
+                        if (!("justificaciones" in result)) {
+                            result.justificaciones = 0;
+                        }
+                        result.justificaciones += 1;
+                    } else {
+                        if ("motivo" in value) {
+                            if (!("solicitudes" in result)) {
+                                result.solicitudes = 0;
+                            }
+                            result.solicitudes += 1;
+                        } else {
+                            for (field in value) {
+                                if (value.hasOwnProperty(field) ) {
+                                        result[field] = value[field];
+                                }//if
+                            };//for  
+                        }//2do else
+                   }//else
+                });//for each
+                return result;
+            };
+
+            var o = {};
+            o.map = mapMarca;
+            o.reduce = reduceJustUsuario;
+            o.query = {tipoMarca: "Entrada", epoch:{"$gte": epochYesterday, "$lt": epochToday}};
+            o.out = {"reduce": "Temporal"};
+
+            Marca.mapReduce(o);
+
+            o.map = mapSolicitud;
+            o.query = {fechaCreada:{"$gte": epochYesterday, "$lt": epochToday}, estado:{"$nin": ['Aceptada']}};
+
+            Solicitudes.mapReduce(o);
+
+            o.map = mapJustificacion;
+
+            Justificaciones.mapReduce(o);
+
+            o.map = mapUsuario;
+            o.query = {"tipo": "Empleado"};
+
+            Usuario.mapReduce(o).populate('horario').exec(function (err, Temporal) {
+                                
+                var pipeline = [
+                    {
+                        "$group" : {
+                            "_id" : "$value.departamento",
+                            "justificaciones" : {
+                                "$sum" : "$value.justificaciones"
+                            },
+                            "solicitudes" : {
+                                "$sum" : "$value.solicitudes"
+                            },
+                            "usuarios" : {
+                                "$push" : {
+                                    "marca" : "$value.epoch",
+                                    "horario" : "$value.horario"
+                                }
+                            }
+                        }
+                    }
+                ];
+
+                Temporal.aggregate(pipeline, function(error, temporal){
+                    temporal.forEach(function (departamento){
+                        console.log(departamento);
+                        var estado = 0;
+                        estado += departamento.justificaciones;
+                        estado += departamento.solicitudes * 2;
+                        departamento.usuarios.forEach(function (user){
+                            var epochTime = user.marca;
                             var fechaActual= new Date(0);
                             fechaActual.setUTCSeconds(epochTime);  
                             var hora = fechaActual.getHours();
-                            if(marca.usuario.horario.horaEntrada - hora < 0){
-                                estad -= 1;     
-                            }//if
-                        });//each
+                            Horario.findById(user.horario, function(error, horario) {
+                                console.log(horario.horaEntrada + " - " + hora);
+                                if(horario.horaEntrada - hora < 0){
+                                    estado -= 1;   
+                                }//if
+                            });//horario
+                        });//for each usario
                         var newCierre = Cierre({
-                                        estado: estad,
-                                        epoch: epochToday
-                                    });
+                                    estado: estado,
+                                    epoch: epochToday,
+                                    departamento: departamento 
+                                });
 
                         newCierre.save(function(error, user) {
 
                             if (error) console.log(error);
                             else console.log("exito al guardar");
                         });//cierre
-                    });//marcas
-                });//solicitudes
-            }); //justificaciones
+                    });//for each departamento
+                });//aggregate
+
+            });//mapReduce
+
+
         }, //funcion
         start: false,
         timeZone: "America/Costa_Rica"
@@ -830,7 +933,7 @@ module.exports = function(app, io) {
 
         Cierre.find().exec(function(err, cierre) {
             if (err) {
-                console.log('error saving user prefs '+err);
+                console.log('error saving user prefs ' + err);
             }
             console.log('consulta sin errores');
             //console.log(cierre);
