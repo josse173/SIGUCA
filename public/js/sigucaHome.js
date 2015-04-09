@@ -1,13 +1,25 @@
 
-    //#1 Declaramos el objeto socket que se conectará en este caso a localhost
+    //Declaramos el objeto socket que se conectará en este caso a localhost
     var socket = io.connect('http://localhost:3000');
 
 
-    //#3 Si estamos conectados, muestra el log y cambia el mensaje
+    //Si estamos conectados, muestra el log y cambia el mensaje
     socket.on('connected', function () {
-        console.log('Conectado!');
+        selectValue();
     });
 
+    function selectValue(){
+        var value = $('#selectFiltro').val();
+        //alert(value);
+        socket.emit('listar', value);
+    }
+
+    $('#selectFiltro').change(function(){
+        location.reload();
+        selectValue();
+    });
+
+    //Se recibe resultado de la consulta
     socket.on('listaCierre', function(cierre){
         var stats = {};
         for (var d in cierre) {
@@ -17,7 +29,7 @@
     });
 
 
-    //#6 Si nos desconectamos, muestra el log y cambia el mensaje.
+    //Si nos desconectamos, muestra el log y cambia el mensaje.
     socket.on('disconnect', function () {
         console.log('Desconectado!');
     });

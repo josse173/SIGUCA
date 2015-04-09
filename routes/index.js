@@ -15,7 +15,6 @@ var Solicitudes = require('../models/Solicitudes');
 var Cierre = require('../models/Cierre');
 var CronJob = require('cron').CronJob;
 
-
 module.exports = function(app, io) {
 
 
@@ -45,14 +44,14 @@ module.exports = function(app, io) {
 
     app.get('/escritorio', autentificado, function(req, res) {
         if (req.session.name == "Supervisor") {
-            Usuario.find().exec(function(error, empleados) {
+            Departamento.find().exec(function(error, departamentos) {
                 Justificaciones.find({estado:'Pendiente'}).count().exec(function(error, justificaciones) {
                     Solicitudes.find({estado:'Pendiente'}).count().exec(function(error, solicitudes) {
                        
                         if (error) return res.json(error);
                         return res.render('escritorio', {
                             title: 'Escritorio Supervisor | SIGUCA',
-                            empleados: empleados, 
+                            departamentos: departamentos, 
                             justificaciones: justificaciones, 
                             solicitudes: solicitudes,
                             usuario: req.user
@@ -779,7 +778,7 @@ module.exports = function(app, io) {
     });
 
     var job = new CronJob({
-        cronTime: '00 20 12 * * 0-6',//'00 00 23 * * 0-6',
+        cronTime: '00 26 16 * * 0-6',//'00 00 23 * * 0-6',
         onTick: function() {
             // Runs every weekday
             // at 12:00:00 AM.
@@ -787,9 +786,9 @@ module.exports = function(app, io) {
                 yesterday = new Date(today);
             yesterday.setDate(today.getDate()-1);
 
-            var epochToday = (today.getTime() - today.getMilliseconds())/1000,
-                epochYesterday = (yesterday.getTime() - yesterday.getMilliseconds())/1000;
-                       
+            var epochToday = 1428422901,//(today.getTime() - today.getMilliseconds())/1000,
+                epochYesterday = 1428335492;//(yesterday.getTime() - yesterday.getMilliseconds())/1000;
+            
             var mapJustificacion = function () {
                var output= {
                     detalle:this.detalle
@@ -798,7 +797,7 @@ module.exports = function(app, io) {
             };
             var mapSolicitud = function () {
                 var output= {
-                    motivo: this.motivo
+                    diaInicio: this.diaInicio
                }
                emit(this.usuario, output);
             };
@@ -808,12 +807,46 @@ module.exports = function(app, io) {
                }
                emit(this.usuario, output);
             };
+            var mapHorario = function () {
+               var output= {
+                    hora: this.horaEntrada
+               }
+               emit(this._id, output);
+            };
             var mapUsuario = function() {
                 var values = {
                     departamento: this.departamento,
-                    horario: this.horario
+                    _id: this._id
                 };
-                emit(this._id, values);
+                emit(this.horario, values);
+            };
+            var mapHoraUs = function() {
+                for (var x = 0; x < this.value.count; x++){
+                    emit(this.value.usuario[x]._id, {hora: this.value.hora, departamento: this.value.usuario[x].departamento}); 
+                }
+            };
+            var reduceHoraUsuario =  function(k, values) {
+                var result = {};
+                values.forEach(function(value) {
+                var field;
+                    if ("departamento" in value) {
+                        if (!("usuario" in result)) {
+                            result.usuario = [];
+                        }
+                        result.usuario.push(value);
+                        if (!("count" in result)) {
+                            result.count = 0;
+                        }
+                        result.count += 1;
+                    } else {
+                          for (field in value) {
+                              if (value.hasOwnProperty(field) ) {
+                                      result[field] = value[field];
+                              }//if
+                          };//for 
+                    }//else
+                });
+                return result;
             };
             var reduceJustUsuario =  function(k, values) {
                 var result = {};
@@ -825,100 +858,100 @@ module.exports = function(app, io) {
                         }
                         result.justificaciones += 1;
                     } else {
-                        if ("motivo" in value) {
+                        if ("diaInicio" in value) {
                             if (!("solicitudes" in result)) {
                                 result.solicitudes = 0;
                             }
                             result.solicitudes += 1;
                         } else {
-                            for (field in value) {
-                                if (value.hasOwnProperty(field) ) {
+                                for (field in value) {
+                                    if (value.hasOwnProperty(field) ) {
                                         result[field] = value[field];
-                                }//if
-                            };//for  
+                                    }//if
+                              };//for 
                         }//2do else
                    }//else
-                });//for each
+                });
                 return result;
             };
 
             var o = {};
-            o.map = mapMarca;
-            o.reduce = reduceJustUsuario;
-            o.query = {tipoMarca: "Entrada", epoch:{"$gte": epochYesterday, "$lt": epochToday}};
-            o.out = {"reduce": "Temporal"};
-
-            Marca.mapReduce(o);
-
-            o.map = mapSolicitud;
-            o.query = {fechaCreada:{"$gte": epochYesterday, "$lt": epochToday}, estado:{"$nin": ['Aceptada']}};
-
-            Solicitudes.mapReduce(o);
-
-            o.map = mapJustificacion;
-
-            Justificaciones.mapReduce(o);
+            o.map = mapHorario;
+            o.reduce = reduceHoraUsuario;
+            o.out = {"reduce": "Auxiliar"};
+            Horario.mapReduce(o);
 
             o.map = mapUsuario;
             o.query = {"tipo": "Empleado"};
 
-            Usuario.mapReduce(o).populate('horario').exec(function (err, Temporal) {
-                                
-                var pipeline = [
-                    {
-                        "$group" : {
-                            "_id" : "$value.departamento",
-                            "justificaciones" : {
-                                "$sum" : "$value.justificaciones"
-                            },
-                            "solicitudes" : {
-                                "$sum" : "$value.solicitudes"
-                            },
-                            "usuarios" : {
-                                "$push" : {
-                                    "marca" : "$value.epoch",
-                                    "horario" : "$value.horario"
+            Usuario.mapReduce(o, function (err, Auxiliar) {
+                var o = {};
+                o.map = mapHoraUs;
+                o.reduce = reduceJustUsuario;
+                o.out = {"reduce": "Temporal"};
+                Auxiliar.mapReduce(o);
+
+                o.map = mapMarca;
+                o.query = {tipoMarca: "Entrada", epoch:{"$gte": epochYesterday, "$lt": epochToday}};
+                Marca.mapReduce(o);
+
+                o.map = mapSolicitud;
+                o.query = {fechaCreada:{"$gte": epochYesterday, "$lt": epochToday}, estado:{"$nin": ['Aceptada']}};
+                Solicitudes.mapReduce(o);
+
+                o.map = mapJustificacion;
+                Justificaciones.mapReduce(o, function (err, Temporal) {
+
+                    var pipeline = [
+                        {
+                            "$group" : {
+                                "_id" : "$value.departamento",
+                                "justificaciones" : {
+                                    "$sum" : "$value.justificaciones"
+                                },
+                                "solicitudes" : {
+                                    "$sum" : "$value.solicitudes"
+                                },
+                                "usuarios" : {
+                                    "$push" : {
+                                        "marca" : "$value.epoch",
+                                        "horario" : "$value.hora"
+                                    }
                                 }
                             }
                         }
-                    }
-                ];
-
-                Temporal.aggregate(pipeline, function(error, temporal){
-                    temporal.forEach(function (departamento){
-                        console.log(departamento);
-                        var estado = 0;
-                        estado += departamento.justificaciones;
-                        estado += departamento.solicitudes * 2;
-                        departamento.usuarios.forEach(function (user){
-                            var epochTime = user.marca;
-                            var fechaActual= new Date(0);
-                            fechaActual.setUTCSeconds(epochTime);  
-                            var hora = fechaActual.getHours();
-                            Horario.findById(user.horario, function(error, horario) {
-                                console.log(horario.horaEntrada + " - " + hora);
-                                if(horario.horaEntrada - hora < 0){
+                    ];
+                    Temporal.aggregate(pipeline).exec(function (err, temporal){
+                        temporal.forEach(function (departamento){
+                            console.log(departamento);
+                            var estado = 0;
+                            estado += departamento.justificaciones;
+                            estado += departamento.solicitudes * 2;
+                            departamento.usuarios.forEach(function (user){
+                                var epochTime = user.marca;
+                                var fechaActual= new Date(0);
+                                fechaActual.setUTCSeconds(epochTime);  
+                                var hora = fechaActual.getHours();
+                                if(user.horario - hora < 0){
                                     estado -= 1;   
                                 }//if
-                            });//horario
-                        });//for each usario
-                        var newCierre = Cierre({
-                                    estado: estado,
-                                    epoch: epochToday,
-                                    departamento: departamento 
-                                });
+                            });//for each usario
+                            var newCierre = Cierre({
+                                        estado: estado,
+                                        epoch: epochToday,
+                                        departamento: departamento 
+                                    });
 
-                        newCierre.save(function(error, user) {
+                            newCierre.save(function(error, user) {
 
-                            if (error) console.log(error);
-                            else console.log("exito al guardar");
-                        });//cierre
-                    });//for each departamento
-                });//aggregate
-
+                                if (error) console.log(error);
+                                else console.log("exito al guardar");
+                            });//cierre
+                            epochToday++;
+                        });// for each departamento
+                    });//Aggregate
+                });//MapReduce
             });//mapReduce
-
-
         }, //funcion
         start: false,
         timeZone: "America/Costa_Rica"
@@ -928,17 +961,29 @@ module.exports = function(app, io) {
     //Iniciamos la conexión.
     io.sockets.on('connection', function(socket){
         //Emitimos nuestro evento connected
-        //socket.emit('connected');
-        console.log('connected');
+        socket.emit('connected');
+        //console.log('connected');
 
-        Cierre.find().exec(function(err, cierre) {
-            if (err) {
-                console.log('error saving user prefs ' + err);
+        socket.on('listar', function(departamentoId){
+            if(departamentoId == "todos"){
+                Cierre.find().exec(function(err, cierre) {
+                    if (err) console.log('error saving user prefs ' + err);
+                    else {
+                        console.log('consulta sin errores');
+                        socket.emit('listaCierre', cierre);
+                    }
+                });
+            } else {
+                Cierre.find({departamento: departamentoId}).exec(function(err, cierre) {
+                    if (err) console.log('error saving user prefs ' + err);
+                    else {
+                        console.log('consulta sin errores');
+                        socket.emit('listaCierre', cierre);
+                    }
+                });
             }
-            console.log('consulta sin errores');
-            //console.log(cierre);
-            socket.emit('listaCierre', cierre);
         });
+        
 
     });
 
