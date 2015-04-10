@@ -25,9 +25,9 @@ block content
                   .btn-group
                      .btn-group
                     select.form-control#selectFiltro(type="text", name="idSupervisor") 
-                        option(value= "todos") Mí gráfico
-                        each departamento, i in departamentos
-                          option(value= departamento.id) #{departamento.nombre} 
+                        option(value= "todos," + todos) Mí gráfico
+                        each item, i in departamentos
+                          option(value= item.departamento.id) #{item.departamento.nombre} 
 
       .col-xs-4
       .col-xs-4

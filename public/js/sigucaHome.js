@@ -15,7 +15,7 @@
     }
 
     $('#selectFiltro').change(function(){
-        location.reload();
+        $('#cal').empty();
         selectValue();
     });
 

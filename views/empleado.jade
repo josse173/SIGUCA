@@ -34,8 +34,11 @@ block content
               td #{empleado.cedula} 
               td #{empleado.email} 
               td #{empleado.tipo} 
-              td #{empleado.departamento} 
-              td #{empleado.horario} 
+              td 
+                each departamentos, i in empleado.departamentos
+                  ul
+                    li #{departamentos.departamento.nombre} 
+              td #{empleado.horario.nombre} 
               td #{empleado.estado} 
               td
                 a#edit.btn.btn-success(href="/empleado/edit/"+empleado.id) Editar

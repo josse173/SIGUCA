@@ -44,17 +44,23 @@ module.exports = function(app, io) {
 
     app.get('/escritorio', autentificado, function(req, res) {
         if (req.session.name == "Supervisor") {
-            Departamento.find().exec(function(error, departamentos) {
+            Usuario.find({_id:req.user.id},{_id:0, departamentos: 1}).populate('departamentos.departamento').exec(function(error, result) {
                 Justificaciones.find({estado:'Pendiente'}).count().exec(function(error, justificaciones) {
                     Solicitudes.find({estado:'Pendiente'}).count().exec(function(error, solicitudes) {
-                       
-                        if (error) return res.json(error);
-                        return res.render('escritorio', {
-                            title: 'Escritorio Supervisor | SIGUCA',
-                            departamentos: departamentos, 
-                            justificaciones: justificaciones, 
-                            solicitudes: solicitudes,
-                            usuario: req.user
+                        result.forEach(function(supervisor){
+                            var array = [];
+                            supervisor.departamentos.forEach(function(departamento){
+                                array.push(departamento.departamento.id);
+                            });
+                            if (error) return res.json(error);
+                            return res.render('escritorio', {
+                                title: 'Escritorio Supervisor | SIGUCA',
+                                departamentos: supervisor.departamentos, 
+                                justificaciones: justificaciones, 
+                                solicitudes: solicitudes,
+                                todos: array,
+                                usuario: req.user
+                            });
                         });
                     });
                 });
@@ -573,29 +579,52 @@ module.exports = function(app, io) {
             var array = [];
             var d = e.idDepartamento;
             
-            for( var i in d){
-                array.push({departamento:d[i]}); 
+            if(e.idDepartamento instanceof Array){
+                for( var i in d){
+                   array.push({departamento:d[i]}); 
+                }
             }
             console.log(e);
+            console.log(d);
             console.log(array);
             //no esta creando
-            Usuario.register(new Usuario({
+            if(e.tipo == 'Supervisor'){
+                Usuario.register(new Usuario({
 
-                username: e.username, 
-                tipo: e.tipo,
-                estado: "Activo",
-                nombre: e.nombre,
-                apellido1: e.apellido1,
-                apellido2: e.apellido2,
-                email: e.email,
-                cedula: e.cedula,
-                codTarjeta: e.codTarjeta,
-                departamentos: array,
-                horario: e.idHorario,
-                }), e.password, function(err, usuario) {
-                    console.log('Recibimos nuevo usuario:' + e.username + ' de tipo: ' + e.tipo);
-                }
-            );
+                    username: e.username, 
+                    tipo: e.tipo,
+                    estado: "Activo",
+                    nombre: e.nombre,
+                    apellido1: e.apellido1,
+                    apellido2: e.apellido2,
+                    email: e.email,
+                    cedula: e.cedula,
+                    codTarjeta: e.codTarjeta,
+                    departamentos: array,
+                    horario: e.idHorario,
+                    }), e.password, function(err, usuario) {
+                        console.log('Recibimos nuevo usuario:' + e.username + ' de tipo: ' + e.tipo);
+                    }
+                );
+            } else {
+                Usuario.register(new Usuario({
+
+                    username: e.username, 
+                    tipo: e.tipo,
+                    estado: "Activo",
+                    nombre: e.nombre,
+                    apellido1: e.apellido1,
+                    apellido2: e.apellido2,
+                    email: e.email,
+                    cedula: e.cedula,
+                    codTarjeta: e.codTarjeta,
+                    departamento: e.idDepartamento,
+                    horario: e.idHorario,
+                    }), e.password, function(err, usuario) {
+                        if(!err) console.log('Recibimos nuevo usuario:' + e.username + ' de tipo: ' + e.tipo);
+                    }
+                );
+            }
 
             if (req.session.name == "Administrador"){
                res.redirect('/configuracionAdmin'); 
@@ -608,19 +637,12 @@ module.exports = function(app, io) {
     //read empleado
     app.get('/empleado', autentificado, function(req, res) {
 
-        Usuario.find().exec(function(error, empleados) {
-            Horario.find().exec(function(error, horarios) {
-                Departamento.find().exec(function(error, departamentos) {
-
-                    if (error) return res.json(error);
-                    return res.render('empleado', {
-                        title: 'Gestionar empleados | SIGUCA',
-                        empleados: empleados, 
-                        usuario: req.user,
-                        horarios: horarios,
-                        departamentos: departamentos
-                    });
-                });
+        Usuario.find().populate('departamentos.departamento').populate('horario').exec(function(error, empleados){
+            if (error) return res.json(error);
+            return res.render('empleado', {
+                title: 'Gestionar empleados | SIGUCA',
+                empleados: empleados, 
+                usuario: req.user
             });
         });
         
@@ -649,15 +671,26 @@ module.exports = function(app, io) {
     //update empleado
     app.post('/empleado/:id', function(req, res) {
 
-        var empleado = req.body,
-            empleadoId = req.params.id;
+        var empleadoId = req.params.id,
+            empleado = req.body;
 
         delete empleado.id;
         delete empleado._id;
 
+        var array = [];
+        if(empleado.departamentos instanceof Array && empleado.tipo == "Supervisor"){
+            for( var i in req.body.departamentos){
+                array.push({departamento:req.body.departamentos[i]});
+            }
+        } else {
+            array.push({departamento:req.body.departamentos});
+        }
+        empleado.departamentos = array;
+
         Usuario.findByIdAndUpdate(empleadoId, empleado, function(error, empleados) { //cambie Empleado por Usuario segun nuevo CRUD
 
-            if (error) return res.json(error);
+            if (error) console.log(error);
+            else console.log("Se actualizo con exito");
 
             res.redirect('/empleado');
 
@@ -777,8 +810,8 @@ module.exports = function(app, io) {
         });
     });
 
-    var job = new CronJob({
-        cronTime: '00 26 16 * * 0-6',//'00 00 23 * * 0-6',
+    var job = new CronJob({ // Crea los estados de cierre a una hora determinada
+        cronTime: '00 09 09 * * 0-6',//'00 00 23 * * 0-6',
         onTick: function() {
             // Runs every weekday
             // at 12:00:00 AM.
@@ -815,7 +848,7 @@ module.exports = function(app, io) {
             };
             var mapUsuario = function() {
                 var values = {
-                    departamento: this.departamento,
+                    departamento: this.departamentos[0].departamento,
                     _id: this._id
                 };
                 emit(this.horario, values);
@@ -926,15 +959,19 @@ module.exports = function(app, io) {
                             console.log(departamento);
                             var estado = 0;
                             estado += departamento.justificaciones;
-                            estado += departamento.solicitudes * 2;
+                            estado += departamento.solicitudes;
                             departamento.usuarios.forEach(function (user){
-                                var epochTime = user.marca;
-                                var fechaActual= new Date(0);
-                                fechaActual.setUTCSeconds(epochTime);  
-                                var hora = fechaActual.getHours();
-                                if(user.horario - hora < 0){
-                                    estado -= 1;   
-                                }//if
+                                if("marca" in user){
+                                    var epochTime = user.marca;
+                                    var fechaActual= new Date(0);
+                                    fechaActual.setUTCSeconds(epochTime);  
+                                    var hora = fechaActual.getHours();
+                                    if(user.horario - hora < 0){
+                                        estado += 1;   
+                                    }//if
+                                } else {
+                                    estado += 1;
+                                } 
                             });//for each usario
                             var newCierre = Cierre({
                                         estado: estado,
@@ -965,9 +1002,17 @@ module.exports = function(app, io) {
         //console.log('connected');
 
         socket.on('listar', function(departamentoId){
-            if(departamentoId == "todos"){
-                Cierre.find().exec(function(err, cierre) {
-                    if (err) console.log('error saving user prefs ' + err);
+            var option = departamentoId.split(',');
+            if(option[0] == "todos"){
+                var or = [];
+                for (var i = 1; i < option.length; i++) {
+                    or.push({departamento:option[i]});
+                };
+                var queryOr = {
+                    "$or": or
+                }
+                Cierre.find(queryOr).exec(function(err, cierre) {
+                    if (err) console.log('error al cargar los cierres: ' + err);
                     else {
                         console.log('consulta sin errores');
                         socket.emit('listaCierre', cierre);
@@ -982,6 +1027,7 @@ module.exports = function(app, io) {
                     }
                 });
             }
+
         });
         
 
