@@ -379,7 +379,7 @@ module.exports = function(app, io) {
             if (req.session.name == "Administrador") {
 
                 res.redirect('/configuracionAdmin');
-            } else res.redirect('/configuracion');
+            } 
 
         });
     });
@@ -577,55 +577,33 @@ module.exports = function(app, io) {
         if (req.session.name == "Administrador") {
             var e = req.body; 
             var array = [];
-            var d = e.idDepartamento;
             
             if(e.idDepartamento instanceof Array){
-                for( var i in d){
-                   array.push({departamento:d[i]}); 
+                for( var i in e.idDepartamento){
+                   array.push({departamento: e.idDepartamento[i]}); 
                 }
+            } else {
+                array.push({departamento: e.idDepartamento});
             }
             console.log(e);
-            console.log(d);
             console.log(array);
-            //no esta creando
-            if(e.tipo == 'Supervisor'){
-                Usuario.register(new Usuario({
+            Usuario.register(new Usuario({
 
-                    username: e.username, 
-                    tipo: e.tipo,
-                    estado: "Activo",
-                    nombre: e.nombre,
-                    apellido1: e.apellido1,
-                    apellido2: e.apellido2,
-                    email: e.email,
-                    cedula: e.cedula,
-                    codTarjeta: e.codTarjeta,
-                    departamentos: array,
-                    horario: e.idHorario,
-                    }), e.password, function(err, usuario) {
-                        console.log('Recibimos nuevo usuario:' + e.username + ' de tipo: ' + e.tipo);
-                    }
-                );
-            } else {
-                Usuario.register(new Usuario({
-
-                    username: e.username, 
-                    tipo: e.tipo,
-                    estado: "Activo",
-                    nombre: e.nombre,
-                    apellido1: e.apellido1,
-                    apellido2: e.apellido2,
-                    email: e.email,
-                    cedula: e.cedula,
-                    codTarjeta: e.codTarjeta,
-                    departamento: e.idDepartamento,
-                    horario: e.idHorario,
-                    }), e.password, function(err, usuario) {
-                        if(!err) console.log('Recibimos nuevo usuario:' + e.username + ' de tipo: ' + e.tipo);
-                    }
-                );
-            }
-
+                username: e.username, 
+                tipo: e.tipo,
+                estado: "Activo",
+                nombre: e.nombre,
+                apellido1: e.apellido1,
+                apellido2: e.apellido2,
+                email: e.email,
+                cedula: e.cedula,
+                codTarjeta: e.codTarjeta,
+                departamentos: array,
+                horario: e.idHorario,
+                }), e.password, function(err, usuario) {
+                    console.log('Recibimos nuevo usuario:' + e.username + ' de tipo: ' + e.tipo);
+                }
+            );
             if (req.session.name == "Administrador"){
                res.redirect('/configuracionAdmin'); 
             }
@@ -651,7 +629,7 @@ module.exports = function(app, io) {
     app.get('/empleado/edit/:id', autentificado, function(req, res) {
         var empleadoId = req.params.id;
 
-        Usuario.findById(empleadoId, function(error, empleado) { //cambie Empleado por Usuario segun nuevo CRUD
+        Usuario.findById(empleadoId, function(error, empleado) { 
             Horario.find().exec(function(error, horarios) {
                 Departamento.find().exec(function(error, departamentos) {
                     if (error) return res.json(error);
@@ -687,7 +665,7 @@ module.exports = function(app, io) {
         }
         empleado.departamentos = array;
 
-        Usuario.findByIdAndUpdate(empleadoId, empleado, function(error, empleados) { //cambie Empleado por Usuario segun nuevo CRUD
+        Usuario.findByIdAndUpdate(empleadoId, empleado, function(error, empleados) { 
 
             if (error) console.log(error);
             else console.log("Se actualizo con exito");
@@ -701,7 +679,7 @@ module.exports = function(app, io) {
 
         var empleadoId = req.params.id;
 
-        Usuario.findByIdAndUpdate(empleadoId, {estado:'Inactivo'}, function(error, empleados) { //cambie Empleado por Usuario segun nuevo CRUD
+        Usuario.findByIdAndUpdate(empleadoId, {estado:'Inactivo'}, function(error, empleados) { 
 
             if (error) return res.json(error);
 
@@ -713,7 +691,7 @@ module.exports = function(app, io) {
     app.post('/departamento',autentificado, function(req, res) {
 
         var e = req.body;
-        var newDepartamento = Departamento({ /*no necesita new ??*/
+        var newDepartamento = Departamento({ 
             nombre: e.nombre
         });
         newDepartamento.save(function(error, user) {
@@ -811,7 +789,7 @@ module.exports = function(app, io) {
     });
 
     var job = new CronJob({ // Crea los estados de cierre a una hora determinada
-        cronTime: '00 09 09 * * 0-6',//'00 00 23 * * 0-6',
+        cronTime: '00 38 14 * * 0-6',//'00 00 23 * * 0-6',
         onTick: function() {
             // Runs every weekday
             // at 12:00:00 AM.
@@ -819,8 +797,8 @@ module.exports = function(app, io) {
                 yesterday = new Date(today);
             yesterday.setDate(today.getDate()-1);
 
-            var epochToday = 1428422901,//(today.getTime() - today.getMilliseconds())/1000,
-                epochYesterday = 1428335492;//(yesterday.getTime() - yesterday.getMilliseconds())/1000;
+            var epochToday = (today.getTime() - today.getMilliseconds())/1000,
+                epochYesterday = (yesterday.getTime() - yesterday.getMilliseconds())/1000;
             
             var mapJustificacion = function () {
                var output= {
@@ -841,28 +819,31 @@ module.exports = function(app, io) {
                emit(this.usuario, output);
             };
             var mapHorario = function () {
+               var split = this.horaEntrada.split(':');
                var output= {
-                    hora: this.horaEntrada
+                    hora: split[0],
+                    min: split[1]
                }
                emit(this._id, output);
             };
             var mapUsuario = function() {
                 var values = {
-                    departamento: this.departamentos[0].departamento,
-                    _id: this._id
+                    departamento: this.departamentos,
+                    _id: this._id,
+                    count: 0
                 };
                 emit(this.horario, values);
             };
             var mapHoraUs = function() {
                 for (var x = 0; x < this.value.count; x++){
-                    emit(this.value.usuario[x]._id, {hora: this.value.hora, departamento: this.value.usuario[x].departamento}); 
+                    emit(this.value.usuario[x]._id, {hora: this.value.hora, min: this.value.min, departamento: this.value.usuario[x].departamentos[this.value.usuario[x].count].departamento}); 
                 }
             };
             var reduceHoraUsuario =  function(k, values) {
                 var result = {};
                 values.forEach(function(value) {
                 var field;
-                    if ("departamento" in value) {
+                    if ("departamentos" in value) {
                         if (!("usuario" in result)) {
                             result.usuario = [];
                         }
@@ -915,7 +896,7 @@ module.exports = function(app, io) {
             Horario.mapReduce(o);
 
             o.map = mapUsuario;
-            o.query = {"tipo": "Empleado"};
+            o.query = {"tipo": "Empleado", "estado": "Activo"};
 
             Usuario.mapReduce(o, function (err, Auxiliar) {
                 var o = {};
@@ -948,7 +929,8 @@ module.exports = function(app, io) {
                                 "usuarios" : {
                                     "$push" : {
                                         "marca" : "$value.epoch",
-                                        "horario" : "$value.hora"
+                                        "hora" : "$value.hora",
+                                        "minutos" : "$value.min"
                                     }
                                 }
                             }
@@ -963,10 +945,12 @@ module.exports = function(app, io) {
                             departamento.usuarios.forEach(function (user){
                                 if("marca" in user){
                                     var epochTime = user.marca;
-                                    var fechaActual= new Date(0);
-                                    fechaActual.setUTCSeconds(epochTime);  
-                                    var hora = fechaActual.getHours();
-                                    if(user.horario - hora < 0){
+                                    var fechaEpoch= new Date(0);
+                                    fechaEpoch.setUTCSeconds(epochTime);  
+                                    var hora = fechaEpoch.getHours();
+                                    var min = fechaEpoch.getMinutes();
+                                    console.log(user.hora + ":"  + user.minutos + " - " + hora + ":"  + min)
+                                    if(user.hora - hora < 0  && user.minutos - min){
                                         estado += 1;   
                                     }//if
                                 } else {
