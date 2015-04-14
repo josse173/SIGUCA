@@ -20,7 +20,7 @@ block content
             tbody 
               each justificacion, i in justificaciones
                 tr
-                  td #{justificacion.usuario.fechaCreacion} 
+                  td #{justificacion.fecha} 
                   td #{justificacion.usuario.nombre} #{justificacion.usuario.apellido1}
                   td #{justificacion.motivo} 
                   td #{justificacion.detalle} 
@@ -52,7 +52,7 @@ block content
             tbody 
               each extra, i in extras
                 tr
-                  td #{extra.usuario.fechaCreacion} 
+                  td #{extra.fecha} 
                   td #{extra.usuario.nombre} #{extra.usuario.apellido1} 
                   td #{extra.diaInicio} 
                   td #{extra.horaFinal} 
@@ -80,7 +80,7 @@ block content
             tbody 
               each permiso, i in permisos
                 tr
-                  td #{permiso.usuario.fechaCreacion} 
+                  td #{permiso.fecha} 
                   td #{permiso.usuario.nombre} #{permiso.usuario.apellido1} 
                   td #{permiso.diaInicio} 
                   td #{permiso.diaFinal} 

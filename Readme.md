@@ -9,34 +9,34 @@ SIGUCA is an acronym for User Managnent and Assistance Control System, in spanis
 ## Prerequisite Technologies
 
 ### Linux
-	* *Node.js* - <a href="http://nodejs.org/download/">Download</a> and Install Node.js, nodeschool has free <a href=" http://nodeschool.io/#workshoppers">node tutorials</a> to get you started.
-	* *MongoDB* - <a href="http://www.mongodb.org/downloads">Download</a> and Install mongodb - <a href="http://docs.mongodb.org/manual">Checkout their manual</a> if you're just starting.
+*Node.js* - [Download][donwloadNodejs] and Install Node.js, [nodeschool][nodeschool] has free  node tutorials to get you started.
+*MongoDB* - [Download][donwloadMongodb] and Install mongodb. Checkout their [manual][manualMongodb] if you're just starting.
 
 If you don't know how to install them, here is a guide [NodeJS and MongoDB][guide]
 
 ## Technologies 
-==
-	* *[Node.js][nodejs]* 
-		Node.js is a platform built on Chrome's JavaScript runtime for easily building fast, scalable network applications. 
-	* *[Express][express]*
-		Express is a minimal and flexible Node.js web application framework that provides a robust set of features for web and mobile applications. 
-	* *[MongoDB][mongodb]*
-		MongoDB is a NoSQL database, go through MongoDB Official Website and learn more about it. As an additional help, here is a guide than widely explain the differences betweend [SQL and NoSQL ][guideSQL]
-	* *[JadeJS][jade]* 
+
+*[Node.js][nodejs]* 
+	Node.js is a platform built on Chrome's JavaScript runtime for easily building fast, scalable network applications. 
+*[Express][express]*
+	Express is a minimal and flexible Node.js web application framework that provides a robust set of features for web and mobile applications. 
+*[MongoDB][mongodb]*
+	MongoDB is a NoSQL database, go through MongoDB Official Website and learn more about it. As an additional help, here is a guide than widely explain the differences betweend [SQL and NoSQL ][guideSQL]
+*[JadeJS][jade]* 
 		Jade is a templating engine,designed primarily for server side templating in node.js .
 
 ### Additional Tools
-=
-	* [MongooseJS][mongoose] - The mongodb node.js driver in charge of providing elegant mongodb object modeling for node.js. Provides a straight-forward, schema-based solution to modeling your application data and includes built-in type casting, validation, query building, business logic hooks and more, out of the box
-	* [PassportJS][passport] - Passport is authentication middleware for Node.js. Extremely flexible and modular, Passport can be unobtrusively dropped in to any Express-based web application.
-	* [Bootstrap][bootstrap] - The most popular HTML, CSS, and JS framework for developing responsive, mobile first projects.
-	* [Node-cron][cron] - Is an openSource project for Timed tasks.
+
+*[MongooseJS][mongoose]* - The mongodb node.js driver in charge of providing elegant mongodb object modeling for node.js. Provides a straight-forward, schema-based solution to modeling your application data and includes built-in type casting, validation, query building, business logic hooks and more, out of the box
+*[PassportJS][passport]* - Passport is authentication middleware for Node.js. Extremely flexible and modular, Passport can be unobtrusively dropped in to any Express-based web application.
+*[Bootstrap][bootstrap]* - The most popular HTML, CSS, and JS framework for developing responsive, mobile first projects.
+*[Node-cron][cron]* - Is an openSource project for Timed tasks.
 
 Install
 ==========
 
-    From source: `npm install`
-    Started: `node app.js`
+    From source: 'npm install'
+    Started: 'node app.js'
 
 ### Files structure
 
@@ -68,8 +68,12 @@ License
 
 MIT
 
+[donwloadNodejs]:http://nodejs.org/download/
+[donwloadMongodb]:http://www.mongodb.org/downloads
 [nodejs]:http://www.nodejs.org/
+[nodeschool]:http:nodeschool.io/#workshoppers
 [mongodb]:http://www.mongodb.org/
+[manualMongodb]:http://docs.mongodb.org/manual
 [express]:http://expressjs.com/starter/hello-world.html
 [jade]:http://jade-lang.com/tutorial/
 [guide]:https://github.com/rodrigopolo/node-mongo-demo/tree/master/install_instructions

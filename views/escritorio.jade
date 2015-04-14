@@ -28,12 +28,12 @@ block content
                         option(value= "todos," + todos) Mí gráfico
                         each item, i in departamentos
                           option(value= item.departamento.id) #{item.departamento.nombre} 
-
+                
       .col-xs-4
       .col-xs-4
         
       .col-xs-4
-        h3 Solicitudes 
+        h3 Acciones 
         ul.list-group
           li.list-group-item
             a(data-toggle="modal" data-target="#horaExtra")
@@ -41,7 +41,16 @@ block content
           li.list-group-item
             a(data-toggle="modal" data-target="#permiso")
               | Solicitud de permiso anticipado
-        
+          li.list-group-item
+            a(data-toggle="modal" data-target="#addJustificacion")
+              | Justificaciones
+      .col-xs-8
+        div#containerCentral
+          h3  Marca Mediante el Sistema
+          div#contBotones
+            div#Marca             
+             button#marca.btn.btn-success(name='marcar', onclick= "changeElemt('marca')", data-toggle="modal" data-target="#addMarca") Realizar Marca
+
       .col-xs-4
         h3 Pendientes de revisar 
         ul.list-group
@@ -53,6 +62,52 @@ block content
             a(href='/Configuracion')
               span.badge #{justificaciones} 
               |   Justificaciones
+
+      #addMarca.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+        
+        .modal-dialog
+            .modal-content
+              
+              .modal-header
+                button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+                h1#myModalLabel.modal-title SIGUCA
+                h3#myModalLabel.modal-title Marcar Mediante Sistema
+
+              .modal-body
+               table.table 
+                 form.marcas(role='form', method="POST", action="/marca")
+                  tr
+                    modal.group     
+                       label-info( name= codTarjeta)  Empleado #{usuario.apellido1} #{usuario.nombre}
+                  tr
+                    modal.group     
+                          td
+                            
+                            button.btn.btn-success(type='submit', value = 'entrada', name = 'marca') Entrada
+                    modal.group
+                          td
+                            button.btn.btn-success(type='submit' , value = 'salida', name = 'marca') Salida
+                  tr
+                    modal.group     
+                          td
+                            button.btn.btn-warning(type='submit', value = 'salidaReceso', name = 'marca') Salida Receso
+                    modal.group
+                          td
+                            button.btn.btn-warning(type='submit', value = 'entradaReceso', name = 'marca') Entrada Receso          
+                  tr
+                    modal.group     
+                          td
+                            button.btn.btn-primary(type='submit', value = 'salidaAlmuerzo', name = 'marca') Salida Almuerzo
+                    modal.group
+                          td
+                            button.btn.btn-primary(type='submit', value = 'entradaAlmuerzo', name = 'marca') Entrada Almuerzo                    
+                  tr   
+                    modal.group
+                      td             
+                          button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
+                .container
+                   #fancyClock    
+              .modal-footer    
       #horaExtra.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
           .modal-dialog
               .modal-content
@@ -95,7 +150,28 @@ block content
                     button.btn.btn-default(type='submit') Ingresar
                     button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
      
-                .modal-footer  
+                .modal-footer          
+      #addJustificacion.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+        .modal-dialog
+          .modal-content
+            .modal-header
+              button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+              h4#myModalLabel.modal-title Enviar Justificación
+            .modal-body
+              form(role='form', method="POST", action="justificacion_nueva")#login-form.well.span4
+                .form-group
+                    h3 Información Básica
+                    label(for='motivo') Motivo:
+                    input#group.form-control(type= 'text', placeholder='motivo', name= 'motivo', value=motivo)
+                .form-group
+                    label(for='detalles') Detalles:
+                    //input#detalles.form-control(type= 'Number', placeholder='Detalles', name='detalle', value=detalles)
+                    textarea#detalles.form-control(rows="4" cols="50" name='detalle')
+                       
+                button.btn.btn-default(type='submit') Enviar
+                button.btn.btn-default(type='button', data-dismiss='modal') Cancelar 
+
+            .modal-footer  
                 
 block sigucaJS
   script(src="/socket.io/socket.io.js")

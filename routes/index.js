@@ -86,18 +86,24 @@ module.exports = function(app, io) {
             req.logout();
             res.redirect('/');
         }
-
     });
     app.get('/escritorioAdmin', autentificado, function(req, res) {
-        if (req.session.name == "Administrador") {
-             Usuario.find().exec(function(error, empleados) {
+        if (req.session.name ==="Administrador") {
 
-                if (error) return res.json(error);
-                return res.render('escritorioAdmin', {
-                    title: 'Escritorio Administrador | SIGUCA',
-                    empleados: empleados, /* Para que envian los empleados?? - para el calendario?*/
-                    usuario: req.user,
+            Usuario.find().exec(function(error, empleados) {
 
+                Horario.find().exec(function(error, horarios) {
+                    Departamento.find().exec(function(error, departamentos) {
+
+                        if (error) return res.json(error);
+                        return res.render('escritorioAdmin', {
+                            title: 'Escritorio Administrador | SIGUCA',
+                            empleados: empleados, 
+                            usuario: req.user,
+                            horarios: horarios,
+                            departamentos: departamentos
+                        });
+                    });
                 });
             });
         } else {
@@ -105,7 +111,6 @@ module.exports = function(app, io) {
             res.redirect('/');
         }
     });
-  
     app.get('/ayuda', autentificado, function(req, res) {
         if (req.session.name == "Supervisor" || req.session.name == "Administrador"|| req.session.name == "Empleado") {
             res.render('ayuda', {
@@ -128,19 +133,19 @@ module.exports = function(app, io) {
                             var epochTime = justificacion.fechaCreada;
                             var fecha= new Date(0);
                             fecha.setUTCSeconds(epochTime); 
-                            justificacion.usuario.fechaCreacion = fecha;
+                            justificacion.fecha = fecha;
                         });//each
                         extras.forEach(function(extra){
                             var epochTime = extra.fechaCreada;
                             var fecha= new Date(0);
                             fecha.setUTCSeconds(epochTime); 
-                            extra.usuario.fechaCreacion = fecha;
+                            extra.fecha = fecha;
                         });//each
                         permisos.forEach(function(permiso){
                             var epochTime = permiso.fechaCreada;
                             var fecha= new Date(0);
                             fecha.setUTCSeconds(epochTime); 
-                            permiso.usuario.fechaCreacion = fecha;
+                            permiso.fecha = fecha;
                         });//each
                         //console.log(justificaciones);
                         if (error) return res.json(error);
@@ -170,87 +175,51 @@ module.exports = function(app, io) {
             res.redirect('/');
         }
     });
-    app.get('/configuracionAdmin', autentificado, function(req, res) {
-        if (req.session.name ==="Administrador") {
-
-            Usuario.find().exec(function(error, empleados) {
-
-                Horario.find().exec(function(error, horarios) {
-                    Departamento.find().exec(function(error, departamentos) {
-
-                        if (error) return res.json(error);
-                        return res.render('configuracionAdmin', {
-                            title: 'Configuración Administrador | SIGUCA',
-                            empleados: empleados, 
-                            usuario: req.user,
-                            horarios: horarios,
-                            departamentos: departamentos
-                        });
-                    });
-                });
-            });
-        } else {
-            req.logout();
-            res.redirect('/');
-        }
-    });
-    app.get('/justificaciones', autentificado, function(req, res) { /* Redirecciona*/
-        if (req.session.name == "Supervisor") {
-            res.render('justificaciones', {
-                title: 'Justificaciones/Permisos | SIGUCA',
-                usuario: req.user
-            });
-        } else {
-            req.logout();
-            res.redirect('/');
-        }
-    });
-    app.get('/justificacionesAdmin', autentificado, function(req, res) {/* No hace nada*/
-        if (req.session.name == "Administrador") {
-            res.render('justificacionesAdmin', {
-                title: 'Administrador justificaciones| Permisos',
-                usuario: req.user
-            });
-        } else {
-            req.logout();
-            res.redirect('/');
-        }
-    });
     //Lista justificaciones a empleado
     app.get('/justificacionesEmpl', autentificado, function(req, res) {
-        if (req.session.name == "Empleado") {
+        if (req.session.name != "Administrador") {
             
-            Justificaciones.find({usuario: req.user.id}).populate('usuario').exec(function(error, justificaciones) {
-                Solicitudes.find({usuario: req.user.id, tipoSolicitudes:'Extras'}).populate('usuario').exec(function(error, extras) {
-                    Solicitudes.find({usuario: req.user.id, tipoSolicitudes:'Permisos'}).populate('usuario').exec(function(error, permisos) {
+            Justificaciones.find({usuario: req.user.id}).exec(function(error, justificaciones) {
+                Solicitudes.find({usuario: req.user.id, tipoSolicitudes:'Extras'}).exec(function(error, extras) {
+                    Solicitudes.find({usuario: req.user.id, tipoSolicitudes:'Permisos'}).exec(function(error, permisos) {
 
                         justificaciones.forEach(function(justificacion){
                             var epochTime = justificacion.fechaCreada;
                             var fecha= new Date(0);
                             fecha.setUTCSeconds(epochTime); 
-                            justificacion.usuario.fechaCreacion = fecha;
+                            justificacion.fecha = fecha;
                         });//each
                         extras.forEach(function(extra){
                             var epochTime = extra.fechaCreada;
                             var fecha= new Date(0);
                             fecha.setUTCSeconds(epochTime); 
-                            extra.usuario.fechaCreacion = fecha;
+                            extra.fecha = fecha;
                         });//each
                         permisos.forEach(function(permiso){
                             var epochTime = permiso.fechaCreada;
                             var fecha= new Date(0);
                             fecha.setUTCSeconds(epochTime); 
-                            permiso.usuario.fechaCreacion = fecha;
+                            permiso.fecha = fecha;
                         });//each
                         //console.log(justificaciones);
                         if (error) return res.json(error);
-                        return res.render('justificacionesEmpl', {
-                            title: 'Solicitudes/Justificaciones | SIGUCA',
-                            usuario: req.user,
-                            justificaciones: justificaciones,
-                            extras: extras,
-                            permisos: permisos
-                        });
+                            if(req.session.name == "Empleado"){
+                                return res.render('justificacionesEmpl', {
+                                    title: 'Solicitudes/Justificaciones | SIGUCA',
+                                    usuario: req.user,
+                                    justificaciones: justificaciones,
+                                    extras: extras,
+                                    permisos: permisos
+                                });
+                            } else {
+                                return res.render('justificaciones', {
+                                    title: 'Solicitudes/Justificaciones | SIGUCA',
+                                    usuario: req.user,
+                                    justificaciones: justificaciones,
+                                    extras: extras,
+                                    permisos: permisos
+                                });
+                            }
                     });
                 });
             });
@@ -364,7 +333,7 @@ module.exports = function(app, io) {
     app.post('/horarioN', autentificado, function(req, res) {
 
         var h = req.body;
-        var horarioN = Horario({ /* No ocupa new (?)*/
+        var horarioN = Horario({ 
             nombre: h.nombre,
             horaEntrada: h.horaEntrada,
             horaSalida: h.horaSalida,
@@ -378,7 +347,7 @@ module.exports = function(app, io) {
             if (error) res.json(error);
             if (req.session.name == "Administrador") {
 
-                res.redirect('/configuracionAdmin');
+                res.redirect('/escritorioAdmin');
             } 
 
         });
@@ -468,7 +437,11 @@ module.exports = function(app, io) {
 
                     if (error) return res.json(error);
 
-                    res.redirect('/escritorioEmpl');
+                    if(req.session.name == "Empleado"){
+                        res.redirect('/escritorioEmpl');
+                    } else {
+                        res.redirect('/escritorio')
+                    }
 
                 });
                 break;
@@ -486,7 +459,11 @@ module.exports = function(app, io) {
 
                     if (error) return res.json(error);
 
-                    res.redirect('/escritorioEmpl');
+                    if(req.session.name == "Empleado"){
+                        res.redirect('/escritorioEmpl');
+                    } else {
+                        res.redirect('/escritorio')
+                    }
 
                 });
                 break;
@@ -505,7 +482,11 @@ module.exports = function(app, io) {
 
                     if (error) return res.json(error);
 
-                    res.redirect('/escritorioEmpl');
+                    if(req.session.name == "Empleado"){
+                        res.redirect('/escritorioEmpl');
+                    } else {
+                        res.redirect('/escritorio')
+                    }
 
                 });
                 break;
@@ -524,7 +505,11 @@ module.exports = function(app, io) {
 
                     if (error) return res.json(error);
 
-                    res.redirect('/escritorioEmpl');
+                    if(req.session.name == "Empleado"){
+                        res.redirect('/escritorioEmpl');
+                    } else {
+                        res.redirect('/escritorio')
+                    }
 
                 });
                 break;
@@ -542,7 +527,11 @@ module.exports = function(app, io) {
 
                     if (error) return res.json(error);
 
-                    res.redirect('/escritorioEmpl');
+                    if(req.session.name == "Empleado"){
+                        res.redirect('/escritorioEmpl');
+                    } else {
+                        res.redirect('/escritorio')
+                    }
 
                 });
                 break;
@@ -561,7 +550,11 @@ module.exports = function(app, io) {
 
                     if (error) return res.json(error);
 
-                    res.redirect('/escritorioEmpl');
+                    if(req.session.name == "Empleado"){
+                        res.redirect('/escritorioEmpl');
+                    } else {
+                        res.redirect('/escritorio')
+                    }
 
                 });
                 break;
@@ -605,7 +598,7 @@ module.exports = function(app, io) {
                 }
             );
             if (req.session.name == "Administrador"){
-               res.redirect('/configuracionAdmin'); 
+               res.redirect('/escritorioAdmin'); 
             }
         } else {
             req.logout();
@@ -699,8 +692,8 @@ module.exports = function(app, io) {
             if (error) res.json(error);
             if (req.session.name == "Administrador") {
 
-                res.redirect('/configuracionAdmin');
-            } else res.redirect('/configuracion');
+                res.redirect('/escritorioAdmin');
+            }
         });
     });
     //read departamento
@@ -896,7 +889,7 @@ module.exports = function(app, io) {
             Horario.mapReduce(o);
 
             o.map = mapUsuario;
-            o.query = {"tipo": "Empleado", "estado": "Activo"};
+            o.query = {"tipo": {"$nin": ["Administrador"]}, "estado": "Activo"};
 
             Usuario.mapReduce(o, function (err, Auxiliar) {
                 var o = {};

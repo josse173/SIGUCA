@@ -33,11 +33,7 @@ var SchemaHorario = new Schema({
     tiempoAlmuerzo: {
         type: String,
         default: '1h'
-    }/*,
-    tipoHorario: { //Fijo-Horas
-        type: String,
-        default: 'Fijo'
-    }*/
+    }
 });
 
 module.exports = mongoose.model('Horario', SchemaHorario);
