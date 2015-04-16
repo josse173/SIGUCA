@@ -1,4 +1,3 @@
-
 /*
  * GET home page.
  * Rutas
@@ -42,22 +41,43 @@ module.exports = function(app, io) {
         res.redirect('/');
     });
 
+    /*
+    *  Se cuentan las solicitudes y justificaciones pendientes y se filtran por supervisor
+    */
     app.get('/escritorio', autentificado, function(req, res) {
         if (req.session.name == "Supervisor") {
             Usuario.find({_id:req.user.id},{_id:0, departamentos: 1}).populate('departamentos.departamento').exec(function(error, result) {
-                Justificaciones.find({estado:'Pendiente'}).count().exec(function(error, justificaciones) {
-                    Solicitudes.find({estado:'Pendiente'}).count().exec(function(error, solicitudes) {
+                Justificaciones.find({estado:'Pendiente'}).populate('usuario').exec(function(error, justificaciones) {
+                    Solicitudes.find({estado:'Pendiente'}).populate('usuario').exec(function(error, solicitudes) {
+                        var just = 0;
+                        var soli = 0;
                         result.forEach(function(supervisor){
                             var array = [];
-                            supervisor.departamentos.forEach(function(departamento){
+                            supervisor.departamentos.forEach(function (departamento){
                                 array.push(departamento.departamento.id);
+                                justificaciones.forEach(function (justificacion){
+                                    justificacion.usuario.departamentos.forEach(function (departamentoUs){
+                                        if(JSON.stringify(departamentoUs.departamento) === JSON.stringify(departamento.departamento._id)
+                                            && JSON.stringify(justificacion.usuario._id) != JSON.stringify(req.user.id)){
+                                            just++;
+                                        }
+                                    });
+                                });
+                                solicitudes.forEach(function (solicitud){
+                                    solicitud.usuario.departamentos.forEach(function (departamentoUs){
+                                        if(JSON.stringify(departamentoUs.departamento) === JSON.stringify(departamento.departamento._id)
+                                            && JSON.stringify(solicitud.usuario._id) != JSON.stringify(req.user.id)){
+                                            soli++;
+                                        }
+                                    });
+                                });
                             });
                             if (error) return res.json(error);
                             return res.render('escritorio', {
                                 title: 'Escritorio Supervisor | SIGUCA',
                                 departamentos: supervisor.departamentos, 
-                                justificaciones: justificaciones, 
-                                solicitudes: solicitudes,
+                                justificaciones: just, 
+                                solicitudes: soli,
                                 todos: array,
                                 usuario: req.user
                             });
@@ -71,50 +91,14 @@ module.exports = function(app, io) {
             res.redirect('/');
         }
     });
+
+    /*
+    *  Redirecciona al escritorio del empleado
+    */
     app.get('/escritorioEmpl', autentificado, function(req, res) {
         if (req.session.name == "Empleado") {
-            Marca.find().exec(function(error, marcas) {
-
-                if (error) return res.json(error);
-                return res.render('escritorioEmpl', {
-                    title: 'Escritorio Empleado | SIGUCA',
-                    marcas: marcas, 
-                    usuario: req.user
-                });
-            });
-        } else {
-            req.logout();
-            res.redirect('/');
-        }
-    });
-    app.get('/escritorioAdmin', autentificado, function(req, res) {
-        if (req.session.name ==="Administrador") {
-
-            Usuario.find().exec(function(error, empleados) {
-
-                Horario.find().exec(function(error, horarios) {
-                    Departamento.find().exec(function(error, departamentos) {
-
-                        if (error) return res.json(error);
-                        return res.render('escritorioAdmin', {
-                            title: 'Escritorio Administrador | SIGUCA',
-                            empleados: empleados, 
-                            usuario: req.user,
-                            horarios: horarios,
-                            departamentos: departamentos
-                        });
-                    });
-                });
-            });
-        } else {
-            req.logout();
-            res.redirect('/');
-        }
-    });
-    app.get('/ayuda', autentificado, function(req, res) {
-        if (req.session.name == "Supervisor" || req.session.name == "Administrador"|| req.session.name == "Empleado") {
-            res.render('ayuda', {
-                title: 'Ayuda | SIGUCA',
+            res.render('escritorioEmpl', {
+                title: 'Escritorio Empleado | SIGUCA',
                 usuario: req.user
             });
         } else {
@@ -123,38 +107,135 @@ module.exports = function(app, io) {
         }
     });
 
+    /*
+    *  Envia los departamentos y horarios al escritorio del administrador, 
+    *  para la posterior creación de usuarios 
+    */
+    app.get('/escritorioAdmin', autentificado, function(req, res) {
+        if (req.session.name ==="Administrador") {
+            Horario.find().exec(function(error, horarios) {
+                Departamento.find().exec(function(error, departamentos) {
+
+                    if (error) return res.json(error);
+                    return res.render('escritorioAdmin', {
+                        title: 'Escritorio Administrador | SIGUCA',
+                        usuario: req.user,
+                        horarios: horarios,
+                        departamentos: departamentos
+                    });
+                });
+            });
+        } else {
+            req.logout();
+            res.redirect('/');
+        }
+    });
+
+    /*
+    *  Redirecciona a las distintas paginas de ayuda, dependiendo del tipo de usuario
+    */
+    app.get('/ayuda', autentificado, function(req, res) {
+        if (req.session.name == "Supervisor"){
+            res.render('ayuda', {
+                title: 'Ayuda | SIGUCA',
+                usuario: req.user
+            });
+        } else {
+            if(req.session.name == "Administrador"){
+                res.render('ayudaAdmin', {
+                    title: 'Ayuda | SIGUCA',
+                    usuario: req.user
+                });
+            } else {
+                res.render('ayudaEmpl', {
+                    title: 'Ayuda | SIGUCA',
+                    usuario: req.user
+                });
+            }
+        } 
+    });
+
+    /*
+    *  Carga las justificaciones, solicitudes de horas extra y solicitudes de permisos,
+    *  a cada consulta se le realiza la conversion de epoch a la CST Standard.
+    *  Los resultados se filtran por supervisor, finalmente se direcciona a la página 
+    *  correspondiente, donde se gestionaran cada uno de los resultados.
+    */
     app.get('/configuracion', autentificado, function(req, res) {
         if (req.session.name == "Supervisor") {
             Justificaciones.find({estado:'Pendiente'}).populate('usuario').exec(function(error, justificaciones) {
                 Solicitudes.find({tipoSolicitudes:'Extras', estado:'Pendiente'}).populate('usuario').exec(function(error, extras) {
                     Solicitudes.find({tipoSolicitudes:'Permisos', estado:'Pendiente'}).populate('usuario').exec(function(error, permisos) {
-
-                        justificaciones.forEach(function(justificacion){
-                            var epochTime = justificacion.fechaCreada;
-                            var fecha= new Date(0);
-                            fecha.setUTCSeconds(epochTime); 
-                            justificacion.fecha = fecha;
-                        });//each
-                        extras.forEach(function(extra){
-                            var epochTime = extra.fechaCreada;
-                            var fecha= new Date(0);
-                            fecha.setUTCSeconds(epochTime); 
-                            extra.fecha = fecha;
-                        });//each
-                        permisos.forEach(function(permiso){
-                            var epochTime = permiso.fechaCreada;
-                            var fecha= new Date(0);
-                            fecha.setUTCSeconds(epochTime); 
-                            permiso.fecha = fecha;
-                        });//each
-                        //console.log(justificaciones);
+                        var notFound = true;
+                        var arrayJust = [];
+                        for(var x = 0; x < justificaciones.length; x++){
+                            for(var y = 0; y < req.user.departamentos.length; y++){
+                                var epochTime = justificaciones[x].fechaCreada;
+                                var fecha = new Date(0);
+                                fecha.setUTCSeconds(epochTime); 
+                                justificaciones[x].fecha = fecha;
+                                if(JSON.stringify(justificaciones[x].usuario.departamentos[0].departamento) === JSON.stringify(req.user.departamentos[y].departamento) 
+                                    && JSON.stringify(justificaciones[x].usuario._id) != JSON.stringify(req.user.id)){
+                                    arrayJust.push(justificaciones[x]);
+                                } 
+                                if(JSON.stringify(justificaciones[x].usuario.tipo) === JSON.stringify("Supervisor") 
+                                    && JSON.stringify(justificaciones[x].usuario._id) != JSON.stringify(req.user.id)
+                                    && notFound){
+                                    arrayJust.push(justificaciones[x]);
+                                    notFound = false;
+                                }
+                            }
+                            notFound = true;
+                        }
+                        notFound = true;
+                        var arrayExtras = [];
+                        for(var x = 0; x < extras.length; x++){
+                            for(var y = 0; y < req.user.departamentos.length; y++){
+                                var epochTime = extras[x].fechaCreada;
+                                var fecha = new Date(0);
+                                fecha.setUTCSeconds(epochTime); 
+                                extras[x].fecha = fecha;
+                                if(JSON.stringify(extras[x].usuario.departamentos[0].departamento) === JSON.stringify(req.user.departamentos[y].departamento) 
+                                    && JSON.stringify(extras[x].usuario._id) != JSON.stringify(req.user.id)){
+                                    arrayExtras.push(extras[x]);
+                                } 
+                                if(JSON.stringify(extras[x].usuario.tipo) === JSON.stringify("Supervisor") 
+                                    && JSON.stringify(extras[x].usuario._id) != JSON.stringify(req.user.id)
+                                    && notFound){
+                                    arrayExtras.push(extras[x]);
+                                    notFound = false;
+                                }
+                            }
+                            notFound = true;
+                        }
+                        notFound = true;
+                        var arrayPermisos = [];
+                        for(var x = 0; x < permisos.length; x++){
+                            for(var y = 0; y < req.user.departamentos.length; y++){
+                                var epochTime = permisos[x].fechaCreada;
+                                var fecha = new Date(0);
+                                fecha.setUTCSeconds(epochTime); 
+                                permisos[x].fecha = fecha;
+                                if(JSON.stringify(permisos[x].usuario.departamentos[0].departamento) === JSON.stringify(req.user.departamentos[y].departamento) 
+                                    && JSON.stringify(permisos[x].usuario._id) != JSON.stringify(req.user.id)){
+                                    arrayPermisos.push(permisos[x]);
+                                } 
+                                if(JSON.stringify(permisos[x].usuario.tipo) === JSON.stringify("Supervisor") 
+                                    && JSON.stringify(permisos[x].usuario._id) != JSON.stringify(req.user.id)
+                                    && notFound){
+                                    arrayPermisos.push(permisos[x]);
+                                    notFound = false;
+                                }
+                            }
+                            notFound = true;
+                        }
                         if (error) return res.json(error);
                         return res.render('configuracion', {
                             title: 'Configuración | SIGUCA',
                             usuario: req.user,
-                            justificaciones: justificaciones,
-                            extras: extras,
-                            permisos: permisos
+                            justificaciones: arrayJust,
+                            extras: arrayExtras,
+                            permisos: arrayPermisos
                         });
                     });
                 });
@@ -164,7 +245,11 @@ module.exports = function(app, io) {
             res.redirect('/');
         }
     });
-    app.get('/configuracionEmpl', autentificado, function(req, res) /* Redirecciona*/{
+
+    /*
+    *  Redirecciona a la configuración de empleado
+    */
+    app.get('/configuracionEmpl', autentificado, function(req, res) {
         if (req.session.name == "Empleado") {
             res.render('configuracionEmpl', {
                 title: 'Configuración | SIGUCA',
@@ -175,8 +260,11 @@ module.exports = function(app, io) {
             res.redirect('/');
         }
     });
-    //Lista justificaciones a empleado
-    app.get('/justificacionesEmpl', autentificado, function(req, res) {
+
+    /*
+    *  Carga los eventos realizados por un empleado en específico
+    */
+    app.get('/eventosEmpl', autentificado, function(req, res) {
         if (req.session.name != "Administrador") {
             
             Justificaciones.find({usuario: req.user.id}).exec(function(error, justificaciones) {
@@ -229,7 +317,10 @@ module.exports = function(app, io) {
             res.redirect('/');
         }
     });
-    //create Justificacion
+
+    /*
+    *  Crea una justificación
+    */
     app.post('/justificacion_nueva', autentificado, function(req, res) {
         var d = new Date();
         var epochTime = (d.getTime() - d.getMilliseconds())/1000;
@@ -245,11 +336,17 @@ module.exports = function(app, io) {
 
             if (error) return res.json(error);
 
-            res.redirect('/justificacionesEmpl');
+            if (req.session.name == "Empleado") {
+
+                res.redirect('/escritorioEmpl');
+            } else res.redirect('/escritorio');
 
         });
     });
-    //create solicitud hora extra
+
+    /*
+    *  Crea una solicitud tipo hora extra
+    */
     app.post('/solicitud_extra', autentificado, function(req, res) {
         var d = new Date();
         var epochTime = (d.getTime() - d.getMilliseconds())/1000; 
@@ -260,7 +357,8 @@ module.exports = function(app, io) {
             diaInicio: e.diaInicio,
             horaFinal: e.horaFinal,
             motivo: e.motivo,
-            usuario: req.user.id
+            usuario: req.user.id,
+            comentarioSupervisor: ""
         });
         newSolicitud.save(function(error, user) {
 
@@ -273,7 +371,10 @@ module.exports = function(app, io) {
 
         });
     });
-    //create solicitud de permisos
+
+    /*
+    *  Crea una solicitud tipo permiso anticipado
+    */
     app.post('/solicitud_permisos', autentificado, function(req, res) {
         var d = new Date();
         var epochTime = (d.getTime() - d.getMilliseconds())/1000; 
@@ -284,7 +385,8 @@ module.exports = function(app, io) {
             diaInicio: e.diaInicio,
             diaFinal: e.diaFinal,
             motivo: e.motivo,
-            usuario: req.user.id
+            usuario: req.user.id,
+            comentarioSupervisor: ""
         });
         newSolicitud.save(function(error, user) {
 
@@ -297,7 +399,10 @@ module.exports = function(app, io) {
 
         });
     });
-    //update solicitud
+
+    /*
+    *  Actualiza el estado y el comentario del supervisor a una solicitud en específico
+    */
     app.post('/getionarSolicitud/:id', autentificado, function(req, res) {
         var solicitud = req.body,
             solicitudId = req.params.id;
@@ -305,7 +410,7 @@ module.exports = function(app, io) {
         delete solicitud.id;
         delete solicitud._id;
 
-        Solicitudes.findByIdAndUpdate(solicitudId, {estado: solicitud.estado}, function(error, solicitudes) { //cambie Empleado por Usuario segun nuevo CRUD
+        Solicitudes.findByIdAndUpdate(solicitudId, {estado: solicitud.estado, comentarioSupervisor: solicitud.comentarioSupervisor}, function(error, solicitudes) { //cambie Empleado por Usuario segun nuevo CRUD
 
             if (error) return res.json(error);
 
@@ -313,7 +418,10 @@ module.exports = function(app, io) {
 
         });
     });
-    //update justificación
+
+    /*
+    *  Actualiza el estado y el comentario del supervisor a una justificacion en específico
+    */
     app.post('/getionarJustificacion/:id', autentificado, function(req, res) {
         var justificacion = req.body,
             justificacionId = req.params.id;
@@ -329,7 +437,10 @@ module.exports = function(app, io) {
 
         });
     });
-    //create Horario
+
+    /*
+    *  Crea un nuevo horario
+    */
     app.post('/horarioN', autentificado, function(req, res) {
 
         var h = req.body;
@@ -352,7 +463,10 @@ module.exports = function(app, io) {
 
         });
     });
-    //read horario
+
+    /*
+    *  Lista todos los horarios creados
+    */
     app.get('/horarioN', autentificado, function(req, res) {
 
         Horario.find().exec(function(error, horarios) {
@@ -368,7 +482,10 @@ module.exports = function(app, io) {
 
         });
     });
-    //fill form to update Horario
+
+    /*
+    *  Carga los datos de un horario en específico
+    */
     app.get('/horarioN/editHorario/:id', autentificado, function(req, res) { 
         var horarioId = req.params.id;
 
@@ -380,7 +497,10 @@ module.exports = function(app, io) {
 
         });
     });
-    //update Horario
+
+    /*
+    *  Actualiza los datos de un horario en específico
+    */
     app.post('/horarioN/:id',autentificado, function(req, res) { 
 
         var horario = req.body,
@@ -400,7 +520,10 @@ module.exports = function(app, io) {
 
         });
     });
-    //delete Horario
+
+    /*
+    *  Elimina un horario en específico
+    */
     app.get('/horarioN/deleteHorario/:id', autentificado, function(req, res) {
 
         var horarioId = req.params.id;
@@ -414,157 +537,38 @@ module.exports = function(app, io) {
 
         });
     });
-    //create marca por sistema
+
+    /*
+    *  Crea una nueva marca vía página web
+    */
     app.post('/marca', autentificado, function(req, res) {
-        var m = req.body;
-        var newMarca;
         var d = new Date();
         var epochTime = (d.getTime() - d.getMilliseconds())/1000;
         var fechaActual= new Date(0);
-        fechaActual.setUTCSeconds(epochTime);  
-        console.log(fechaActual);
-        switch (req.body.marca) { //controla el tipo de marca
+        fechaActual.setUTCSeconds(epochTime); 
 
-            case "entrada":
-                newMarca = Marca({
-                    tipoMarca: "Entrada",
+        var newMarca = Marca({
+                    tipoMarca: req.body.marca,
                     epoch: epochTime,
                     usuario: req.user.id,
                     fecha: fechaActual
                 });
+        newMarca.save(function(error, user) {
 
-                newMarca.save(function(error, user) {
+            if (error) return res.json(error);
 
-                    if (error) return res.json(error);
+            if(req.session.name == "Empleado"){
+                res.redirect('/escritorioEmpl');
+            } else {
+                res.redirect('/escritorio')
+            }
 
-                    if(req.session.name == "Empleado"){
-                        res.redirect('/escritorioEmpl');
-                    } else {
-                        res.redirect('/escritorio')
-                    }
-
-                });
-                break;
-
-            case "salida":
-                newMarca = Marca({
-                    tipoMarca: "Salida",
-                    epoch: epochTime,
-                    usuario: req.user.id,
-                    fecha: fechaActual
-
-                });
-
-                newMarca.save(function(error, user) {
-
-                    if (error) return res.json(error);
-
-                    if(req.session.name == "Empleado"){
-                        res.redirect('/escritorioEmpl');
-                    } else {
-                        res.redirect('/escritorio')
-                    }
-
-                });
-                break;
-
-            case "salidaReceso":
-
-                newMarca = Marca({
-                    tipoMarca: "salidaReceso",
-                    epoch: epochTime,
-                    usuario: req.user.id,
-                    fecha: fechaActual
-
-                });
-
-                newMarca.save(function(error, user) {
-
-                    if (error) return res.json(error);
-
-                    if(req.session.name == "Empleado"){
-                        res.redirect('/escritorioEmpl');
-                    } else {
-                        res.redirect('/escritorio')
-                    }
-
-                });
-                break;
-
-            case "entradaReceso":
-
-                newMarca = Marca({
-                    tipoMarca: "entradaReceso",
-                    epoch: epochTime,
-                    usuario: req.user.id,
-                    fecha: fechaActual
-
-                });
-
-                newMarca.save(function(error, user) {
-
-                    if (error) return res.json(error);
-
-                    if(req.session.name == "Empleado"){
-                        res.redirect('/escritorioEmpl');
-                    } else {
-                        res.redirect('/escritorio')
-                    }
-
-                });
-                break;
-
-            case "salidaAlmuerzo":
-
-                newMarca = Marca({
-                    tipoMarca: "salidaAlmuerzo",
-                    epoch: epochTime,
-                    usuario: req.user.id,
-                    fecha: fechaActual
-
-                });
-                newMarca.save(function(error, user) {
-
-                    if (error) return res.json(error);
-
-                    if(req.session.name == "Empleado"){
-                        res.redirect('/escritorioEmpl');
-                    } else {
-                        res.redirect('/escritorio')
-                    }
-
-                });
-                break;
-
-            case "entradaAlmuerzo":
-
-                newMarca = Marca({
-                    tipoMarca: "entradaAlmuerzo",
-                    epoch: epochTime,
-                    usuario: req.user.id,
-                    fecha: fechaActual
-
-                });
-
-                newMarca.save(function(error, user) {
-
-                    if (error) return res.json(error);
-
-                    if(req.session.name == "Empleado"){
-                        res.redirect('/escritorioEmpl');
-                    } else {
-                        res.redirect('/escritorio')
-                    }
-
-                });
-                break;
-
-            default:
-                console.log("hubo un error");
-                break;
-        }
+        });
     });
-    //create empleado
+
+    /*
+    *  Crea un nuevo usuario
+    */
     app.post('/empleado', autentificado, function(req, res) {
     
         if (req.session.name == "Administrador") {
@@ -605,7 +609,10 @@ module.exports = function(app, io) {
             res.redirect('/');
         }
     });
-    //read empleado
+
+    /*
+    *  Lista todos los usuarios creados
+    */
     app.get('/empleado', autentificado, function(req, res) {
 
         Usuario.find().populate('departamentos.departamento').populate('horario').exec(function(error, empleados){
@@ -615,10 +622,12 @@ module.exports = function(app, io) {
                 empleados: empleados, 
                 usuario: req.user
             });
-        });
-        
+        });        
     });
-    //fill form to update empleado
+
+    /*
+    *  Carga los datos de un usuario en específico, además los horarios y departamentos creados
+    */
     app.get('/empleado/edit/:id', autentificado, function(req, res) {
         var empleadoId = req.params.id;
 
@@ -636,10 +645,12 @@ module.exports = function(app, io) {
 
                 });
             });
-        });
-        
+        });        
     });
-    //update empleado
+
+    /*
+    *  Actualiza los datos de un usuario en específico
+    */
     app.post('/empleado/:id', function(req, res) {
 
         var empleadoId = req.params.id,
@@ -667,7 +678,10 @@ module.exports = function(app, io) {
 
         });
     });
-    //delete empleado
+
+    /*
+    *  Modifica el estado de Activo a Inactivo de un usuario en específico
+    */
     app.get('/empleado/delete/:id', autentificado, function(req, res) {
 
         var empleadoId = req.params.id;
@@ -680,7 +694,10 @@ module.exports = function(app, io) {
 
         });
     });
-    //create Departamento
+
+    /*
+    *  Crea un nuevo departamento
+    */
     app.post('/departamento',autentificado, function(req, res) {
 
         var e = req.body;
@@ -696,7 +713,10 @@ module.exports = function(app, io) {
             }
         });
     });
-    //read departamento
+
+    /*
+    *  Lista todos los departamentos creados
+    */
     app.get('/departamento', autentificado, function(req, res) {
 
         Departamento.find().exec(function(error, departamentos) {
@@ -710,7 +730,10 @@ module.exports = function(app, io) {
             });
         });
     });
-    //fill form to update departamento
+
+    /*
+    *  Carga los datos de un departamento en específico
+    */
     app.get('/departamento/editDepartamento/:id', autentificado, function(req, res) {
         var departamentoId = req.params.id;
 
@@ -722,7 +745,10 @@ module.exports = function(app, io) {
 
         });
     });
-    //update departamento
+
+    /*
+    *  Actualiza los datos de un departamento en específico
+    */
     app.post('/departamento/:id',autentificado, function(req, res) {
         var departamento = req.body,
             departamentoId = req.params.id;
@@ -738,7 +764,10 @@ module.exports = function(app, io) {
 
         });
     });
-    //delete departamento
+
+    /*
+    *  Elimina un departamento en específico
+    */
     app.get('/departamento/deleteDepartamento/:id', autentificado, function(req, res) {
 
         var departamentoId = req.params.id;
@@ -753,15 +782,20 @@ module.exports = function(app, io) {
         });
     });
 
-
-
-    app.get('/dispositivos', autentificado, function(req, res) { /* No hace nada, para que dispositivos??*/
+    /*
+    *  En caso de tener varias sedes, se pueden crear dispositivos para especificar en cual
+    *  sede se crearon las marcas manuales.
+    */
+    app.get('/dispositivos', autentificado, function(req, res) { 
         res.render('dispositivos', {
             title: 'Dispositivos | SIGUCA',
             usuario: req.user
         });
     });
 
+    /*
+    *   Verifica si el usuario es valido, utiliza una función de passport
+    */
     function autentificado(req, res, next) {
         // Si no esta autentificado en la sesion, que prosiga con el enrutamiento 
         if (req.isAuthenticated())
@@ -771,6 +805,9 @@ module.exports = function(app, io) {
         res.redirect('/');
     }
 
+    /*
+    *   Cambia la contraseña de los usuarios
+    */
     app.post('/cambioPassword', function(req, res) {
         Usuario.virtual('password').set(function(password) {
             this._password = password;
@@ -781,8 +818,29 @@ module.exports = function(app, io) {
         });
     });
 
-    var job = new CronJob({ // Crea los estados de cierre a una hora determinada
-        cronTime: '00 38 14 * * 0-6',//'00 00 23 * * 0-6',
+    /*
+    *   A una hora determinada de lunes a sábado se crearán los estados de cierre general 
+    *   por cada departamento y los estados de cierre personales por cada usuario.
+    *   ****************************************************************************
+    *   Se utiliza MapReduce de mongoDB para simular los joins de SQL.
+    *   Los map filtraran cada collection. El emit consiste en enviar 2 valores,
+    *       El primero indicara cual sera la llave primaria de la nueva collection, el 
+    *       segundo incica cuales son los field de cada collection que se enviarán.
+    *   Los reduce organizarán cada emit realizado por los maps.
+    *   ****************************************************************************
+    *   Para crear los cierres personales se necesita organizar el resultado por usuario,
+    *   pero por el modelo de base de datos, primero se organizan los usuarios por horario. 
+    *   De esta manera se obtienen la hora y minutos de inicio de jornada, seguidamente se 
+    *   organizan las justificaciones, solicitudes y marcas por usuario; se valora si el 
+    *   usuario presenta una tardía o una ausencia. Finalmente se crea un cierre por cada 
+    *   usuario.
+    *   Para crear los cierres generales se necesita organizar el resultado por departamento,
+    *   por lo tanto se utiliza el mismo resultado de los cierres personales, pero en esta 
+    *   ocación emplea el método Aggregate de mongoDB, el cual organizá las collections a 
+    *   gusto del desarrollador. Finalmente se crea un cierre por cada departamento.
+    */
+    var job = new CronJob({ 
+        cronTime: '00 02 17 * * 0-6',//'00 00 23 * * 0-6',
         onTick: function() {
             // Runs every weekday
             // at 12:00:00 AM.
@@ -821,7 +879,7 @@ module.exports = function(app, io) {
             };
             var mapUsuario = function() {
                 var values = {
-                    departamento: this.departamentos,
+                    departamentos: this.departamentos,
                     _id: this._id,
                     count: 0
                 };
@@ -909,6 +967,46 @@ module.exports = function(app, io) {
                 o.map = mapJustificacion;
                 Justificaciones.mapReduce(o, function (err, Temporal) {
 
+                    Temporal.find().exec(function (err, temporal){
+                        //console.log(temporal);
+                        temporal.forEach(function (usuario){
+                            var cierrePersonal = {
+                                usuario: usuario._id,
+                                departamento: usuario.value.departamento,
+                                epoch: epochToday,
+                                tipo: "Personal"
+                            }
+                            if("justificaciones" in usuario.value){
+                                cierrePersonal.justificaciones = usuario.value.justificaciones;
+                            } else cierrePersonal.justificaciones = 0
+                            if("solicitudes" in usuario.value){
+                                cierrePersonal.solicitudes = usuario.value.solicitudes;
+                            } else cierrePersonal.solicitudes = 0;
+
+                            cierrePersonal.marcas = 0;
+                            if("marcas" in usuario.value){
+                                var epochTime = user.marca;
+                                var fechaEpoch= new Date(0);
+                                fechaEpoch.setUTCSeconds(epochTime);  
+                                var hora = fechaEpoch.getHours();
+                                var min = fechaEpoch.getMinutes();
+                                if(user.hora - hora < 0  && user.minutos - min){
+                                    cierrePersonal.marcas += 1;   
+                                }
+                            } else cierrePersonal.marcas = 1;
+
+                            cierrePersonal.estado = cierrePersonal.justificaciones + cierrePersonal.solicitudes + cierrePersonal.marcas;;
+                            console.log(cierrePersonal);
+                            var newCierre = Cierre(cierrePersonal);
+
+                            newCierre.save(function(error, user) {
+
+                                if (error) console.log(error);
+                                else console.log("exito al guardar cierre personal");
+                            });
+                        });
+                        console.log("--------------------------------------------------------------------");
+                    });
                     var pipeline = [
                         {
                             "$group" : {
@@ -931,7 +1029,7 @@ module.exports = function(app, io) {
                     ];
                     Temporal.aggregate(pipeline).exec(function (err, temporal){
                         temporal.forEach(function (departamento){
-                            console.log(departamento);
+                            //console.log(departamento);
                             var estado = 0;
                             estado += departamento.justificaciones;
                             estado += departamento.solicitudes;
@@ -942,14 +1040,14 @@ module.exports = function(app, io) {
                                     fechaEpoch.setUTCSeconds(epochTime);  
                                     var hora = fechaEpoch.getHours();
                                     var min = fechaEpoch.getMinutes();
-                                    console.log(user.hora + ":"  + user.minutos + " - " + hora + ":"  + min)
+                                    //console.log(user.hora + ":"  + user.minutos + " - " + hora + ":"  + min)
                                     if(user.hora - hora < 0  && user.minutos - min){
                                         estado += 1;   
                                     }//if
                                 } else {
                                     estado += 1;
                                 } 
-                            });//for each usario
+                            });//for each usuario
                             var newCierre = Cierre({
                                         estado: estado,
                                         epoch: epochToday,
@@ -972,20 +1070,40 @@ module.exports = function(app, io) {
     });
     job.start();
 
-    //Iniciamos la conexión.
+    /*
+    *   Envia los resultados de los cierres a la función calendario.
+    *   Se inicia la conexión.
+    */
     io.sockets.on('connection', function(socket){
-        //Emitimos nuestro evento connected
+        /*
+        *   Emitimos nuestro evento connected
+        */
         socket.emit('connected');
         //console.log('connected');
 
+        /*
+        *   Recibe la orden de lista y filtra cierres por tipo de usuario
+        */
         socket.on('listar', function(departamentoId){
             var option = departamentoId.split(',');
-            if(option[0] == "todos"){
+            if(option[0] == "Supervisor")
+                listarSupervisor(departamentoId);
+            else
+                listarEmpleado(departamentoId);
+        });
+
+        /*
+        *   Filtra cierres por departamento
+        */
+        function listarSupervisor(departamentoId){
+            var option = departamentoId.split(',');
+            if(option[1] == "todos"){
                 var or = [];
-                for (var i = 1; i < option.length; i++) {
+                for (var i = 2; i < option.length; i++) {
                     or.push({departamento:option[i]});
                 };
                 var queryOr = {
+                    "tipo": "General",
                     "$or": or
                 }
                 Cierre.find(queryOr).exec(function(err, cierre) {
@@ -996,7 +1114,7 @@ module.exports = function(app, io) {
                     }
                 });
             } else {
-                Cierre.find({departamento: departamentoId}).exec(function(err, cierre) {
+                Cierre.find({tipo: "General", departamento: option[1]}).exec(function(err, cierre) {
                     if (err) console.log('error saving user prefs ' + err);
                     else {
                         console.log('consulta sin errores');
@@ -1004,9 +1122,36 @@ module.exports = function(app, io) {
                     }
                 });
             }
+        }
 
-        });
-        
+        /*
+        *   Filtra cierres por evento (justificaciones, solicitudes y marcas)
+        */
+        function listarEmpleado(departamentoId){
+            var option = departamentoId.split(',');
+            Cierre.find({usuario: option[2]}).exec(function(err, cierre) {
+                if (err) console.log('error al cargar los cierres: ' + err);
+                else {
+                    console.log('consulta sin errores');
+                    var result = {
+                        cierre: cierre
+                    }
+                    if(option[1] == "todos"){
+                        result.tipo = "general";
+                    } else {
+                        if(option[1] == "justificaciones")
+                            result.tipo = "justificaciones";
+                        else {
+                            if(option[1] == "solicitudes")
+                                result.tipo = "solicitudes";
+                            else
+                                result.tipo = "marcas";
+                        }
+                    }
+                    socket.emit('listaCierreEmpleado', result);  
+                }
+            });
+        }
 
     });
 

@@ -2,6 +2,7 @@ extends layout
 
 block sigucaCSS
   link(rel='stylesheet', href='/stylesheets/cal-heatmap.css')
+  link(rel='stylesheet', href='/stylesheets/bootstrap-select.min.css')
 
 block content   
     .container
@@ -16,18 +17,21 @@ block content
       .col-xs-4
        h3 Filtros   
        div.filter
-                 label#tHorario(for='horario') 
-                   |Soporte Técnico
             
              div.filter
                   label#departamento(for='departamento') 
-                   |Departamentos: 
                   .btn-group
                      .btn-group
-                    select.form-control#selectFiltro(type="text", name="idSupervisor") 
-                        option(value= "todos," + todos) Mí gráfico
-                        each item, i in departamentos
-                          option(value= item.departamento.id) #{item.departamento.nombre} 
+                    select.form-control#selectFiltro.selectpicker(data-style="btn-success", type="text", name="idSupervisor") 
+                        optgroup(label="Departamentos")
+                          option(value= "Supervisor,todos," + todos) Todos los departamentos
+                          each item, i in departamentos
+                            option(value= "Supervisor," + item.departamento.id) #{item.departamento.nombre}
+                        optgroup(label="Personales")
+                          option(value= "Empleado,todos," + usuario.id) Mí gráfico
+                          option(value= "Empleado,justificaciones," + usuario.id) Justificaciones
+                          option(value= "Empleado,solicitudes," + usuario.id) Solicitudes
+                          option(value= "Empleado,marcas," + usuario.id) Tardias o Ausencias
                 
       .col-xs-4
       .col-xs-4
@@ -83,10 +87,10 @@ block content
                     modal.group     
                           td
                             
-                            button.btn.btn-success(type='submit', value = 'entrada', name = 'marca') Entrada
+                            button.btn.btn-success(type='submit', value = 'Entrada', name = 'marca') Entrada
                     modal.group
                           td
-                            button.btn.btn-success(type='submit' , value = 'salida', name = 'marca') Salida
+                            button.btn.btn-success(type='submit' , value = 'Salida', name = 'marca') Salida
                   tr
                     modal.group     
                           td
@@ -178,4 +182,5 @@ block sigucaJS
   script( src='/js/sigucaHome.js')
   script(src="/js/d3.min.js")
   script(src="/js/cal-heatmap.js")
+  script(src="/js/bootstrap-select.min.js")
   //script(src='/js/horasExtras.js')

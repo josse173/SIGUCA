@@ -16,11 +16,31 @@ var SchemaCierre = new Schema({
     },
     estado: {
         type: Number,
-        default: '0'
+        default: 0
+    },
+    justificaciones: {
+        type: Number,
+        default: 0
+    },
+    solicitudes: {
+        type: Number,
+        default: 0
+    },
+    marcas: {
+        type: Number,
+        default: 0
     },
     departamento: {
         type: Schema.ObjectId,
         ref: 'Departamento'
+    },
+    tipo: {
+        type: String,
+        default: 'General'
+    },
+    usuario: {
+        type: Schema.Types.ObjectId,
+        ref: 'Usuario'
     }
 });
 

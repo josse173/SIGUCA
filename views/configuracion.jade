@@ -49,6 +49,7 @@ block content
                 th Dia
                 th Horas 
                 th Motivo
+                th Comentario
             tbody 
               each extra, i in extras
                 tr
@@ -58,6 +59,8 @@ block content
                   td #{extra.horaFinal} 
                   td #{extra.motivo} 
                   form(role='form', method="POST", action="/getionarSolicitud/"+extra.id)
+                    td
+                      textarea.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
                     td
                       select.selectpicker.show-tick(name='estado')
                         option(value='Aceptada') Aceptar
@@ -77,6 +80,7 @@ block content
                 th Dia Inicial
                 th Dia Final 
                 th Motivo
+                th Comentario
             tbody 
               each permiso, i in permisos
                 tr
@@ -86,6 +90,8 @@ block content
                   td #{permiso.diaFinal} 
                   td #{permiso.motivo} 
                   form(role='form', method="POST", action="/getionarSolicitud/"+permiso.id)
+                    td
+                      textarea.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
                     td
                       select.selectpicker.show-tick(name='estado')
                         option(value='Aceptada') Aceptar

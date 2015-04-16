@@ -19,13 +19,34 @@
         selectValue();
     });
 
-    //Se recibe resultado de la consulta
+
+    //Se recibe result de la consulta
     socket.on('listaCierre', function(cierre){
         var stats = {};
-        for (var d in cierre) {
+        for (var d in cierre)
             stats[cierre[d].epoch] = cierre[d].estado;
+        calendario(stats, [2, 5, 10, 15, 20]);
+    });
+
+    socket.on('listaCierreEmpleado', function(result){
+        var stats = {};
+        if(result.tipo == "general")
+            for (var d in result.cierre)
+                stats[result.cierre[d].epoch] = result.cierre[d].estado;
+        else{
+            if(result.tipo == "justificaciones")
+                for (var d in result.cierre)
+                    stats[result.cierre[d].epoch] = result.cierre[d].justificaciones;
+            else{
+                if(result.tipo == "solicitudes")
+                    for (var d in result.cierre)
+                        stats[result.cierre[d].epoch] = result.cierre[d].solicitudes;
+                else
+                    for (var d in result.cierre)
+                        stats[result.cierre[d].epoch] = result.cierre[d].marcas;
+            }
         }
-        calendario(stats);
+        calendario(stats, [2, 5, 10]);
     });
 
 
@@ -35,7 +56,7 @@
     });
 
 
-function calendario(stats){
+function calendario(stats, array){
 
     var cal = new CalHeatMap();
     cal.init({
@@ -52,7 +73,7 @@ function calendario(stats){
         previousSelector: "#previous",
         nextSelector: "#next",
         highlight: "now", //señala la hora actual.
-        legend: [2, 5, 10, 15, 20],
+        legend: array,
         legendCellSize: 15,
         legendColors: {
             min: "#00C322",//"#74D943",//"#00C322",

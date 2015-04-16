@@ -2,7 +2,7 @@ extends layoutAdmin
 
 block sigucaCSS
   link(rel='stylesheet', href='/stylesheets/sigucaEscritorio.css')
-block imgSession
+  link(rel='stylesheet', href='/stylesheets/bootstrap-select.min.css')
 
 block content
   .container
@@ -51,14 +51,6 @@ block content
                       option(value='Administrador' selected='true') Administrador 
                     else 
                       option(value='Administrador') Administrador 
-                label(for='departamento') Departamento:
-                  select.form-control#idDepartamento(type="text", name="departamentos" multiple) 
-                    each departamento, i in departamentos
-                      if(empleado.departamento == departamento.id)
-                       option(value= departamento.id selected='true') #{departamento.nombre} 
-                      else
-                       option(value= departamento.id) #{departamento.nombre} 
-
 
                 label(for='horario') Horario:
                   select.form-control#idHorario(type="text", name="horario") 
@@ -67,8 +59,27 @@ block content
                         option(value= horario.id selected='true') #{horario.nombre} 
                       else
                        option(value= horario.id) #{horario.nombre}
+
+                label(for='departamento') Departamento:
+                  if(empleado.tipo =='Supervisor')
+                    select.form-control#idDepartamento.selectpicker(data-style="btn-success",type="text", name="departamentos" multiple='true')
+                      each departamento, i in departamentos
+                        if(empleado.departamento == departamento.id)
+                         option(value= departamento.id selected='true') #{departamento.nombre} 
+                        else
+                         option(value= departamento.id) #{departamento.nombre} 
+                  else
+                    select.form-control#idDepartamento.selectpicker(data-style="btn-success",type="text", name="departamentos")  
+                      each departamento, i in departamentos
+                        if(empleado.departamento == departamento.id)
+                         option(value= departamento.id selected='true') #{departamento.nombre} 
+                        else
+                         option(value= departamento.id) #{departamento.nombre} 
                          
               button.btn.btn-default(type='submit') Actualizar
               button.btn.btn-default(type='button', data-dismiss='modal') Cancelar 
 
           .modal-footer       
+
+block sigucaJS
+  script(src="/js/bootstrap-select.min.js")

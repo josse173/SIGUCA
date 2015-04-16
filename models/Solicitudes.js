@@ -41,6 +41,10 @@ var SchemaSolicitudes = new Schema({
     estado: {
         type: String,
         default: 'Pendiente'
+    },
+    comentarioSupervisor: {
+        type: String,
+        default: ''
     }
 });
 

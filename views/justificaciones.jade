@@ -38,6 +38,7 @@ block content
                 th Horas 
                 th Motivo
                 th Estado
+                th Comentario
             tbody 
               each extra, i in extras
                 tr
@@ -46,6 +47,7 @@ block content
                   td #{extra.horaFinal} 
                   td #{extra.motivo} 
                   td #{extra.estado}
+                  td #{extra.comentarioSupervisor} 
 
         h3 Solicitudes Permisos
         br
@@ -58,6 +60,7 @@ block content
                 th Dia Final 
                 th Motivo
                 th Estado
+                th Comentario
             tbody 
               each permiso, i in permisos
                 tr
@@ -66,6 +69,7 @@ block content
                   td #{permiso.diaFinal} 
                   td #{permiso.motivo}
                   td #{permiso.estado} 
+                  td #{permiso.comentarioSupervisor} 
    
 block sigucaJS
   script(src="/javascripts/datepicker.js")

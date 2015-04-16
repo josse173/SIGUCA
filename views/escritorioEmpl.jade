@@ -1,37 +1,54 @@
 extends layoutEmpl
 
 block sigucaCSS
-  //link(rel='stylesheet', href='/stylesheets/sigucaEscritorio.css')
-  link(rel='stylesheet', href='/stylesheets/jquery.tzineClock/jquery.tzineClock.css')
-  link(rel='stylesheet', href='/stylesheets/jquery.tzineClockstyles.css')
   link(rel='stylesheet', href='/stylesheets/cal-heatmap.css')
+  link(rel='stylesheet', href='/stylesheets/bootstrap-select.min.css')
 
   
 block content
-
-  
   .container
-     
+    .col-xs-8
+        h3 Gráfico de:  #{usuario.username}
+        button#previous.btn.btn-default
+          i.icon.icon-chevron-left
+        button#next.btn.btn-default 
+          i.icon.icon-chevron-right
+        div#cal
+        input#usuario(type='hidden', value=usuario.id)      
+    .col-xs-4
+     h3 Filtros   
+     div.filter
+       div.filter
+            label#departamento(for='departamento') 
+             |Departamentos: 
+            .btn-group
+               .btn-group
+              select.form-control#selectFiltro.selectpicker(data-style="btn-success",type="text", name="idSupervisor") 
+                  option(value= "Empleado,todos," + usuario.id) Mí gráfico
+                  option(value= "Empleado,justificaciones," + usuario.id) Justificaciones
+                  option(value= "Empleado,solicitudes," + usuario.id) Solicitudes
+                  option(value= "Empleado,marcas," + usuario.id) Tardias o Ausencias
+    .col-xs-4
+      h3 Acciones 
+      ul.list-group
+        li.list-group-item
+          a(data-toggle="modal" data-target="#horaExtra")
+            | Solicitar de hora extraordinaria
+        li.list-group-item
+          a(data-toggle="modal" data-target="#permiso")
+            | Solicitar de permiso anticipado
+        li.list-group-item
+          a(data-toggle="modal" data-target="#addJustificacion")
+            | Justificaciones
+
+    
     .col-xs-8
       div#containerCentral
         h3  Marca Mediante el Sistema
         div#contBotones
           div#Marca             
            button#marca.btn.btn-success(name='marcar', onclick= "changeElemt('marca')", data-toggle="modal" data-target="#addMarca") Realizar Marca
-                 
-    .col-xs-4
-        h3 Acciones 
-        ul.list-group
-          li.list-group-item
-            a(data-toggle="modal" data-target="#horaExtra")
-              | Solicitar de hora extraordinaria
-          li.list-group-item
-            a(data-toggle="modal" data-target="#permiso")
-              | Solicitar de permiso anticipado
-          li.list-group-item
-            a(data-toggle="modal" data-target="#addJustificacion")
-              | Justificaciones
-   
+
     .col-xs-2      
       //modal para realizar marcas
       #addMarca.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
@@ -54,10 +71,10 @@ block content
                     modal.group     
                           td
                             
-                            button.btn.btn-success(type='submit', value = 'entrada', name = 'marca') Entrada
+                            button.btn.btn-success(type='submit', value = 'Entrada', name = 'marca') Entrada
                     modal.group
                           td
-                            button.btn.btn-success(type='submit' , value = 'salida', name = 'marca') Salida
+                            button.btn.btn-success(type='submit' , value = 'Salida', name = 'marca') Salida
                   tr
                     modal.group     
                           td
@@ -149,7 +166,4 @@ block sigucaJS
   script( src='/js/sigucaHome.js')
   script(src="/js/d3.min.js")
   script(src="/js/cal-heatmap.js")
-  script(type='text/javascript', src='/javascripts/demo/jquery.tzineClock/jquery.tzineClock.js')
-  script(type='text/javascript', src='/javascripts/demo/script.js')
-
- 
+  script(src="/js/bootstrap-select.min.js")
