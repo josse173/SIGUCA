@@ -13,14 +13,20 @@ block content
       div.form-group
         label(for="usernameInput")
           |Usuario:
-        input.form-control#textInput(type="text", name="username", placeholder="Usuario")
+        div.input-group.margin-bottom-sm
+          span.input-group-addon
+            i.icon-user
+          input.form-control#textInput(type="text", name="username", placeholder="Usuario")
       div.form-group
         label(for="passwordInput")
           |Contraseña:
-        input.form-control#passInput(type="password", name="password", placeholder="Contraseña")
+        div.input-group
+          span.input-group-addon
+            i.icon-key
+          input.form-control#passInput(type="password", name="password", placeholder="Contraseña")
       button(type="submit")#btn-login.btn.btn-primary
         i.icon-lock.icon-white
-        | Ingresar
+        |  Ingresar
       label#remember-me.checkbox Recordarme
         input(type="checkbox", checked='checked')
 

@@ -3,6 +3,7 @@ extends layout
 block sigucaCSS
   link(rel='stylesheet', href='/stylesheets/cal-heatmap.css')
   link(rel='stylesheet', href='/stylesheets/bootstrap-select.min.css')
+  link(rel='stylesheet', href='/stylesheets/bootstrap-datepicker.min.css')
 
 block content   
     .container
@@ -123,6 +124,9 @@ block content
                     .form-group
                       label(for='fecha') Día:
                         input#fecha.form-control(type='text', name='diaInicio', placeholder='Fecha')
+                    .form-group
+                      label(for='horaInicio') Hora de Inicio:
+                        input#horaInicio.form-control(type= 'text', placeholder='Hora de inicio de horas extras', name= 'horaInicio')
                       label(for='horaFinal') Hora de Salida:
                         input#horaFinal.form-control(type= 'text', placeholder='Hora de salida de horas extras', name= 'horaFinal')
                     .form-group
@@ -149,7 +153,18 @@ block content
                         input#diaFinal.form-control(type= 'text', placeholder='Fecha Final', name= 'diaFinal')
                     .form-group
                       label(for='motivo') Motivo:
-                      textarea#motivo.form-control(rows="4" cols="50" name='motivo')
+                        select#selectMotivo.form-control(type= 'text', name= 'motivo' style='float:left')
+                          option(value='seleccionar') Seleccione una opcion
+                          option(value='vacaciones') Vacaciones
+                          option(value='permisoMedico') Permiso Médico
+                          option(value='permisoEstudio') Permiso de Estudio
+                          option(value='familiar') Familiar
+                          option(value='otro') Otro
+                      label(for='motivoOtro') Otro:
+                        input#motivoOtro.form-control(type= 'text', placeholder='Otro', name= 'motivoOtro' style='float:left' disabled)
+                    .form-group
+                      label(for='detalle') Detalle:
+                        textarea#detalle.form-control(rows="4" cols="50" name='detalle')
                                                                          
                     button.btn.btn-default(type='submit') Ingresar
                     button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
@@ -164,7 +179,6 @@ block content
             .modal-body
               form(role='form', method="POST", action="justificacion_nueva")#login-form.well.span4
                 .form-group
-                    h3 Información Básica
                     label(for='motivo') Motivo:
                     input#group.form-control(type= 'text', placeholder='motivo', name= 'motivo', value=motivo)
                 .form-group
@@ -183,4 +197,5 @@ block sigucaJS
   script(src="/js/d3.min.js")
   script(src="/js/cal-heatmap.js")
   script(src="/js/bootstrap-select.min.js")
+  script(src="/js/bootstrap-datepicker.min.js")
   //script(src='/js/horasExtras.js')

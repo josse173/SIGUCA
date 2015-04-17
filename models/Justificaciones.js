@@ -33,7 +33,7 @@ var SchemaJustificacion = new Schema({
     comentarioSupervisor: {
         type: String,
         default: ''
-    },
+    }
 });
 
 SchemaJustificacion.plugin(passportLocalMongoose);

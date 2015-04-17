@@ -49,6 +49,13 @@
         calendario(stats, [2, 5, 10]);
     });
 
+    $('#selectMotivo').change(function (){
+        if($('#selectMotivo').val() == 'otro') $("#motivoOtro").removeAttr('disabled');
+        else $("#motivoOtro").attr('disabled','disabled');
+    });
+
+    $('#datepicker').datepicker({dateFormat: "yy-mm-dd"
+    });
 
     //Si nos desconectamos, muestra el log y cambia el mensaje.
     socket.on('disconnect', function () {

@@ -107,11 +107,15 @@ block content
                     .form-group
                       label(for='fecha') Día:
                         input#fecha.form-control(type='text', name='diaInicio', placeholder='Fecha')
+                    .form-group
+                      label(for='horaInicio') Hora de Inicio:
+                        input#horaInicio.form-control(type= 'text', placeholder='Hora de inicio de horas extras', name= 'horaInicio')
                       label(for='horaFinal') Hora de Salida:
                         input#horaFinal.form-control(type= 'text', placeholder='Hora de salida de horas extras', name= 'horaFinal')
                     .form-group
                       label(for='motivo') Motivo:
                       textarea#motivo.form-control(rows="4" cols="50" name='motivo')
+                      
                                                    
                     button.btn.btn-default(type='submit') Ingresar
                     button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
@@ -132,12 +136,23 @@ block content
                         input#diaFinal.form-control(type= 'text', placeholder='Fecha Final', name= 'diaFinal')
                     .form-group
                       label(for='motivo') Motivo:
-                      textarea#motivo.form-control(rows="4" cols="50" name='motivo')
-                                                   
+                        select#selectMotivo.form-control(type= 'text', name= 'motivo' style='float:left')
+                          option(value='seleccionar') Seleccione una opcion
+                          option(value='vacaciones') Vacaciones
+                          option(value='permisoMedico') Permiso Médico
+                          option(value='permisoEstudio') Permiso de Estudio
+                          option(value='familiar') Familiar
+                          option(value='otro') Otro
+                      label(for='motivoOtro') Otro:
+                        input#motivoOtro.form-control(type= 'text', placeholder='Otro', name= 'motivoOtro' style='float:left' disabled)
+                    .form-group
+                      label(for='detalle') Detalle:
+                        textarea#detalle.form-control(rows="4" cols="50" name='detalle')
+                                                                         
                     button.btn.btn-default(type='submit') Ingresar
                     button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
      
-                .modal-footer  
+                .modal-footer          
       //agregar justificacion            
       #addJustificacion.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
         .modal-dialog

@@ -14,6 +14,7 @@ var Solicitudes = require('../models/Solicitudes');
 var Cierre = require('../models/Cierre');
 var CronJob = require('cron').CronJob;
 
+
 module.exports = function(app, io) {
 
 
@@ -205,6 +206,11 @@ module.exports = function(app, io) {
                                     arrayExtras.push(extras[x]);
                                     notFound = false;
                                 }
+                                var  s = extras[x].cantidadHoras;
+                                var h  = Math.floor( s / ( 60 * 60 ) );
+                                    s -= h * ( 60 * 60 );
+                                var m  = Math.floor( s / 60 );
+                                extras[x].cantHoras = h + ":" + m;
                             }
                             notFound = true;
                         }
@@ -247,6 +253,101 @@ module.exports = function(app, io) {
     });
 
     /*
+    *  Carga las justificaciones, solicitudes de horas extra y solicitudes de permisos,
+    *  a cada consulta se le realiza la conversion de epoch a la CST Standard.
+    *  Los resultados se filtran por supervisor, finalmente se direcciona a la página 
+    *  correspondiente, donde se gestionaran cada uno de los resultados.
+    */
+    app.get('/reportes', autentificado, function(req, res) {
+        if (req.session.name == "Supervisor") {
+            Justificaciones.find({estado:{"$nin": ['Pendiente']}}).populate('usuario').exec(function(error, justificaciones) {
+                Solicitudes.find({tipoSolicitudes:'Extras', estado:{"$nin": ['Pendiente']}}).populate('usuario').exec(function(error, extras) {
+                    Solicitudes.find({tipoSolicitudes:'Permisos', estado:{"$nin": ['Pendiente']}}).populate('usuario').exec(function(error, permisos) {
+                        var notFound = true;
+                        var arrayJust = [];
+                        for(var x = 0; x < justificaciones.length; x++){
+                            for(var y = 0; y < req.user.departamentos.length; y++){
+                                var epochTime = justificaciones[x].fechaCreada;
+                                var fecha = new Date(0);
+                                fecha.setUTCSeconds(epochTime); 
+                                justificaciones[x].fecha = fecha;
+                                if(JSON.stringify(justificaciones[x].usuario.departamentos[0].departamento) === JSON.stringify(req.user.departamentos[y].departamento) 
+                                    && JSON.stringify(justificaciones[x].usuario._id) != JSON.stringify(req.user.id)){
+                                    arrayJust.push(justificaciones[x]);
+                                } 
+                                if(JSON.stringify(justificaciones[x].usuario.tipo) === JSON.stringify("Supervisor") 
+                                    && JSON.stringify(justificaciones[x].usuario._id) != JSON.stringify(req.user.id)
+                                    && notFound){
+                                    arrayJust.push(justificaciones[x]);
+                                    notFound = false;
+                                }
+                            }
+                            notFound = true;
+                        }
+                        notFound = true;
+                        var arrayExtras = [];
+                        for(var x = 0; x < extras.length; x++){
+                            for(var y = 0; y < req.user.departamentos.length; y++){
+                                var epochTime = extras[x].fechaCreada;
+                                var fecha = new Date(0);
+                                fecha.setUTCSeconds(epochTime); 
+                                extras[x].fecha = fecha;
+                                if(JSON.stringify(extras[x].usuario.departamentos[0].departamento) === JSON.stringify(req.user.departamentos[y].departamento) 
+                                    && JSON.stringify(extras[x].usuario._id) != JSON.stringify(req.user.id)){
+                                    arrayExtras.push(extras[x]);
+                                } 
+                                if(JSON.stringify(extras[x].usuario.tipo) === JSON.stringify("Supervisor") 
+                                    && JSON.stringify(extras[x].usuario._id) != JSON.stringify(req.user.id)
+                                    && notFound){
+                                    arrayExtras.push(extras[x]);
+                                    notFound = false;
+                                }
+                                var  s = extras[x].cantidadHoras;
+                                var h  = Math.floor( s / ( 60 * 60 ) );
+                                    s -= h * ( 60 * 60 );
+                                var m  = Math.floor( s / 60 );
+                                extras[x].cantHoras = h + ":" + m;
+                            }
+                            notFound = true;
+                        }
+                        notFound = true;
+                        var arrayPermisos = [];
+                        for(var x = 0; x < permisos.length; x++){
+                            for(var y = 0; y < req.user.departamentos.length; y++){
+                                var epochTime = permisos[x].fechaCreada;
+                                var fecha = new Date(0);
+                                fecha.setUTCSeconds(epochTime); 
+                                permisos[x].fecha = fecha;
+                                if(JSON.stringify(permisos[x].usuario.departamentos[0].departamento) === JSON.stringify(req.user.departamentos[y].departamento) 
+                                    && JSON.stringify(permisos[x].usuario._id) != JSON.stringify(req.user.id)){
+                                    arrayPermisos.push(permisos[x]);
+                                } 
+                                if(JSON.stringify(permisos[x].usuario.tipo) === JSON.stringify("Supervisor") 
+                                    && JSON.stringify(permisos[x].usuario._id) != JSON.stringify(req.user.id)
+                                    && notFound){
+                                    arrayPermisos.push(permisos[x]);
+                                    notFound = false;
+                                }
+                            }
+                            notFound = true;
+                        }
+                        if (error) return res.json(error);
+                        return res.render('reportes', {
+                            title: 'Reportes | SIGUCA',
+                            usuario: req.user,
+                            justificaciones: arrayJust,
+                            extras: arrayExtras,
+                            permisos: arrayPermisos
+                        });
+                    });
+                });
+            });
+        } else {
+            req.logout();
+            res.redirect('/');
+        }
+    });
+    /*
     *  Redirecciona a la configuración de empleado
     */
     app.get('/configuracionEmpl', autentificado, function(req, res) {
@@ -282,6 +383,12 @@ module.exports = function(app, io) {
                             var fecha= new Date(0);
                             fecha.setUTCSeconds(epochTime); 
                             extra.fecha = fecha;
+
+                            var  s = extra.cantidadHoras;
+                            var h  = Math.floor( s / ( 60 * 60 ) );
+                                s -= h * ( 60 * 60 );
+                            var m  = Math.floor( s / 60 );
+                            extra.cantHoras = h + ":" + m;
                         });//each
                         permisos.forEach(function(permiso){
                             var epochTime = permiso.fechaCreada;
@@ -351,11 +458,24 @@ module.exports = function(app, io) {
         var d = new Date();
         var epochTime = (d.getTime() - d.getMilliseconds())/1000; 
         var e = req.body; 
+
+        var hmsInicio = e.horaInicio; 
+        var aInicio = hmsInicio.split(':'); 
+        var sInicio = (+aInicio[0]) * 60 * 60 + (+aInicio[1]) * 60 + 00; 
+
+        var hmsFinal = e.horaFinal; 
+        var aFinal = hmsFinal.split(':'); 
+        var sFinal = (+aFinal[0]) * 60 * 60 + (+aFinal[1]) * 60 + 00; 
+
+        var cantHoras = sFinal - sInicio;
+
         var newSolicitud = Solicitudes({
             fechaCreada: epochTime,
             tipoSolicitudes: "Extras",
             diaInicio: e.diaInicio,
+            horaInicio: e.horaInicio,
             horaFinal: e.horaFinal,
+            cantidadHoras: cantHoras,
             motivo: e.motivo,
             usuario: req.user.id,
             comentarioSupervisor: ""
@@ -379,25 +499,36 @@ module.exports = function(app, io) {
         var d = new Date();
         var epochTime = (d.getTime() - d.getMilliseconds())/1000; 
         var e = req.body; 
+
+        var date1 = new Date(e.diaInicio);
+        var date2 = new Date(e.diaFinal);
+        var timeDiff = Math.abs(date2.getTime() - date1.getTime());
+        var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24)); 
+        
+
         var newSolicitud = Solicitudes({
             fechaCreada: epochTime,
             tipoSolicitudes: "Permisos",
             diaInicio: e.diaInicio,
             diaFinal: e.diaFinal,
-            motivo: e.motivo,
+            detalle: e.detalle,
             usuario: req.user.id,
             comentarioSupervisor: ""
         });
-        newSolicitud.save(function(error, user) {
+        if(e.motivo == 'otro')
+            newSolicitud.motivo = e.motivoOtro;
+        else
+            newSolicitud.motivo = e.motivo;
+        // newSolicitud.save(function(error, user) {
 
-            if (error) return res.json(error);
+        //     if (error) return res.json(error);
 
-            if (req.session.name == "Empleado") {
+        //     if (req.session.name == "Empleado") {
 
-                res.redirect('/escritorioEmpl');
-            } else res.redirect('/escritorio');
+        //         res.redirect('/escritorioEmpl');
+        //     } else res.redirect('/escritorio');
 
-        });
+        // });
     });
 
     /*
@@ -840,7 +971,7 @@ module.exports = function(app, io) {
     *   gusto del desarrollador. Finalmente se crea un cierre por cada departamento.
     */
     var job = new CronJob({ 
-        cronTime: '00 02 17 * * 0-6',//'00 00 23 * * 0-6',
+        cronTime: '00 45 15 * * 0-6',//'00 00 23 * * 0-6',
         onTick: function() {
             // Runs every weekday
             // at 12:00:00 AM.
@@ -850,7 +981,9 @@ module.exports = function(app, io) {
 
             var epochToday = (today.getTime() - today.getMilliseconds())/1000,
                 epochYesterday = (yesterday.getTime() - yesterday.getMilliseconds())/1000;
-            
+            console.log(epochYesterday);
+            console.log(epochToday);
+
             var mapJustificacion = function () {
                var output= {
                     detalle:this.detalle
@@ -968,7 +1101,7 @@ module.exports = function(app, io) {
                 Justificaciones.mapReduce(o, function (err, Temporal) {
 
                     Temporal.find().exec(function (err, temporal){
-                        //console.log(temporal);
+                        console.log(temporal);
                         temporal.forEach(function (usuario){
                             var cierrePersonal = {
                                 usuario: usuario._id,
@@ -996,14 +1129,13 @@ module.exports = function(app, io) {
                             } else cierrePersonal.marcas = 1;
 
                             cierrePersonal.estado = cierrePersonal.justificaciones + cierrePersonal.solicitudes + cierrePersonal.marcas;;
-                            console.log(cierrePersonal);
                             var newCierre = Cierre(cierrePersonal);
 
-                            newCierre.save(function(error, user) {
+                            // newCierre.save(function(error, user) {
 
-                                if (error) console.log(error);
-                                else console.log("exito al guardar cierre personal");
-                            });
+                            //     if (error) console.log(error);
+                            //     else console.log("exito al guardar cierre personal");
+                            // });
                         });
                         console.log("--------------------------------------------------------------------");
                     });
@@ -1054,16 +1186,17 @@ module.exports = function(app, io) {
                                         departamento: departamento 
                                     });
 
-                            newCierre.save(function(error, user) {
+                            // newCierre.save(function(error, user) {
 
-                                if (error) console.log(error);
-                                else console.log("exito al guardar");
-                            });//cierre
+                            //     if (error) console.log(error);
+                            //     else console.log("exito al guardar");
+                            // });//cierre
                             epochToday++;
                         });// for each departamento
                     });//Aggregate
-                });//MapReduce
+                 });//MapReduce
             });//mapReduce
+                     
         }, //funcion
         start: false,
         timeZone: "America/Costa_Rica"
@@ -1090,6 +1223,35 @@ module.exports = function(app, io) {
                 listarSupervisor(departamentoId);
             else
                 listarEmpleado(departamentoId);
+
+
+            var hms = '02:04:33';   // your input string
+            var a = hms.split(':'); // split it at the colons
+            // minutes are worth 60 seconds. Hours are worth 60 minutes.
+            var s = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]); 
+            console.log(s);
+
+            var h  = Math.floor( s / ( 60 * 60 ) );
+                s -= h * ( 60 * 60 );
+            var m  = Math.floor( s / 60 );
+                s -= m * 60;
+           
+            var hh = {
+                "h": h,
+                "m": m,
+                "s": s
+            }
+            console.log(hh);
+
+            var oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
+            var firstDate = new Date(2008,01,12);
+            var secondDate = new Date(2008,02,22);
+
+            var diffDays = Math.round(Math.abs((firstDate.getTime() - secondDate.getTime())/(oneDay)));
+            console.log(diffDays);
+
+            
+
         });
 
         /*

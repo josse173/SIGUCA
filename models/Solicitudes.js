@@ -26,12 +26,20 @@ var SchemaSolicitudes = new Schema({
         type: String,
         default: ''
     },
+    horaInicio: { 
+        type: String,
+        default: ''
+    },
     horaFinal: { 
         type: String,
         default: ''
     },
     fechaCreada: { //epoch
         type: Number,
+        default: 0
+    },
+    detalle: {
+        type: String,
         default: ''
     },
     motivo: {
@@ -45,6 +53,14 @@ var SchemaSolicitudes = new Schema({
     comentarioSupervisor: {
         type: String,
         default: ''
+    },
+    cantidadHoras: { //epoch
+        type: Number,
+        default: 0
+    },
+    cantidadDias: { //epoch
+        type: Number,
+        default: 0
     }
 });
 

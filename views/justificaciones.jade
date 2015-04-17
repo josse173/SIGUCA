@@ -3,8 +3,8 @@ extends layout
 block sigucaCSS
   link(rel='stylesheet', href='/stylesheets/sigucaConfiguraciones.css')
 
-block content  
-  div.container
+block content
+    div.container
       .col-xs-12
         h3 Justificaciones
         br
@@ -13,19 +13,21 @@ block content
             thead
               tr
                 th Fecha
+                th Usuario
                 th Motivo
                 th Detalle
-                th Estado
                 th Comentario
+                th Estado
             tbody 
               each justificacion, i in justificaciones
                 tr
                   td #{justificacion.fecha} 
+                  td #{justificacion.usuario.nombre} #{justificacion.usuario.apellido1}
                   td #{justificacion.motivo} 
                   td #{justificacion.detalle} 
-                  td #{justificacion.estado} 
                   td #{justificacion.comentarioSupervisor} 
-                          
+                  td #{justificacion.estado} 
+
 
         h3 Solicitudes Horas Extras
         br
@@ -34,20 +36,25 @@ block content
             thead
               tr
                 th Fecha
+                th Usuario
                 th Dia
-                th Horas 
+                th Hora Entrada 
+                th Hora Salida
+                th Cantidad de Horas
                 th Motivo
-                th Estado
                 th Comentario
             tbody 
               each extra, i in extras
                 tr
-                  td #{extra.fecha}  
+                  td #{extra.fecha} 
+                  td #{extra.usuario.nombre} #{extra.usuario.apellido1} 
                   td #{extra.diaInicio} 
+                  td #{extra.horaInicio} 
                   td #{extra.horaFinal} 
+                  td #{extra.cantHoras} 
                   td #{extra.motivo} 
-                  td #{extra.estado}
                   td #{extra.comentarioSupervisor} 
+                  td #{extra.estado} 
 
         h3 Solicitudes Permisos
         br
@@ -56,20 +63,23 @@ block content
             thead
               tr
                 th Fecha
+                th Usuario
                 th Dia Inicial
                 th Dia Final 
                 th Motivo
-                th Estado
+                th Detalle
                 th Comentario
             tbody 
               each permiso, i in permisos
                 tr
-                  td #{permiso.fecha}  
+                  td #{permiso.fecha} 
+                  td #{permiso.usuario.nombre} #{permiso.usuario.apellido1} 
                   td #{permiso.diaInicio} 
                   td #{permiso.diaFinal} 
-                  td #{permiso.motivo}
-                  td #{permiso.estado} 
+                  td #{permiso.motivo} 
+                  td #{permiso.detalle} 
                   td #{permiso.comentarioSupervisor} 
-   
+                  td #{permiso.estado} 
+                                 
 block sigucaJS
-  script(src="/javascripts/datepicker.js")
+  script(src= " /js/configuracionSupervisor.js")
