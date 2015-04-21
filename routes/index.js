@@ -157,84 +157,19 @@ module.exports = function(app, io) {
     });
 
     /*
-    *  Carga las justificaciones, solicitudes de horas extra y solicitudes de permisos,
+    *  Carga las justificaciones, solicitudes de horas extra y solicitudes de permisos pendientes, 
     *  a cada consulta se le realiza la conversion de epoch a la CST Standard.
-    *  Los resultados se filtran por supervisor, finalmente se direcciona a la página 
-    *  correspondiente, donde se gestionaran cada uno de los resultados.
     */
     app.get('/configuracion', autentificado, function(req, res) {
         if (req.session.name == "Supervisor") {
             Justificaciones.find({estado:'Pendiente'}).populate('usuario').exec(function(error, justificaciones) {
                 Solicitudes.find({tipoSolicitudes:'Extras', estado:'Pendiente'}).populate('usuario').exec(function(error, extras) {
                     Solicitudes.find({tipoSolicitudes:'Permisos', estado:'Pendiente'}).populate('usuario').exec(function(error, permisos) {
-                        var notFound = true;
-                        var arrayJust = [];
-                        for(var x = 0; x < justificaciones.length; x++){
-                            for(var y = 0; y < req.user.departamentos.length; y++){
-                                var epochTime = justificaciones[x].fechaCreada;
-                                var fecha = new Date(0);
-                                fecha.setUTCSeconds(epochTime); 
-                                justificaciones[x].fecha = fecha;
-                                if(JSON.stringify(justificaciones[x].usuario.departamentos[0].departamento) === JSON.stringify(req.user.departamentos[y].departamento) 
-                                    && JSON.stringify(justificaciones[x].usuario._id) != JSON.stringify(req.user.id)){
-                                    arrayJust.push(justificaciones[x]);
-                                } 
-                                if(JSON.stringify(justificaciones[x].usuario.tipo) === JSON.stringify("Supervisor") 
-                                    && JSON.stringify(justificaciones[x].usuario._id) != JSON.stringify(req.user.id)
-                                    && notFound){
-                                    arrayJust.push(justificaciones[x]);
-                                    notFound = false;
-                                }
-                            }
-                            notFound = true;
-                        }
-                        notFound = true;
-                        var arrayExtras = [];
-                        for(var x = 0; x < extras.length; x++){
-                            for(var y = 0; y < req.user.departamentos.length; y++){
-                                var epochTime = extras[x].fechaCreada;
-                                var fecha = new Date(0);
-                                fecha.setUTCSeconds(epochTime); 
-                                extras[x].fecha = fecha;
-                                if(JSON.stringify(extras[x].usuario.departamentos[0].departamento) === JSON.stringify(req.user.departamentos[y].departamento) 
-                                    && JSON.stringify(extras[x].usuario._id) != JSON.stringify(req.user.id)){
-                                    arrayExtras.push(extras[x]);
-                                } 
-                                if(JSON.stringify(extras[x].usuario.tipo) === JSON.stringify("Supervisor") 
-                                    && JSON.stringify(extras[x].usuario._id) != JSON.stringify(req.user.id)
-                                    && notFound){
-                                    arrayExtras.push(extras[x]);
-                                    notFound = false;
-                                }
-                                var  s = extras[x].cantidadHoras;
-                                var h  = Math.floor( s / ( 60 * 60 ) );
-                                    s -= h * ( 60 * 60 );
-                                var m  = Math.floor( s / 60 );
-                                extras[x].cantHoras = h + ":" + m;
-                            }
-                            notFound = true;
-                        }
-                        notFound = true;
-                        var arrayPermisos = [];
-                        for(var x = 0; x < permisos.length; x++){
-                            for(var y = 0; y < req.user.departamentos.length; y++){
-                                var epochTime = permisos[x].fechaCreada;
-                                var fecha = new Date(0);
-                                fecha.setUTCSeconds(epochTime); 
-                                permisos[x].fecha = fecha;
-                                if(JSON.stringify(permisos[x].usuario.departamentos[0].departamento) === JSON.stringify(req.user.departamentos[y].departamento) 
-                                    && JSON.stringify(permisos[x].usuario._id) != JSON.stringify(req.user.id)){
-                                    arrayPermisos.push(permisos[x]);
-                                } 
-                                if(JSON.stringify(permisos[x].usuario.tipo) === JSON.stringify("Supervisor") 
-                                    && JSON.stringify(permisos[x].usuario._id) != JSON.stringify(req.user.id)
-                                    && notFound){
-                                    arrayPermisos.push(permisos[x]);
-                                    notFound = false;
-                                }
-                            }
-                            notFound = true;
-                        }
+                        
+                        var arrayJust = eventosAjuste(justificaciones, req.user);
+                        var arrayExtras = eventosAjuste(extras, req.user);
+                        var arrayPermisos = eventosAjuste(permisos, req.user);
+
                         if (error) return res.json(error);
                         return res.render('configuracion', {
                             title: 'Configuración | SIGUCA',
@@ -253,91 +188,41 @@ module.exports = function(app, io) {
     });
 
     /*
-    *  Carga las justificaciones, solicitudes de horas extra y solicitudes de permisos,
+    *  Carga las justificaciones, solicitudes de horas extra y solicitudes de permisos NO pendientes,
     *  a cada consulta se le realiza la conversion de epoch a la CST Standard.
-    *  Los resultados se filtran por supervisor, finalmente se direcciona a la página 
-    *  correspondiente, donde se gestionaran cada uno de los resultados.
+    *  
     */
     app.get('/reportes', autentificado, function(req, res) {
         if (req.session.name == "Supervisor") {
-            Justificaciones.find({estado:{"$nin": ['Pendiente']}}).populate('usuario').exec(function(error, justificaciones) {
-                Solicitudes.find({tipoSolicitudes:'Extras', estado:{"$nin": ['Pendiente']}}).populate('usuario').exec(function(error, extras) {
-                    Solicitudes.find({tipoSolicitudes:'Permisos', estado:{"$nin": ['Pendiente']}}).populate('usuario').exec(function(error, permisos) {
-                        var notFound = true;
-                        var arrayJust = [];
-                        for(var x = 0; x < justificaciones.length; x++){
-                            for(var y = 0; y < req.user.departamentos.length; y++){
-                                var epochTime = justificaciones[x].fechaCreada;
-                                var fecha = new Date(0);
-                                fecha.setUTCSeconds(epochTime); 
-                                justificaciones[x].fecha = fecha;
-                                if(JSON.stringify(justificaciones[x].usuario.departamentos[0].departamento) === JSON.stringify(req.user.departamentos[y].departamento) 
-                                    && JSON.stringify(justificaciones[x].usuario._id) != JSON.stringify(req.user.id)){
-                                    arrayJust.push(justificaciones[x]);
-                                } 
-                                if(JSON.stringify(justificaciones[x].usuario.tipo) === JSON.stringify("Supervisor") 
-                                    && JSON.stringify(justificaciones[x].usuario._id) != JSON.stringify(req.user.id)
-                                    && notFound){
-                                    arrayJust.push(justificaciones[x]);
-                                    notFound = false;
-                                }
-                            }
-                            notFound = true;
-                        }
-                        notFound = true;
-                        var arrayExtras = [];
-                        for(var x = 0; x < extras.length; x++){
-                            for(var y = 0; y < req.user.departamentos.length; y++){
-                                var epochTime = extras[x].fechaCreada;
-                                var fecha = new Date(0);
-                                fecha.setUTCSeconds(epochTime); 
-                                extras[x].fecha = fecha;
-                                if(JSON.stringify(extras[x].usuario.departamentos[0].departamento) === JSON.stringify(req.user.departamentos[y].departamento) 
-                                    && JSON.stringify(extras[x].usuario._id) != JSON.stringify(req.user.id)){
-                                    arrayExtras.push(extras[x]);
-                                } 
-                                if(JSON.stringify(extras[x].usuario.tipo) === JSON.stringify("Supervisor") 
-                                    && JSON.stringify(extras[x].usuario._id) != JSON.stringify(req.user.id)
-                                    && notFound){
-                                    arrayExtras.push(extras[x]);
-                                    notFound = false;
-                                }
-                                var  s = extras[x].cantidadHoras;
-                                var h  = Math.floor( s / ( 60 * 60 ) );
-                                    s -= h * ( 60 * 60 );
-                                var m  = Math.floor( s / 60 );
-                                extras[x].cantHoras = h + ":" + m;
-                            }
-                            notFound = true;
-                        }
-                        notFound = true;
-                        var arrayPermisos = [];
-                        for(var x = 0; x < permisos.length; x++){
-                            for(var y = 0; y < req.user.departamentos.length; y++){
-                                var epochTime = permisos[x].fechaCreada;
-                                var fecha = new Date(0);
-                                fecha.setUTCSeconds(epochTime); 
-                                permisos[x].fecha = fecha;
-                                if(JSON.stringify(permisos[x].usuario.departamentos[0].departamento) === JSON.stringify(req.user.departamentos[y].departamento) 
-                                    && JSON.stringify(permisos[x].usuario._id) != JSON.stringify(req.user.id)){
-                                    arrayPermisos.push(permisos[x]);
-                                } 
-                                if(JSON.stringify(permisos[x].usuario.tipo) === JSON.stringify("Supervisor") 
-                                    && JSON.stringify(permisos[x].usuario._id) != JSON.stringify(req.user.id)
-                                    && notFound){
-                                    arrayPermisos.push(permisos[x]);
-                                    notFound = false;
-                                }
-                            }
-                            notFound = true;
-                        }
-                        if (error) return res.json(error);
-                        return res.render('reportes', {
-                            title: 'Reportes | SIGUCA',
-                            usuario: req.user,
-                            justificaciones: arrayJust,
-                            extras: arrayExtras,
-                            permisos: arrayPermisos
+            Usuario.find({tipo:{"$nin": ['Administrador']}}).exec(function(error, usuarios) {
+                Usuario.find({_id:req.user.id},{_id:0, departamentos: 1}).populate('departamentos.departamento').exec(function(error, result) {
+                    Justificaciones.find({estado:{"$nin": ['Pendiente']}}).populate('usuario').exec(function(error, justificaciones) {
+                        Solicitudes.find({tipoSolicitudes:'Extras', estado:{"$nin": ['Pendiente']}}).populate('usuario').exec(function(error, extras) {
+                            Solicitudes.find({tipoSolicitudes:'Permisos', estado:{"$nin": ['Pendiente']}}).populate('usuario').exec(function(error, permisos) {
+                            
+                                result.forEach(function(supervisor){
+                                    var arrayDepa = [];
+                                    supervisor.departamentos.forEach(function (departamento){
+                                        arrayDepa.push(departamento.departamento.id);
+                                    });
+                                    var arrayUsuario = eventosAjuste(usuarios, req.user);
+                                    var arrayJust = eventosAjuste(justificaciones, req.user);
+                                    var arrayExtras = eventosAjuste(extras, req.user);
+                                    var arrayPermisos = eventosAjuste(permisos, req.user);
+                                   
+                                    if (error) return res.json(error);
+                                    return res.render('reportes', {
+                                        title: 'Reportes | SIGUCA',
+                                        usuario: req.user,
+                                        justificaciones: arrayJust,
+                                        extras: arrayExtras,
+                                        permisos: arrayPermisos,
+                                        usuarios: arrayUsuario,
+                                        departamentos: arrayDepa,
+                                        empleado: 'Todos los usuarios'
+                                    });
+                                });
+                            });
                         });
                     });
                 });
@@ -347,6 +232,143 @@ module.exports = function(app, io) {
             res.redirect('/');
         }
     });
+
+    /*
+    *  Resultados de configuracion y reportes se filtran por supervisor, finalmente se direcciona a la página 
+    *  correspondiente, donde se gestionaran cada uno de los resultados. 
+    */
+    function eventosAjuste(evento, supervisor){
+        var notFound = true;
+        var array = [];
+        for(var x = 0; x < evento.length; x++){
+            for(var y = 0; y < supervisor.departamentos.length; y++){
+                if("usuario" in evento[x]){
+                    if("fechaCreada" in evento[x]){
+                        var epochTime = evento[x].fechaCreada;
+                        var fecha = new Date(0);
+                        fecha.setUTCSeconds(epochTime); 
+                        evento[x].fecha = fecha;
+                        if(JSON.stringify(evento[x].usuario.departamentos[0].departamento) === JSON.stringify(supervisor.departamentos[y].departamento) 
+                            && JSON.stringify(evento[x].usuario._id) != JSON.stringify(supervisor._id)){
+                            array.push(evento[x]);
+                        } 
+                        if(JSON.stringify(evento[x].usuario.tipo) === JSON.stringify("Supervisor") 
+                            && JSON.stringify(evento[x].usuario._id) != JSON.stringify(supervisor._id)
+                            && notFound){
+                            array.push(evento[x]);
+                            notFound = false;
+                        }
+                    }
+                    if("cantidadHoras" in evento[x]){
+                        var  s = evento[x].cantidadHoras;
+                        var h  = Math.floor( s / ( 60 * 60 ) );
+                            s -= h * ( 60 * 60 );
+                        var m  = Math.floor( s / 60 );
+                        evento[x].cantHoras = h + ":" + m;
+                    } 
+                } else {
+                    if(JSON.stringify(evento[x].departamentos[0].departamento) === JSON.stringify(supervisor.departamentos[y].departamento) 
+                        && JSON.stringify(evento[x]._id) != JSON.stringify(supervisor._id)){
+                        array.push(evento[x]);
+                    } 
+                    if(JSON.stringify(evento[x].tipo) === JSON.stringify("Supervisor") 
+                        && JSON.stringify(evento[x]._id) != JSON.stringify(supervisor._id)
+                        && notFound){
+                        array.push(evento[x]);
+                        notFound = false;
+                    }
+                }
+            }
+            notFound = true;
+        }
+        return array;
+    }
+
+    /*
+    *   Filtra los eventos por usuario
+    */
+    app.post('/filtrarReportes', autentificado, function(req, res) {
+        if (req.session.name == "Supervisor") {
+            var usuarios = req.body.filtro;
+            var option = usuarios.split('|');
+            
+            var opt = option[1].split(',');
+            var arrayDepa = [];
+                for (var i = 0; i < opt.length; i++) {
+                    arrayDepa.push({departamento:opt[i]});
+                };
+
+            var supervisor = {
+                _id: option[0],
+                departamentos: arrayDepa
+            }, 
+                usuarioId = option[2];
+            var justQuery = {
+                estado:{
+                    "$nin": ['Pendiente']
+                }
+            };
+            var extraQuery = {
+                tipoSolicitudes:'Extras', 
+                estado:{
+                    "$nin": ['Pendiente']
+                }
+            };
+            var permisosQuery = {
+                tipoSolicitudes:'Permisos', 
+                estado:{
+                    "$nin": ['Pendiente']
+                }
+            };
+            if(usuarioId != "todos"){
+                justQuery.usuario = usuarioId;
+                extraQuery.usuario = usuarioId;
+                permisosQuery.usuario = usuarioId;
+            } 
+
+            Usuario.find({tipo:{"$nin": ['Administrador']}}).exec(function(error, usuarios) {
+                Justificaciones.find(justQuery).populate('usuario').exec(function(error, justificaciones) {
+                    Solicitudes.find(extraQuery).populate('usuario').exec(function(error, extras) {
+                        Solicitudes.find(permisosQuery).populate('usuario').exec(function(error, permisos) {
+                           
+                            var arrayUsuario = eventosAjuste(usuarios, supervisor)
+                            var arrayJust = eventosAjuste(justificaciones, supervisor);
+                            var arrayExtras = eventosAjuste(extras, supervisor);
+                            var arrayPermisos = eventosAjuste(permisos, supervisor);
+                           
+                            var filtro = {
+                                title: 'Reportes | SIGUCA',
+                                usuario: req.user,
+                                justificaciones: arrayJust,
+                                extras: arrayExtras,
+                                permisos: arrayPermisos,
+                                usuarios: arrayUsuario,
+                                departamentos: option[1]
+                            };
+
+                            if(usuarioId != "todos"){
+                                Usuario.find({"_id":usuarioId},{"nombre":1, "apellido1":1,"apellido2":1, "_id":0}).exec(function(error, usuario) {
+                                    filtro.empleado = usuario[0].apellido1 + ' ' + usuario[0].apellido2 + ', ' + usuario[0].nombre;
+                                    
+                                    if (error) return res.json(error);
+                                    return res.render('reportes', filtro); 
+                                });
+                            } else {
+                                filtro.empleado = 'Todos los usuarios';
+
+                                if (error) return res.json(error);
+                                return res.render('reportes', filtro); 
+                            }
+                        });
+                    });
+                });
+            }); 
+        } else {
+            req.logout();
+            res.redirect('/');
+        } 
+    });
+
     /*
     *  Redirecciona a la configuración de empleado
     */
@@ -1212,7 +1234,6 @@ module.exports = function(app, io) {
         *   Emitimos nuestro evento connected
         */
         socket.emit('connected');
-        //console.log('connected');
 
         /*
         *   Recibe la orden de lista y filtra cierres por tipo de usuario
@@ -1223,35 +1244,6 @@ module.exports = function(app, io) {
                 listarSupervisor(departamentoId);
             else
                 listarEmpleado(departamentoId);
-
-
-            var hms = '02:04:33';   // your input string
-            var a = hms.split(':'); // split it at the colons
-            // minutes are worth 60 seconds. Hours are worth 60 minutes.
-            var s = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]); 
-            console.log(s);
-
-            var h  = Math.floor( s / ( 60 * 60 ) );
-                s -= h * ( 60 * 60 );
-            var m  = Math.floor( s / 60 );
-                s -= m * 60;
-           
-            var hh = {
-                "h": h,
-                "m": m,
-                "s": s
-            }
-            console.log(hh);
-
-            var oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
-            var firstDate = new Date(2008,01,12);
-            var secondDate = new Date(2008,02,22);
-
-            var diffDays = Math.round(Math.abs((firstDate.getTime() - secondDate.getTime())/(oneDay)));
-            console.log(diffDays);
-
-            
-
         });
 
         /*
@@ -1315,6 +1307,6 @@ module.exports = function(app, io) {
             });
         }
 
-    });
+    });//io.sockets
 
-};
+};//modules

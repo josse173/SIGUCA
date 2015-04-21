@@ -62,7 +62,8 @@ block content
 
                 label(for='departamento') Departamento:
                   if(empleado.tipo =='Supervisor')
-                    select.form-control#idDepartamento.selectpicker(data-style="btn-success",type="text", name="departamentos" multiple='true')
+                    br
+                    select.form-control#idDepartamento.selectpicker(data-style="btn-success", data-width="200px", type="text", name="departamentos" multiple='true')
                       each departamento, i in departamentos
                         if(empleado.departamento == departamento.id)
                          option(value= departamento.id selected='true') #{departamento.nombre} 

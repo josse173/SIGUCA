@@ -54,11 +54,11 @@ var SchemaSolicitudes = new Schema({
         type: String,
         default: ''
     },
-    cantidadHoras: { //epoch
+    cantidadHoras: { 
         type: Number,
         default: 0
     },
-    cantidadDias: { //epoch
+    cantidadDias: { 
         type: Number,
         default: 0
     }

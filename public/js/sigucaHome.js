@@ -56,7 +56,9 @@
 
     $('#datepicker').datepicker({dateFormat: "yy-mm-dd"
     });
-
+    $(document).ready(function() {
+        $('div#timepicker1').timepicker('showWidget');
+    });
     //Si nos desconectamos, muestra el log y cambia el mensaje.
     socket.on('disconnect', function () {
         console.log('Desconectado!');

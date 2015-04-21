@@ -3,6 +3,7 @@ extends layout
 block sigucaCSS
   link(rel='stylesheet', href='/stylesheets/cal-heatmap.css')
   link(rel='stylesheet', href='/stylesheets/bootstrap-select.min.css')
+  link(rel='stylesheet', href='/stylesheets/bootstrap-timepicker.min.css')
   link(rel='stylesheet', href='/stylesheets/bootstrap-datepicker.min.css')
 
 block content   
@@ -123,12 +124,21 @@ block content
                   form(role='form', method="POST", action="/solicitud_extra")#login-form.well.span4
                     .form-group
                       label(for='fecha') Día:
-                        input#fecha.form-control(type='text', name='diaInicio', placeholder='Fecha')
+                        div.input-group.bootstrap-timepicker
+                          input.form-control(type='text', name='diaInicio', placeholder='Fecha')
+                          span#datepicker.input-group-addon
+                            i.icon-calendar
                     .form-group
                       label(for='horaInicio') Hora de Inicio:
-                        input#horaInicio.form-control(type= 'text', placeholder='Hora de inicio de horas extras', name= 'horaInicio')
+                        div.input-group.bootstrap-timepicker
+                          input#timepicker1.input-small.form-control(type="text", name= 'horaInicio')
+                          span#timepicker1.input-group-addon
+                            i.icon-time
                       label(for='horaFinal') Hora de Salida:
-                        input#horaFinal.form-control(type= 'text', placeholder='Hora de salida de horas extras', name= 'horaFinal')
+                        div.input-group.bootstrap-timepicker
+                          input#timepicker1.input-small.form-control(type="text", name= 'horaFinal')
+                          span.input-group-addon
+                            i.icon-time
                     .form-group
                       label(for='motivo') Motivo:
                       textarea#motivo.form-control(rows="4" cols="50" name='motivo')
@@ -148,13 +158,21 @@ block content
                   form(role='form', method="POST", action="/solicitud_permisos")#login-form.well.span4
                     .form-group
                       label(for='diaInicio') Día Inicial:
-                        input#diaInicio.form-control(type='text', name='diaInicio', placeholder='Fecha Inicial')
+                        div.input-group.bootstrap-timepicker
+                          input#diaInicio.form-control(type='text', name='diaInicio', placeholder='Fecha Inicial')
+                          span.input-group-addon
+                            i.icon-calendar
                       label(for='diaFinal') Día Final:
-                        input#diaFinal.form-control(type= 'text', placeholder='Fecha Final', name= 'diaFinal')
+                        div.input-group.bootstrap-timepicker
+                          input#diaFinal.form-control(type= 'text', placeholder='Fecha Final', name= 'diaFinal')
+                          span.input-group-addon
+                            i.icon-calendar
+                      //label(for='cantidadDias')  Días:
+                        //input#cantidadDias.form-control(type= 'text', placeholder='3', name= 'cantidadDias', style='width:30%')
                     .form-group
                       label(for='motivo') Motivo:
                         select#selectMotivo.form-control(type= 'text', name= 'motivo' style='float:left')
-                          option(value='seleccionar') Seleccione una opcion
+                          option(value='seleccionar') Seleccione una opción
                           option(value='vacaciones') Vacaciones
                           option(value='permisoMedico') Permiso Médico
                           option(value='permisoEstudio') Permiso de Estudio
@@ -197,5 +215,6 @@ block sigucaJS
   script(src="/js/d3.min.js")
   script(src="/js/cal-heatmap.js")
   script(src="/js/bootstrap-select.min.js")
+  script(src="/js/bootstrap-timepicker.min.js")
   script(src="/js/bootstrap-datepicker.min.js")
   //script(src='/js/horasExtras.js')

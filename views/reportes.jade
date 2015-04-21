@@ -2,9 +2,31 @@ extends layout
 
 block sigucaCSS
   link(rel='stylesheet', href='/stylesheets/sigucaConfiguraciones.css')
+  link(rel='stylesheet', href='/stylesheets/bootstrap-select.min.css')
 
 block content
     div.container
+      .col-xs-4
+       h3 Reportes de eventos
+       h4 #{empleado}   
+
+      .col-xs-12
+       h3 Filtros   
+       div.filter
+             div.filter
+                  label#departamento(for='departamento') 
+                  .btn-group
+                     .btn-group
+                     table
+                       form(role='form', method="POST", action="/filtrarReportes/")
+                        td
+                          select.form-control#selectFiltro.selectpicker(data-style="btn-default", data-width="auto", type="text", name="filtro") 
+                            option(value= usuario._id + "|" + departamentos + "|todos") Todos los usuarios
+                            each user in usuarios
+                              option(value= usuario._id + "|" + departamentos + "|" + user._id) #{user.apellido1} #{user.apellido2}, #{user.nombre}
+                        td
+                          button.form-control.btn.btn-success(type='submit', name='gestionar') Filtrar
+                        
       .col-xs-12
         h3 Justificaciones
         br
@@ -18,7 +40,7 @@ block content
                 th Detalle
                 th Comentario
                 th Estado
-            tbody 
+            tbody
               each justificacion, i in justificaciones
                 tr
                   td #{justificacion.fecha} 
@@ -26,7 +48,8 @@ block content
                   td #{justificacion.motivo} 
                   td #{justificacion.detalle} 
                   td #{justificacion.comentarioSupervisor} 
-                  td #{justificacion.estado} 
+                  td #{justificacion.estado}  
+              
 
 
         h3 Solicitudes Horas Extras
@@ -43,7 +66,8 @@ block content
                 th Cantidad de Horas
                 th Motivo
                 th Comentario
-            tbody 
+                th Estado
+            tbody
               each extra, i in extras
                 tr
                   td #{extra.fecha} 
@@ -55,6 +79,7 @@ block content
                   td #{extra.motivo} 
                   td #{extra.comentarioSupervisor} 
                   td #{extra.estado} 
+               
 
         h3 Solicitudes Permisos
         br
@@ -69,7 +94,8 @@ block content
                 th Motivo
                 th Detalle
                 th Comentario
-            tbody 
+                th Estado
+            tbody
               each permiso, i in permisos
                 tr
                   td #{permiso.fecha} 
@@ -79,7 +105,9 @@ block content
                   td #{permiso.motivo} 
                   td #{permiso.detalle} 
                   td #{permiso.comentarioSupervisor} 
-                  td #{permiso.estado} 
-                                 
+                  td #{permiso.estado}  
+              
+                                     
 block sigucaJS
   script(src= " /js/configuracionSupervisor.js")
+  script(src="/js/bootstrap-select.min.js")

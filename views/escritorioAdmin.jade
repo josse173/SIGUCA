@@ -3,7 +3,7 @@ extends layoutAdmin
 block sigucaCSS
   link(rel='stylesheet', href='/stylesheets/sigucaConfiguraciones.css')
   //link(rel='stylesheet', href='/stylesheets/bootstrap-timepicker.min.css')
-  link(rel='stylesheet', href='/js/multiple-select/multiple-select.css')
+  link(rel='stylesheet', href='/stylesheets/bootstrap-select.min.css')
 block imgSession
     
 
@@ -132,15 +132,17 @@ block content
                           option Empleado
                           option Supervisor
                           option Administrador
-                      label(for='departamento') Departamento:
-                        select.form-control#selectDepartamentos(type="text", name="idDepartamento", multiple="multiple") 
-                          each departamento, i in departamentos
-                              option(value= departamento.id) #{departamento.nombre} 
 
                       label(for='horario') Horario:
                         select.form-control#textInput(type="text", name="idHorario") 
                           each horario, i in horarios
                               option(value= horario.id) #{horario.nombre} 
+
+                      label(for='departamento') Departamento:
+                        br
+                        select.form-control#selectDepartamentos.selectpicker(data-style="btn-success", data-width="200px", type="text", name="idDepartamento", multiple="multiple") 
+                          each departamento, i in departamentos
+                              option(value= departamento.id) #{departamento.nombre} 
 
                     .form-group
                       label(for="passwordInput")
@@ -153,8 +155,7 @@ block content
                     button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
 block sigucaJS
   //script(src= "/js/bootstrap-timepicker.min.js) // Error al descomentarlo
-  script(src="/js/efectos.js")
-  script(src="/js/multiple-select/jquery.multiple-select.js")
+  script(src="/js/bootstrap-select.min.js")
   script(src="/js/mailgun_validator.js")
   script(src= " /js/configuracionSupervisor.js")
 
