@@ -124,19 +124,19 @@ block content
                   form(role='form', method="POST", action="/solicitud_extra")#login-form.well.span4
                     .form-group
                       label(for='fecha') Día:
-                        div.input-group.bootstrap-timepicker
+                        div#datepicker.input-group
                           input.form-control(type='text', name='diaInicio', placeholder='Fecha')
-                          span#datepicker.input-group-addon
+                          span.input-group-addon
                             i.icon-calendar
                     .form-group
                       label(for='horaInicio') Hora de Inicio:
-                        div.input-group.bootstrap-timepicker
-                          input#timepicker1.input-small.form-control(type="text", name= 'horaInicio')
-                          span#timepicker1.input-group-addon
+                        div#timepicker.input-group
+                          input.input-small.form-control(data-format="hh:mm:ss", type="text", name= 'horaInicio')
+                          span.input-group-addon
                             i.icon-time
                       label(for='horaFinal') Hora de Salida:
-                        div.input-group.bootstrap-timepicker
-                          input#timepicker1.input-small.form-control(type="text", name= 'horaFinal')
+                        div#timepicker.input-group
+                          input.input-small.form-control(type="text", name= 'horaFinal')
                           span.input-group-addon
                             i.icon-time
                     .form-group
@@ -158,12 +158,12 @@ block content
                   form(role='form', method="POST", action="/solicitud_permisos")#login-form.well.span4
                     .form-group
                       label(for='diaInicio') Día Inicial:
-                        div.input-group.bootstrap-timepicker
+                        div#datepicker.input-group
                           input#diaInicio.form-control(type='text', name='diaInicio', placeholder='Fecha Inicial')
                           span.input-group-addon
                             i.icon-calendar
                       label(for='diaFinal') Día Final:
-                        div.input-group.bootstrap-timepicker
+                        div#datepicker.input-group
                           input#diaFinal.form-control(type= 'text', placeholder='Fecha Final', name= 'diaFinal')
                           span.input-group-addon
                             i.icon-calendar
@@ -197,8 +197,15 @@ block content
             .modal-body
               form(role='form', method="POST", action="justificacion_nueva")#login-form.well.span4
                 .form-group
-                    label(for='motivo') Motivo:
-                    input#group.form-control(type= 'text', placeholder='motivo', name= 'motivo', value=motivo)
+                  label(for='motivo1') Motivo:
+                    select#selectMotivo1.form-control(type= 'text', name= 'motivo1' style='float:left')
+                      option(value='seleccionar') Seleccione una opción
+                      option(value='Tardía') Tardía
+                      option(value='OmisiónMarca') Omisión Marca
+                      option(value='Ausencia') Ausencia
+                      option(value='otro') Otro
+                  label(for='motivoOtro1') Otro:
+                    input#motivoOtro1.form-control(type= 'text', placeholder='Otro', name= 'motivoOtro1' style='float:left' disabled)
                 .form-group
                     label(for='detalles') Detalles:
                     //input#detalles.form-control(type= 'Number', placeholder='Detalles', name='detalle', value=detalles)
@@ -211,10 +218,10 @@ block content
                 
 block sigucaJS
   script(src="/socket.io/socket.io.js")
+  script(src="/js/bootstrap-timepicker.min.js")
+  script(src="/js/bootstrap-datepicker.min.js")
   script( src='/js/sigucaHome.js')
   script(src="/js/d3.min.js")
   script(src="/js/cal-heatmap.js")
   script(src="/js/bootstrap-select.min.js")
-  script(src="/js/bootstrap-timepicker.min.js")
-  script(src="/js/bootstrap-datepicker.min.js")
   //script(src='/js/horasExtras.js')

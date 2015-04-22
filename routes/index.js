@@ -264,7 +264,11 @@ module.exports = function(app, io) {
                         var h  = Math.floor( s / ( 60 * 60 ) );
                             s -= h * ( 60 * 60 );
                         var m  = Math.floor( s / 60 );
-                        evento[x].cantHoras = h + ":" + m;
+                        if(m < 10)
+                            evento[x].cantHoras = h + ":0" + m;
+                        else
+                            evento[x].cantHoras = h + ":" + m;
+                        
                     } 
                 } else {
                     if(JSON.stringify(evento[x].departamentos[0].departamento) === JSON.stringify(supervisor.departamentos[y].departamento) 
@@ -418,7 +422,6 @@ module.exports = function(app, io) {
                             fecha.setUTCSeconds(epochTime); 
                             permiso.fecha = fecha;
                         });//each
-                        //console.log(justificaciones);
                         if (error) return res.json(error);
                             if(req.session.name == "Empleado"){
                                 return res.render('justificacionesEmpl', {
@@ -457,10 +460,14 @@ module.exports = function(app, io) {
         var newjustificacion = Justificaciones({
             usuario: req.user.id,
             fechaCreada: epochTime,
-            motivo: e.motivo,
             detalle: e.detalle,
             comentarioSupervisor: ""
         });
+
+        if(e.motivo == 'otro')
+            newSolicitud.motivo = e.motivoOtro;
+        else
+            newSolicitud.motivo = e.motivo;
         newjustificacion.save(function(error, user) {
 
             if (error) return res.json(error);
@@ -541,16 +548,16 @@ module.exports = function(app, io) {
             newSolicitud.motivo = e.motivoOtro;
         else
             newSolicitud.motivo = e.motivo;
-        // newSolicitud.save(function(error, user) {
+        newSolicitud.save(function(error, user) {
 
-        //     if (error) return res.json(error);
+            if (error) return res.json(error);
 
-        //     if (req.session.name == "Empleado") {
+            if (req.session.name == "Empleado") {
 
-        //         res.redirect('/escritorioEmpl');
-        //     } else res.redirect('/escritorio');
+                res.redirect('/escritorioEmpl');
+            } else res.redirect('/escritorio');
 
-        // });
+        });
     });
 
     /*
@@ -563,7 +570,7 @@ module.exports = function(app, io) {
         delete solicitud.id;
         delete solicitud._id;
 
-        Solicitudes.findByIdAndUpdate(solicitudId, {estado: solicitud.estado, comentarioSupervisor: solicitud.comentarioSupervisor}, function(error, solicitudes) { //cambie Empleado por Usuario segun nuevo CRUD
+        Solicitudes.findByIdAndUpdate(solicitudId, {estado: solicitud.estado, comentarioSupervisor: solicitud.comentarioSupervisor}, function(error, solicitudes) { 
 
             if (error) return res.json(error);
 
@@ -582,7 +589,7 @@ module.exports = function(app, io) {
         delete justificacion.id;
         delete justificacion._id;
 
-        Justificaciones.findByIdAndUpdate(justificacionId, {estado: justificacion.estado, comentarioSupervisor: justificacion.comentarioSupervisor}, function(error, justificaciones) { //cambie Empleado por Usuario segun nuevo CRUD
+        Justificaciones.findByIdAndUpdate(justificacionId, {estado: justificacion.estado, comentarioSupervisor: justificacion.comentarioSupervisor}, function(error, justificaciones) { 
 
             if (error) return res.json(error);
 
@@ -605,7 +612,6 @@ module.exports = function(app, io) {
             tiempoReceso: h.tiempoReceso,
             tiempoAlmuerzo: h.tiempoAlmuerzo
         });
-        console.log(h);
         horarioN.save(function(error, user) {
 
             if (error) res.json(error);
@@ -661,9 +667,6 @@ module.exports = function(app, io) {
 
         delete horario.id;
         delete horario._id;
-
-        console.log(horario);
-        console.log(horarioId);
 
         Horario.findByIdAndUpdate(horarioId, horario, function(error, horarios) {
 
@@ -735,8 +738,7 @@ module.exports = function(app, io) {
             } else {
                 array.push({departamento: e.idDepartamento});
             }
-            console.log(e);
-            console.log(array);
+
             Usuario.register(new Usuario({
 
                 username: e.username, 
@@ -993,7 +995,7 @@ module.exports = function(app, io) {
     *   gusto del desarrollador. Finalmente se crea un cierre por cada departamento.
     */
     var job = new CronJob({ 
-        cronTime: '00 45 15 * * 0-6',//'00 00 23 * * 0-6',
+        cronTime: '00 02 11 * * 0-6',//'00 00 23 * * 0-6',
         onTick: function() {
             // Runs every weekday
             // at 12:00:00 AM.
@@ -1003,8 +1005,6 @@ module.exports = function(app, io) {
 
             var epochToday = (today.getTime() - today.getMilliseconds())/1000,
                 epochYesterday = (yesterday.getTime() - yesterday.getMilliseconds())/1000;
-            console.log(epochYesterday);
-            console.log(epochToday);
 
             var mapJustificacion = function () {
                var output= {
@@ -1123,7 +1123,6 @@ module.exports = function(app, io) {
                 Justificaciones.mapReduce(o, function (err, Temporal) {
 
                     Temporal.find().exec(function (err, temporal){
-                        console.log(temporal);
                         temporal.forEach(function (usuario){
                             var cierrePersonal = {
                                 usuario: usuario._id,
@@ -1153,13 +1152,12 @@ module.exports = function(app, io) {
                             cierrePersonal.estado = cierrePersonal.justificaciones + cierrePersonal.solicitudes + cierrePersonal.marcas;;
                             var newCierre = Cierre(cierrePersonal);
 
-                            // newCierre.save(function(error, user) {
+                            newCierre.save(function(error, user) {
 
-                            //     if (error) console.log(error);
-                            //     else console.log("exito al guardar cierre personal");
-                            // });
+                                if (error) console.log(error);
+                                else console.log("exito al guardar cierre personal");
+                            });
                         });
-                        console.log("--------------------------------------------------------------------");
                     });
                     var pipeline = [
                         {
@@ -1183,7 +1181,6 @@ module.exports = function(app, io) {
                     ];
                     Temporal.aggregate(pipeline).exec(function (err, temporal){
                         temporal.forEach(function (departamento){
-                            //console.log(departamento);
                             var estado = 0;
                             estado += departamento.justificaciones;
                             estado += departamento.solicitudes;
@@ -1194,7 +1191,6 @@ module.exports = function(app, io) {
                                     fechaEpoch.setUTCSeconds(epochTime);  
                                     var hora = fechaEpoch.getHours();
                                     var min = fechaEpoch.getMinutes();
-                                    //console.log(user.hora + ":"  + user.minutos + " - " + hora + ":"  + min)
                                     if(user.hora - hora < 0  && user.minutos - min){
                                         estado += 1;   
                                     }//if
@@ -1208,11 +1204,11 @@ module.exports = function(app, io) {
                                         departamento: departamento 
                                     });
 
-                            // newCierre.save(function(error, user) {
+                            newCierre.save(function(error, user) {
 
-                            //     if (error) console.log(error);
-                            //     else console.log("exito al guardar");
-                            // });//cierre
+                                if (error) console.log(error);
+                                else console.log("exito al guardar");
+                            });//cierre
                             epochToday++;
                         });// for each departamento
                     });//Aggregate
@@ -1269,7 +1265,7 @@ module.exports = function(app, io) {
                 });
             } else {
                 Cierre.find({tipo: "General", departamento: option[1]}).exec(function(err, cierre) {
-                    if (err) console.log('error saving user prefs ' + err);
+                    if (err) console.log('error al cargar los cierres: ' + err);
                     else {
                         console.log('consulta sin errores');
                         socket.emit('listaCierre', cierre);

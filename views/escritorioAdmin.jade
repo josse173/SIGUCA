@@ -1,11 +1,8 @@
 extends layoutAdmin
 
 block sigucaCSS
-  link(rel='stylesheet', href='/stylesheets/sigucaConfiguraciones.css')
-  //link(rel='stylesheet', href='/stylesheets/bootstrap-timepicker.min.css')
-  link(rel='stylesheet', href='/stylesheets/bootstrap-select.min.css')
-block imgSession
-    
+  link(rel='stylesheet', href='/stylesheets/bootstrap-timepicker.min.css')
+  link(rel='stylesheet', href='/stylesheets/bootstrap-select.min.css')    
 
 block content
     div.container
@@ -47,36 +44,35 @@ block content
                     h4 Información Básica
                     label(for='nombre') Nombre del Horario:
                       input.form-control#textInput( type="text", name="nombre", placeholder='Nombre del horario')
-                    //.checkbox-inline#jFija
-                      label
-                        input(type='checkbox', name="jornada")
-                        | Jornada fija
-                    //.checkbox-inline#jLibre
-                      label
-                        input(type='checkbox', name= "jornada")
-                        | Jornada libre
                                 
                   .form-group
                     h4 Información de jornada
-                    label(for='hEntrada') Hora de entrada:
-                      input.form-control#textInput( type="text", name= "horaEntrada", placeholder='Hora de entrada')
-                    //div.input-append.bootstrap-timepicker
-                    //  input#timepicker1.input-small(type="text")
-                    //  span.add-on
-                    //    img.icon-time// Esto comentado no funciona es de bootstrap-timepicker-min
-    
-                    label(for='hSalida') Hora de salida:
-                      input.form-control#textInput(type="text", name="horaSalida", placeholder='Hora de salida')
-                    label(for='rJornada') Rango de jornada:
-                      input.form-control#textInput(type="text", name="rangoJornada", placeholder='6 (horas diarias)')
+                    label(for='horaEntrada') Hora de Inicio:
+                      div#timepicker.input-group
+                        input.input-small.form-control(type="text", name= 'horaEntrada')
+                        span.input-group-addon
+                          i.icon-time
+                    label(for='horaSalida') Hora de salida:
+                      div#timepicker1.input-group
+                        input.input-small.form-control(type="text", name= 'horaSalida')
+                        span.input-group-addon
+                          i.icon-time
+                    label(for='rangoJornada') Rango de jornada:
+                      input.form-control#rangoJornada(type="text", name="rangoJornada", placeholder='9:00')
                   .form-group
                     h4 Información de descansos
-                    label(for='tReceso') Rango de receso:
-                      input.form-control#textInput( type="text", name="tiempoReceso", placeholder='45m')   
-                    label(for='tAlmuerzo') Rango de almuerzo:
-                      input.form-control#textInput(type="text", name="tiempoAlmuerzo", placeholder='1h30m')
+                    label(for='tiempoReceso') Rango de receso:
+                      div#timepicker2.input-group
+                        input.input-small.form-control(type="text", name= 'tiempoReceso')
+                        span.input-group-addon
+                          i.icon-time  
+                    label(for='tiempoAlmuerzo') Rango de almuerzo:
+                      div#timepicker3.input-group
+                        input.input-small.form-control(type="text", name= 'tiempoAlmuerzo')
+                        span.input-group-addon
+                          i.icon-time
                      
-                  button.btn.btn-default(type='submit') Ingresar
+                  button.btn.btn-success(type='submit') Ingresar
                   button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
       
 
@@ -92,7 +88,7 @@ block content
                   .form-group
                       label(for='nombre') Nombre:
                         input#group.form-control( type="text", placeholder='Nombre del area', name= "nombre")
-                  button.btn.btn-default(type='submit') Ingresar
+                  button.btn.btn-success(type='submit') Ingresar
                   button.btn.btn-default(type='button', data-dismiss='modal') Cancelar                
 
 
@@ -128,7 +124,7 @@ block content
                         input.form-control#textInput(type="text", name="username", placeholder="Usuario")
                       label(for="tipoInput")
                         |Tipo de Usuario:
-                        select.form-control#textInput(type="text", name="tipo") 
+                        select.form-control#selectTipo(type="text", name="tipo") 
                           option Empleado
                           option Supervisor
                           option Administrador
@@ -148,15 +144,15 @@ block content
                       label(for="passwordInput")
                         |Contraseña:
                         input.form-control#passInput(type='text', size='18', name="password", placeholder="Contraseña")
-                        button.btn.btn-default(type='button', onclick='generatepass(4)') Generar Contraseña
+                        button.btn.btn-default(type='button', onclick='generatepass(8)') Generar Contraseña
                         div#correoMsj 
                                     
-                    button.btn.btn-default(type='submit') Ingresar
+                    button.btn.btn-success(type='submit') Ingresar
                     button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
 block sigucaJS
-  //script(src= "/js/bootstrap-timepicker.min.js) // Error al descomentarlo
+  script(src="/js/bootstrap-timepicker.min.js")
+  script( src='/js/timepickerAdmin.js')
   script(src="/js/bootstrap-select.min.js")
   script(src="/js/mailgun_validator.js")
-  script(src= " /js/configuracionSupervisor.js")
 
 

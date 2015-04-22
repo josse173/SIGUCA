@@ -1,8 +1,5 @@
 extends layout
 
-block sigucaCSS
-  link(rel='stylesheet', href='/stylesheets/sigucaConfiguraciones.css')
-
 block content
     div.container
       .col-xs-12
@@ -80,6 +77,3 @@ block content
                   td #{permiso.detalle} 
                   td #{permiso.comentarioSupervisor} 
                   td #{permiso.estado} 
-                                 
-block sigucaJS
-  script(src= " /js/configuracionSupervisor.js")

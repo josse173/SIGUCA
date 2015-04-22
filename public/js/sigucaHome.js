@@ -54,11 +54,22 @@
         else $("#motivoOtro").attr('disabled','disabled');
     });
 
-    $('#datepicker').datepicker({dateFormat: "yy-mm-dd"
+    $('#selectMotivo1').change(function (){
+        if($('#selectMotivo1').val() == 'otro') $("#motivoOtro1").removeAttr('disabled');
+        else $("#motivoOtro1").attr('disabled','disabled');
     });
-    $(document).ready(function() {
-        $('div#timepicker1').timepicker('showWidget');
+
+    $('#datepicker input').datepicker({
+        format: "dd/mm/yy",
+        daysOfWeekDisabled: "0",
+        autoclose: true,
+        language: "es",
+        todayHighlight: true
     });
+
+    $('#timepicker input').timepicker();
+
+
     //Si nos desconectamos, muestra el log y cambia el mensaje.
     socket.on('disconnect', function () {
         console.log('Desconectado!');
