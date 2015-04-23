@@ -1,4 +1,4 @@
-extends layoutEmpl
+extends layout
 
 block content  
   div.container
@@ -12,16 +12,16 @@ block content
                 th Fecha
                 th Motivo
                 th Detalle
-                th Estado
                 th Comentario
+                th Estado
             tbody 
               each justificacion, i in justificaciones
                 tr
                   td #{justificacion.fecha} 
                   td #{justificacion.motivo} 
                   td #{justificacion.detalle} 
-                  td #{justificacion.estado} 
                   td #{justificacion.comentarioSupervisor} 
+                  td #{justificacion.estado} 
                           
 
         h3 Solicitudes Horas Extras
@@ -31,18 +31,17 @@ block content
             thead
               tr
                 th Fecha
-                th Usuario
-                th Dia
-                th Hora Entrada 
+                th Día
+                th Hora Inicio 
                 th Hora Salida
                 th Cantidad de Horas
                 th Motivo
                 th Comentario
+                th Estado
             tbody 
               each extra, i in extras
                 tr
                   td #{extra.fecha} 
-                  td #{extra.usuario.nombre} #{extra.usuario.apellido1} 
                   td #{extra.diaInicio} 
                   td #{extra.horaInicio} 
                   td #{extra.horaFinal} 
@@ -58,19 +57,20 @@ block content
             thead
               tr
                 th Fecha
-                th Usuario
-                th Dia Inicial
-                th Dia Final 
+                th Día Inicial
+                th Día Final 
+                th Cantidad Días
                 th Motivo
                 th Detalle
                 th Comentario
+                th Estado
             tbody 
               each permiso, i in permisos
                 tr
                   td #{permiso.fecha} 
-                  td #{permiso.usuario.nombre} #{permiso.usuario.apellido1} 
                   td #{permiso.diaInicio} 
                   td #{permiso.diaFinal} 
+                  td #{permiso.cantidadDias} 
                   td #{permiso.motivo} 
                   td #{permiso.detalle} 
                   td #{permiso.comentarioSupervisor} 

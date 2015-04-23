@@ -2,7 +2,6 @@ extends layoutAdmin
 
 block content
   .container
-    
     h3 Lista de Departamentos
     br
     .table-responsive
@@ -15,6 +14,6 @@ block content
             tr
               td #{departamento.nombre} 
               td
-                 a#edit.btn.btn-success(href="/departamento/editDepartamento/"+departamento.id)  editar
+                 a#edit.btn.btn-success(href="/departamento/editDepartamento/"+departamento.id)  Editar
               td
-                 a#delete.btn.btn-danger(href="/departamento/deleteDepartamento/"+departamento.id)  eliminar
+                 a#delete.btn.btn-danger(href="/departamento/deleteDepartamento/"+departamento.id)  Eliminar

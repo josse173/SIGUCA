@@ -2,7 +2,8 @@ extends layoutAdmin
 
 block sigucaCSS
   link(rel='stylesheet', href='/stylesheets/bootstrap-timepicker.min.css')
-  link(rel='stylesheet', href='/stylesheets/bootstrap-select.min.css')    
+  link(rel='stylesheet', href='/stylesheets/bootstrap-select.min.css')
+  link(rel='stylesheet', href='/stylesheets/awesome-bootstrap-checkbox.css')    
 
 block content
     div.container
@@ -15,20 +16,20 @@ block content
               label(for="Departamento")
                 |Departamento:
             form(action= '/departamento')
-              button#empleados.btn.btn-success(name='agregar', onclick= "changeElemt('departamento')", data-toggle="modal" data-target="#addDep") Nuevo
+              button#empleados.btn.btn-success(name='agregar', data-toggle="modal" data-target="#addDep") Nuevo
               button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/departamento") Modificar o Eliminar      
             
             div#horario
               label(for="horario")
                 |Horario:
             form(action= '/horarioN')    
-              button#empleados.btn.btn-success(name='agregar', onclick= "changeElemt('horarioN')", data-toggle="modal" data-target="#addHorario") Nuevo       
+              button#empleados.btn.btn-success(name='agregar', data-toggle="modal" data-target="#addHorario") Nuevo       
               button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/horarioN") Modificar o Eliminar
             div#empleado
               label(for="empleado")
                 |Empleado:
             form(action= '/empleado')     
-              button#empleados.btn.btn-success(name='agregar', onclick= "changeElemt('empleado')", data-toggle="modal" data-target="#addEmpl") Nuevo 
+              button#empleados.btn.btn-success(name='agregar', data-toggle="modal" data-target="#addEmpl") Nuevo 
               button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/empleado") Modificar o Eliminar
           
     .col-xs-2
@@ -42,9 +43,12 @@ block content
                 form(action='/horarioN', method='post')#login-form.well.span4
                   .form-group
                     h4 Información Básica
-                    label(for='nombre') Nombre del Horario:
+                    label(for='nombre' style="float:left") Nombre del Horario:
                       input.form-control#textInput( type="text", name="nombre", placeholder='Nombre del horario')
-                                
+                    label(for='tipo') Tipo jornada  
+                      .checkboxAwesome.checkbox-success          
+                        input(type='checkbox', name= "tipo", id="tipoJornada")
+                        label(for='tipoJornada', id="tipoJornadaLabel") Libre         
                   .form-group
                     h4 Información de jornada
                     label(for='horaEntrada') Hora de Inicio:
@@ -57,8 +61,12 @@ block content
                         input.input-small.form-control(type="text", name= 'horaSalida')
                         span.input-group-addon
                           i.icon-time
-                    label(for='rangoJornada') Rango de jornada:
-                      input.form-control#rangoJornada(type="text", name="rangoJornada", placeholder='9:00')
+                    label(for='rangoJornada') Rango de horas:
+                      label.form-control#rangoJornada()
+                      div#timepicker4.input-group
+                        input.form-control#inputRango(type="text", name="rangoJornada")
+                        span.input-group-addon
+                          i.icon-time  
                   .form-group
                     h4 Información de descansos
                     label(for='tiempoReceso') Rango de receso:
@@ -73,7 +81,7 @@ block content
                           i.icon-time
                      
                   button.btn.btn-success(type='submit') Ingresar
-                  button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
+                  button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
       
 
       //agregar departamento            
@@ -89,7 +97,7 @@ block content
                       label(for='nombre') Nombre:
                         input#group.form-control( type="text", placeholder='Nombre del area', name= "nombre")
                   button.btn.btn-success(type='submit') Ingresar
-                  button.btn.btn-default(type='button', data-dismiss='modal') Cancelar                
+                  button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar                
 
 
       //agregar empleados
@@ -144,11 +152,11 @@ block content
                       label(for="passwordInput")
                         |Contraseña:
                         input.form-control#passInput(type='text', size='18', name="password", placeholder="Contraseña")
-                        button.btn.btn-default(type='button', onclick='generatepass(8)') Generar Contraseña
-                        div#correoMsj 
+                      br
+                      button.btn.btn-default(type='button', onclick='generatepass(8)') Generar Contraseña
                                     
                     button.btn.btn-success(type='submit') Ingresar
-                    button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
+                    button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
 block sigucaJS
   script(src="/js/bootstrap-timepicker.min.js")
   script( src='/js/timepickerAdmin.js')

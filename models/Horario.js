@@ -1,7 +1,6 @@
 /** SIGUCA 
  *
  *  Modelo de Horario
- *  Schedule model
  *
  */
 
@@ -16,23 +15,27 @@ var SchemaHorario = new Schema({
     },
     horaEntrada: {
         type: String,
-        default: '8:00'
+        default: '0:00'
     },
     horaSalida: {
         type: String,
-        default: '17:00'
+        default: '0:00'
     },
-    rangoJornada: { //horas a trabajar por dia
-        type: Number,
-        default: 6
+    rangoJornada: { 
+        type: String,
+        default: '9:00'
     },
     tiempoReceso: {
         type: String,
-        default: '45m'
+        default: '0:45'
     },
     tiempoAlmuerzo: {
         type: String,
-        default: '1h'
+        default: '1:00'
+    },
+    tipo: {
+        type: String,
+        default: 'Fijo'
     }
 });
 

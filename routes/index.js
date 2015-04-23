@@ -17,13 +17,18 @@ var CronJob = require('cron').CronJob;
 
 module.exports = function(app, io) {
 
-
+    /*
+    *   Redirecciona al index
+    */
     app.get('/', function(req, res) {
         res.render('index', {
             usuario: req.user
         });
     });
 
+    /*
+    *   Verifica el login dependiendo del tipo de usuario
+    */
     app.post('/login', passport.authenticate('local'), function(req, res) {
         req.session.name = req.user.tipo;
         if (req.session.name == "Administrador") {
@@ -37,6 +42,9 @@ module.exports = function(app, io) {
         }
     });
 
+    /*
+    *   Cierra sessión de usuario
+    */
     app.get('/logout',autentificado, function(req, res) {
         req.logout();
         res.redirect('/');
@@ -160,7 +168,7 @@ module.exports = function(app, io) {
     *  Carga las justificaciones, solicitudes de horas extra y solicitudes de permisos pendientes, 
     *  a cada consulta se le realiza la conversion de epoch a la CST Standard.
     */
-    app.get('/configuracion', autentificado, function(req, res) {
+    app.get('/gestionarEventos', autentificado, function(req, res) {
         if (req.session.name == "Supervisor") {
             Justificaciones.find({estado:'Pendiente'}).populate('usuario').exec(function(error, justificaciones) {
                 Solicitudes.find({tipoSolicitudes:'Extras', estado:'Pendiente'}).populate('usuario').exec(function(error, extras) {
@@ -171,8 +179,8 @@ module.exports = function(app, io) {
                         var arrayPermisos = eventosAjuste(permisos, req.user);
 
                         if (error) return res.json(error);
-                        return res.render('configuracion', {
-                            title: 'Configuración | SIGUCA',
+                        return res.render('gestionarEventos', {
+                            title: 'Gestionar eventos | SIGUCA',
                             usuario: req.user,
                             justificaciones: arrayJust,
                             extras: arrayExtras,
@@ -240,8 +248,17 @@ module.exports = function(app, io) {
     function eventosAjuste(evento, supervisor){
         var notFound = true;
         var array = [];
+
         for(var x = 0; x < evento.length; x++){
             for(var y = 0; y < supervisor.departamentos.length; y++){
+                /*
+                *   - Busca cada evento en cada departamento, convierte el epoch a fecha estándar
+                *    y convierte el epoch de la cantidad de horas a formato hh:mm.
+                *   - Si el evento y el departamento coinciden y además el evento y el supervisor
+                *   no coinciden, muestra el evento.
+                *   - Si el evento es de un supervisor y no coinciden el evento y el supervisor,
+                *   muestra el evento.
+                */
                 if("usuario" in evento[x]){
                     if("fechaCreada" in evento[x]){
                         var epochTime = evento[x].fechaCreada;
@@ -271,6 +288,10 @@ module.exports = function(app, io) {
                         
                     } 
                 } else {
+                /*
+                *   - Filtra los usuarios por supervisor, sin mostrarse el mismo.
+                *   - Se utiliza en los reportes.
+                */
                     if(JSON.stringify(evento[x].departamentos[0].departamento) === JSON.stringify(supervisor.departamentos[y].departamento) 
                         && JSON.stringify(evento[x]._id) != JSON.stringify(supervisor._id)){
                         array.push(evento[x]);
@@ -424,7 +445,7 @@ module.exports = function(app, io) {
                         });//each
                         if (error) return res.json(error);
                             if(req.session.name == "Empleado"){
-                                return res.render('justificacionesEmpl', {
+                                return res.render('eventosEmpl', {
                                     title: 'Solicitudes/Justificaciones | SIGUCA',
                                     usuario: req.user,
                                     justificaciones: justificaciones,
@@ -432,7 +453,7 @@ module.exports = function(app, io) {
                                     permisos: permisos
                                 });
                             } else {
-                                return res.render('justificaciones', {
+                                return res.render('eventos', {
                                     title: 'Solicitudes/Justificaciones | SIGUCA',
                                     usuario: req.user,
                                     justificaciones: justificaciones,
@@ -464,10 +485,10 @@ module.exports = function(app, io) {
             comentarioSupervisor: ""
         });
 
-        if(e.motivo == 'otro')
-            newSolicitud.motivo = e.motivoOtro;
+        if(e.motivoJust == 'otro')
+            newjustificacion.motivo = e.motivoOtroJust;
         else
-            newSolicitud.motivo = e.motivo;
+            newjustificacion.motivo = e.motivoJust;
         newjustificacion.save(function(error, user) {
 
             if (error) return res.json(error);
@@ -540,6 +561,7 @@ module.exports = function(app, io) {
             tipoSolicitudes: "Permisos",
             diaInicio: e.diaInicio,
             diaFinal: e.diaFinal,
+            cantidadDias: e.cantidadDias,
             detalle: e.detalle,
             usuario: req.user.id,
             comentarioSupervisor: ""
@@ -574,7 +596,7 @@ module.exports = function(app, io) {
 
             if (error) return res.json(error);
 
-            res.redirect('/configuracion');
+            res.redirect('/gestionarEventos');
 
         });
     });
@@ -593,7 +615,7 @@ module.exports = function(app, io) {
 
             if (error) return res.json(error);
 
-            res.redirect('/configuracion');
+            res.redirect('/gestionarEventos');
 
         });
     });
@@ -606,6 +628,7 @@ module.exports = function(app, io) {
         var h = req.body;
         var horarioN = Horario({ 
             nombre: h.nombre,
+            tipo: h.tipo,
             horaEntrada: h.horaEntrada,
             horaSalida: h.horaSalida,
             rangoJornada: h.rangoJornada,
@@ -651,8 +674,11 @@ module.exports = function(app, io) {
         Horario.findById(horarioId, function(error, horario) {
 
             if (error) return res.json(error);
-
-            res.render('editHorario', horario);
+            console.log(horario)
+            res.render('editHorario', {
+                title: 'Editar Horario | SIGUCA',
+                horario: horario,
+                usuario: req.user});
 
         });
     });
@@ -896,7 +922,11 @@ module.exports = function(app, io) {
 
             if (error) return res.json(error);
 
-            res.render('editDepartamento', departamento);
+            res.render('editDepartamento', {
+                title: 'Editar Departamento | SIGUCA',
+                departamento: departamento,
+                usuario: req.user
+            });
 
         });
     });
@@ -995,7 +1025,7 @@ module.exports = function(app, io) {
     *   gusto del desarrollador. Finalmente se crea un cierre por cada departamento.
     */
     var job = new CronJob({ 
-        cronTime: '00 02 11 * * 0-6',//'00 00 23 * * 0-6',
+        cronTime: '00 22 16 * * 0-6',//'00 00 23 * * 0-6',
         onTick: function() {
             // Runs every weekday
             // at 12:00:00 AM.
@@ -1007,30 +1037,48 @@ module.exports = function(app, io) {
                 epochYesterday = (yesterday.getTime() - yesterday.getMilliseconds())/1000;
 
             var mapJustificacion = function () {
-               var output= {
+                var output= {
                     detalle:this.detalle
-               }
-               emit(this.usuario, output);
+                }
+                emit(this.usuario, output);
             };
             var mapSolicitud = function () {
                 var output= {
                     diaInicio: this.diaInicio
-               }
-               emit(this.usuario, output);
+                }
+                emit(this.usuario, output);
             };
             var mapMarca = function () {
-                var output= {
-                    epoch: this.epoch
-               }
-               emit(this.usuario, output);
+                if(this.tipoMarca === 'Entrada'){
+                    var output= {
+                        epochEntrada: this.epoch
+                    }
+                    emit(this.usuario, output);
+                } else {
+                    var output= {
+                        epochSalida: this.epoch
+                    }
+                    emit(this.usuario, output);
+                }
             };
             var mapHorario = function () {
-               var split = this.horaEntrada.split(':');
-               var output= {
-                    hora: split[0],
-                    min: split[1]
-               }
-               emit(this._id, output);
+                if(this.tipo === 'Fijo'){
+                    var split = this.horaEntrada.split(':');
+                    var output= {
+                        hora: split[0],
+                        min: split[1],
+                        tipo: this.tipo
+                    }
+                    emit(this._id, output);
+                } else {
+                    var split = this.rangoJornada.split(':');
+                    var output= {
+                        hora: split[0],
+                        min: split[1],
+                        tipo: this.tipo
+                    }
+                    emit(this._id, output);
+                }
             };
             var mapUsuario = function() {
                 var values = {
@@ -1042,7 +1090,7 @@ module.exports = function(app, io) {
             };
             var mapHoraUs = function() {
                 for (var x = 0; x < this.value.count; x++){
-                    emit(this.value.usuario[x]._id, {hora: this.value.hora, min: this.value.min, departamento: this.value.usuario[x].departamentos[this.value.usuario[x].count].departamento}); 
+                    emit(this.value.usuario[x]._id, {hora: this.value.hora, min: this.value.min, tipo: this.value.tipo, departamento: this.value.usuario[x].departamentos[this.value.usuario[x].count].departamento}); 
                 }
             };
             var reduceHoraUsuario =  function(k, values) {
@@ -1084,11 +1132,11 @@ module.exports = function(app, io) {
                             }
                             result.solicitudes += 1;
                         } else {
-                                for (field in value) {
-                                    if (value.hasOwnProperty(field) ) {
-                                        result[field] = value[field];
-                                    }//if
-                              };//for 
+                            for (field in value) {
+                                if (value.hasOwnProperty(field) ) {
+                                    result[field] = value[field];
+                                }//if
+                            };//for 
                         }//2do else
                    }//else
                 });
@@ -1112,7 +1160,7 @@ module.exports = function(app, io) {
                 Auxiliar.mapReduce(o);
 
                 o.map = mapMarca;
-                o.query = {tipoMarca: "Entrada", epoch:{"$gte": epochYesterday, "$lt": epochToday}};
+                o.query = {tipoMarca:{"$in": ["Entrada", "Salida"]}, epoch:{"$gte": epochYesterday, "$lt": epochToday}};
                 Marca.mapReduce(o);
 
                 o.map = mapSolicitud;
@@ -1124,6 +1172,7 @@ module.exports = function(app, io) {
 
                     Temporal.find().exec(function (err, temporal){
                         temporal.forEach(function (usuario){
+                            console.log(usuario);
                             var cierrePersonal = {
                                 usuario: usuario._id,
                                 departamento: usuario.value.departamento,
@@ -1139,13 +1188,39 @@ module.exports = function(app, io) {
 
                             cierrePersonal.marcas = 0;
                             if("marcas" in usuario.value){
-                                var epochTime = user.marca;
-                                var fechaEpoch= new Date(0);
-                                fechaEpoch.setUTCSeconds(epochTime);  
-                                var hora = fechaEpoch.getHours();
-                                var min = fechaEpoch.getMinutes();
-                                if(user.hora - hora < 0  && user.minutos - min){
-                                    cierrePersonal.marcas += 1;   
+                                if(usuario.tipo === 'Fijo'){
+                                    var epochTime = usuario.epochEntrada;
+                                    var fechaEpoch= new Date(0);
+                                    fechaEpoch.setUTCSeconds(epochTime);  
+                                    var hora = fechaEpoch.getHours();
+                                    var min = fechaEpoch.getMinutes();
+                                    var sInicio = (+horaEntrada) * 60 * 60 + (+minEntrada) * 60 + 00; 
+                                    var sHorarioEntrada = (+usuario.hora) * 60 * 60 + (+usuario.minutos) * 60 + 00; 
+
+                                    if(sHorarioEntrada < sInicio){
+                                        cierrePersonal.marcas += 1;   
+                                    }//if
+                                } else {
+                                    var epochEntrada = user.epochEntrada;
+                                    var fechaEntrada= new Date(0);
+                                    fechaEntrada.setUTCSeconds(epochEntrada);  
+                                    var horaEntrada = fechaEntrada.getHours();
+                                    var minEntrada = fechaEntrada.getMinutes();
+                                    var sInicio = (+horaEntrada) * 60 * 60 + (+minEntrada) * 60 + 00; 
+
+                                    var epochSalida = user.epochSalida;
+                                    var fechaSalida= new Date(0);
+                                    fechaSalida.setUTCSeconds(epochSalida);  
+                                    var horaSalida = fechaSalida.getHours();
+                                    var minSalida = fechaSalida.getMinutes();
+                                    var sFinal = (+horaSalida) * 60 * 60 + (+minSalida) * 60 + 00; 
+
+                                    var seg = sFinal - sInicio;
+
+                                    var sJornada = (+user.hora) * 60 * 60 + (+user.minutos) * 60 + 00; 
+                                    if(sJornada > seg){
+                                        estado += 1;   
+                                    }//if
                                 }
                             } else cierrePersonal.marcas = 1;
 
@@ -1171,9 +1246,11 @@ module.exports = function(app, io) {
                                 },
                                 "usuarios" : {
                                     "$push" : {
-                                        "marca" : "$value.epoch",
+                                        "marcaEntrada" : "$value.epochEntrada",
+                                        "marcaSalida" : "$value.epochSalida",
                                         "hora" : "$value.hora",
-                                        "minutos" : "$value.min"
+                                        "minutos" : "$value.min",
+                                        "tipo" : "$value.tipo"
                                     }
                                 }
                             }
@@ -1186,14 +1263,40 @@ module.exports = function(app, io) {
                             estado += departamento.solicitudes;
                             departamento.usuarios.forEach(function (user){
                                 if("marca" in user){
-                                    var epochTime = user.marca;
-                                    var fechaEpoch= new Date(0);
-                                    fechaEpoch.setUTCSeconds(epochTime);  
-                                    var hora = fechaEpoch.getHours();
-                                    var min = fechaEpoch.getMinutes();
-                                    if(user.hora - hora < 0  && user.minutos - min){
-                                        estado += 1;   
-                                    }//if
+                                    if(user.tipo === 'Fijo'){
+                                        var epochTime = user.epochEntrada;
+                                        var fechaEpoch= new Date(0);
+                                        fechaEpoch.setUTCSeconds(epochTime);  
+                                        var hora = fechaEpoch.getHours();
+                                        var min = fechaEpoch.getMinutes();
+                                        var sInicio = (+horaEntrada) * 60 * 60 + (+minEntrada) * 60 + 00; 
+                                        var sHorarioEntrada = (+user.hora) * 60 * 60 + (+user.minutos) * 60 + 00; 
+
+                                        if(sHorarioEntrada < sInicio){
+                                            estado += 1;   
+                                        }//if
+                                    } else {
+                                        var epochEntrada = user.epochEntrada;
+                                        var fechaEntrada= new Date(0);
+                                        fechaEntrada.setUTCSeconds(epochEntrada);  
+                                        var horaEntrada = fechaEntrada.getHours();
+                                        var minEntrada = fechaEntrada.getMinutes();
+                                        var sInicio = (+horaEntrada) * 60 * 60 + (+minEntrada) * 60 + 00; 
+
+                                        var epochSalida = user.epochSalida;
+                                        var fechaSalida= new Date(0);
+                                        fechaSalida.setUTCSeconds(epochSalida);  
+                                        var horaSalida = fechaSalida.getHours();
+                                        var minSalida = fechaSalida.getMinutes();
+                                        var sFinal = (+horaSalida) * 60 * 60 + (+minSalida) * 60 + 00; 
+
+                                        var seg = sFinal - sInicio;
+
+                                        var sJornada = (+user.hora) * 60 * 60 + (+user.minutos) * 60 + 00; 
+                                        if(sJornada > seg){
+                                            estado += 1;   
+                                        }//if
+                                    }
                                 } else {
                                     estado += 1;
                                 } 

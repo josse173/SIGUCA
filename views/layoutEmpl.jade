@@ -66,7 +66,7 @@ html
               li
                 a(href="/configuracionEmpl")
                   i.icon-cogs.icon-large
-                  |&nbsp;Configuracion
+                  |&nbsp;Configuración
               li
                 a(href='/Ayuda')
                   i.icon-question-sign.icon-large     
@@ -75,12 +75,6 @@ html
                 a(href='/logout')
                   img(src='images/cerrar.jpg', alt='something')      
                   |&nbsp;#{usuario.tipo}: #{usuario.username}  
-          if (!usuario)
-            ul.nav.navbar-nav
-              li.active
-                a.active(href="/registro")
-                  i.icon-home.icon-large
-                  |&nbsp;Registro   
       br     
     block content
     

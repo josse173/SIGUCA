@@ -20,7 +20,7 @@ var SchemaJustificacion = new Schema({
     },
     motivo: {
         type: String,
-        default: 'Justificacion' //Tardia - Omision de marca
+        default: '' //Tardia - Omision de marca
     },
     detalle: {
         type: String,

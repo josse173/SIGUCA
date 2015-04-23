@@ -43,7 +43,7 @@ block content
               tr
                 th Fecha
                 th Usuario
-                th Dia
+                th Día
                 th Hora Entrada 
                 th Hora Salida
                 th Cantidad de Horas
@@ -78,8 +78,9 @@ block content
               tr
                 th Fecha
                 th Usuario
-                th Dia Inicial
-                th Dia Final 
+                th Día Inicial
+                th Día Final 
+                th Cantidad Días
                 th Motivo
                 th Detalle
                 th Comentario
@@ -90,6 +91,7 @@ block content
                   td #{permiso.usuario.nombre} #{permiso.usuario.apellido1} 
                   td #{permiso.diaInicio} 
                   td #{permiso.diaFinal} 
+                  td #{permiso.cantidadDias} 
                   td #{permiso.motivo} 
                   td #{permiso.detalle} 
                   form(role='form', method="POST", action="/getionarSolicitud/"+permiso.id)

@@ -10,6 +10,7 @@ block content
         thead
           tr
             th Nombre
+            th Tipo Jornada
             th Hora Entrada
             th Hora Salida
             th Rango Jornada
@@ -20,12 +21,13 @@ block content
           each horario, i in horarios
             tr
               td #{horario.nombre} 
+              td #{horario.tipo} 
               td #{horario.horaEntrada} 
               td #{horario.horaSalida} 
               td #{horario.rangoJornada} 
               td #{horario.tiempoReceso} 
               td #{horario.tiempoAlmuerzo} 
               td
-                 a#edit.btn.btn-success(href="/horarioN/editHorario/"+horario.id)  editar
+                 a#edit.btn.btn-success(href="/horarioN/editHorario/"+horario.id)  Editar
               td
-                 a#delete.btn.btn-danger(href="/horarioN/deleteHorario/"+horario.id)  eliminar
+                 a#delete.btn.btn-danger(href="/horarioN/deleteHorario/"+horario.id)  Eliminar

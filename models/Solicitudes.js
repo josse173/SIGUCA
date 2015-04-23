@@ -1,7 +1,6 @@
 /** SIGUCA 
  *
  *  Modelo de Solicitudes
- *  Schedule model
  *
  */
 
@@ -38,11 +37,11 @@ var SchemaSolicitudes = new Schema({
         type: Number,
         default: 0
     },
-    detalle: {
+    motivo: {
         type: String,
         default: ''
     },
-    motivo: {
+    detalle: {
         type: String,
         default: ''
     },

@@ -4,7 +4,6 @@ SIGUCA
 
 SIGUCA is an acronym for User Managnent and Assistance Control System, in spanish (Sistema de Gestion de Usuarios y Control de Asistencia). The based aplications are [MongoDB][mongodb], [Node.js][nodejs], [Express][express], and [Jade][jade]. 
 
-************************ ACA PONER LO DE LOS DOCUMENTOS DE INGE ***********************
 
 ## Prerequisite Technologies
 

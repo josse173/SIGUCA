@@ -54,9 +54,9 @@
         else $("#motivoOtro").attr('disabled','disabled');
     });
 
-    $('#selectMotivo1').change(function (){
-        if($('#selectMotivo1').val() == 'otro') $("#motivoOtro1").removeAttr('disabled');
-        else $("#motivoOtro1").attr('disabled','disabled');
+    $('#selectMotivoJust').change(function (){
+        if($('#selectMotivoJust').val() == 'otro') $("#motivoOtroJust").removeAttr('disabled');
+        else $("#motivoOtroJust").attr('disabled','disabled');
     });
 
     $('#datepicker input').datepicker({
