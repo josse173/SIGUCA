@@ -170,21 +170,35 @@ module.exports = function(app, io) {
     */
     app.get('/gestionarEventos', autentificado, function(req, res) {
         if (req.session.name == "Supervisor") {
-            Justificaciones.find({estado:'Pendiente'}).populate('usuario').exec(function(error, justificaciones) {
-                Solicitudes.find({tipoSolicitudes:'Extras', estado:'Pendiente'}).populate('usuario').exec(function(error, extras) {
-                    Solicitudes.find({tipoSolicitudes:'Permisos', estado:'Pendiente'}).populate('usuario').exec(function(error, permisos) {
-                        
-                        var arrayJust = eventosAjuste(justificaciones, req.user);
-                        var arrayExtras = eventosAjuste(extras, req.user);
-                        var arrayPermisos = eventosAjuste(permisos, req.user);
-
-                        if (error) return res.json(error);
-                        return res.render('gestionarEventos', {
-                            title: 'Gestionar eventos | SIGUCA',
-                            usuario: req.user,
-                            justificaciones: arrayJust,
-                            extras: arrayExtras,
-                            permisos: arrayPermisos
+            Usuario.find({tipo:{"$nin": ['Administrador']}}).exec(function(error, usuarios) {
+                Usuario.find({_id:req.user.id},{_id:0, departamentos: 1}).populate('departamentos.departamento').exec(function(error, result) {
+                    Justificaciones.find({estado:'Pendiente'}).populate('usuario').exec(function(error, justificaciones) {
+                        Solicitudes.find({tipoSolicitudes:'Extras', estado:'Pendiente'}).populate('usuario').exec(function(error, extras) {
+                            Solicitudes.find({tipoSolicitudes:'Permisos', estado:'Pendiente'}).populate('usuario').exec(function(error, permisos) {
+                            
+                                result.forEach(function(supervisor){
+                                    var arrayDepa = [];
+                                    supervisor.departamentos.forEach(function (departamento){
+                                        arrayDepa.push(departamento.departamento.id);
+                                    });
+                                    var arrayUsuario = eventosAjuste(usuarios, req.user);
+                                    var arrayJust = eventosAjuste(justificaciones, req.user);
+                                    var arrayExtras = eventosAjuste(extras, req.user);
+                                    var arrayPermisos = eventosAjuste(permisos, req.user);
+                                   
+                                    if (error) return res.json(error);
+                                    return res.render('gestionarEventos', {
+                                        title: 'Gestionar eventos | SIGUCA',
+                                        usuario: req.user,
+                                        justificaciones: arrayJust,
+                                        extras: arrayExtras,
+                                        permisos: arrayPermisos,
+                                        usuarios: arrayUsuario,
+                                        departamentos: arrayDepa,
+                                        empleado: 'Todos los usuarios'
+                                    });
+                                });
+                            });
                         });
                     });
                 });
@@ -266,7 +280,8 @@ module.exports = function(app, io) {
                         fecha.setUTCSeconds(epochTime); 
                         evento[x].fecha = fecha;
                         if(JSON.stringify(evento[x].usuario.departamentos[0].departamento) === JSON.stringify(supervisor.departamentos[y].departamento) 
-                            && JSON.stringify(evento[x].usuario._id) != JSON.stringify(supervisor._id)){
+                            && JSON.stringify(evento[x].usuario._id) != JSON.stringify(supervisor._id)
+                            && notFound){
                             array.push(evento[x]);
                         } 
                         if(JSON.stringify(evento[x].usuario.tipo) === JSON.stringify("Supervisor") 
@@ -293,7 +308,8 @@ module.exports = function(app, io) {
                 *   - Se utiliza en los reportes.
                 */
                     if(JSON.stringify(evento[x].departamentos[0].departamento) === JSON.stringify(supervisor.departamentos[y].departamento) 
-                        && JSON.stringify(evento[x]._id) != JSON.stringify(supervisor._id)){
+                        && JSON.stringify(evento[x]._id) != JSON.stringify(supervisor._id)
+                        && notFound){
                         array.push(evento[x]);
                     } 
                     if(JSON.stringify(evento[x].tipo) === JSON.stringify("Supervisor") 
@@ -310,9 +326,10 @@ module.exports = function(app, io) {
     }
 
     /*
-    *   Filtra los eventos por usuario
+    *   - Filtra los eventos por usuario y rango de fecha. 
+    *   - Dependiendo si es reporte o gestión de eventos, filtra los eventos por distintos estados.
     */
-    app.post('/filtrarReportes', autentificado, function(req, res) {
+    app.post('/filtrarEventos', autentificado, function(req, res) {
         if (req.session.name == "Supervisor") {
             var usuarios = req.body.filtro;
             var option = usuarios.split('|');
@@ -326,30 +343,55 @@ module.exports = function(app, io) {
             var supervisor = {
                 _id: option[0],
                 departamentos: arrayDepa
-            }, 
-                usuarioId = option[2];
-            var justQuery = {
-                estado:{
-                    "$nin": ['Pendiente']
-                }
-            };
-            var extraQuery = {
-                tipoSolicitudes:'Extras', 
-                estado:{
-                    "$nin": ['Pendiente']
-                }
-            };
-            var permisosQuery = {
-                tipoSolicitudes:'Permisos', 
-                estado:{
-                    "$nin": ['Pendiente']
-                }
-            };
+            } 
+            
+            usuarioId = option[2];
+            
+            var justQuery = {};
+            var extraQuery = {tipoSolicitudes:'Extras'};
+            var permisosQuery = {tipoSolicitudes:'Permisos'};
+
             if(usuarioId != "todos"){
                 justQuery.usuario = usuarioId;
                 extraQuery.usuario = usuarioId;
                 permisosQuery.usuario = usuarioId;
             } 
+
+            if(req.body.fechaDesde != '' && req.body.fechaHasta != ''){
+                var splitDate1 = req.body.fechaDesde.split('/');
+                var date1 = new Date(splitDate1[2], splitDate1[1]-1, splitDate1[0]);
+                var epochDesde = (date1.getTime() - date1.getMilliseconds())/1000;
+
+                var splitDate2 = req.body.fechaHasta.split('/');
+                var date2 = new Date(splitDate2[2], splitDate2[1]-1, splitDate2[0]);
+                var epochHasta = (date2.getTime() - date2.getMilliseconds())/1000;
+
+                var fechaCreada = {
+                    "$gte": epochDesde, 
+                    "$lt": epochHasta
+                }
+
+                justQuery.fechaCreada = fechaCreada;
+                extraQuery.fechaCreada = fechaCreada;
+                permisosQuery.fechaCreada = fechaCreada;  
+            } 
+
+            var titulo;
+            if(option[3] === "reportes"){
+                var estado = {
+                    "$nin": ['Pendiente']
+                }
+                justQuery.estado = estado;
+                extraQuery.estado = estado;
+                permisosQuery.estado = estado;
+                titulo = 'Reportes | SIGUCA';
+            } else {
+                var estado = 'Pendiente';
+                justQuery.estado = estado;
+                extraQuery.estado = estado;
+                permisosQuery.estado = estado;
+                titulo = 'Gestionar eventos | SIGUCA';
+            }
 
             Usuario.find({tipo:{"$nin": ['Administrador']}}).exec(function(error, usuarios) {
                 Justificaciones.find(justQuery).populate('usuario').exec(function(error, justificaciones) {
@@ -362,7 +404,7 @@ module.exports = function(app, io) {
                             var arrayPermisos = eventosAjuste(permisos, supervisor);
                            
                             var filtro = {
-                                title: 'Reportes | SIGUCA',
+                                title: titulo,
                                 usuario: req.user,
                                 justificaciones: arrayJust,
                                 extras: arrayExtras,
@@ -376,13 +418,13 @@ module.exports = function(app, io) {
                                     filtro.empleado = usuario[0].apellido1 + ' ' + usuario[0].apellido2 + ', ' + usuario[0].nombre;
                                     
                                     if (error) return res.json(error);
-                                    return res.render('reportes', filtro); 
+                                    return (option[3] === "reportes") ? res.render('reportes', filtro) : res.render('gestionarEventos', filtro); 
                                 });
                             } else {
                                 filtro.empleado = 'Todos los usuarios';
 
                                 if (error) return res.json(error);
-                                return res.render('reportes', filtro); 
+                                return (option[3] === "reportes") ? res.render('reportes', filtro) : res.render('gestionarEventos', filtro); 
                             }
                         });
                     });
@@ -414,10 +456,93 @@ module.exports = function(app, io) {
     */
     app.get('/eventosEmpl', autentificado, function(req, res) {
         if (req.session.name != "Administrador") {
-            
             Justificaciones.find({usuario: req.user.id}).exec(function(error, justificaciones) {
                 Solicitudes.find({usuario: req.user.id, tipoSolicitudes:'Extras'}).exec(function(error, extras) {
                     Solicitudes.find({usuario: req.user.id, tipoSolicitudes:'Permisos'}).exec(function(error, permisos) {
+
+                        justificaciones.forEach(function(justificacion){
+                            var epochTime = justificacion.fechaCreada;
+                            var fecha= new Date(0);
+                            fecha.setUTCSeconds(epochTime); 
+                            justificacion.fecha = fecha;
+                        });//each
+                        extras.forEach(function(extra){
+                            var epochTime = extra.fechaCreada;
+                            var fecha= new Date(0);
+                            fecha.setUTCSeconds(epochTime); 
+                            extra.fecha = fecha;
+
+                            var  s = extra.cantidadHoras;
+                            var h  = Math.floor( s / ( 60 * 60 ) );
+                                s -= h * ( 60 * 60 );
+                            var m  = Math.floor( s / 60 );
+                            extra.cantHoras = h + ":" + m;
+                        });//each
+                        permisos.forEach(function(permiso){
+                            var epochTime = permiso.fechaCreada;
+                            var fecha= new Date(0);
+                            fecha.setUTCSeconds(epochTime); 
+                            permiso.fecha = fecha;
+                        });//each
+                        if (error) return res.json(error);
+                            if(req.session.name == "Empleado"){
+                                return res.render('eventosEmpl', {
+                                    title: 'Solicitudes/Justificaciones | SIGUCA',
+                                    usuario: req.user,
+                                    justificaciones: justificaciones,
+                                    extras: extras,
+                                    permisos: permisos
+                                });
+                            } else {
+                                return res.render('eventos', {
+                                    title: 'Solicitudes/Justificaciones | SIGUCA',
+                                    usuario: req.user,
+                                    justificaciones: justificaciones,
+                                    extras: extras,
+                                    permisos: permisos
+                                });
+                            }
+                    });
+                });
+            });
+            
+        } else {
+            req.logout();
+            res.redirect('/');
+        }
+    });
+
+    /*
+    *  Filtra los eventos de un usuario en específico por rango de fecha
+    */
+    app.post('/filtrarEventosEmpl', autentificado, function(req, res) {
+        if (req.session.name != "Administrador") {
+            
+            var justQuery = {usuario: req.user.id};
+            var extraQuery = {usuario: req.user.id, tipoSolicitudes:'Extras'};
+            var permisosQuery = {usuario: req.user.id, tipoSolicitudes:'Permisos'};
+
+            if(req.body.fechaDesde != '' && req.body.fechaHasta != ''){
+                var splitDate1 = req.body.fechaDesde.split('/');
+                var date1 = new Date(splitDate1[2], splitDate1[1]-1, splitDate1[0]);
+                var epochDesde = (date1.getTime() - date1.getMilliseconds())/1000;
+
+                var splitDate2 = req.body.fechaHasta.split('/');
+                var date2 = new Date(splitDate2[2], splitDate2[1]-1, splitDate2[0]);
+                var epochHasta = (date2.getTime() - date2.getMilliseconds())/1000;
+
+                var fechaCreada = {
+                    "$gte": epochDesde, 
+                    "$lt": epochHasta
+                }
+
+                justQuery.fechaCreada = fechaCreada;
+                extraQuery.fechaCreada = fechaCreada;
+                permisosQuery.fechaCreada = fechaCreada;  
+            } 
+            Justificaciones.find(justQuery).exec(function(error, justificaciones) {
+                Solicitudes.find(extraQuery).exec(function(error, extras) {
+                    Solicitudes.find(permisosQuery).exec(function(error, permisos) {
 
                         justificaciones.forEach(function(justificacion){
                             var epochTime = justificacion.fechaCreada;
@@ -674,7 +799,7 @@ module.exports = function(app, io) {
         Horario.findById(horarioId, function(error, horario) {
 
             if (error) return res.json(error);
-            console.log(horario)
+            
             res.render('editHorario', {
                 title: 'Editar Horario | SIGUCA',
                 horario: horario,
@@ -1025,7 +1150,7 @@ module.exports = function(app, io) {
     *   gusto del desarrollador. Finalmente se crea un cierre por cada departamento.
     */
     var job = new CronJob({ 
-        cronTime: '00 22 16 * * 0-6',//'00 00 23 * * 0-6',
+        cronTime: '00 00 23 * * 0-6',//'00 00 23 * * 0-6',
         onTick: function() {
             // Runs every weekday
             // at 12:00:00 AM.

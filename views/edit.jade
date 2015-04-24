@@ -65,7 +65,7 @@ block content
                     select.form-control#idDepartamento.selectpicker(data-style="btn-success", data-width="200px", type="text", name="departamentos" multiple='true')
                       each departamento, i in departamentos
                         if(empleado.departamento == departamento.id)
-                         option(value= departamento.id selected='true') #{departamento.nombre} 
+                         option(value= departamento.id selected) #{departamento.nombre} 
                         else
                          option(value= departamento.id) #{departamento.nombre} 
                   else
@@ -76,7 +76,7 @@ block content
                         else
                          option(value= departamento.id) #{departamento.nombre} 
                          
-              button.btn.btn-default(type='submit') Actualizar
+              button.btn.btn-success(type='submit') Actualizar
               button.btn.btn-default(type='button', data-dismiss='modal') Cancelar 
 
           .modal-footer       

@@ -60,7 +60,7 @@
     });
 
     $('#datepicker input').datepicker({
-        format: "dd/mm/yy",
+        format: "dd/mm/yyyy",
         daysOfWeekDisabled: "0",
         autoclose: true,
         language: "es",

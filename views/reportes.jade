@@ -2,10 +2,11 @@ extends layout
 
 block sigucaCSS
   link(rel='stylesheet', href='/stylesheets/bootstrap-select.min.css')
+  link(rel='stylesheet', href='/stylesheets/bootstrap-datepicker.min.css')
 
 block content
     div.container
-      .col-xs-4
+      .col-xs-3
        h3 Reportes de eventos
        h4 #{empleado}   
 
@@ -17,12 +18,24 @@ block content
                   .btn-group
                      .btn-group
                      table
-                       form(role='form', method="POST", action="/filtrarReportes/")
+                       form(role='form', method="POST", action="/filtrarEventos/")
                         td
                           select.form-control#selectFiltro.selectpicker(data-style="btn-default", data-width="auto", type="text", name="filtro") 
-                            option(value= usuario._id + "|" + departamentos + "|todos") Todos los usuarios
+                            option(value= usuario._id + "|" + departamentos + "|todos|reportes") Todos los usuarios
                             each user in usuarios
-                              option(value= usuario._id + "|" + departamentos + "|" + user._id) #{user.apellido1} #{user.apellido2}, #{user.nombre}
+                              option(value= usuario._id + "|" + departamentos + "|" + user._id + "|reportes") #{user.apellido1} #{user.apellido2}, #{user.nombre}
+                        td
+                          label(for='fechaDesde') Desde:
+                            div#datepicker.input-group
+                              input.form-control(type='text', name='fechaDesde')
+                              span.input-group-addon
+                                i.icon-calendar
+                        td
+                          label(for='fechaHasta') Hasta:
+                            div#datepicker.input-group
+                              input.form-control(type='text', name='fechaHasta')
+                              span.input-group-addon
+                                i.icon-calendar
                         td
                           button.form-control.btn.btn-success(type='submit', name='gestionar') Filtrar
                         
@@ -110,4 +123,6 @@ block content
               
                                      
 block sigucaJS
+  script(src="/js/bootstrap-datepicker.min.js")
   script(src="/js/bootstrap-select.min.js")
+  script(src="/js/datepickerReportes.js")

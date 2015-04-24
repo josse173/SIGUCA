@@ -152,15 +152,13 @@ block content
                       label(for="passwordInput")
                         |Contraseña:
                         input.form-control#passInput(type='text', size='18', name="password", placeholder="Contraseña")
-                      br
-                      button.btn.btn-default(type='button', onclick='generatepass(8)') Generar Contraseña
+                        button.btn.btn-default(type='button', onclick='generatepass(8)') Generar Contraseña
                                     
                     button.btn.btn-success(type='submit') Ingresar
                     button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
 block sigucaJS
+  script(src="/js/mailgun_validator.js")
+  script(src="/js/generarPassword.js")
   script(src="/js/bootstrap-timepicker.min.js")
   script( src='/js/timepickerAdmin.js')
   script(src="/js/bootstrap-select.min.js")
-  script(src="/js/mailgun_validator.js")
-
-

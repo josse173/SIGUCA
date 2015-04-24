@@ -13,7 +13,7 @@ block content
           button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
           h4#myModalLabel.modal-title Actualizar Horarios
         .modal-body
-          form(method="post", action="/horarioN/" + _id)#login-form.well.span4
+          form(method="post", action="/horarioN/" + horario._id)#login-form.well.span4
             .form-group
               h4 Información Básica
               label(for='nombre' style="float:left") Nombre del Horario:
@@ -39,7 +39,7 @@ block content
                   span.input-group-addon
                     i.icon-time
               label(for='rangoJornada') Rango de jornada:de horas:
-                label.form-control#rangoJornada(text=horario.rangoJornada)
+                label.form-control#rangoJornada() #{horario.rangoJornada}
                 div#timepicker4.input-group
                   input.form-control#inputRango(type="text", name="rangoJornada", value=horario.rangoJornada)
                   span.input-group-addon

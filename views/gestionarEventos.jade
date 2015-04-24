@@ -1,7 +1,44 @@
 extends layout
 
+block sigucaCSS
+  link(rel='stylesheet', href='/stylesheets/bootstrap-select.min.css')
+  link(rel='stylesheet', href='/stylesheets/bootstrap-datepicker.min.css')
+
 block content
     div.container
+      .col-xs-3
+       h3 Reportes de eventos
+       h4 #{empleado}   
+
+      .col-xs-12
+       h3 Filtros   
+       div.filter
+             div.filter
+                  label#departamento(for='departamento') 
+                  .btn-group
+                     .btn-group
+                     table
+                       form(role='form', method="POST", action="/filtrarEventos/")
+                        td
+                          select.form-control#selectFiltro.selectpicker(data-style="btn-default", data-width="auto", type="text", name="filtro") 
+                            option(value= usuario._id + "|" + departamentos + "|todos|gestionarEventos") Todos los usuarios
+                            each user in usuarios
+                              option(value= usuario._id + "|" + departamentos + "|" + user._id + "|gestionarEventos") #{user.apellido1} #{user.apellido2}, #{user.nombre}
+                        td
+                          label(for='fechaDesde') Desde:
+                            div#datepicker.input-group
+                              input.form-control(type='text', name='fechaDesde')
+                              span.input-group-addon
+                                i.icon-calendar
+                        td
+                          label(for='fechaHasta') Hasta:
+                            div#datepicker.input-group
+                              input.form-control(type='text', name='fechaHasta')
+                              span.input-group-addon
+                                i.icon-calendar
+                        td
+                          button.form-control.btn.btn-success(type='submit', name='gestionar') Filtrar
+       
       .col-xs-12
         h3 Justificaciones
         br
@@ -25,7 +62,7 @@ block content
                     td
                       textarea.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
                     td
-                      select.selectpicker.show-tick(name='estado')
+                      select(name='estado')
                         option(value='Aceptada') Aceptar
                         option(value='Rechazada') Rechazar
                         option(value='Pendiente') Pendiente
@@ -63,7 +100,7 @@ block content
                     td
                       textarea.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
                     td
-                      select.selectpicker.show-tick(name='estado')
+                      select(name='estado')
                         option(value='Aceptada') Aceptar
                         option(value='Rechazada') Rechazar
                         option(value='Pendiente') Pendiente
@@ -98,7 +135,7 @@ block content
                     td
                       textarea.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
                     td
-                      select.selectpicker.show-tick(name='estado')
+                      select(name='estado')
                         option(value='Aceptada') Aceptar
                         option(value='Rechazada') Rechazar
                         option(value='Pendiente') Pendiente
@@ -106,4 +143,6 @@ block content
                       button.btn.btn-success(type='submit', name='gestionar') Gestionar
                                  
 block sigucaJS
-  script(src="/js/mailgun_validator.js")
+  script(src="/js/bootstrap-datepicker.min.js")
+  script(src="/js/bootstrap-select.min.js")
+  script(src="/js/datepickerReportes.js")

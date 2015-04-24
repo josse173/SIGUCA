@@ -11,9 +11,9 @@ block content
           form(role='form', method="POST", action="/departamento/" + _id)#login-form.well.span4
             .form-group
                 label(for='nombre') Nombre:
-                  input#group.form-control( placeholder='Nombre del area', name ='nombre', value = nombre)
+                  input#group.form-control( placeholder='Nombre del area', name ='nombre', value = departamento.nombre)
                                                           
-            button.btn.btn-default(type='submit') Actualizar
+            button.btn.btn-success(type='submit') Actualizar
             button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
 
         .modal-footer    

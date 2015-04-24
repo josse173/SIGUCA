@@ -1,7 +1,36 @@
 extends layoutEmpl
 
+block sigucaCSS
+  link(rel='stylesheet', href='/stylesheets/bootstrap-datepicker.min.css')
+
 block content  
   div.container
+      .col-xs-3
+       h3 Mis eventos
+       h4 #{usuario.apellido1} #{usuario.apellido2}, #{usuario.nombre}   
+      .col-xs-12
+       h3 Filtros   
+       div.filter
+             div.filter
+                  .btn-group
+                     .btn-group
+                     table
+                       form(role='form', method="POST", action="/filtrarEventosEmpl")
+                        td
+                          label(for='fechaDesde') Desde:
+                            div#datepicker.input-group
+                              input.form-control(type='text', name='fechaDesde')
+                              span.input-group-addon
+                                i.icon-calendar
+                        td
+                          label(for='fechaHasta') Hasta:
+                            div#datepicker.input-group
+                              input.form-control(type='text', name='fechaHasta')
+                              span.input-group-addon
+                                i.icon-calendar
+                        td
+                          button.form-control.btn.btn-success(type='submit', name='filtrar') Filtrar
+      
       .col-xs-12
         h3 Justificaciones
         br
@@ -75,3 +104,7 @@ block content
                   td #{permiso.detalle} 
                   td #{permiso.comentarioSupervisor} 
                   td #{permiso.estado} 
+                  
+block sigucaJS
+  script(src="/js/bootstrap-datepicker.min.js")
+  script(src="/js/datepickerReportes.js")
