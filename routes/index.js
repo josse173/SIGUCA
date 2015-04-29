@@ -60,27 +60,16 @@ module.exports = function(app, io) {
                     Solicitudes.find({estado:'Pendiente'}).populate('usuario').exec(function(error, solicitudes) {
                         var just = 0;
                         var soli = 0;
+                        var notFound = true;
                         result.forEach(function(supervisor){
                             var array = [];
-                            supervisor.departamentos.forEach(function (departamento){
-                                array.push(departamento.departamento.id);
-                                justificaciones.forEach(function (justificacion){
-                                    justificacion.usuario.departamentos.forEach(function (departamentoUs){
-                                        if(JSON.stringify(departamentoUs.departamento) === JSON.stringify(departamento.departamento._id)
-                                            && JSON.stringify(justificacion.usuario._id) != JSON.stringify(req.user.id)){
-                                            just++;
-                                        }
-                                    });
-                                });
-                                solicitudes.forEach(function (solicitud){
-                                    solicitud.usuario.departamentos.forEach(function (departamentoUs){
-                                        if(JSON.stringify(departamentoUs.departamento) === JSON.stringify(departamento.departamento._id)
-                                            && JSON.stringify(solicitud.usuario._id) != JSON.stringify(req.user.id)){
-                                            soli++;
-                                        }
-                                    });
-                                });
-                            });
+                            for(var y = 0; y < supervisor.departamentos.length; y++){
+                                array.push(supervisor.departamentos[y].departamento._id);
+                            }
+
+                            just = eventosAjuste(justificaciones, req.user, "count");
+                            soli = eventosAjuste(solicitudes, req.user, "count");
+
                             if (error) return res.json(error);
                             return res.render('escritorio', {
                                 title: 'Escritorio Supervisor | SIGUCA',
@@ -90,10 +79,10 @@ module.exports = function(app, io) {
                                 todos: array,
                                 usuario: req.user
                             });
-                        });
-                    });
-                });
-            });
+                        });//Supervisor
+                    });//solicitudes
+                });//Justificaciones
+            });//Usuarios
 
         } else {
             req.logout();
@@ -171,38 +160,34 @@ module.exports = function(app, io) {
     app.get('/gestionarEventos', autentificado, function(req, res) {
         if (req.session.name == "Supervisor") {
             Usuario.find({tipo:{"$nin": ['Administrador']}}).exec(function(error, usuarios) {
-                Usuario.find({_id:req.user.id},{_id:0, departamentos: 1}).populate('departamentos.departamento').exec(function(error, result) {
-                    Justificaciones.find({estado:'Pendiente'}).populate('usuario').exec(function(error, justificaciones) {
-                        Solicitudes.find({tipoSolicitudes:'Extras', estado:'Pendiente'}).populate('usuario').exec(function(error, extras) {
-                            Solicitudes.find({tipoSolicitudes:'Permisos', estado:'Pendiente'}).populate('usuario').exec(function(error, permisos) {
-                            
-                                result.forEach(function(supervisor){
-                                    var arrayDepa = [];
-                                    supervisor.departamentos.forEach(function (departamento){
-                                        arrayDepa.push(departamento.departamento.id);
-                                    });
-                                    var arrayUsuario = eventosAjuste(usuarios, req.user);
-                                    var arrayJust = eventosAjuste(justificaciones, req.user);
-                                    var arrayExtras = eventosAjuste(extras, req.user);
-                                    var arrayPermisos = eventosAjuste(permisos, req.user);
-                                   
-                                    if (error) return res.json(error);
-                                    return res.render('gestionarEventos', {
-                                        title: 'Gestionar eventos | SIGUCA',
-                                        usuario: req.user,
-                                        justificaciones: arrayJust,
-                                        extras: arrayExtras,
-                                        permisos: arrayPermisos,
-                                        usuarios: arrayUsuario,
-                                        departamentos: arrayDepa,
-                                        empleado: 'Todos los usuarios'
-                                    });
-                                });
+                Justificaciones.find({estado:'Pendiente'}).populate('usuario').exec(function(error, justificaciones) {
+                    Solicitudes.find({tipoSolicitudes:'Extras', estado:'Pendiente'}).populate('usuario').exec(function(error, extras) {
+                        Solicitudes.find({tipoSolicitudes:'Permisos', estado:'Pendiente'}).populate('usuario').exec(function(error, permisos) {
+                        
+                            var arrayDepa = [];
+                            req.user.departamentos.forEach(function (departamento){
+                                arrayDepa.push(departamento.departamento);
                             });
-                        });
-                    });
-                });
-            });
+                            var arrayUsuario = eventosAjuste(usuarios, req.user,"gestionar");
+                            var arrayJust = eventosAjuste(justificaciones, req.user,"gestionar");
+                            var arrayExtras = eventosAjuste(extras, req.user,"gestionar");
+                            var arrayPermisos = eventosAjuste(permisos, req.user,"gestionar");
+                           
+                            if (error) return res.json(error);
+                            return res.render('gestionarEventos', {
+                                title: 'Gestionar eventos | SIGUCA',
+                                usuario: req.user,
+                                justificaciones: arrayJust,
+                                extras: arrayExtras,
+                                permisos: arrayPermisos,
+                                usuarios: arrayUsuario,
+                                departamentos: arrayDepa,
+                                empleado: 'Todos los usuarios'
+                            });//res.render
+                        });//Permisos
+                    });//Extras
+                });//Justificaciones
+            });//Usuarios
         } else {
             req.logout();
             res.redirect('/');
@@ -216,39 +201,49 @@ module.exports = function(app, io) {
     */
     app.get('/reportes', autentificado, function(req, res) {
         if (req.session.name == "Supervisor") {
+            var diaGte = new Date(),
+                diaLt = new Date();
+            diaGte.setHours(0);
+            diaGte.setMinutes(1);
+            diaGte.setSeconds(0);
+            diaGte.setMilliseconds(0);
+            var epochGte = (diaGte.getTime() - diaGte.getMilliseconds())/1000,
+                epochLt = (diaLt.getTime() - diaLt.getMilliseconds())/1000;
+
             Usuario.find({tipo:{"$nin": ['Administrador']}}).exec(function(error, usuarios) {
-                Usuario.find({_id:req.user.id},{_id:0, departamentos: 1}).populate('departamentos.departamento').exec(function(error, result) {
+                Marca.find({epoch:{"$gte": epochGte, "$lt": epochLt}}).populate('usuario').exec(function(error, marcas) {
                     Justificaciones.find({estado:{"$nin": ['Pendiente']}}).populate('usuario').exec(function(error, justificaciones) {
                         Solicitudes.find({tipoSolicitudes:'Extras', estado:{"$nin": ['Pendiente']}}).populate('usuario').exec(function(error, extras) {
                             Solicitudes.find({tipoSolicitudes:'Permisos', estado:{"$nin": ['Pendiente']}}).populate('usuario').exec(function(error, permisos) {
                             
-                                result.forEach(function(supervisor){
-                                    var arrayDepa = [];
-                                    supervisor.departamentos.forEach(function (departamento){
-                                        arrayDepa.push(departamento.departamento.id);
-                                    });
-                                    var arrayUsuario = eventosAjuste(usuarios, req.user);
-                                    var arrayJust = eventosAjuste(justificaciones, req.user);
-                                    var arrayExtras = eventosAjuste(extras, req.user);
-                                    var arrayPermisos = eventosAjuste(permisos, req.user);
-                                   
-                                    if (error) return res.json(error);
-                                    return res.render('reportes', {
-                                        title: 'Reportes | SIGUCA',
-                                        usuario: req.user,
-                                        justificaciones: arrayJust,
-                                        extras: arrayExtras,
-                                        permisos: arrayPermisos,
-                                        usuarios: arrayUsuario,
-                                        departamentos: arrayDepa,
-                                        empleado: 'Todos los usuarios'
-                                    });
+                                var arrayDepa = [];
+                                req.user.departamentos.forEach(function (departamento){
+                                    arrayDepa.push(departamento.departamento);
                                 });
-                            });
-                        });
-                    });
-                });
-            });
+
+                                var arrayUsuario = eventosAjuste(usuarios, req.user, "reportes");
+                                var arrayJust = eventosAjuste(justificaciones, req.user, "reportes");
+                                var arrayExtras = eventosAjuste(extras, req.user, "reportes");
+                                var arrayPermisos = eventosAjuste(permisos, req.user, "reportes");
+                                var arrayMarcas = eventosAjuste(marcas, req.user, "reportes");
+                               
+                                if (error) return res.json(error);
+                                return res.render('reportes', {
+                                    title: 'Reportes | SIGUCA',
+                                    usuario: req.user,
+                                    justificaciones: arrayJust,
+                                    extras: arrayExtras,
+                                    permisos: arrayPermisos,
+                                    usuarios: arrayUsuario,
+                                    departamentos: arrayDepa,
+                                    marcas: arrayMarcas,
+                                    empleado: 'Todos los usuarios'
+                                });//res.render
+                            });//Permisos
+                        });//Extras
+                    });//Marcas
+                });//Justificaciones
+            });//Usuarios
         } else {
             req.logout();
             res.redirect('/');
@@ -259,9 +254,10 @@ module.exports = function(app, io) {
     *  Resultados de configuracion y reportes se filtran por supervisor, finalmente se direcciona a la página 
     *  correspondiente, donde se gestionaran cada uno de los resultados. 
     */
-    function eventosAjuste(evento, supervisor){
+    function eventosAjuste(evento, supervisor, query){
         var notFound = true;
         var array = [];
+        var count = 0;
 
         for(var x = 0; x < evento.length; x++){
             for(var y = 0; y < supervisor.departamentos.length; y++){
@@ -279,17 +275,6 @@ module.exports = function(app, io) {
                         var fecha = new Date(0);
                         fecha.setUTCSeconds(epochTime); 
                         evento[x].fecha = fecha;
-                        if(JSON.stringify(evento[x].usuario.departamentos[0].departamento) === JSON.stringify(supervisor.departamentos[y].departamento) 
-                            && JSON.stringify(evento[x].usuario._id) != JSON.stringify(supervisor._id)
-                            && notFound){
-                            array.push(evento[x]);
-                        } 
-                        if(JSON.stringify(evento[x].usuario.tipo) === JSON.stringify("Supervisor") 
-                            && JSON.stringify(evento[x].usuario._id) != JSON.stringify(supervisor._id)
-                            && notFound){
-                            array.push(evento[x]);
-                            notFound = false;
-                        }
                     }
                     if("cantidadHoras" in evento[x]){
                         var  s = evento[x].cantidadHoras;
@@ -302,6 +287,27 @@ module.exports = function(app, io) {
                             evento[x].cantHoras = h + ":" + m;
                         
                     } 
+                    if("epoch" in evento[x]){
+                        var epochTime = evento[x].epoch;
+                        var fecha = new Date(0);
+                        fecha.setUTCSeconds(epochTime); 
+                        evento[x].fecha = fecha;
+                    }
+
+                    if(JSON.stringify(evento[x].usuario.departamentos[0].departamento) === JSON.stringify(supervisor.departamentos[y].departamento) 
+                        && JSON.stringify(evento[x].usuario._id) != JSON.stringify(supervisor._id)
+                        && notFound){
+                        array.push(evento[x]);
+                        count++;
+                        notFound = false;
+                    } 
+                    if(JSON.stringify(evento[x].usuario.tipo) === JSON.stringify("Supervisor") 
+                        && JSON.stringify(evento[x].usuario._id) != JSON.stringify(supervisor._id)
+                        && notFound){
+                        array.push(evento[x]);
+                        count++;
+                        notFound = false;
+                    }
                 } else {
                 /*
                 *   - Filtra los usuarios por supervisor, sin mostrarse el mismo.
@@ -311,6 +317,7 @@ module.exports = function(app, io) {
                         && JSON.stringify(evento[x]._id) != JSON.stringify(supervisor._id)
                         && notFound){
                         array.push(evento[x]);
+                        notFound = false;
                     } 
                     if(JSON.stringify(evento[x].tipo) === JSON.stringify("Supervisor") 
                         && JSON.stringify(evento[x]._id) != JSON.stringify(supervisor._id)
@@ -322,6 +329,9 @@ module.exports = function(app, io) {
             }
             notFound = true;
         }
+        if("count" === query){
+            return count;
+        }
         return array;
     }
 
@@ -331,6 +341,15 @@ module.exports = function(app, io) {
     */
     app.post('/filtrarEventos', autentificado, function(req, res) {
         if (req.session.name == "Supervisor") {
+            var diaGte = new Date(),
+                diaLt = new Date();
+            diaGte.setHours(0);
+            diaGte.setMinutes(1);
+            diaGte.setSeconds(0);
+            diaGte.setMilliseconds(0);
+            var epochGte = (diaGte.getTime() - diaGte.getMilliseconds())/1000,
+                epochLt = (diaLt.getTime() - diaLt.getMilliseconds())/1000;
+
             var usuarios = req.body.filtro;
             var option = usuarios.split('|');
             
@@ -350,11 +369,13 @@ module.exports = function(app, io) {
             var justQuery = {};
             var extraQuery = {tipoSolicitudes:'Extras'};
             var permisosQuery = {tipoSolicitudes:'Permisos'};
+            var marcaQuery = {epoch:{"$gte": epochGte, "$lt": epochLt}};
 
             if(usuarioId != "todos"){
                 justQuery.usuario = usuarioId;
                 extraQuery.usuario = usuarioId;
                 permisosQuery.usuario = usuarioId;
+                marcaQuery.usuario = usuarioId;
             } 
 
             if(req.body.fechaDesde != '' && req.body.fechaHasta != ''){
@@ -394,42 +415,46 @@ module.exports = function(app, io) {
             }
 
             Usuario.find({tipo:{"$nin": ['Administrador']}}).exec(function(error, usuarios) {
-                Justificaciones.find(justQuery).populate('usuario').exec(function(error, justificaciones) {
-                    Solicitudes.find(extraQuery).populate('usuario').exec(function(error, extras) {
-                        Solicitudes.find(permisosQuery).populate('usuario').exec(function(error, permisos) {
-                           
-                            var arrayUsuario = eventosAjuste(usuarios, supervisor)
-                            var arrayJust = eventosAjuste(justificaciones, supervisor);
-                            var arrayExtras = eventosAjuste(extras, supervisor);
-                            var arrayPermisos = eventosAjuste(permisos, supervisor);
-                           
-                            var filtro = {
-                                title: titulo,
-                                usuario: req.user,
-                                justificaciones: arrayJust,
-                                extras: arrayExtras,
-                                permisos: arrayPermisos,
-                                usuarios: arrayUsuario,
-                                departamentos: option[1]
-                            };
+                Marca.find(marcaQuery).populate('usuario').exec(function(error, marcas) {
+                    Justificaciones.find(justQuery).populate('usuario').exec(function(error, justificaciones) {
+                        Solicitudes.find(extraQuery).populate('usuario').exec(function(error, extras) {
+                            Solicitudes.find(permisosQuery).populate('usuario').exec(function(error, permisos) {
+                               
+                                var arrayUsuario = eventosAjuste(usuarios, supervisor, "filtro")
+                                var arrayJust = eventosAjuste(justificaciones, supervisor, "filtro");
+                                var arrayExtras = eventosAjuste(extras, supervisor, "filtro");
+                                var arrayPermisos = eventosAjuste(permisos, supervisor, "filtro");
+                                var arrayMarcas = eventosAjuste(marcas, supervisor, "filtro");
+                               
+                                var filtro = {
+                                    title: titulo,
+                                    usuario: req.user,
+                                    justificaciones: arrayJust,
+                                    extras: arrayExtras,
+                                    permisos: arrayPermisos,
+                                    usuarios: arrayUsuario,
+                                    departamentos: option[1],
+                                    marcas: arrayMarcas
+                                };
 
-                            if(usuarioId != "todos"){
-                                Usuario.find({"_id":usuarioId},{"nombre":1, "apellido1":1,"apellido2":1, "_id":0}).exec(function(error, usuario) {
-                                    filtro.empleado = usuario[0].apellido1 + ' ' + usuario[0].apellido2 + ', ' + usuario[0].nombre;
-                                    
+                                if(usuarioId != "todos"){
+                                    Usuario.find({"_id":usuarioId},{"nombre":1, "apellido1":1,"apellido2":1, "_id":0}).exec(function(error, usuario) {
+                                        filtro.empleado = usuario[0].apellido1 + ' ' + usuario[0].apellido2 + ', ' + usuario[0].nombre;
+                                        
+                                        if (error) return res.json(error);
+                                        return (option[3] === "reportes") ? res.render('reportes', filtro) : res.render('gestionarEventos', filtro); 
+                                    });
+                                } else {
+                                    filtro.empleado = 'Todos los usuarios';
+
                                     if (error) return res.json(error);
                                     return (option[3] === "reportes") ? res.render('reportes', filtro) : res.render('gestionarEventos', filtro); 
-                                });
-                            } else {
-                                filtro.empleado = 'Todos los usuarios';
-
-                                if (error) return res.json(error);
-                                return (option[3] === "reportes") ? res.render('reportes', filtro) : res.render('gestionarEventos', filtro); 
-                            }
-                        });
-                    });
-                });
-            }); 
+                                }
+                            });//Permisos
+                        });//Extras
+                    });//Justificaciones
+                });//Marcas
+            });//Usuarios 
         } else {
             req.logout();
             res.redirect('/');
@@ -1128,6 +1153,47 @@ module.exports = function(app, io) {
         });
     });
 
+
+    /*
+    *   Detalles del calendario por día.
+    ------------------------------------------------------
+    creo que es mejor modificar como se crean los cierres de los departamentos y mostrar solo una consulta no varias.
+    */
+    app.get('/reportarEventos', autentificado, function(req, res) {
+        var diaGte = new Date(req.query.dia);
+        var diaLt = new Date(diaGte);
+        diaLt.setDate(diaGte.getDate() + 1);
+
+        var epochGte = (diaGte.getTime() - diaGte.getMilliseconds())/1000,
+            epochLt = (diaLt.getTime() - diaLt.getMilliseconds())/1000;
+
+        if (req.session.name == "Supervisor") {
+            Justificaciones.find({fechaCreada:{"$gte": epochGte, "$lt": epochLt}, estado:{"$nin": ['Pendiente']}}).populate('usuario').exec(function(error, justificaciones) {
+                Solicitudes.find({fechaCreada:{"$gte": epochGte, "$lt": epochLt}, tipoSolicitudes:'Extras', estado:{"$nin": ['Pendiente']}}).populate('usuario').exec(function(error, extras) {
+                    Solicitudes.find({fechaCreada:{"$gte": epochGte, "$lt": epochLt}, tipoSolicitudes:'Permisos', estado:{"$nin": ['Pendiente']}}).populate('usuario').exec(function(error, permisos) {
+                        var supervisor = {departamentos: req.user.departamentos, _id: req.user.id};
+                        var arrayJust = eventosAjuste(justificaciones, supervisor, req.query.departamentoId);
+                        var arrayExtras = eventosAjuste(extras, supervisor, req.query.departamentoId);
+                        var arrayPermisos = eventosAjuste(permisos, supervisor, req.query.departamentoId);
+
+                        var total = arrayJust.length + arrayExtras.length + arrayPermisos.length;
+                        
+                        res.send(
+                            //'<p> Departamento: ' + req.query.departamento +  '</p>' +
+                            '<tr><td> Justificaciones: </td><td>' + arrayJust.length +  '</td></tr>' +
+                            '<tr><td> Extras: </td><td>' + arrayExtras.length +  '</td></tr>' +
+                            '<tr><td> Permisos: </td><td>' + arrayPermisos.length + '</td></tr>' +
+                            '<tr><td> Tardías o Ausencias: </td><td>' + (req.query.eventos - total) + '</td></tr>'
+                        );
+                    });//Permisos
+                });//Extras
+            });//Justificaciones
+        } else {
+            req.logout();
+            res.redirect('/');
+        }
+    });
+
     /*
     *   A una hora determinada de lunes a sábado se crearán los estados de cierre general 
     *   por cada departamento y los estados de cierre personales por cada usuario.
@@ -1462,7 +1528,7 @@ module.exports = function(app, io) {
         /*
         *   Recibe la orden de lista y filtra cierres por tipo de usuario
         */
-        socket.on('listar', function(departamentoId){
+        socket.on('listar', function (departamentoId){
             var option = departamentoId.split(',');
             if(option[0] == "Supervisor")
                 listarSupervisor(departamentoId);
@@ -1487,7 +1553,6 @@ module.exports = function(app, io) {
                 Cierre.find(queryOr).exec(function(err, cierre) {
                     if (err) console.log('error al cargar los cierres: ' + err);
                     else {
-                        console.log('consulta sin errores');
                         socket.emit('listaCierre', cierre);
                     }
                 });
@@ -1495,7 +1560,6 @@ module.exports = function(app, io) {
                 Cierre.find({tipo: "General", departamento: option[1]}).exec(function(err, cierre) {
                     if (err) console.log('error al cargar los cierres: ' + err);
                     else {
-                        console.log('consulta sin errores');
                         socket.emit('listaCierre', cierre);
                     }
                 });
@@ -1530,7 +1594,6 @@ module.exports = function(app, io) {
                 }
             });
         }
-
     });//io.sockets
 
 };//modules

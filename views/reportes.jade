@@ -40,6 +40,23 @@ block content
                           button.form-control.btn.btn-success(type='submit', name='gestionar') Filtrar
                         
       .col-xs-12
+        h3 Marcas
+        br
+        .table-responsive
+        table.table
+            thead
+              tr
+                th Fecha
+                th Usuario
+                th Tipo
+            tbody
+              each marca, i in marcas
+                tr
+                  td #{marca.fecha} 
+                  td #{marca.usuario.nombre} #{marca.usuario.apellido1}
+                  td #{marca.tipoMarca} 
+              
+      .col-xs-12
         h3 Justificaciones
         br
         .table-responsive
@@ -63,8 +80,7 @@ block content
                   td #{justificacion.estado}  
               
 
-
-        h3 Solicitudes Horas Extras
+        h3 Solicitudes Horas Extraordinarias
         br
         .table-responsive
         table.table

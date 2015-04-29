@@ -59,6 +59,7 @@
         else $("#motivoOtroJust").attr('disabled','disabled');
     });
 
+
     $('#datepicker input').datepicker({
         format: "dd/mm/yyyy",
         daysOfWeekDisabled: "0",
@@ -85,7 +86,7 @@ function calendario(stats, array){
         subDomain: "x_day", //"x_hour",
         subDomainTextFormat: "%d",
         weekStartOnMonday: false,
-        range: 4,
+        range: 2,
         cellSize: 24,
         domainGutter:   5, // separa los meses
         tooltip: true, // muestra el fecha y hora de cada cuadro
@@ -93,6 +94,9 @@ function calendario(stats, array){
         previousSelector: "#previous",
         nextSelector: "#next",
         highlight: "now", //señala la hora actual.
+        label: {
+            position: "top"
+        },
         legend: array,
         legendCellSize: 15,
         legendColors: {
@@ -103,16 +107,27 @@ function calendario(stats, array){
             overflowing: "#EA4868"
         },
         legendTitleFormat: {
-            lower: "menos de {min} {name}",
-            inner: "entre {down} y {up} {name}",
-            upper: "mas de {max} {name}",
+            lower: "Menos de {min} {name}",
+            inner: "Entre {down} y {up} {name}",
+            upper: "Mas de {max} {name}",
             overflowing: "Tardias"
         },
-        itemName: "Evento"
+        legendHorizontalPosition: "right",
+        //legendVerticalPosition: "top",
+        itemName: "evento",
+        onClick: function(date, nb) {
+            // $("#calDetalle").html("You just clicked <br/>on <b>" +
+            //     date + "</b> <br/>with <b>" +
+            //     (nb === null ? "unknown" : nb) + "</b> items"
+            // );
+            var value = $('#selectFiltro').val();
+            var departamento = value.split(',');
+            if(departamento[0] === 'Supervisor'){
+
+                $.get('/reportarEventos', {dia: date, eventos: nb, departamentoId: departamento[1]}, function( data ) {
+                    $( "#calDetalle" ).html(data);
+                });
+            }
+        }
     });
-    // cal.highlight(new Date(2014, 5, 18));
-
-    // // // Add January 5th to already highlighted dates
-    // cal.highlight(cal.options.highlight.push(new Date(2014, 5, 14)));
-
 };

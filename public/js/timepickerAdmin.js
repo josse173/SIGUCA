@@ -4,6 +4,12 @@
     $('#timepicker2 input').timepicker('setTime', '0:45');
     $('#timepicker3 input').timepicker('setTime', '1:00');
     $('#timepicker4 input').timepicker('setTime', '9:00');
+
+    $('#timepicker span').timepicker('setTime', '8:00');
+    $('#timepicker1 span').timepicker('setTime', '17:00');
+    $('#timepicker2 span').timepicker('setTime', '0:45');
+    $('#timepicker3 span').timepicker('setTime', '1:00');
+    $('#timepicker4 span').timepicker('setTime', '9:00');
     $('#rangoJornada').text("9:00");
     
     $('#tipoJornada').val('Fijo');
@@ -56,7 +62,8 @@
     });
 
     // $('#selectTipo').change(function () {
-    // 	if($('#selectTipo option[value=Supervisor]:selected')){
+    //     var val = $('#selectTipo').val()
+    // 	if(val === 'Supervisor'){
     // 		$('#selectDepartamento').attr('multiple','multiple');
     // 	}
     // 	else{

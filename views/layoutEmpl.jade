@@ -46,8 +46,8 @@ html
           span.icon-bar
         span.navbar-brand(href="#")          
           span#barLogo
-            img(src='images/logo-siguca.png',  href="/Ayuda")#sigucaLogo
-            img(src='images/logo-greencore.png',  href="/Ayuda")#sigucaLogo
+            img(src='/images/logo-siguca.png',  href="/Ayuda")#sigucaLogo
+            img(src='/images/logo-greencore.png',  href="/Ayuda")#sigucaLogo
          
         
       div.collapse.navbar-collapse.navbar-ex1-collapse.navbar-right
@@ -73,7 +73,7 @@ html
                   |&nbsp;Acerca de SIGUCA  
               li
                 a(href='/logout')
-                  img(src='images/cerrar.jpg', alt='something')      
+                  img(src='/images/cerrar.jpg', alt='something')      
                   |&nbsp;#{usuario.tipo}: #{usuario.username}  
       br     
     block content

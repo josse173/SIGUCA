@@ -54,25 +54,21 @@ block content
     .col-xs-2      
       //modal para realizar marcas
       #addMarca.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
-        
         .modal-dialog
             .modal-content
-              
               .modal-header
                 button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
                 h1#myModalLabel.modal-title SIGUCA
                 h3#myModalLabel.modal-title Marcar Mediante Sistema
-
               .modal-body
                table.table 
                  form.marcas(role='form', method="POST", action="/marca")
                   tr
                     modal.group     
-                       label-info( name= codTarjeta)  Empleado #{usuario.apellido1} #{usuario.nombre}
+                       label-info( name= codTarjeta) Empleado #{usuario.apellido1} #{usuario.nombre}
                   tr
                     modal.group     
                           td
-                            
                             button.btn.btn-success(type='submit', value = 'Entrada', name = 'marca') Entrada
                     modal.group
                           td
@@ -99,6 +95,41 @@ block content
                    #fancyClock    
               .modal-footer    
       
+      #addMarca.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+          .modal-dialog
+              .modal-content
+                .modal-header
+                  button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+                  h3#myModalLabel.modal-title Marcar Mediante Sistema
+                .modal-body
+                  form(role='form', method="POST", action="/marca")#login-form.well.span4
+                    table.table
+                      tr
+                        modal.group     
+                           label-info( name= codTarjeta) Empleado #{usuario.apellido1} #{usuario.nombre}
+                      tr
+                        modal.group 
+                          td
+                            button.btn.btn-success(style="width: 150px;" type='submit', value = 'Entrada', name = 'marca') Entrada
+                          td
+                            button.btn.btn-success(style="width: 150px;" type='submit', value = 'Salida', name = 'marca') Salida
+                      tr
+                        modal.group 
+                          td
+                            button.btn.btn-warning(style="width: 150px;" type='submit', value = 'Salida Receso', name = 'marca') Salida Receso 
+                          td
+                            button.btn.btn-warning(style="width: 150px;" type='submit', value = 'Entrada Receso', name = 'marca') Entrada Receso
+                      tr
+                        modal.group 
+                          td
+                            button.btn.btn-primary(style="width: 150px;" type='submit', value = 'Salida Almuerzo', name = 'marca') Salida Almuerzo
+                          td
+                            button.btn.btn-primary(style="width: 150px;" type='submit', value = 'Entrada Almuerzo', name = 'marca') Entrada Almuerzo
+                    .form-group
+                      label()
+                        button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
+
+          .modal-footer  
       #horaExtra.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
           .modal-dialog
               .modal-content

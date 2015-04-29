@@ -64,17 +64,21 @@ block content
                     br
                     select.form-control#idDepartamento.selectpicker(data-style="btn-success", data-width="200px", type="text", name="departamentos" multiple='true')
                       each departamento, i in departamentos
-                        if(empleado.departamento == departamento.id)
-                         option(value= departamento.id selected) #{departamento.nombre} 
-                        else
-                         option(value= departamento.id) #{departamento.nombre} 
+                        var noSelect = true;
+                        each depa in empleado.departamentos
+                          if(depa.departamento == departamento.id)
+                            option(value= departamento.id selected) #{departamento.nombre} 
+                            noSelect = false;
+                        if(!noSelect)
+                          option(value= departamento.id) #{departamento.nombre} 
                   else
                     select.form-control#idDepartamento.selectpicker(data-style="btn-success",type="text", name="departamentos")  
                       each departamento, i in departamentos
-                        if(empleado.departamento == departamento.id)
-                         option(value= departamento.id selected='true') #{departamento.nombre} 
-                        else
-                         option(value= departamento.id) #{departamento.nombre} 
+                        each depa in empleado.departamentos
+                          if(depa.departamento == departamento.id)
+                            option(value= departamento.id selected='true') #{departamento.nombre}
+                          else
+                              option(value= departamento.id) #{departamento.nombre}
                          
               button.btn.btn-success(type='submit') Actualizar
               button.btn.btn-default(type='button', data-dismiss='modal') Cancelar 
