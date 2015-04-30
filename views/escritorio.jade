@@ -9,7 +9,7 @@ block sigucaCSS
 block content   
     .container
       .col-xs-8
-        .col-xs-7
+        .col-xs-4
           h3 Gráfico de:  #{usuario.username}
           button#previous.btn.btn-default
             i.icon.icon-chevron-left
@@ -17,14 +17,14 @@ block content
             i.icon.icon-chevron-right
           div#cal
 
-        .col-xs-4
-          h3 Detalle de eventos por Departamentos
+        .col-xs-4.bordered
+          h3 Detalle diario por departamento
           br
-          div.table-responsive.table.table-bordered
+          div.table-responsive.table.bordered
             table
               thead
                 tr
-                  th Evento
+                  th Acciones
                   th Cantidad
               tbody#calDetalle
                   tr
@@ -36,6 +36,43 @@ block content
                   tr
                     td Ausencias o Tardías
                     td -
+
+        .col-xs-3.bordered(style="margin: 10px;")
+          h3 Registro de Marcas
+          br
+          div.table-responsive.table.bordered
+            table
+              thead
+                tr
+                  th Tipo
+                  th Hora
+              tbody#marcasDetalle
+                each marca, i in marcas
+                  case marca.tipoMarca
+                    when "Entrada"
+                      tr
+                        td Entrada
+                        td #{marca.fecha}
+                    when "Salida a Receso"
+                      tr
+                        td Salida a Receso
+                        td #{marca.fecha}
+                    when "Entrada de Receso"
+                      tr
+                        td Entrada de Receso
+                        td #{marca.fecha}
+                    when "Salida al Almuerzo"
+                      tr
+                        td Salida al Almuerzo
+                        td #{marca.fecha}
+                    when "Entrada del Almuerzo"
+                      tr
+                        td Entrada del Almuerzo
+                        td #{marca.fecha}
+                    when "Salida"
+                      tr
+                        td Salida
+                        td #{marca.fecha}
 
       .col-xs-4
        h3 Filtros   

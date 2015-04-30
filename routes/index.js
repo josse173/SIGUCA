@@ -55,16 +55,24 @@ module.exports = function(app, io) {
     */
     app.get('/escritorio', autentificado, function(req, res) {
         if (req.session.name == "Supervisor") {
-            Usuario.find({_id:req.user.id},{_id:0, departamentos: 1}).populate('departamentos.departamento').exec(function(error, result) {
+            var diaGte = new Date(),
+                diaLt = new Date();
+            diaGte.setHours(0);
+            diaGte.setMinutes(1);
+            diaGte.setSeconds(0);
+            diaGte.setMilliseconds(0);
+            var epochGte = (diaGte.getTime() - diaGte.getMilliseconds())/1000,
+                epochLt = (diaLt.getTime() - diaLt.getMilliseconds())/1000;
+
+            Marca.find({usuario: req.user.id, epoch:{"$gte": epochGte, "$lt": epochLt}},{_id:0,tipoMarca:1,epoch:1}).exec(function(error, marcas) {
                 Justificaciones.find({estado:'Pendiente'}).populate('usuario').exec(function(error, justificaciones) {
-                    Solicitudes.find({estado:'Pendiente'}).populate('usuario').exec(function(error, solicitudes) {
-                        var just = 0;
-                        var soli = 0;
-                        var notFound = true;
-                        result.forEach(function(supervisor){
+                    Solicitudes.find({estado:'Pendiente'}).populate('usuario').exec(function(error, solicitudes) {                        
+                        
+                            var arrayMarcas = eventosAjuste(marcas, req.user, "escritorioEmpl");
+
                             var array = [];
-                            for(var y = 0; y < supervisor.departamentos.length; y++){
-                                array.push(supervisor.departamentos[y].departamento._id);
+                            for(var y = 0; y < req.user.departamentos.length; y++){
+                                array.push(req.user.departamentos[y].departamento);
                             }
 
                             just = eventosAjuste(justificaciones, req.user, "count");
@@ -73,16 +81,16 @@ module.exports = function(app, io) {
                             if (error) return res.json(error);
                             return res.render('escritorio', {
                                 title: 'Escritorio Supervisor | SIGUCA',
-                                departamentos: supervisor.departamentos, 
+                                departamentos: req.user.departamentos, 
                                 justificaciones: just, 
                                 solicitudes: soli,
                                 todos: array,
-                                usuario: req.user
+                                usuario: req.user,
+                                marcas: marcas
                             });
-                        });//Supervisor
                     });//solicitudes
                 });//Justificaciones
-            });//Usuarios
+            });//Marcas
 
         } else {
             req.logout();
@@ -114,7 +122,7 @@ module.exports = function(app, io) {
                 return res.render('escritorioEmpl', {
                     title: 'Escritorio Empleado | SIGUCA',
                     usuario: req.user, 
-                    marcas: marcas
+                    marcas: arrayMarcas
                 });
             });
         } else {

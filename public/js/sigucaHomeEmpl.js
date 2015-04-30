@@ -87,7 +87,7 @@ function calendario(stats, array){
         subDomain: "x_day", //"x_hour",
         subDomainTextFormat: "%d",
         weekStartOnMonday: false,
-        range: 1,
+        range: 2,
         cellSize: 24,
         domainGutter:   5, // separa los meses
         tooltip: true, // muestra el fecha y hora de cada cuadro
@@ -115,12 +115,6 @@ function calendario(stats, array){
         },
         legendHorizontalPosition: "right",
         //legendVerticalPosition: "top",
-        itemName: "evento",
-        onClick: function(date, nb) {
-            var departamento = $('#selectFiltro').val();
-            $.get('/reportarEventos', {dia: date, departamentoId: departamento}, function( data ) {
-                $( "#calDetalle" ).html(data);
-            });
-        }
+        itemName: "evento"
     });
 };
