@@ -1,5 +1,6 @@
 
     //Declaramos el objeto socket que se conectará en este caso a localhost
+    //var socket = io.connect('http://siguca.greencore.int:3000');
     var socket = io.connect('http://localhost:3000');
 
 
@@ -116,18 +117,10 @@ function calendario(stats, array){
         //legendVerticalPosition: "top",
         itemName: "evento",
         onClick: function(date, nb) {
-            // $("#calDetalle").html("You just clicked <br/>on <b>" +
-            //     date + "</b> <br/>with <b>" +
-            //     (nb === null ? "unknown" : nb) + "</b> items"
-            // );
-            var value = $('#selectFiltro').val();
-            var departamento = value.split(',');
-            if(departamento[0] === 'Supervisor'){
-
-                $.get('/reportarEventos', {dia: date, eventos: nb, departamentoId: departamento[1]}, function( data ) {
-                    $( "#calDetalle" ).html(data);
-                });
-            }
+            var departamento = $('#selectFiltro').val();
+            $.get('/reportarEventos', {dia: date, departamentoId: departamento}, function( data ) {
+                $( "#calDetalle" ).html(data);
+            });
         }
     });
 };

@@ -10,19 +10,56 @@ block sigucaCSS
 block content
   .container
     .col-xs-8
-        h3 Gráfico de:  #{usuario.username}
-        button#previous.btn.btn-default
-          i.icon.icon-chevron-left
-        button#next.btn.btn-default 
-          i.icon.icon-chevron-right
-        div#cal
-        input#usuario(type='hidden', value=usuario.id)      
+        .col-xs-7
+          h3 Gráfico de:  #{usuario.username}
+          button#previous.btn.btn-default
+            i.icon.icon-chevron-left
+          button#next.btn.btn-default 
+            i.icon.icon-chevron-right
+          div#cal
+
+        .col-xs-4
+          h3 Registro de Marcas
+          br
+          div.table-responsive.table.table-bordered
+            table
+              thead
+                tr
+                  th Tipo
+                  th Hora
+              tbody#marcasDetalle
+                each marca, i in marcas
+                  case marca.tipoMarca
+                    when "Entrada"
+                      tr
+                        td Entrada
+                        td #{marca.fecha}
+                    when "Salida a Receso"
+                      tr
+                        td Salida a Receso
+                        td #{marca.fecha}
+                    when "Entrada de Receso"
+                      tr
+                        td Entrada de Receso
+                        td #{marca.fecha}
+                    when "Salida al Almuerzo"
+                      tr
+                        td Salida al Almuerzo
+                        td #{marca.fecha}
+                    when "Entrada del Almuerzo"
+                      tr
+                        td Entrada del Almuerzo
+                        td #{marca.fecha}
+                    when "Salida"
+                      tr
+                        td Salida
+                        td #{marca.fecha}
+
+          
     .col-xs-4
      h3 Filtros   
      div.filter
        div.filter
-            label#departamento(for='departamento') 
-             |Departamentos: 
             .btn-group
                .btn-group
               select.form-control#selectFiltro.selectpicker(data-style="btn-success",type="text", name="idSupervisor") 
@@ -54,48 +91,6 @@ block content
     .col-xs-2      
       //modal para realizar marcas
       #addMarca.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
-        .modal-dialog
-            .modal-content
-              .modal-header
-                button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-                h1#myModalLabel.modal-title SIGUCA
-                h3#myModalLabel.modal-title Marcar Mediante Sistema
-              .modal-body
-               table.table 
-                 form.marcas(role='form', method="POST", action="/marca")
-                  tr
-                    modal.group     
-                       label-info( name= codTarjeta) Empleado #{usuario.apellido1} #{usuario.nombre}
-                  tr
-                    modal.group     
-                          td
-                            button.btn.btn-success(type='submit', value = 'Entrada', name = 'marca') Entrada
-                    modal.group
-                          td
-                            button.btn.btn-success(type='submit' , value = 'Salida', name = 'marca') Salida
-                  tr
-                    modal.group     
-                          td
-                            button.btn.btn-warning(type='submit', value = 'salidaReceso', name = 'marca') Salida Receso
-                    modal.group
-                          td
-                            button.btn.btn-warning(type='submit', value = 'entradaReceso', name = 'marca') Entrada Receso          
-                  tr
-                    modal.group     
-                          td
-                            button.btn.btn-primary(type='submit', value = 'salidaAlmuerzo', name = 'marca') Salida Almuerzo
-                    modal.group
-                          td
-                            button.btn.btn-primary(type='submit', value = 'entradaAlmuerzo', name = 'marca') Entrada Almuerzo                    
-                  tr   
-                    modal.group
-                      td             
-                          button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
-                .container
-                   #fancyClock    
-              .modal-footer    
-      
-      #addMarca.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
           .modal-dialog
               .modal-content
                 .modal-header
@@ -116,20 +111,19 @@ block content
                       tr
                         modal.group 
                           td
-                            button.btn.btn-warning(style="width: 150px;" type='submit', value = 'Salida Receso', name = 'marca') Salida Receso 
+                            button.btn.btn-warning(style="width: 150px;" type='submit', value = 'Salida a Receso', name = 'marca') Salida a Receso 
                           td
-                            button.btn.btn-warning(style="width: 150px;" type='submit', value = 'Entrada Receso', name = 'marca') Entrada Receso
+                            button.btn.btn-warning(style="width: 150px;" type='submit', value = 'Entrada de Receso', name = 'marca') Entrada de Receso
                       tr
                         modal.group 
                           td
-                            button.btn.btn-primary(style="width: 150px;" type='submit', value = 'Salida Almuerzo', name = 'marca') Salida Almuerzo
+                            button.btn.btn-primary(style="width: 150px;" type='submit', value = 'Salida al Almuerzo', name = 'marca') Salida al Almuerzo
                           td
-                            button.btn.btn-primary(style="width: 150px;" type='submit', value = 'Entrada Almuerzo', name = 'marca') Entrada Almuerzo
+                            button.btn.btn-primary(style="width: 150px;" type='submit', value = 'Entrada del Almuerzo', name = 'marca') Entrada del Almuerzo
                     .form-group
                       label()
                         button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
-
-          .modal-footer  
+ 
       #horaExtra.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
           .modal-dialog
               .modal-content

@@ -95,9 +95,27 @@ module.exports = function(app, io) {
     */
     app.get('/escritorioEmpl', autentificado, function(req, res) {
         if (req.session.name == "Empleado") {
-            res.render('escritorioEmpl', {
-                title: 'Escritorio Empleado | SIGUCA',
-                usuario: req.user
+            var diaGte = new Date(),
+                diaLt = new Date();
+            diaGte.setHours(0);
+            diaGte.setMinutes(1);
+            diaGte.setSeconds(0);
+            diaGte.setMilliseconds(0);
+            var epochGte = (diaGte.getTime() - diaGte.getMilliseconds())/1000,
+                epochLt = (diaLt.getTime() - diaLt.getMilliseconds())/1000;
+
+            Marca.find({usuario: req.user.id, epoch:{"$gte": epochGte, "$lt": epochLt}},{_id:0,tipoMarca:1,epoch:1}).exec(function(error, marcas) {
+                
+                var supervisor = {departamentos: [1]};
+
+                var arrayMarcas = eventosAjuste(marcas, supervisor, "escritorioEmpl");
+
+                if (error) return res.json(error);
+                return res.render('escritorioEmpl', {
+                    title: 'Escritorio Empleado | SIGUCA',
+                    usuario: req.user, 
+                    marcas: marcas
+                });
             });
         } else {
             req.logout();
@@ -264,71 +282,81 @@ module.exports = function(app, io) {
                 /*
                 *   - Busca cada evento en cada departamento, convierte el epoch a fecha estándar
                 *    y convierte el epoch de la cantidad de horas a formato hh:mm.
-                *   - Si el evento y el departamento coinciden y además el evento y el supervisor
-                *   no coinciden, muestra el evento.
-                *   - Si el evento es de un supervisor y no coinciden el evento y el supervisor,
-                *   muestra el evento.
                 */
-                if("usuario" in evento[x]){
-                    if("fechaCreada" in evento[x]){
-                        var epochTime = evento[x].fechaCreada;
-                        var fecha = new Date(0);
-                        fecha.setUTCSeconds(epochTime); 
+                if("fechaCreada" in evento[x]){
+                    var epochTime = evento[x].fechaCreada;
+                    var fecha = new Date(0);
+                    fecha.setUTCSeconds(epochTime); 
+                    evento[x].fecha = fecha;
+                }
+                if("cantidadHoras" in evento[x]){
+                    var  s = evento[x].cantidadHoras;
+                    var h  = Math.floor( s / ( 60 * 60 ) );
+                        s -= h * ( 60 * 60 );
+                    var m  = Math.floor( s / 60 );
+                    if(m < 10)
+                        evento[x].cantHoras = h + ":0" + m;
+                    else
+                        evento[x].cantHoras = h + ":" + m;
+                    
+                } 
+                if("epoch" in evento[x]){
+                    var epochTime = evento[x].epoch;
+                    var fecha = new Date(0);
+                    fecha.setUTCSeconds(epochTime);
+                    if("escritorioEmpl" === query){
+                        evento[x].fecha = fecha.getHours() + ":" + fecha.getMinutes() + ":" + fecha.getSeconds();
+                    } else{
                         evento[x].fecha = fecha;
-                    }
-                    if("cantidadHoras" in evento[x]){
-                        var  s = evento[x].cantidadHoras;
-                        var h  = Math.floor( s / ( 60 * 60 ) );
-                            s -= h * ( 60 * 60 );
-                        var m  = Math.floor( s / 60 );
-                        if(m < 10)
-                            evento[x].cantHoras = h + ":0" + m;
-                        else
-                            evento[x].cantHoras = h + ":" + m;
-                        
-                    } 
-                    if("epoch" in evento[x]){
-                        var epochTime = evento[x].epoch;
-                        var fecha = new Date(0);
-                        fecha.setUTCSeconds(epochTime); 
-                        evento[x].fecha = fecha;
-                    }
-
-                    if(JSON.stringify(evento[x].usuario.departamentos[0].departamento) === JSON.stringify(supervisor.departamentos[y].departamento) 
-                        && JSON.stringify(evento[x].usuario._id) != JSON.stringify(supervisor._id)
-                        && notFound){
-                        array.push(evento[x]);
-                        count++;
-                        notFound = false;
-                    } 
-                    if(JSON.stringify(evento[x].usuario.tipo) === JSON.stringify("Supervisor") 
-                        && JSON.stringify(evento[x].usuario._id) != JSON.stringify(supervisor._id)
-                        && notFound){
-                        array.push(evento[x]);
-                        count++;
-                        notFound = false;
-                    }
-                } else {
-                /*
-                *   - Filtra los usuarios por supervisor, sin mostrarse el mismo.
-                *   - Se utiliza en los reportes.
-                */
-                    if(JSON.stringify(evento[x].departamentos[0].departamento) === JSON.stringify(supervisor.departamentos[y].departamento) 
-                        && JSON.stringify(evento[x]._id) != JSON.stringify(supervisor._id)
-                        && notFound){
-                        array.push(evento[x]);
-                        notFound = false;
-                    } 
-                    if(JSON.stringify(evento[x].tipo) === JSON.stringify("Supervisor") 
-                        && JSON.stringify(evento[x]._id) != JSON.stringify(supervisor._id)
-                        && notFound){
-                        array.push(evento[x]);
-                        notFound = false;
                     }
                 }
-            }
+
+                if("eventosEmpl" != query && "filtrarEventosEmpl" != query && "escritorioEmpl" != query){
+                    if("usuario" in evento[x]){
+                        /*
+                        *   - Si el evento y el departamento coinciden y además el evento y el supervisor
+                        *   no coinciden, muestra el evento.
+                        *   - Si el evento es de un supervisor y no coinciden el evento y el supervisor,
+                        *   muestra el evento.
+                        */
+                        if(JSON.stringify(evento[x].usuario.departamentos[0].departamento) === JSON.stringify(supervisor.departamentos[y].departamento) 
+                            && JSON.stringify(evento[x].usuario._id) != JSON.stringify(supervisor._id)
+                            && notFound){
+                            array.push(evento[x]);
+                            count++;
+                            notFound = false;
+                        } 
+                        if(JSON.stringify(evento[x].usuario.tipo) === JSON.stringify("Supervisor") 
+                            && JSON.stringify(evento[x].usuario._id) != JSON.stringify(supervisor._id)
+                            && notFound){
+                            array.push(evento[x]);
+                            count++;
+                            notFound = false;
+                        }
+                    } else {
+                        /*
+                        *   - Filtra los usuarios por supervisor, sin mostrarse el mismo.
+                        *   - Se utiliza en los reportes.
+                        */
+                        if(JSON.stringify(evento[x].departamentos[0].departamento) === JSON.stringify(supervisor.departamentos[y].departamento) 
+                            && JSON.stringify(evento[x]._id) != JSON.stringify(supervisor._id)
+                            && notFound){
+                            array.push(evento[x]);
+                            notFound = false;
+                        } 
+                        if(JSON.stringify(evento[x].tipo) === JSON.stringify("Supervisor") 
+                            && JSON.stringify(evento[x]._id) != JSON.stringify(supervisor._id)
+                            && notFound){
+                            array.push(evento[x]);
+                            notFound = false;
+                        }
+                    }
+                } else {
+                    array.push(evento[x]);
+                }
+            }//for
             notFound = true;
-        }
+        }//for
         if("count" === query){
             return count;
         }
@@ -341,14 +369,6 @@ module.exports = function(app, io) {
     */
     app.post('/filtrarEventos', autentificado, function(req, res) {
         if (req.session.name == "Supervisor") {
-            var diaGte = new Date(),
-                diaLt = new Date();
-            diaGte.setHours(0);
-            diaGte.setMinutes(1);
-            diaGte.setSeconds(0);
-            diaGte.setMilliseconds(0);
-            var epochGte = (diaGte.getTime() - diaGte.getMilliseconds())/1000,
-                epochLt = (diaLt.getTime() - diaLt.getMilliseconds())/1000;
 
             var usuarios = req.body.filtro;
             var option = usuarios.split('|');
@@ -369,7 +389,7 @@ module.exports = function(app, io) {
             var justQuery = {};
             var extraQuery = {tipoSolicitudes:'Extras'};
             var permisosQuery = {tipoSolicitudes:'Permisos'};
-            var marcaQuery = {epoch:{"$gte": epochGte, "$lt": epochLt}};
+            var marcaQuery = {};
 
             if(usuarioId != "todos"){
                 justQuery.usuario = usuarioId;
@@ -377,7 +397,7 @@ module.exports = function(app, io) {
                 permisosQuery.usuario = usuarioId;
                 marcaQuery.usuario = usuarioId;
             } 
-
+            var epochDesde, epochHasta;
             if(req.body.fechaDesde != '' && req.body.fechaHasta != ''){
                 var splitDate1 = req.body.fechaDesde.split('/');
                 var date1 = new Date(splitDate1[2], splitDate1[1]-1, splitDate1[0]);
@@ -395,7 +415,18 @@ module.exports = function(app, io) {
                 justQuery.fechaCreada = fechaCreada;
                 extraQuery.fechaCreada = fechaCreada;
                 permisosQuery.fechaCreada = fechaCreada;  
-            } 
+            } else {
+                var diaGte = new Date(),
+                    diaLt = new Date();
+                diaGte.setHours(0);
+                diaGte.setMinutes(1);
+                diaGte.setSeconds(0);
+                diaGte.setMilliseconds(0);
+                epochDesde = (diaGte.getTime() - diaGte.getMilliseconds())/1000;
+                epochHasta = (diaLt.getTime() - diaLt.getMilliseconds())/1000;
+            }
+
+             marcaQuery.epoch = {"$gte": epochDesde, "$lt": epochHasta};
 
             var titulo;
             if(option[3] === "reportes"){
@@ -485,46 +516,28 @@ module.exports = function(app, io) {
                 Solicitudes.find({usuario: req.user.id, tipoSolicitudes:'Extras'}).exec(function(error, extras) {
                     Solicitudes.find({usuario: req.user.id, tipoSolicitudes:'Permisos'}).exec(function(error, permisos) {
 
-                        justificaciones.forEach(function(justificacion){
-                            var epochTime = justificacion.fechaCreada;
-                            var fecha= new Date(0);
-                            fecha.setUTCSeconds(epochTime); 
-                            justificacion.fecha = fecha;
-                        });//each
-                        extras.forEach(function(extra){
-                            var epochTime = extra.fechaCreada;
-                            var fecha= new Date(0);
-                            fecha.setUTCSeconds(epochTime); 
-                            extra.fecha = fecha;
+                        var supervisor = {departamentos: [1]};
 
-                            var  s = extra.cantidadHoras;
-                            var h  = Math.floor( s / ( 60 * 60 ) );
-                                s -= h * ( 60 * 60 );
-                            var m  = Math.floor( s / 60 );
-                            extra.cantHoras = h + ":" + m;
-                        });//each
-                        permisos.forEach(function(permiso){
-                            var epochTime = permiso.fechaCreada;
-                            var fecha= new Date(0);
-                            fecha.setUTCSeconds(epochTime); 
-                            permiso.fecha = fecha;
-                        });//each
+                        var arrayJust = eventosAjuste(justificaciones,supervisor,"eventosEmpl");
+                        var arrayExtras = eventosAjuste(extras,supervisor,"eventosEmpl");
+                        var arrayPermisos = eventosAjuste(permisos,supervisor,"eventosEmpl");
+
                         if (error) return res.json(error);
                             if(req.session.name == "Empleado"){
                                 return res.render('eventosEmpl', {
                                     title: 'Solicitudes/Justificaciones | SIGUCA',
                                     usuario: req.user,
-                                    justificaciones: justificaciones,
-                                    extras: extras,
-                                    permisos: permisos
+                                    justificaciones: arrayJust,
+                                    extras: arrayExtras,
+                                    permisos: arrayPermisos
                                 });
                             } else {
                                 return res.render('eventos', {
                                     title: 'Solicitudes/Justificaciones | SIGUCA',
                                     usuario: req.user,
-                                    justificaciones: justificaciones,
-                                    extras: extras,
-                                    permisos: permisos
+                                    justificaciones: arrayJust,
+                                    extras: arrayExtras,
+                                    permisos: arrayPermisos
                                 });
                             }
                     });
@@ -568,53 +581,34 @@ module.exports = function(app, io) {
             Justificaciones.find(justQuery).exec(function(error, justificaciones) {
                 Solicitudes.find(extraQuery).exec(function(error, extras) {
                     Solicitudes.find(permisosQuery).exec(function(error, permisos) {
+                        
+                        var supervisor = {departamentos: [1]};
 
-                        justificaciones.forEach(function(justificacion){
-                            var epochTime = justificacion.fechaCreada;
-                            var fecha= new Date(0);
-                            fecha.setUTCSeconds(epochTime); 
-                            justificacion.fecha = fecha;
-                        });//each
-                        extras.forEach(function(extra){
-                            var epochTime = extra.fechaCreada;
-                            var fecha= new Date(0);
-                            fecha.setUTCSeconds(epochTime); 
-                            extra.fecha = fecha;
+                        var arrayJust = eventosAjuste(justificaciones,supervisor,"filtrarEventosEmpl");
+                        var arrayExtras = eventosAjuste(extras,supervisor,"filtrarEventosEmpl");
+                        var arrayPermisos = eventosAjuste(permisos,supervisor,"filtrarEventosEmpl");
 
-                            var  s = extra.cantidadHoras;
-                            var h  = Math.floor( s / ( 60 * 60 ) );
-                                s -= h * ( 60 * 60 );
-                            var m  = Math.floor( s / 60 );
-                            extra.cantHoras = h + ":" + m;
-                        });//each
-                        permisos.forEach(function(permiso){
-                            var epochTime = permiso.fechaCreada;
-                            var fecha= new Date(0);
-                            fecha.setUTCSeconds(epochTime); 
-                            permiso.fecha = fecha;
-                        });//each
                         if (error) return res.json(error);
-                            if(req.session.name == "Empleado"){
-                                return res.render('eventosEmpl', {
-                                    title: 'Solicitudes/Justificaciones | SIGUCA',
-                                    usuario: req.user,
-                                    justificaciones: justificaciones,
-                                    extras: extras,
-                                    permisos: permisos
-                                });
-                            } else {
-                                return res.render('eventos', {
-                                    title: 'Solicitudes/Justificaciones | SIGUCA',
-                                    usuario: req.user,
-                                    justificaciones: justificaciones,
-                                    extras: extras,
-                                    permisos: permisos
-                                });
-                            }
-                    });
-                });
-            });
-            
+                        if(req.session.name == "Empleado"){
+                            return res.render('eventosEmpl', {
+                                title: 'Solicitudes/Justificaciones | SIGUCA',
+                                usuario: req.user,
+                                justificaciones: arrayJust,
+                                extras: arrayExtras,
+                                permisos: arrayPermisos
+                            });
+                        } else {
+                            return res.render('eventos', {
+                                title: 'Solicitudes/Justificaciones | SIGUCA',
+                                usuario: req.user,
+                                justificaciones: arrayJust,
+                                extras: arrayExtras,
+                                permisos: arrayPermisos
+                            });//render
+                        }//else
+                    });//Permisos
+                });//Extras
+            });//Justificaciones
         } else {
             req.logout();
             res.redirect('/');
@@ -878,7 +872,6 @@ module.exports = function(app, io) {
         var epochTime = (d.getTime() - d.getMilliseconds())/1000;
         var fechaActual= new Date(0);
         fechaActual.setUTCSeconds(epochTime); 
-
         var newMarca = Marca({
                     tipoMarca: req.body.marca,
                     epoch: epochTime,
@@ -1155,39 +1148,71 @@ module.exports = function(app, io) {
 
 
     /*
-    *   Detalles del calendario por día.
-    ------------------------------------------------------
-    creo que es mejor modificar como se crean los cierres de los departamentos y mostrar solo una consulta no varias.
+    *   Detalla los eventos del calendario por día.
     */
     app.get('/reportarEventos', autentificado, function(req, res) {
-        var diaGte = new Date(req.query.dia);
-        var diaLt = new Date(diaGte);
-        diaLt.setDate(diaGte.getDate() + 1);
-
-        var epochGte = (diaGte.getTime() - diaGte.getMilliseconds())/1000,
-            epochLt = (diaLt.getTime() - diaLt.getMilliseconds())/1000;
-
         if (req.session.name == "Supervisor") {
-            Justificaciones.find({fechaCreada:{"$gte": epochGte, "$lt": epochLt}, estado:{"$nin": ['Pendiente']}}).populate('usuario').exec(function(error, justificaciones) {
-                Solicitudes.find({fechaCreada:{"$gte": epochGte, "$lt": epochLt}, tipoSolicitudes:'Extras', estado:{"$nin": ['Pendiente']}}).populate('usuario').exec(function(error, extras) {
-                    Solicitudes.find({fechaCreada:{"$gte": epochGte, "$lt": epochLt}, tipoSolicitudes:'Permisos', estado:{"$nin": ['Pendiente']}}).populate('usuario').exec(function(error, permisos) {
-                        var supervisor = {departamentos: req.user.departamentos, _id: req.user.id};
-                        var arrayJust = eventosAjuste(justificaciones, supervisor, req.query.departamentoId);
-                        var arrayExtras = eventosAjuste(extras, supervisor, req.query.departamentoId);
-                        var arrayPermisos = eventosAjuste(permisos, supervisor, req.query.departamentoId);
+            var diaGte = new Date(req.query.dia);
+            var diaLt = new Date(diaGte);
+            diaLt.setDate(diaGte.getDate() + 1);
 
-                        var total = arrayJust.length + arrayExtras.length + arrayPermisos.length;
-                        
+            var epochGte = (diaGte.getTime() - diaGte.getMilliseconds())/1000,
+                epochLt = (diaLt.getTime() - diaLt.getMilliseconds())/1000;
+
+            var option = req.query.departamentoId.split(',');
+            if(option[1] == "todos"){
+                var or = [];
+                for (var i = 2; i < option.length; i++) {
+                    or.push({departamento:option[i]});
+                };
+                var queryOr = {
+                    "tipo": "General",
+                    "$or": or,
+                    "epoch":{
+                        "$gte": epochGte, 
+                        "$lt": epochLt
+                    }
+                }
+                Cierre.find(queryOr).exec(function(err, cierres) {
+                    var justificaciones = 0,
+                        solicitudes = 0,
+                        marcas = 0;
+                    for(var i = 0; i < cierres.length; i++){
+                            justificaciones += cierres[i].justificaciones;
+                            solicitudes += cierres[i].solicitudes;
+                            marcas += cierres[i].marcas;
+                    }
+
+                    if (err) console.log('error al cargar los cierres: ' + err);
+                    else {
                         res.send(
-                            //'<p> Departamento: ' + req.query.departamento +  '</p>' +
-                            '<tr><td> Justificaciones: </td><td>' + arrayJust.length +  '</td></tr>' +
-                            '<tr><td> Extras: </td><td>' + arrayExtras.length +  '</td></tr>' +
-                            '<tr><td> Permisos: </td><td>' + arrayPermisos.length + '</td></tr>' +
-                            '<tr><td> Tardías o Ausencias: </td><td>' + (req.query.eventos - total) + '</td></tr>'
+                            '<tr><td> Justificaciones </td><td>' + justificaciones+  '</td></tr>' +
+                            '<tr><td> Solicitudes </td><td>' + solicitudes +  '</td></tr>' +
+                            '<tr><td> Ausencias o Tardías </td><td>' + marcas + '</td></tr>'
                         );
-                    });//Permisos
-                });//Extras
-            });//Justificaciones
+                    }
+                });
+            } else {
+                Cierre.find({tipo: "General", departamento: option[1], epoch:{"$gte": epochGte, "$lt": epochLt}}).exec(function(err, cierres) {
+                    var justificaciones = 0,
+                        solicitudes = 0,
+                        marcas = 0;
+                    for(var i = 0; i < cierres.length; i++){
+                            justificaciones += cierres[i].justificaciones;
+                            solicitudes += cierres[i].solicitudes;
+                            marcas += cierres[i].marcas;
+                    }
+
+                    if (err) console.log('error al cargar los cierres: ' + err);
+                    else {
+                        res.send(
+                            '<tr><td> Justificaciones </td><td>' + justificaciones+  '</td></tr>' +
+                            '<tr><td> Solicitudes </td><td>' + solicitudes +  '</td></tr>' +
+                            '<tr><td> Ausencias o Tardías </td><td>' + marcas + '</td></tr>'
+                        );
+                    }
+                });
+            }
         } else {
             req.logout();
             res.redirect('/');
@@ -1363,7 +1388,6 @@ module.exports = function(app, io) {
 
                     Temporal.find().exec(function (err, temporal){
                         temporal.forEach(function (usuario){
-                            console.log(usuario);
                             var cierrePersonal = {
                                 usuario: usuario._id,
                                 departamento: usuario.value.departamento,
@@ -1450,8 +1474,6 @@ module.exports = function(app, io) {
                     Temporal.aggregate(pipeline).exec(function (err, temporal){
                         temporal.forEach(function (departamento){
                             var estado = 0;
-                            estado += departamento.justificaciones;
-                            estado += departamento.solicitudes;
                             departamento.usuarios.forEach(function (user){
                                 if("marca" in user){
                                     if(user.tipo === 'Fijo'){
@@ -1492,10 +1514,18 @@ module.exports = function(app, io) {
                                     estado += 1;
                                 } 
                             });//for each usuario
+                            
+                            var marcas = estado;
+                            estado += departamento.justificaciones;
+                            estado += departamento.solicitudes;
+
                             var newCierre = Cierre({
                                         estado: estado,
                                         epoch: epochToday,
-                                        departamento: departamento 
+                                        departamento: departamento,
+                                        justificaciones: departamento.justificaciones,
+                                        solicitudes: departamento.solicitudes,
+                                        marcas: marcas 
                                     });
 
                             newCierre.save(function(error, user) {

@@ -9,23 +9,33 @@ block sigucaCSS
 block content   
     .container
       .col-xs-8
-        h3 Gráfico de:  #{usuario.username}
-        button#previous.btn.btn-default
-          i.icon.icon-chevron-left
-        button#next.btn.btn-default 
-          i.icon.icon-chevron-right
-        div#cal
-        div.table-responsive
-          table
-            thead
-              tr
-                td(colspan="2") Detalle de eventos
-              tr
-                th Evento
-                th Cantidad
-            tbody#calDetalle
-            
-        input#usuario(type='hidden', value=usuario.id) 
+        .col-xs-7
+          h3 Gráfico de:  #{usuario.username}
+          button#previous.btn.btn-default
+            i.icon.icon-chevron-left
+          button#next.btn.btn-default 
+            i.icon.icon-chevron-right
+          div#cal
+
+        .col-xs-4
+          h3 Detalle de eventos por Departamentos
+          br
+          div.table-responsive.table.table-bordered
+            table
+              thead
+                tr
+                  th Evento
+                  th Cantidad
+              tbody#calDetalle
+                  tr
+                    td Justificaciones
+                    td -
+                  tr
+                    td Solicitudes
+                    td -
+                  tr
+                    td Ausencias o Tardías
+                    td -
 
       .col-xs-4
        h3 Filtros   
@@ -45,9 +55,7 @@ block content
                           option(value= "Empleado,justificaciones," + usuario.id) Justificaciones
                           option(value= "Empleado,solicitudes," + usuario.id) Solicitudes
                           option(value= "Empleado,marcas," + usuario.id) Tardías o Ausencias
-                
-      .col-xs-4
-      .col-xs-4
+      
         
       .col-xs-4
         h3 Acciones 
@@ -61,12 +69,15 @@ block content
           li.list-group-item
             a(data-toggle="modal" data-target="#addJustificacion")
               | Justificaciones
+
+
       .col-xs-8
         div#containerCentral
           h3  Marca Mediante el Sistema
           div#contBotones
             div#Marca             
              button#marca.btn.btn-success(name='marcar', onclick= "changeElemt('marca')", data-toggle="modal" data-target="#addMarca") Realizar Marca
+
 
       .col-xs-4
         h3 Pendientes de revisar 
@@ -101,20 +112,19 @@ block content
                       tr
                         modal.group 
                           td
-                            button.btn.btn-warning(style="width: 150px;" type='submit', value = 'Salida Receso', name = 'marca') Salida Receso 
+                            button.btn.btn-warning(style="width: 150px;" type='submit', value = 'Salida a Receso', name = 'marca') Salida a Receso 
                           td
-                            button.btn.btn-warning(style="width: 150px;" type='submit', value = 'Entrada Receso', name = 'marca') Entrada Receso
+                            button.btn.btn-warning(style="width: 150px;" type='submit', value = 'Entrada de Receso', name = 'marca') Entrada de Receso
                       tr
                         modal.group 
                           td
-                            button.btn.btn-primary(style="width: 150px;" type='submit', value = 'Salida Almuerzo', name = 'marca') Salida Almuerzo
+                            button.btn.btn-primary(style="width: 150px;" type='submit', value = 'Salida al Almuerzo', name = 'marca') Salida al Almuerzo
                           td
-                            button.btn.btn-primary(style="width: 150px;" type='submit', value = 'Entrada Almuerzo', name = 'marca') Entrada Almuerzo
+                            button.btn.btn-primary(style="width: 150px;" type='submit', value = 'Entrada de Almuerzo', name = 'marca') Entrada del Almuerzo
                     .form-group
                       label()
                         button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
 
-          .modal-footer  
       #horaExtra.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
           .modal-dialog
               .modal-content
