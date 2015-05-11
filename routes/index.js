@@ -67,27 +67,31 @@ module.exports = function(app, io) {
             Marca.find({usuario: req.user.id, epoch:{"$gte": epochGte, "$lt": epochLt}},{_id:0,tipoMarca:1,epoch:1}).exec(function(error, marcas) {
                 Justificaciones.find({estado:'Pendiente'}).populate('usuario').exec(function(error, justificaciones) {
                     Solicitudes.find({estado:'Pendiente'}).populate('usuario').exec(function(error, solicitudes) {                        
-                        
-                            var arrayMarcas = eventosAjuste(marcas, req.user, "escritorioEmpl");
+                        Usuario.find({_id:req.user.id},{_id:0,departamentos: 1}).populate('departamentos.departamento').exec(function(error, result){
+                            
+                            result.forEach(function(supervisor){
+                                var arrayMarcas = eventosAjuste(marcas, req.user, "escritorioEmpl");
 
-                            var array = [];
-                            for(var y = 0; y < req.user.departamentos.length; y++){
-                                array.push(req.user.departamentos[y].departamento);
-                            }
+                                var array = [];
+                                for(var y = 0; y < req.user.departamentos.length; y++){
+                                    array.push(req.user.departamentos[y].departamento);
+                                }
 
-                            just = eventosAjuste(justificaciones, req.user, "count");
-                            soli = eventosAjuste(solicitudes, req.user, "count");
-
-                            if (error) return res.json(error);
-                            return res.render('escritorio', {
-                                title: 'Escritorio Supervisor | SIGUCA',
-                                departamentos: req.user.departamentos, 
-                                justificaciones: just, 
-                                solicitudes: soli,
-                                todos: array,
-                                usuario: req.user,
-                                marcas: marcas
-                            });
+                                just = eventosAjuste(justificaciones, req.user, "count");
+                                soli = eventosAjuste(solicitudes, req.user, "count");
+                                
+                                if (error) return res.json(error);
+                                return res.render('escritorio', {
+                                    title: 'Escritorio Supervisor | SIGUCA',
+                                    departamentos: supervisor.departamentos, 
+                                    justificaciones: just, 
+                                    solicitudes: soli,
+                                    todos: array,
+                                    usuario: req.user,
+                                    marcas: marcas
+                                });
+                            });//Supervisor
+                        });//Departamentos    
                     });//solicitudes
                 });//Justificaciones
             });//Marcas

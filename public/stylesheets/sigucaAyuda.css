@@ -4,17 +4,17 @@ body {
   height: 100%;
   background: #f2f9fe;
   background: -moz-radial-gradient(center, ellipse cover, #f2f9fe 0%, #C1EEA4 100%);
-/* FF3.6+ */
+  /* FF3.6+ */
   background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%, #f2f9fe), color-stop(100%, #C1EEA4));
-/* Chrome,Safari4+ */
+  /* Chrome,Safari4+ */
   background: -webkit-radial-gradient(center, ellipse cover, #f2f9fe 0%, #C1EEA4 100%);
-/* Chrome10+,Safari5.1+ */
+  /* Chrome10+,Safari5.1+ */
   background: -o-radial-gradient(center, ellipse cover, #f2f9fe 0%, #C1EEA4 100%);
-/* Opera 12+ */
+  /* Opera 12+ */
   background: -ms-radial-gradient(center, ellipse cover, #f2f9fe 0%, #C1EEA4 100%);
-/* IE10+ */
+  /* IE10+ */
   background: radial-gradient(center, ellipse cover, #f2f9fe 0%, #C1EEA4 100%);
-/* W3C */
+  /* W3C */
 }
 .col-sm-4{
 	margin-top: 30px;
