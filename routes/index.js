@@ -20,16 +20,14 @@ module.exports = function(app, io) {
     /*
     *   Redirecciona al index
     */
-    app.get('/', function(req, res) {
-        res.render('index', {
-            usuario: req.user
-        });
+    app.get('/', function (req, res) {
+        res.render('index');
     });
 
     /*
     *   Verifica el login dependiendo del tipo de usuario
     */
-    app.post('/login', passport.authenticate('local'), function(req, res) {
+    app.post('/login', passport.authenticate('login'), function(req, res) {
         req.session.name = req.user.tipo;
         if (req.session.name == "Administrador") {
             res.redirect('/escritorioAdmin');
@@ -920,23 +918,31 @@ module.exports = function(app, io) {
                 array.push({departamento: e.idDepartamento});
             }
 
-            Usuario.register(new Usuario({
+            Usuario.findOne({ 'username' :  e.username }, function(err, user) {
+                if (err) return res.json(error);
+                if (!user) {
+                    var newUser = new Usuario({
+                        username: e.username, 
+                        tipo: e.tipo,
+                        estado: "Activo",
+                        nombre: e.nombre,
+                        apellido1: e.apellido1,
+                        apellido2: e.apellido2,
+                        email: e.email,
+                        cedula: e.cedula,
+                        codTarjeta: e.codTarjeta,
+                        departamentos: array,
+                        horario: e.idHorario,
+                    });
 
-                username: e.username, 
-                tipo: e.tipo,
-                estado: "Activo",
-                nombre: e.nombre,
-                apellido1: e.apellido1,
-                apellido2: e.apellido2,
-                email: e.email,
-                cedula: e.cedula,
-                codTarjeta: e.codTarjeta,
-                departamentos: array,
-                horario: e.idHorario,
-                }), e.password, function(err, usuario) {
-                    console.log('Recibimos nuevo usuario:' + e.username + ' de tipo: ' + e.tipo);
+                    newUser.password = Usuario.generateHash(e.password);
+
+                    newUser.save(function(err) {
+                        if (err) return res.json(error);
+                        
+                    });//Crea Usuario
                 }
-            );
+            });//Busca Usuario
             if (req.session.name == "Administrador"){
                res.redirect('/escritorioAdmin'); 
             }
@@ -994,7 +1000,9 @@ module.exports = function(app, io) {
 
         delete empleado.id;
         delete empleado._id;
+        delete empleado.password;
 
+        empleado.password = Usuario.generateHash(req.body.password);
         var array = [];
         if(empleado.departamentos instanceof Array && empleado.tipo == "Supervisor"){
             for( var i in req.body.departamentos){
@@ -1146,16 +1154,42 @@ module.exports = function(app, io) {
     }
 
     /*
+    *   Cambia el username de los usuarios
+    */
+    app.post('/cambioUsername/:id', autentificado, function(req, res) {
+        var userId = req.params.id;
+
+        var user = {};
+        user.username = req.body.username;
+
+        Usuario.findByIdAndUpdate(userId, user, function(error, user) { 
+            if (error) return res.json(error);
+            res.redirect('/configuracionEmpl');
+        });
+    });
+
+    /*
     *   Cambia la contraseña de los usuarios
     */
-    app.post('/cambioPassword', function(req, res) {
-        Usuario.virtual('password').set(function(password) {
-            this._password = password;
-            this.salt = this.makeSalt();
-            this.hashed_password = this.encryptPassword(password);
-        }).get(function() {
-            return this._password;
+    app.post('/cambioPassword/:id', autentificado, function(req, res) {
+        var userId = req.params.id,
+            currentPassword = Usuario.generateHash(req.body.currentPassword);
+
+        Usuario.findById(userId, function(error, user){
+            if(!user.validPassword(currentPassword)){
+                if(req.body.newPassword != "" && req.body.newPassword != null && req.body.newPassword === req.body.repeatNewPassword){
+                    
+                    var user = {};
+                    user.password = Usuario.generateHash(req.body.newPassword);
+
+                    Usuario.findByIdAndUpdate(userId, user, function(error, user) { 
+                        if (error) return res.json(error);
+                        console.log("Se actualizo la contraseña con exito");
+                    });
+                } else console.log("Nueva contraseña inválida.");
+            } else console.log("Contraseña inválida.");
         });
+        res.redirect('/configuracionEmpl');
     });
 
 

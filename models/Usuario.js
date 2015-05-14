@@ -7,7 +7,8 @@
 
  var mongoose = require('mongoose'),
      Schema = mongoose.Schema,
-     passportLocalMongoose = require('passport-local-mongoose');
+     passportLocalMongoose = require('passport-local-mongoose'),
+     bcrypt   = require('bcrypt-nodejs');
 
  var SchemaUsuario = new Schema({
      codTarjeta: {
@@ -15,6 +16,10 @@
          default: 0
      },
      username : {
+         type: String,
+         default: ''
+     },
+     password : {
          type: String,
          default: ''
      },
@@ -63,5 +68,16 @@
  });
 
  SchemaUsuario.plugin(passportLocalMongoose);
+
+// methods ======================
+// generating a hash
+SchemaUsuario.statics.generateHash = function(password) {
+    return bcrypt.hashSync(password);
+};
+
+// checking if password is valid
+SchemaUsuario.methods.validPassword = function(password) {
+    return bcrypt.compareSync(password, this.password);
+};
 
  module.exports = mongoose.model('Usuario', SchemaUsuario);

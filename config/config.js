@@ -9,15 +9,15 @@ var path = require('path'),
 
 module.exports = {
 	'development': {
-		db: 'mongodb://localhost/sigucaDB_dev',
-		root: 'rootPath',
+		db: 'mongodb://localhost/sigucadb',
+		root: rootPath,
 		app: {
 			name: 'SIGUCA Ambiente de Desarollo'
 		}
 	},
 	'production': {
 		db: 'mongodb://localhost/sigucaDB',
-		root: 'rootPath',
+		root: rootPath,
 		app: {
 			name: 'SIGUCA'
 		}

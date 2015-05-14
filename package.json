@@ -21,6 +21,7 @@
     "event-stream": "3.1.5",
     "hanson": "1.1.1",
     "socket.io": "*",
-    "cron": "latest"
+    "cron": "latest",
+    "bcrypt-nodejs" : "latest"
   }
 }
