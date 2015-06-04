@@ -72,7 +72,7 @@ All of the Client side code resides in the `/public` directory.
 License
 ==========
 
-MIT
+***AGPL License***
 
 [donwloadNodejs]:http://nodejs.org/download/
 [donwloadMongodb]:http://www.mongodb.org/downloads
