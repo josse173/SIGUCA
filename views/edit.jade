@@ -31,12 +31,9 @@ block content
                 h3 Información Laboral
                 label(for='codTarjeta') Código de Empleado:
                   input#codTarjeta.form-control(type= 'text', placeholder='Código de Empleado', name='codTarjeta',  value=empleado.codTarjeta)
-                label(for="usernameInput")
-                  |Usuario:
-                  input.form-control#textInput(type="text", name="username", placeholder="Usuario", value=empleado.username)
-                label(for="passwordInput")
-                  |Contraseña:
-                  input.form-control#passInput(type='text', size='18', name="password", placeholder="Contraseña")
+                //label(for='codTarjeta') Código de Empleado:
+                  input#codTarjeta.form-control(type= 'Number', placeholder='Código de Empleado', name='codTarjeta', value=empleado.codTarjeta)
+                  //input(type='hidden', name='_method', value='put') 
               .form-group 
                 label(for="tipoInput")
                   |Tipo de Usuario:

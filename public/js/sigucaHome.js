@@ -1,6 +1,6 @@
 
     //Declaramos el objeto socket que se conectará en este caso a localhost
-    //var socket = io.connect('http://siguca.greencore.int:3000');
+    //var socket = io.connect('http://siguca.greencore.int');
     var socket = io.connect('http://localhost:3000');
 
 
@@ -118,9 +118,27 @@ function calendario(stats, array){
         itemName: "evento",
         onClick: function(date, nb) {
             var departamento = $('#selectFiltro').val();
-            $.get('/reportarEventos', {dia: date, departamentoId: departamento}, function( data ) {
-                $( "#calDetalle" ).html(data);
+            var usuario = $('#marca').val();
+            $.get('/reportarEventos', {dia: date, departamentoId: departamento, id: usuario}, function( data ) {
+                $( "#calDetalle" ).html('<tr><td> Justificaciones </td><td>' + data.justificaciones+  '</td></tr>' +
+                                        '<tr><td> Solicitudes </td><td>' + data.solicitudes +  '</td></tr>' +
+                                        '<tr><td> Ausencias o Tardías </td><td>' + data.marcas + '</td></tr>');
+                var html = '';
+                for (var i = 0; i < data.marcasPersonales.length; i++) {
+
+                    var fecha = new Date(0);
+                    fecha.setUTCSeconds(data.marcasPersonales[i].epoch);
+                        var m = fecha.getMinutes(),
+                            s = fecha.getSeconds();
+
+                        data.marcasPersonales[i].fecha = fecha.getHours();
+                        m < 10 ? data.marcasPersonales[i].fecha += ":0" + m : data.marcasPersonales[i].fecha += ":" + m ;
+                        s < 10 ? data.marcasPersonales[i].fecha += ":0" + s : data.marcasPersonales[i].fecha += ":" + s ;
+                    html += '<tr><td>' + data.marcasPersonales[i].tipoMarca + '</td><td>' + data.marcasPersonales[i].fecha + '</td></tr>';
+                };
+                $( "#marcasDetalle" ).html(html);
             });
+
         }
     });
 };

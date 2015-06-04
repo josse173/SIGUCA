@@ -1,6 +1,6 @@
 
     //Declaramos el objeto socket que se conectará en este caso a localhost
-    //var socket = io.connect('http://siguca.greencore.int:3000');
+    //var socket = io.connect('http://siguca.greencore.int');
     var socket = io.connect('http://localhost:3000');
 
 
@@ -115,6 +115,26 @@ function calendario(stats, array){
         },
         legendHorizontalPosition: "right",
         //legendVerticalPosition: "top",
-        itemName: "evento"
+        itemName: "evento",
+        onClick: function(date, nb) {
+            var usuario = $('#marca').val();
+            $.get('/reportarEventos', {dia: date, id: usuario}, function( data ) {
+                var html = '';
+                for (var i = 0; i < data.marcasPersonales.length; i++) {
+
+                    var fecha = new Date(0);
+                    fecha.setUTCSeconds(data.marcasPersonales[i].epoch);
+                        var m = fecha.getMinutes(),
+                            s = fecha.getSeconds();
+
+                        data.marcasPersonales[i].fecha = fecha.getHours();
+                        m < 10 ? data.marcasPersonales[i].fecha += ":0" + m : data.marcasPersonales[i].fecha += ":" + m ;
+                        s < 10 ? data.marcasPersonales[i].fecha += ":0" + s : data.marcasPersonales[i].fecha += ":" + s ;
+                    html += '<tr><td>' + data.marcasPersonales[i].tipoMarca + '</td><td>' + data.marcasPersonales[i].fecha + '</td></tr>';
+                };
+                $( "#marcasDetalle" ).html(html);
+            });
+
+        }
     });
 };

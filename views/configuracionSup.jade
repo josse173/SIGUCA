@@ -1,0 +1,36 @@
+extends layout
+
+block content
+  .container 
+    .col-xs-2
+    .col-xs-8
+
+      div#containerCentral
+        h3  Configuración Empleado
+         
+    .col-xs-12
+      .col-xs-6
+        h3 Actualizar nombre de usuario
+        form(role='form', method="POST", action="/cambioUsername/"+usuario._id)#login-form.well.span4
+          .form-group
+            label(for='username') Username
+              input.form-control(type='text', placeholder='username', name='username', value=usuario.username)
+          .form-group
+            button#ingreso.btn.btn-success(name='ingreso') Ingresar
+            button#cancelar.btn.btn-danger(name='cancelar') Cancelar   
+
+      .col-xs-6
+        h3 Actualizar Contraseña
+        form(role='form', method="POST", action="/cambioPassword/"+usuario._id)#login-form.well.span4
+          .form-group
+            label(for='currentpassword') Contraseña Actual
+              input.form-control(type='password', placeholder='Contraseña Actual', name='currentPassword')
+          .form-group
+            label(for='newPassword') Nueva Contraseña
+              input.form-control(type='password', placeholder='Nueva Contraseña', ng-model='query', name='newPassword')
+            label(for='repeatNewPassword') Repita Nueva Contraseña
+              input.form-control(type='password', placeholder='Repetir Nueva Contraseña', ng-model='query', name='repeatNewPassword')
+          .form-group
+            .controls
+             button#ingreso.btn.btn-success(name='ingreso') Ingresar
+             button#cancelar.btn.btn-danger(name='cancelar') Cancelar

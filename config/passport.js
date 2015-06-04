@@ -26,15 +26,12 @@ module.exports = function (passport, config) {
         passReqToCallback : true // allows us to pass back the entire request to the callback
     },
     function(req, username, password, done) {
-      console.log(username + "," + password);
       Usuario.findOne({ 'username': username }, function (err, user) {
         if (err) { return done(err) }
-        console.log(user);
         if (!user) {
           return done(null, false, { message: 'Usuario desconocido.' })
         }
         if (!user.validPassword(password)) {
-          console.log("Contraseña inválida " + password);
           return done(null, false, { message: 'Contraseña inválida.' })
         }
         return done(null, user)
@@ -48,7 +45,6 @@ module.exports = function (passport, config) {
     },
     function(req, username, password, done) {
         process.nextTick(function() {
-          console.log(username + "," + password);
           Usuario.findOne({ 'username' :  username }, function(err, user) {
               if (err)
                   return done(err);
@@ -59,11 +55,9 @@ module.exports = function (passport, config) {
                   newUser.username = username;
                   newUser.password = Usuario.generateHash(password);
 
-                  console.log(newUser);
                   newUser.save(function(err) {
                       if (err)
                           throw err;
-                      console.log("listo");
                       return done(null, newUser);
                   });
               }

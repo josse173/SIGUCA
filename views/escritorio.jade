@@ -9,7 +9,7 @@ block sigucaCSS
 block content   
     .container
       .col-xs-8
-        .col-xs-4
+        .col-xs-3
           h3 Gráfico de:  #{usuario.username}
           button#previous.btn.btn-default
             i.icon.icon-chevron-left
@@ -17,7 +17,7 @@ block content
             i.icon.icon-chevron-right
           div#cal
 
-        .col-xs-4.bordered
+        .col-xs-4.bordered(style="margin: 10px 20px;")
           h3 Detalle diario por departamento
           br
           div.table-responsive.table.bordered
@@ -37,11 +37,11 @@ block content
                     td Ausencias o Tardías
                     td -
 
-        .col-xs-3.bordered(style="margin: 10px;")
+        .col-xs-4.bordered(style="margin: 10px;")
           h3 Registro de Marcas
           br
           div.table-responsive.table.bordered
-            table
+            table#tablaMarcas
               thead
                 tr
                   th Tipo
@@ -113,7 +113,7 @@ block content
           h3  Marca Mediante el Sistema
           div#contBotones
             div#Marca             
-             button#marca.btn.btn-success(name='marcar', onclick= "changeElemt('marca')", data-toggle="modal" data-target="#addMarca") Realizar Marca
+             button#marca.btn.btn-success(name='marcar', onclick= "changeElemt('marca')", data-toggle="modal" data-target="#addMarca" value=usuario._id) Realizar Marca
 
 
       .col-xs-4

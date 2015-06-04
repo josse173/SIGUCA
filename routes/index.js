@@ -20,25 +20,34 @@ module.exports = function(app, io) {
     /*
     *   Redirecciona al index
     */
-    app.get('/', function (req, res) {
-        res.render('index');
+    app.get('/', function(req, res) {
+        res.render('index', {
+            usuario: req.user
+        });
     });
 
     /*
     *   Verifica el login dependiendo del tipo de usuario
     */
-    app.post('/login', passport.authenticate('login'), function(req, res) {
-        req.session.name = req.user.tipo;
-        if (req.session.name == "Administrador") {
-            res.redirect('/escritorioAdmin');
+    app.post('/login', passport.authenticate('login', 
+            {
+                failureRedirect: '/'
+            }
+        ), 
+        function(req, res) {
+            req.session.name = req.user.tipo;
+            if (req.session.name == "Administrador") {
+                res.redirect('/escritorioAdmin');
+            }
+            if (req.session.name == "Supervisor") {
+                res.redirect('/escritorio');
+            }
+            if (req.session.name == "Empleado") {
+                res.redirect('/escritorioEmpl');
+            }
         }
-        if (req.session.name == "Supervisor") {
-            res.redirect('/escritorio');
-        }
-        if (req.session.name == "Empleado") {
-            res.redirect('/escritorioEmpl');
-        }
-    });
+    );
+
 
     /*
     *   Cierra sessión de usuario
@@ -68,7 +77,9 @@ module.exports = function(app, io) {
                         Usuario.find({_id:req.user.id},{_id:0,departamentos: 1}).populate('departamentos.departamento').exec(function(error, result){
                             
                             result.forEach(function(supervisor){
-                                var arrayMarcas = eventosAjuste(marcas, req.user, "escritorioEmpl");
+                                var sup = {departamentos: [1]};
+
+                                var arrayMarcas = eventosAjuste(marcas, sup, "escritorioEmpl");
 
                                 var array = [];
                                 for(var y = 0; y < req.user.departamentos.length; y++){
@@ -286,7 +297,7 @@ module.exports = function(app, io) {
         var notFound = true;
         var array = [];
         var count = 0;
-
+        
         for(var x = 0; x < evento.length; x++){
             for(var y = 0; y < supervisor.departamentos.length; y++){
                 /*
@@ -315,12 +326,16 @@ module.exports = function(app, io) {
                     var fecha = new Date(0);
                     fecha.setUTCSeconds(epochTime);
                     if("escritorioEmpl" === query){
-                        evento[x].fecha = fecha.getHours() + ":" + fecha.getMinutes() + ":" + fecha.getSeconds();
+                        var m = fecha.getMinutes(),
+                            s = fecha.getSeconds();
+
+                        evento[x].fecha = fecha.getHours();
+                        m < 10 ? evento[x].fecha += ":0" + m : evento[x].fecha += ":" + m ;
+                        s < 10 ? evento[x].fecha += ":0" + s : evento[x].fecha += ":" + s ;
                     } else{
                         evento[x].fecha = fecha;
                     }
                 }
-
                 if("eventosEmpl" != query && "filtrarEventosEmpl" != query && "escritorioEmpl" != query){
                     if("usuario" in evento[x]){
                         /*
@@ -506,11 +521,18 @@ module.exports = function(app, io) {
     *  Redirecciona a la configuración de empleado
     */
     app.get('/configuracionEmpl', autentificado, function(req, res) {
-        if (req.session.name == "Empleado") {
-            res.render('configuracionEmpl', {
-                title: 'Configuración | SIGUCA',
-                usuario: req.user
-            });
+        if (req.session.name != "Administrador") {
+            if (req.session.name == "Empleado") {
+                res.render('configuracionEmpl', {
+                    title: 'Configuración | SIGUCA',
+                    usuario: req.user
+                });
+            } else {
+                res.render('configuracionSup', {
+                    title: 'Configuración | SIGUCA',
+                    usuario: req.user
+                });
+            }
         } else {
             req.logout();
             res.redirect('/');
@@ -878,27 +900,35 @@ module.exports = function(app, io) {
     *  Crea una nueva marca vía página web
     */
     app.post('/marca', autentificado, function(req, res) {
-        var d = new Date();
-        var epochTime = (d.getTime() - d.getMilliseconds())/1000;
+        var date = new Date();
+        var epochTime = (date.getTime() - date.getMilliseconds())/1000;
         var fechaActual= new Date(0);
         fechaActual.setUTCSeconds(epochTime); 
+
+        date.setHours(1);
+        date.setMinutes(0);
+        var epochTimeGte = (date.getTime() - date.getMilliseconds())/1000;
+        var epochTimeLt = epochTime + 1;
+
         var newMarca = Marca({
                     tipoMarca: req.body.marca,
                     epoch: epochTime,
                     usuario: req.user.id,
                     fecha: fechaActual
                 });
-        newMarca.save(function(error, user) {
 
-            if (error) return res.json(error);
-
+        Marca.find({epoch:{'$gte': epochTimeGte, '$lt': epochTimeLt}, tipoMarca: newMarca.tipoMarca, usuario:newMarca.usuario}).exec(function (err, marca){
+            if(marca.length == 0){
+                newMarca.save(function(error, user) {
+                    if (error) return res.json(error);
+                });//save
+            }
             if(req.session.name == "Empleado"){
                 res.redirect('/escritorioEmpl');
             } else {
                 res.redirect('/escritorio')
             }
-
-        });
+        });//marca
     });
 
     /*
@@ -1000,9 +1030,7 @@ module.exports = function(app, io) {
 
         delete empleado.id;
         delete empleado._id;
-        delete empleado.password;
 
-        empleado.password = Usuario.generateHash(req.body.password);
         var array = [];
         if(empleado.departamentos instanceof Array && empleado.tipo == "Supervisor"){
             for( var i in req.body.departamentos){
@@ -1152,117 +1180,138 @@ module.exports = function(app, io) {
         // redireccionar al home en caso de que no
         res.redirect('/');
     }
-
+    
     /*
     *   Cambia el username de los usuarios
     */
     app.post('/cambioUsername/:id', autentificado, function(req, res) {
-        var userId = req.params.id;
+        if(req.session.name != "Administrador"){
+            var userId = req.params.id;
 
-        var user = {};
-        user.username = req.body.username;
+            var user = {};
+            user.username = req.body.username;
 
-        Usuario.findByIdAndUpdate(userId, user, function(error, user) { 
-            if (error) return res.json(error);
-            res.redirect('/configuracionEmpl');
-        });
+            Usuario.findByIdAndUpdate(userId, user, function(error, user) { 
+                if (error) return res.json(error);
+                res.redirect('/configuracionEmpl');
+            });
+        }
     });
 
     /*
     *   Cambia la contraseña de los usuarios
     */
     app.post('/cambioPassword/:id', autentificado, function(req, res) {
-        var userId = req.params.id,
-            currentPassword = Usuario.generateHash(req.body.currentPassword);
+        if(req.session.name != "Administrador"){
+            var userId = req.params.id,
+                currentPassword = Usuario.generateHash(req.body.currentPassword);
 
-        Usuario.findById(userId, function(error, user){
-            if(!user.validPassword(currentPassword)){
-                if(req.body.newPassword != "" && req.body.newPassword != null && req.body.newPassword === req.body.repeatNewPassword){
-                    
-                    var user = {};
-                    user.password = Usuario.generateHash(req.body.newPassword);
+            Usuario.findById(userId, function(error, user){
+                if(!user.validPassword(currentPassword)){
+                    if(req.body.newPassword != "" && req.body.newPassword != null && req.body.newPassword === req.body.repeatNewPassword){
+                        
+                        var user = {};
+                        user.password = Usuario.generateHash(req.body.newPassword);
 
-                    Usuario.findByIdAndUpdate(userId, user, function(error, user) { 
-                        if (error) return res.json(error);
-                        console.log("Se actualizo la contraseña con exito");
-                    });
-                } else console.log("Nueva contraseña inválida.");
-            } else console.log("Contraseña inválida.");
-        });
-        res.redirect('/configuracionEmpl');
+                        Usuario.findByIdAndUpdate(userId, user, function(error, user) { 
+                            if (error) return res.json(error);
+                            console.log("Se actualizo la contraseña con exito");
+                        });
+                    } else console.log("Nueva contraseña inválida.");
+                } else console.log("Contraseña inválida.");
+            });
+            res.redirect('/configuracionEmpl');
+        }
     });
+
 
 
     /*
     *   Detalla los eventos del calendario por día.
     */
     app.get('/reportarEventos', autentificado, function(req, res) {
-        if (req.session.name == "Supervisor") {
-            var diaGte = new Date(req.query.dia);
-            var diaLt = new Date(diaGte);
-            diaLt.setDate(diaGte.getDate() + 1);
+        var diaGte = new Date(req.query.dia);
+        var diaLt = new Date(diaGte);
+        diaLt.setDate(diaGte.getDate() + 1);
 
-            var epochGte = (diaGte.getTime() - diaGte.getMilliseconds())/1000,
-                epochLt = (diaLt.getTime() - diaLt.getMilliseconds())/1000;
+        var epochGte = (diaGte.getTime() - diaGte.getMilliseconds())/1000,
+            epochLt = (diaLt.getTime() - diaLt.getMilliseconds())/1000;
 
-            var option = req.query.departamentoId.split(',');
-            if(option[1] == "todos"){
-                var or = [];
-                for (var i = 2; i < option.length; i++) {
-                    or.push({departamento:option[i]});
-                };
-                var queryOr = {
-                    "tipo": "General",
-                    "$or": or,
-                    "epoch":{
-                        "$gte": epochGte, 
-                        "$lt": epochLt
+        console.log(req.query);
+        Marca.find({usuario: req.query.id, epoch:{"$gte": epochGte, "$lt": epochLt}},{_id:0,tipoMarca:1,epoch:1}).exec(function (err, marcasPersonales){
+
+            if (req.session.name == "Supervisor") {
+
+                var option = req.query.departamentoId.split(',');
+                if(option[1] == "todos"){
+                    var or = [];
+                    for (var i = 2; i < option.length; i++) {
+                        or.push({departamento:option[i]});
+                    };
+                    var queryOr = {
+                        "tipo": "General",
+                        "$or": or,
+                        "epoch":{
+                            "$gte": epochGte, 
+                            "$lt": epochLt
+                        }
                     }
+                    Cierre.find(queryOr).exec(function(err, cierres) {
+                        var justificaciones = 0,
+                            solicitudes = 0,
+                            marcas = 0;
+                        for(var i = 0; i < cierres.length; i++){
+                                justificaciones += cierres[i].justificaciones;
+                                solicitudes += cierres[i].solicitudes;
+                                marcas += cierres[i].marcas;
+                        }
+
+                        if (err) console.log('error al cargar los cierres: ' + err);
+                        else {
+                            res.json({
+                                justificaciones: justificaciones,
+                                solicitudes: solicitudes,
+                                marcas: marcas,
+                                marcasPersonales: marcasPersonales 
+                            });
+                        }
+                    });
+                } else {
+                    Cierre.find({tipo: "General", departamento: option[1], epoch:{"$gte": epochGte, "$lt": epochLt}}).exec(function(err, cierres) {
+                        var justificaciones = 0,
+                            solicitudes = 0,
+                            marcas = 0;
+                        for(var i = 0; i < cierres.length; i++){
+                                justificaciones += cierres[i].justificaciones;
+                                solicitudes += cierres[i].solicitudes;
+                                marcas += cierres[i].marcas;
+                        }
+
+                        if (err) console.log('error al cargar los cierres: ' + err);
+                        else {
+                            res.json({
+                                justificaciones: justificaciones,
+                                solicitudes: solicitudes,
+                                marcas: marcas,
+                                marcasPersonales: marcasPersonales 
+                            });
+                        }
+                    });
                 }
-                Cierre.find(queryOr).exec(function(err, cierres) {
-                    var justificaciones = 0,
-                        solicitudes = 0,
-                        marcas = 0;
-                    for(var i = 0; i < cierres.length; i++){
-                            justificaciones += cierres[i].justificaciones;
-                            solicitudes += cierres[i].solicitudes;
-                            marcas += cierres[i].marcas;
-                    }
-
-                    if (err) console.log('error al cargar los cierres: ' + err);
-                    else {
-                        res.send(
-                            '<tr><td> Justificaciones </td><td>' + justificaciones+  '</td></tr>' +
-                            '<tr><td> Solicitudes </td><td>' + solicitudes +  '</td></tr>' +
-                            '<tr><td> Ausencias o Tardías </td><td>' + marcas + '</td></tr>'
-                        );
-                    }
-                });
+            } else if (req.session.name == "Empleado") {
+                res.json({ marcasPersonales: marcasPersonales });
             } else {
-                Cierre.find({tipo: "General", departamento: option[1], epoch:{"$gte": epochGte, "$lt": epochLt}}).exec(function(err, cierres) {
-                    var justificaciones = 0,
-                        solicitudes = 0,
-                        marcas = 0;
-                    for(var i = 0; i < cierres.length; i++){
-                            justificaciones += cierres[i].justificaciones;
-                            solicitudes += cierres[i].solicitudes;
-                            marcas += cierres[i].marcas;
-                    }
-
-                    if (err) console.log('error al cargar los cierres: ' + err);
-                    else {
-                        res.send(
-                            '<tr><td> Justificaciones </td><td>' + justificaciones+  '</td></tr>' +
-                            '<tr><td> Solicitudes </td><td>' + solicitudes +  '</td></tr>' +
-                            '<tr><td> Ausencias o Tardías </td><td>' + marcas + '</td></tr>'
-                        );
-                    }
-                });
+                req.logout();
+                res.redirect('/');
             }
-        } else {
-            req.logout();
-            res.redirect('/');
-        }
+        });
+    });
+
+
+    /*
+    *   Detalla los eventos del calendario por día.
+    */
+    app.get('/reportarMarcas', autentificado, function(req, res) {
     });
 
     /*

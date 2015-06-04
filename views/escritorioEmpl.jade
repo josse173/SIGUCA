@@ -22,7 +22,7 @@ block content
           h3 Registro de Marcas
           br
           div.table-responsive.table.bordered
-            table
+            table#tablaMarcas
               thead
                 tr
                   th Tipo
@@ -86,7 +86,7 @@ block content
         h3  Marca Mediante el Sistema
         div#contBotones
           div#Marca             
-           button#marca.btn.btn-success(name='marcar', onclick= "changeElemt('marca')", data-toggle="modal" data-target="#addMarca") Realizar Marca
+           button#marca.btn.btn-success(name='marcar', onclick= "changeElemt('marca')", data-toggle="modal" data-target="#addMarca" value=usuario._id) Realizar Marca
 
     .col-xs-2      
       //modal para realizar marcas
