@@ -20,7 +20,7 @@ block content
                      table
                        form(role='form', method="POST", action="/filtrarEventos/")
                         td
-                          select.form-control#selectFiltro.selectpicker(data-style="btn-default", data-width="auto", type="text", name="filtro") 
+                          select.form-control#selectFiltro.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro") 
                             option(value= usuario._id + "|" + departamentos + "|todos|gestionarEventos") Todos los usuarios
                             each user in usuarios
                               option(value= usuario._id + "|" + departamentos + "|" + user._id + "|gestionarEventos") #{user.apellido1} #{user.apellido2}, #{user.nombre}
@@ -41,106 +41,132 @@ block content
        
       .col-xs-12
         h3 Justificaciones
-        br
-        .table-responsive
-        table.table
-            thead
-              tr
-                th Fecha
-                th Usuario
-                th Motivo
-                th Detalle
-                th Comentario
-            tbody 
-              each justificacion, i in justificaciones
+        if(justificaciones.length != 0)
+          table.footable(data-page-navigation=".pagination" data-page-size="5" data-page-first-text="first" data-page-previous-text="prev" data-page-next-text="next" data-page-last-text="last")
+              thead
                 tr
-                  td #{justificacion.fecha} 
-                  td #{justificacion.usuario.nombre} #{justificacion.usuario.apellido1}
-                  td #{justificacion.motivo} 
-                  td #{justificacion.detalle} 
+                  th Fecha
+                  th Usuario
+                  th(data-hide="phone") Motivo
+                  th(data-hide="phone") Detalle
+                  th(data-hide="phone,small,medium") Comentario
+                  th(data-hide="phone,small,medium") Estado
+                  th(data-hide="phone,small,medium") Gestionar
+
+              tbody 
+                each justificacion, i in justificaciones
                   form(role='form', method="POST", action="/getionarJustificacion/"+justificacion.id)
-                    td
-                      textarea.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
-                    td
-                      select(name='estado')
-                        option(value='Aceptada') Aceptar
-                        option(value='Rechazada') Rechazar
-                        option(value='Pendiente') Pendiente
-                    td
-                      button.btn.btn-success(type='submit', name='gestionar') Gestionar                 
- 
+                    tr
+                      td #{justificacion.fecha} 
+                      td #{justificacion.usuario.nombre} #{justificacion.usuario.apellido1}
+                      td #{justificacion.motivo} 
+                      td #{justificacion.detalle} 
+                      td
+                        textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
+                      td
+                        select.selectpicker(name='estado' data-width="auto" data-style="btn-inverse")
+                          option(value='Aceptada') Aceptar
+                          option(value='Rechazada') Rechazar
+                          option(value='Pendiente') Pendiente
+                      td
+                        button.btn.btn-default(type='submit', name='gestionar') 
+                            i.icon-ok.icon-large  
+              tfoot
+                tr
+                  td(colspan='7')
+                    .pagination.pagination-centered.hide-if-no-paging 
+        else
+          p No se han enviado justificaciones hasta el momento.               
 
-
-
+        br
         h3 Solicitudes Horas Extraordinarias
-        br
-        .table-responsive
-        table.table
-            thead
-              tr
-                th Fecha
-                th Usuario
-                th Día
-                th Hora Entrada 
-                th Hora Salida
-                th Cantidad de Horas
-                th Motivo
-                th Comentario
-            tbody 
-              each extra, i in extras
+        if(extras.length != 0)
+          table.footable(data-page-navigation=".pagination" data-page-size="5" data-page-first-text="first" data-page-previous-text="prev" data-page-next-text="next" data-page-last-text="last")
+              thead
                 tr
-                  td #{extra.fecha} 
-                  td #{extra.usuario.nombre} #{extra.usuario.apellido1} 
-                  td #{extra.diaInicio} 
-                  td #{extra.horaInicio} 
-                  td #{extra.horaFinal} 
-                  td #{extra.cantHoras} 
-                  td #{extra.motivo} 
-                  form(role='form', method="POST", action="/getionarSolicitud/"+extra.id)
-                    td
-                      textarea.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
-                    td
-                      select(name='estado')
-                        option(value='Aceptada') Aceptar
-                        option(value='Rechazada') Rechazar
-                        option(value='Pendiente') Pendiente
-                    td
-                      button.btn.btn-success(type='submit', name='gestionar') Gestionar
+                  th Fecha
+                  th Usuario
+                  th(data-hide="phone") Día
+                  th(data-hide="phone") Hora Entrada 
+                  th(data-hide="phone") Hora Salida
+                  th(data-hide="phone,small,medium") Cantidad de Horas
+                  th(data-hide="phone,small,medium") Motivo
+                  th(data-hide="phone,small,medium") Comentario
+                  th(data-hide="phone,small,medium") Estado
+                  th(data-hide="phone,small,medium") Gestionar
 
-        h3 Solicitudes Permisos
-        br
-        .table-responsive
-        table.table
-            thead
-              tr
-                th Fecha
-                th Usuario
-                th Día Inicial
-                th Día Final 
-                th Cantidad Días
-                th Motivo
-                th Detalle
-                th Comentario
-            tbody 
-              each permiso, i in permisos
+              tbody 
+                each extra, i in extras
+                  form(role='form', method="POST", action="/getionarSolicitud/"+extra.id)
+                    tr
+                      td #{extra.fecha} 
+                      td #{extra.usuario.nombre} #{extra.usuario.apellido1} 
+                      td #{extra.diaInicio} 
+                      td #{extra.horaInicio} 
+                      td #{extra.horaFinal} 
+                      td #{extra.cantHoras} 
+                      td(data-sort-ignore="true") #{extra.motivo} 
+                      td(data-sort-ignore="true")
+                        textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
+                      td(data-sort-ignore="true")
+                        select.selectpicker(name='estado' data-width="auto"  data-style="btn-inverse")
+                          option(value='Aceptada') Aceptar
+                          option(value='Rechazada') Rechazar
+                          option(value='Pendiente') Pendiente
+                      td(data-sort-ignore="true")
+                        button.btn.btn-default(type='submit', name='gestionar') 
+                          i.icon-ok.icon-large  
+              tfoot
                 tr
-                  td #{permiso.fecha} 
-                  td #{permiso.usuario.nombre} #{permiso.usuario.apellido1} 
-                  td #{permiso.diaInicio} 
-                  td #{permiso.diaFinal} 
-                  td #{permiso.cantidadDias} 
-                  td #{permiso.motivo} 
-                  td #{permiso.detalle} 
+                  td(colspan='10')
+                    .pagination.pagination-centered.hide-if-no-paging
+        else
+          p No se han enviado extras hasta el momento. 
+
+        br
+        h3 Solicitudes Permisos
+        if(permisos.length != 0)
+          table.footable(data-page-navigation=".pagination" data-page-size="5" data-page-first-text="first" data-page-previous-text="prev" data-page-next-text="next" data-page-last-text="last")
+              thead
+                tr
+                  th Fecha
+                  th Usuario
+                  th(data-hide="phone") Día Inicial
+                  th(data-hide="phone") Día Final 
+                  th(data-hide="phone") Cantidad Días
+                  th(data-hide="phone,small,medium") Motivo
+                  th(data-hide="phone,small,medium") Detalle
+                  th(data-hide="phone,small,medium") Comentario
+                  th(data-hide="phone,small,medium") Estado
+                  th(data-hide="phone,small,medium") Gestionar
+
+              tbody 
+                each permiso, i in permisos
                   form(role='form', method="POST", action="/getionarSolicitud/"+permiso.id)
-                    td
-                      textarea.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
-                    td
-                      select(name='estado')
-                        option(value='Aceptada') Aceptar
-                        option(value='Rechazada') Rechazar
-                        option(value='Pendiente') Pendiente
-                    td
-                      button.btn.btn-success(type='submit', name='gestionar') Gestionar
+                    tr
+                      td #{permiso.fecha} 
+                      td #{permiso.usuario.nombre} #{permiso.usuario.apellido1} 
+                      td #{permiso.diaInicio} 
+                      td #{permiso.diaFinal} 
+                      td #{permiso.cantidadDias} 
+                      td #{permiso.motivo} 
+                      td #{permiso.detalle} 
+                      td
+                        textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
+                      td
+                        select.selectpicker(name='estado' data-width="auto"  data-style="btn-inverse")
+                          option(value='Aceptada') Aceptar
+                          option(value='Rechazada') Rechazar
+                          option(value='Pendiente') Pendiente
+                      td
+                        button.btn.btn-default(type='submit', name='gestionar') 
+                          i.icon-ok.icon-large  
+              tfoot
+                tr
+                  td(colspan='10')
+                    .pagination.pagination-centered.hide-if-no-paging
+        else
+          p No se han enviado extras hasta el momento. 
                                  
 block sigucaJS
   script(src="/js/bootstrap-datepicker.min.js")

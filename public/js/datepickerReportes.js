@@ -6,3 +6,7 @@
         language: "es",
         todayHighlight: true
     });
+
+    $('#timepicker input').timepicker();
+
+    $('.footable').footable();

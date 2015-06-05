@@ -16,13 +16,15 @@ html
     meta(charset='utf-8')
     //To ensure proper rendering and touch zooming (boostrap)
     //Para garantizar una adecuada renderización  en caso de dispositivos móviles
-    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    meta(content="width = device-width, initial-scale = 1.0, minimum-scale = 1.0, maximum-scale = 1.0, user-scalable = no")
 
     //Style sheets used
     link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
     link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
     link(rel='stylesheet', href='/stylesheets/bootstrap-theme.min.css')
     link(rel='stylesheet', href='/stylesheets/sigucaAyuda.css')
+    link(rel='stylesheet', href='/stylesheets/footable/footable.core.min.css')
+    link(rel='stylesheet', href='/stylesheets/footable/footable.metro.min.css')
 
     title SIGUCA
 
@@ -87,5 +89,11 @@ html
 
     script(src="/js/jquery-2.0.3.min.js")
     script(src="/js/bootstrap.min.js")
-    script(src='js/respond-min.js')   
+    script(src='js/respond-min.js')  
+    script(src="/js/bootstrap-datepicker.min.js")
+    script(src="/js/bootstrap-timepicker.min.js")
+    script(src="/js/footable.js")
+    script(src="/js/footable.paginate.min.js") 
+    script(src="/js/footable.sort.min.js") 
+    script(src="/js/datepickerReportes.js")
     block sigucaJS

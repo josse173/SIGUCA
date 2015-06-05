@@ -2,6 +2,8 @@ extends layoutEmpl
 
 block sigucaCSS
   link(rel='stylesheet', href='/stylesheets/bootstrap-datepicker.min.css')
+  link(rel='stylesheet', href='/stylesheets/footable/footable.core.min.css')
+  link(rel='stylesheet', href='/stylesheets/footable/footable.metro.min.css')
 
 block content  
   div.container
@@ -33,77 +35,94 @@ block content
       
       .col-xs-12
         h3 Justificaciones
-        br
-        .table-responsive
-        table.table
-            thead
-              tr
-                th Fecha
-                th Motivo
-                th Detalle
-                th Comentario
-                th Estado
-            tbody 
-              each justificacion, i in justificaciones
+        if(justificaciones.length != 0)
+          table.footable(data-page-navigation=".pagination" data-page-size="5" data-page-first-text="first" data-page-previous-text="prev" data-page-next-text="next" data-page-last-text="last")
+              thead
                 tr
-                  td #{justificacion.fecha} 
-                  td #{justificacion.motivo} 
-                  td #{justificacion.detalle} 
-                  td #{justificacion.comentarioSupervisor} 
-                  td #{justificacion.estado} 
+                  th Fecha
+                  th Motivo
+                  th(data-hide="phone,small") Detalle
+                  th(data-hide="phone,small") Comentario
+                  th Estado
+              tbody 
+                each justificacion, i in justificaciones
+                  tr
+                    td #{justificacion.fecha} 
+                    td #{justificacion.motivo} 
+                    td #{justificacion.detalle} 
+                    td #{justificacion.comentarioSupervisor} 
+                    td #{justificacion.estado} 
+              tfoot
+                tr
+                  td(colspan='5')
+                    .pagination.pagination-centered.hide-if-no-paging
+        else
+          p No se existen justificaciones hasta el momento.
                           
 
+        br
         h3 Solicitudes Horas Extraordinarias
-        br
-        .table-responsive
-        table.table
-            thead
-              tr
-                th Fecha
-                th Día
-                th Hora Entrada 
-                th Hora Salida
-                th Cantidad de Horas
-                th Motivo
-                th Comentario
-                th Estado
-            tbody 
-              each extra, i in extras
+        if(extras.length != 0)
+          table.footable(data-page-navigation=".pagination" data-page-size="5" data-page-first-text="first" data-page-previous-text="prev" data-page-next-text="next" data-page-last-text="last")
+              thead
                 tr
-                  td #{extra.fecha} 
-                  td #{extra.diaInicio} 
-                  td #{extra.horaInicio} 
-                  td #{extra.horaFinal} 
-                  td #{extra.cantHoras} 
-                  td #{extra.motivo} 
-                  td #{extra.comentarioSupervisor} 
-                  td #{extra.estado} 
+                  th Fecha
+                  th Día
+                  th Hora Entrada 
+                  th Hora Salida
+                  th(data-hide="phone,small,medium") Cantidad de Horas
+                  th(data-hide="phone,small,medium") Motivo
+                  th(data-hide="phone,small,medium") Comentario
+                  th Estado
+              tbody 
+                each extra, i in extras
+                  tr
+                    td #{extra.fecha} 
+                    td #{extra.diaInicio} 
+                    td #{extra.horaInicio} 
+                    td #{extra.horaFinal} 
+                    td #{extra.cantHoras} 
+                    td #{extra.motivo} 
+                    td #{extra.comentarioSupervisor} 
+                    td #{extra.estado} 
+              tfoot
+                tr
+                  td(colspan='8')
+                    .pagination.pagination-centered.hide-if-no-paging
+        else
+          p No se existen justificaciones hasta el momento.
 
-        h3 Solicitudes Permisos
         br
-        .table-responsive
-        table.table
-            thead
-              tr
-                th Fecha
-                th Día Inicial
-                th Día Final 
-                th Cantidad Días
-                th Motivo
-                th Detalle
-                th Comentario
-                th Estado
-            tbody 
-              each permiso, i in permisos
+        h3 Solicitudes Permisos
+        if(permisos.length != 0)
+          table.footable(data-page-navigation=".pagination" data-page-size="5" data-page-first-text="first" data-page-previous-text="prev" data-page-next-text="next" data-page-last-text="last")
+              thead
                 tr
-                  td #{permiso.fecha} 
-                  td #{permiso.diaInicio} 
-                  td #{permiso.diaFinal} 
-                  td #{permiso.cantidadDias} 
-                  td #{permiso.motivo} 
-                  td #{permiso.detalle} 
-                  td #{permiso.comentarioSupervisor} 
-                  td #{permiso.estado} 
+                  th Fecha
+                  th Día Inicial
+                  th Día Final 
+                  th(data-hide="phone,small,medium") Cantidad Días
+                  th(data-hide="phone,small,medium") Motivo
+                  th(data-hide="phone,small,medium") Detalle
+                  th(data-hide="phone,small,medium") Comentario
+                  th Estado
+              tbody 
+                each permiso, i in permisos
+                  tr
+                    td #{permiso.fecha} 
+                    td #{permiso.diaInicio} 
+                    td #{permiso.diaFinal} 
+                    td #{permiso.cantidadDias} 
+                    td #{permiso.motivo} 
+                    td #{permiso.detalle} 
+                    td #{permiso.comentarioSupervisor} 
+                    td #{permiso.estado} 
+              tfoot
+                tr
+                  td(colspan='8')
+                    .pagination.pagination-centered.hide-if-no-paging
+        else
+          p No se existen justificaciones hasta el momento.
                   
 block sigucaJS
   script(src="/js/bootstrap-datepicker.min.js")

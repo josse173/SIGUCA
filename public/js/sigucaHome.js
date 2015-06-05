@@ -61,17 +61,6 @@
     });
 
 
-    $('#datepicker input').datepicker({
-        format: "dd/mm/yyyy",
-        daysOfWeekDisabled: "0",
-        autoclose: true,
-        language: "es",
-        todayHighlight: true
-    });
-
-    $('#timepicker input').timepicker();
-
-
     //Si nos desconectamos, muestra el log y cambia el mensaje.
     socket.on('disconnect', function () {
         console.log('Desconectado!');

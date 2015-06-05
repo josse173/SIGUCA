@@ -68,6 +68,9 @@ module.exports = function(app, io) {
             diaGte.setMinutes(1);
             diaGte.setSeconds(0);
             diaGte.setMilliseconds(0);
+
+            diaLt.setDate(diaGte.getDate() + 1);
+
             var epochGte = (diaGte.getTime() - diaGte.getMilliseconds())/1000,
                 epochLt = (diaLt.getTime() - diaLt.getMilliseconds())/1000;
 
@@ -78,7 +81,7 @@ module.exports = function(app, io) {
                             
                             result.forEach(function(supervisor){
                                 var sup = {departamentos: [1]};
-
+                                
                                 var arrayMarcas = eventosAjuste(marcas, sup, "escritorioEmpl");
 
                                 var array = [];
@@ -665,16 +668,18 @@ module.exports = function(app, io) {
             newjustificacion.motivo = e.motivoOtroJust;
         else
             newjustificacion.motivo = e.motivoJust;
-        newjustificacion.save(function(error, user) {
 
-            if (error) return res.json(error);
-
+        Justificaciones.find({usuario: newjustificacion.usuario, fechaCreada: newjustificacion.fechaCreada}, function (err, just){
+            if(just.length == 0){
+                newjustificacion.save(function(error, user) {
+                    if (error) return res.json(error);
+                });//save
+            }
             if (req.session.name == "Empleado") {
-
                 res.redirect('/escritorioEmpl');
             } else res.redirect('/escritorio');
 
-        });
+        });//verificar
     });
 
     /*
@@ -706,16 +711,20 @@ module.exports = function(app, io) {
             usuario: req.user.id,
             comentarioSupervisor: ""
         });
-        newSolicitud.save(function(error, user) {
 
-            if (error) return res.json(error);
+        Solicitudes.find({usuario: newSolicitud.usuario, fechaCreada: newSolicitud.fechaCreada}, function (err, soli){
+            if(soli.length == 0){
+                newSolicitud.save(function(error, user) {
 
+                    if (error) return res.json(error);
+
+                });//save
+            }
             if (req.session.name == "Empleado") {
 
                 res.redirect('/escritorioEmpl');
             } else res.redirect('/escritorio');
-
-        });
+        });//verificar
     });
 
     /*
@@ -746,16 +755,19 @@ module.exports = function(app, io) {
             newSolicitud.motivo = e.motivoOtro;
         else
             newSolicitud.motivo = e.motivo;
-        newSolicitud.save(function(error, user) {
+        Solicitudes.find({usuario: newSolicitud.usuario, fechaCreada: newSolicitud.fechaCreada}, function (err, soli){
+            if(soli.length == 0){
+                newSolicitud.save(function(error, user) {
 
-            if (error) return res.json(error);
+                    if (error) return res.json(error);
 
+                });//save
+            }
             if (req.session.name == "Empleado") {
 
                 res.redirect('/escritorioEmpl');
             } else res.redirect('/escritorio');
-
-        });
+        });//verificar
     });
 
     /*
@@ -1234,11 +1246,12 @@ module.exports = function(app, io) {
         var diaLt = new Date(diaGte);
         diaLt.setDate(diaGte.getDate() + 1);
 
+            Marca.find({usuario: req.user.id, epoch:{"$gte": epochGte, "$lt": epochLt}},{_id:0,tipoMarca:1,epoch:1})
         var epochGte = (diaGte.getTime() - diaGte.getMilliseconds())/1000,
             epochLt = (diaLt.getTime() - diaLt.getMilliseconds())/1000;
 
-        console.log(req.query);
         Marca.find({usuario: req.query.id, epoch:{"$gte": epochGte, "$lt": epochLt}},{_id:0,tipoMarca:1,epoch:1}).exec(function (err, marcasPersonales){
+                                console.log(marcasPersonales)
 
             if (req.session.name == "Supervisor") {
 
@@ -1305,13 +1318,6 @@ module.exports = function(app, io) {
                 res.redirect('/');
             }
         });
-    });
-
-
-    /*
-    *   Detalla los eventos del calendario por día.
-    */
-    app.get('/reportarMarcas', autentificado, function(req, res) {
     });
 
     /*

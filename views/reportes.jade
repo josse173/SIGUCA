@@ -20,7 +20,7 @@ block content
                      table
                        form(role='form', method="POST", action="/filtrarEventos/")
                         td
-                          select.form-control#selectFiltro.selectpicker(data-style="btn-default", data-width="auto", type="text", name="filtro") 
+                          select.form-control#selectFiltro.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro") 
                             option(value= usuario._id + "|" + departamentos + "|todos|reportes") Todos los usuarios
                             each user in usuarios
                               option(value= usuario._id + "|" + departamentos + "|" + user._id + "|reportes") #{user.apellido1} #{user.apellido2}, #{user.nombre}
@@ -41,101 +41,122 @@ block content
                         
       .col-xs-12
         h3 Marcas
-        br
-        .table-responsive
-        table.table
-            thead
-              tr
-                th Fecha
-                th Usuario
-                th Tipo
-            tbody
-              each marca, i in marcas
+        if(marcas.length != 0)
+          table.footable(data-page-navigation=".pagination" data-page-size="5" data-page-first-text="first" data-page-previous-text="prev" data-page-next-text="next" data-page-last-text="last")
+              thead
                 tr
-                  td #{marca.fecha} 
-                  td #{marca.usuario.nombre} #{marca.usuario.apellido1}
-                  td #{marca.tipoMarca} 
+                  th Fecha
+                  th Usuario
+                  th Tipo
+              tbody
+                each marca, i in marcas
+                  tr
+                    td #{marca.fecha} 
+                    td #{marca.usuario.nombre} #{marca.usuario.apellido1}
+                    td #{marca.tipoMarca} 
+              tfoot
+                tr
+                  td(colspan='3')
+                    .pagination.pagination-centered.hide-if-no-paging
+        else
+          p No se han realizado marcas hasta el momento.
               
       .col-xs-12
+        br
         h3 Justificaciones
-        br
-        .table-responsive
-        table.table
-            thead
-              tr
-                th Fecha
-                th Usuario
-                th Motivo
-                th Detalle
-                th Comentario
-                th Estado
-            tbody
-              each justificacion, i in justificaciones
+        if(justificaciones.length != 0)
+          table.footable(data-page-navigation=".pagination" data-page-size="5" data-page-first-text="first" data-page-previous-text="prev" data-page-next-text="next" data-page-last-text="last")
+              thead
                 tr
-                  td #{justificacion.fecha} 
-                  td #{justificacion.usuario.nombre} #{justificacion.usuario.apellido1}
-                  td #{justificacion.motivo} 
-                  td #{justificacion.detalle} 
-                  td #{justificacion.comentarioSupervisor} 
-                  td #{justificacion.estado}  
-              
+                  th Fecha
+                  th Usuario
+                  th(data-hide="phone,small") Motivo
+                  th(data-hide="phone,small") Detalle
+                  th(data-hide="phone,small") Comentario
+                  th Estado
+              tbody
+                each justificacion, i in justificaciones
+                  tr
+                    td #{justificacion.fecha} 
+                    td #{justificacion.usuario.nombre} #{justificacion.usuario.apellido1}
+                    td #{justificacion.motivo} 
+                    td #{justificacion.detalle} 
+                    td #{justificacion.comentarioSupervisor} 
+                    td #{justificacion.estado}  
+              tfoot
+                tr
+                  td(colspan='6')
+                    .pagination.pagination-centered.hide-if-no-paging
+        else
+          p No se gestionado justificaciones hasta el momento.
 
+        br
         h3 Solicitudes Horas Extraordinarias
-        br
-        .table-responsive
-        table.table
-            thead
-              tr
-                th Fecha
-                th Usuario
-                th Día
-                th Hora Inicio 
-                th Hora Final
-                th Cantidad de Horas
-                th Motivo
-                th Comentario
-                th Estado
-            tbody
-              each extra, i in extras
+        if(extras.length != 0)
+          table.footable(data-page-navigation=".pagination" data-page-size="5" data-page-first-text="first" data-page-previous-text="prev" data-page-next-text="next" data-page-last-text="last")
+              thead
                 tr
-                  td #{extra.fecha} 
-                  td #{extra.usuario.nombre} #{extra.usuario.apellido1} 
-                  td #{extra.diaInicio} 
-                  td #{extra.horaInicio} 
-                  td #{extra.horaFinal} 
-                  td #{extra.cantHoras} 
-                  td #{extra.motivo} 
-                  td #{extra.comentarioSupervisor} 
-                  td #{extra.estado} 
-               
+                  th Fecha
+                  th Usuario
+                  th Día
+                  th Hora Inicio 
+                  th Hora Final
+                  th(data-hide="phone,small,medium") Cantidad de Horas
+                  th(data-hide="phone,small,medium") Motivo
+                  th(data-hide="phone,small,medium") Comentario
+                  th Estado
+              tbody
+                each extra, i in extras
+                  tr
+                    td #{extra.fecha} 
+                    td #{extra.usuario.nombre} #{extra.usuario.apellido1} 
+                    td #{extra.diaInicio} 
+                    td #{extra.horaInicio} 
+                    td #{extra.horaFinal} 
+                    td #{extra.cantHoras} 
+                    td #{extra.motivo} 
+                    td #{extra.comentarioSupervisor} 
+                    td #{extra.estado} 
+              tfoot
+                tr
+                  td(colspan='9')
+                    .pagination.pagination-centered.hide-if-no-paging
+        else
+          p No se gestionado extras hasta el momento.
 
-        h3 Solicitudes Permisos
         br
-        .table-responsive
-        table.table
-            thead
-              tr
-                th Fecha
-                th Usuario
-                th Día Inicial
-                th Día Final 
-                th Cantidad Días
-                th Motivo
-                th Detalle
-                th Comentario
-                th Estado
-            tbody
-              each permiso, i in permisos
+        h3 Solicitudes Permisos
+        if(permisos.length != 0)
+          table.footable(data-page-navigation=".pagination" data-page-size="5" data-page-first-text="first" data-page-previous-text="prev" data-page-next-text="next" data-page-last-text="last")
+              thead
                 tr
-                  td #{permiso.fecha} 
-                  td #{permiso.usuario.nombre} #{permiso.usuario.apellido1} 
-                  td #{permiso.diaInicio} 
-                  td #{permiso.diaFinal} 
-                  td #{permiso.cantidadDias} 
-                  td #{permiso.motivo} 
-                  td #{permiso.detalle} 
-                  td #{permiso.comentarioSupervisor} 
-                  td #{permiso.estado}  
+                  th Fecha
+                  th Usuario
+                  th Día Inicial
+                  th Día Final 
+                  th Cantidad Días
+                  th(data-hide="phone,small,medium") Motivo
+                  th(data-hide="phone,small,medium") Detalle
+                  th(data-hide="phone,small,medium") Comentario
+                  th Estado
+              tbody
+                each permiso, i in permisos
+                  tr
+                    td #{permiso.fecha} 
+                    td #{permiso.usuario.nombre} #{permiso.usuario.apellido1} 
+                    td #{permiso.diaInicio} 
+                    td #{permiso.diaFinal} 
+                    td #{permiso.cantidadDias} 
+                    td #{permiso.motivo} 
+                    td #{permiso.detalle} 
+                    td #{permiso.comentarioSupervisor} 
+                    td #{permiso.estado} 
+              tfoot
+                tr
+                  td(colspan='9')
+                    .pagination.pagination-centered.hide-if-no-paging
+        else
+          p No se gestionado permisos hasta el momento.
               
                                      
 block sigucaJS
