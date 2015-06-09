@@ -1,23 +1,27 @@
 extends layoutAdmin
 
+block sigucaCSS
+  link(rel='stylesheet', href='/stylesheets/bootstrap-select.min.css')
+
 block content
   .container
     
-    h3 Lista de Empleados
     br
-    .table-responsive
-    table.table
+    h3 Lista de Empleados
+    table.footable.footable(data-page-navigation=".pagination" data-page-size="20")
         thead
           tr
             th Código Tarjeta
             th Nombre
             th Apellidos
-            th Cédula
-            th Email
-            th Tipo
-            th Departamento
-            th Horario
-            th Estado
+            th(data-hide="phone") Cédula
+            th(data-hide="phone,small,medium,large") Email
+            th(data-hide="phone") Tipo
+            th(data-hide="phone,small,medium") Departamento
+            th(data-hide="phone,small,medium") Horario
+            th(data-hide="phone,small") Estado
+            th(data-hide="phone,small") Editar
+            th(data-hide="phone,small") Eliminar
 
         tbody 
           each empleado, i in empleados
@@ -35,6 +39,66 @@ block content
               td #{empleado.horario.nombre} 
               td #{empleado.estado} 
               td
-                a#edit.btn.btn-success(href="/empleado/edit/"+empleado.id) Editar
+                button.btn.btn-default(data-toggle="modal" data-target="#editEmpl" value=empleado.id)
+                  i.icon-pencil.icon-large.i-success
               td
-                 a#delete.btn.btn-danger(href="/empleado/delete/"+empleado.id) Eliminar
+                a.delete.btn.btn-default(href="/empleado/delete/"+empleado.id)
+                  i.icon-trash.icon-large.i-danger
+        tfoot
+          tr
+            td(colspan='11')
+              .pagination.pagination-centered.hide-if-no-paging
+
+    //actualizar empleados
+    #editEmpl.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+        .modal-dialog
+          .modal-content
+            .modal-body
+              button.close(type='button', data-dismiss='modal', aria-hidden='true') × 
+              h3#myModalLabel.modal-title Añadir nuevo Empleado
+              form.formUpdate(role='form', method="POST", action="/empleado")#login-form.well.span4
+                  .form-group
+                    h3 Información Básica
+                    label(for='nombre') Nombre:
+                      input#nombre.form-control(type= 'text', placeholder='Carlos', name= 'nombre')
+                    label(for='cedula') Cédula:
+                     input#cedula.form-control(type= 'text', placeholder='110459625', name='cedula') 
+                  .form-group
+                    label(for='apellido1') Primer Apellido:
+                      input#apellido1.form-control(type= 'text', placeholder='Corella', name= 'apellido1')
+                    label(for='apellido2') Segundo Apellido:
+                     input#apellido2.form-control(type= 'text', placeholder='Sandi', name='apellido2')   
+                    label(for='email') Correo Eléctronico:
+                      input#email.form-control(type= 'email', placeholder='alguien@ejemplo.com', name='email')
+                     
+
+                  .form-group 
+                    h3 Información Laboral
+                    label(for='codTarjeta') Código de Empleado:
+                      input#codTarjeta.form-control(type= 'text', placeholder='Código de Empleado', name='codTarjeta')
+                    label(for="usernameInput") Usuario:
+                      input.form-control#username(type="text", name="username", placeholder="Usuario")
+                    label(for="tipoInput") Tipo de Usuario:
+                      br
+                      select.form-control#selectTipo.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="tipo") 
+                        option Empleado
+                        option Supervisor
+                        option Administrador
+
+                    label(for='horario') Horario:
+                      br
+                      select.form-control#selectHorario.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="horario") 
+                        each horario, i in horarios
+                            option(value= horario.id) #{horario.nombre} 
+
+                    label(for='departamento') Departamento:
+                      br
+                      select.form-control#selectDepartamentos.selectpicker(data-style="btn-success", data-width="200px", data-selected-text-format="count>2", type="text", name="departamentos", multiple="multiple") 
+                        each departamento, i in departamentos
+                            option(value= departamento.id) #{departamento.nombre} 
+                                  
+                  button.btn.btn-success(type='submit') Actualizar
+                  button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
+block sigucaJS
+  script(src="/js/adminEdit.js")
+  script(src="/js/bootstrap-select.min.js")

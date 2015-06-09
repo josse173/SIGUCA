@@ -2,18 +2,39 @@ extends layoutAdmin
 
 block content
   .container
-    h3 Lista de Departamentos
     br
-    .table-responsive
-    table.table
+    h3 Lista de Departamentos
+    table.footable
         thead
           tr
             th Nombre
+            th Editar
+            th Eliminar
         tbody 
           each departamento, i in departamentos
             tr
               td #{departamento.nombre} 
               td
-                 a#edit.btn.btn-success(href="/departamento/editDepartamento/"+departamento.id)  Editar
+                button.btn.btn-default(data-toggle="modal" data-target="#editDep" value=departamento._id)
+                  i.icon-pencil.icon-large.i-success
               td
-                 a#delete.btn.btn-danger(href="/departamento/deleteDepartamento/"+departamento.id)  Eliminar
+                button.deleteDepartamento.btn.btn-default(value=departamento.id)   
+                  i.icon-trash.icon-large.i-danger
+
+    //muestra departamento         
+    #editDep.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+      .modal-dialog
+          .modal-content
+            .modal-header
+              button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+              h4#myModalLabel.modal-title Añadir nuevo departamento
+            .modal-body
+              form.formUpdate(role='form', method="POST", action="/departamento")#login-form.well.span4
+                .form-group
+                    label(for='nombre') Nombre:
+                      input#nombreDepa.form-control( type="text", placeholder='Nombre del area', name= "nombre")
+                button.btn.btn-success(type='submit') Actualizar
+                button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar   
+
+block sigucaJS
+  script(src="/js/adminEdit.js")

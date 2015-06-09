@@ -59,12 +59,3 @@
             $('#tipoJornada').val('Fijo');
         }
     });
-
-    // $('#selectTipo').change(function () {
-    // 	if($('#selectTipo option[value=Supervisor]:selected')){
-    // 		$('#selectDepartamento').attr('multiple','multiple');
-    // 	}
-    // 	else{
-    // 		$('#selectDepartamento').removeAttr('multiple');
-    // 	}
-    // });

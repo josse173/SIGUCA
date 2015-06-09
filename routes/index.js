@@ -863,10 +863,12 @@ module.exports = function(app, io) {
 
             if (error) return res.json(error);
             
-            res.render('editHorario', {
+            /*res.render('editHorario', {
                 title: 'Editar Horario | SIGUCA',
                 horario: horario,
-                usuario: req.user});
+                usuario: req.user});*/
+
+            res.json(horario);
 
         });
     });
@@ -883,23 +885,6 @@ module.exports = function(app, io) {
         delete horario._id;
 
         Horario.findByIdAndUpdate(horarioId, horario, function(error, horarios) {
-
-            if (error) return res.json(error);
-
-            res.redirect('/horarioN');
-
-        });
-    });
-
-    /*
-    *  Elimina un horario en específico
-    */
-    app.get('/horarioN/deleteHorario/:id', autentificado, function(req, res) {
-
-        var horarioId = req.params.id;
-
-
-        Horario.findByIdAndRemove(horarioId, function(error, horarios) {
 
             if (error) return res.json(error);
 
@@ -1000,13 +985,19 @@ module.exports = function(app, io) {
     app.get('/empleado', autentificado, function(req, res) {
 
         Usuario.find().populate('departamentos.departamento').populate('horario').exec(function(error, empleados){
-            if (error) return res.json(error);
-            return res.render('empleado', {
-                title: 'Gestionar empleados | SIGUCA',
-                empleados: empleados, 
-                usuario: req.user
-            });
-        });        
+            Horario.find().exec(function(error, horarios) {
+                Departamento.find().exec(function(error, departamentos) {
+                    if (error) return res.json(error);
+                    return res.render('empleado', {
+                        title: 'Gestionar empleados | SIGUCA',
+                        empleados: empleados, 
+                        usuario: req.user,
+                        horarios: horarios,
+                        departamentos: departamentos
+                    });
+                });//Departamento
+            });//Horario
+        });//Usuario       
     });
 
     /*
@@ -1016,19 +1007,16 @@ module.exports = function(app, io) {
         var empleadoId = req.params.id;
 
         Usuario.findById(empleadoId, function(error, empleado) { 
-            Horario.find().exec(function(error, horarios) {
-                Departamento.find().exec(function(error, departamentos) {
-                    if (error) return res.json(error);
+            if (error) return res.json(error);
 
-                    res.render('edit', {
-                        empleado: empleado, 
-                        usuario: req.user,
-                        horarios: horarios,
-                        departamentos: departamentos
-                    });
+            /*res.render('edit', {
+                empleado: empleado, 
+                usuario: req.user,
+                horarios: horarios,
+                departamentos: departamentos
+            });*/
 
-                });
-            });
+            res.json(empleado);
         });        
     });
 
@@ -1125,11 +1113,13 @@ module.exports = function(app, io) {
 
             if (error) return res.json(error);
 
-            res.render('editDepartamento', {
+            /*res.render('editDepartamento', {
                 title: 'Editar Departamento | SIGUCA',
                 departamento: departamento,
                 usuario: req.user
-            });
+            });*/
+
+            res.json(departamento);
 
         });
     });
@@ -1144,24 +1134,8 @@ module.exports = function(app, io) {
         delete departamento.id;
         delete departamento._id;
 
+
         Departamento.findByIdAndUpdate(departamentoId, departamento, function(error, departamentos) {
-
-            if (error) return res.json(error);
-
-            res.redirect('/departamento');
-
-        });
-    });
-
-    /*
-    *  Elimina un departamento en específico
-    */
-    app.get('/departamento/deleteDepartamento/:id', autentificado, function(req, res) {
-
-        var departamentoId = req.params.id;
-
-
-        Departamento.findByIdAndRemove(departamentoId, function(error, departamentos) {
 
             if (error) return res.json(error);
 
@@ -1251,7 +1225,6 @@ module.exports = function(app, io) {
             epochLt = (diaLt.getTime() - diaLt.getMilliseconds())/1000;
 
         Marca.find({usuario: req.query.id, epoch:{"$gte": epochGte, "$lt": epochLt}},{_id:0,tipoMarca:1,epoch:1}).exec(function (err, marcasPersonales){
-                                console.log(marcasPersonales)
 
             if (req.session.name == "Supervisor") {
 
@@ -1724,6 +1697,44 @@ module.exports = function(app, io) {
                     socket.emit('listaCierreEmpleado', result);  
                 }
             });
+        }
+
+        /*
+        *  Elimina un horario en específico
+        */
+        socket.on('eliminarHorario', function (horarioId){
+            Usuario.find({"horario": horarioId, "estado": "Activo"}).exec(function(error, usuario) {
+                if(usuario.length === 0){
+                    Horario.findByIdAndRemove(horarioId, function(error, horarios) {
+
+                        socket.emit('reload', 'Se elimino el horario con éxito');
+
+                    });
+                } else{
+                    notificar("No se puede eliminar el horario, ya que un empleado lo tiene asignado")
+                }
+            });
+        });
+
+        /*
+        *  Elimina un departamento en específico
+        */
+        socket.on('eliminarDepartamento', function (departamentoId){
+            Usuario.find({"departamentos.departamento": departamentoId, "estado": "Activo"}).exec(function(error, usuario) {
+                if(usuario.length === 0){
+                    Departamento.findByIdAndRemove(departamentoId, function(error, departamentos) {
+
+                        socket.emit('reload', 'Se elimino el departamento con éxito');
+
+                    });
+                } else{
+                    notificar("No se puede eliminar el departamento, ya que un empleado lo tiene asignado")
+                }
+            });
+        });
+
+        function notificar(msg){
+            socket.emit('notificar', msg );
         }
     });//io.sockets
 

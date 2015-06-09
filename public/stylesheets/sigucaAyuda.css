@@ -87,3 +87,11 @@ body {
   background-color: #EBEBEB;
   border-color: #ADADAD;
 }
+
+.i-success {
+  color: #47A447;
+}
+
+.i-danger {
+  color: #D2322D;
+}

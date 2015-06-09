@@ -20,7 +20,7 @@
                 small: 750,
                 medium: 994,
                 tablet: 1024,
-                large: 1200
+                large: 1100
             },
             parsers: {  // The default parser to parse the value out of a cell (values are used in building up row detail)
                 alpha: function (cell) {

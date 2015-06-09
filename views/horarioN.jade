@@ -1,12 +1,15 @@
 extends layoutAdmin
 
+block sigucaCSS
+  link(rel='stylesheet', href='/stylesheets/bootstrap-timepicker.min.css')
+  link(rel='stylesheet', href='/stylesheets/awesome-bootstrap-checkbox.css')   
+
 block content
   .container
     
-    h3 Lista de Horarios
     br
-    .table-responsive
-    table.table
+    h3 Lista de Horarios
+    table.footable
         thead
           tr
             th Nombre
@@ -16,6 +19,8 @@ block content
             th Rango Jornada
             th Tiempo Receso
             th Tiempo Almuerzo
+            th Editar
+            th Eliminar
 
         tbody 
           each horario, i in horarios
@@ -28,6 +33,65 @@ block content
               td #{horario.tiempoReceso} 
               td #{horario.tiempoAlmuerzo} 
               td
-                 a#edit.btn.btn-success(href="/horarioN/editHorario/"+horario.id)  Editar
+                button.btn.btn-default(data-toggle="modal" data-target="#editHorario" value=horario.id)
+                  i.icon-pencil.icon-large.i-success
               td
-                 a#delete.btn.btn-danger(href="/horarioN/deleteHorario/"+horario.id)  Eliminar
+                button.deleteHorario.btn.btn-default(value=horario.id)
+                  i.icon-trash.icon-large.i-danger
+
+
+    //actualizar horario
+    #editHorario.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+      .modal-dialog
+          .modal-content
+            .modal-header
+              button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+              h4#myModalLabel.modal-title Añadir nuevo horario
+            .modal-body
+              form.formUpdate(action='/horarioN', method='post')#login-form.well.span4
+                .form-group
+                  h4 Información Básica
+                  label(for='nombre' style="float:left") Nombre del Horario:
+                    input#nombre.form-control( type="text", name="nombre", placeholder='Nombre del horario')
+                  label(for='tipo') Tipo jornada  
+                    .checkboxAwesome.checkbox-success          
+                      input#tipoJornada(type='checkbox', name= "tipo")
+                      label(for='tipoJornada', id="tipoJornadaLabel") Libre         
+                .form-group
+                  h4 Información de jornada
+                  label(for='horaEntrada') Hora de Inicio:
+                    div#timepicker.input-group
+                      input#horaEntrada.input-small.form-control(type="text", name= 'horaEntrada')
+                      span.input-group-addon
+                        i.icon-time
+                  label(for='horaSalida') Hora de salida:
+                    div#timepicker1.input-group
+                      input#horaSalida.input-small.form-control(type="text", name= 'horaSalida')
+                      span.input-group-addon
+                        i.icon-time
+                  label(for='rangoJornada') Rango de horas:
+                    label.form-control#rangoJornada
+                    div#timepicker4.input-group
+                      input.form-control#inputRango(type="text", name="rangoJornada")
+                      span.input-group-addon
+                        i.icon-time  
+                .form-group
+                  h4 Información de descansos
+                  label(for='tiempoReceso') Rango de receso:
+                    div#timepicker2.input-group
+                      input#tiempoReceso.input-small.form-control(type="text", name= 'tiempoReceso')
+                      span.input-group-addon
+                        i.icon-time  
+                  label(for='tiempoAlmuerzo') Rango de almuerzo:
+                    div#timepicker3.input-group
+                      input#tiempoAlmuerzo.input-small.form-control(type="text", name= 'tiempoAlmuerzo')
+                      span.input-group-addon
+                        i.icon-time
+                   
+                button.btn.btn-success(type='submit') Ingresar
+                button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
+
+block sigucaJS
+  script(src="/js/bootstrap-timepicker.min.js")
+  script( src='/js/timepickerAdminEdit.js')
+  script(src="/js/adminEdit.js")

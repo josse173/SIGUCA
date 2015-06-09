@@ -7,30 +7,45 @@ block sigucaCSS
 
 block content
     div.container
-      .col-xs-4
+      .col-xs-4(style="margin: 20px;")
 
           h3#labelIMEC
             |IMEC:
-          div#contBotones
-            div#empl
-              label(for="Departamento")
-                |Departamento:
-            form(action= '/departamento')
-              button#empleados.btn.btn-success(name='agregar', data-toggle="modal" data-target="#addDep") Nuevo
-              button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/departamento") Modificar o Eliminar      
-            
-            div#horario
-              label(for="horario")
-                |Horario:
-            form(action= '/horarioN')    
-              button#empleados.btn.btn-success(name='agregar', data-toggle="modal" data-target="#addHorario") Nuevo       
-              button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/horarioN") Modificar o Eliminar
-            div#empleado
-              label(for="empleado")
-                |Empleado:
-            form(action= '/empleado')     
-              button#empleados.btn.btn-success(name='agregar', data-toggle="modal" data-target="#addEmpl") Nuevo 
-              button#areas.btn.btn-success(type = 'submit', name='eliminar',  onclick= "/empleado") Modificar o Eliminar
+          table.footable
+            thead
+              tr
+                th Acción
+                th Nuevo
+                th Modificar o eliminar
+            tbody
+              tr
+                td Departamento:
+                form(action= '/departamento')
+                  td
+                    button#empleados.btn.btn-success(name='agregar', data-toggle="modal" data-target="#addDep")
+                      i.icon-plus.icon-large
+                  td
+                    button#areas.btn.btn-primary(type = 'submit', name='eliminar',  onclick= "/departamento")
+                      i.icon-edit.icon-large
+              tr
+                td Horario:
+                form(action= '/horarioN')    
+                  td
+                    button#empleados.btn.btn-success(name='agregar', data-toggle="modal" data-target="#addHorario")
+                      i.icon-plus.icon-large       
+                  td
+                    button#areas.btn.btn-primary(type = 'submit', name='eliminar',  onclick= "/horarioN")
+                      i.icon-edit.icon-large
+              tr
+                td Empleado:
+                form(action= '/empleado')     
+                  td
+                    button#empleados.btn.btn-success(name='agregar', data-toggle="modal" data-target="#addEmpl") 
+                      i.icon-plus.icon-large
+                  td
+                    button#areas.btn.btn-primary(type = 'submit', name='eliminar',  onclick= "/empleado")
+                      i.icon-edit.icon-large
+
           
     .col-xs-2
       #addHorario.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
@@ -130,21 +145,22 @@ block content
                       label(for="usernameInput")
                         |Usuario:
                         input.form-control#textInput(type="text", name="username", placeholder="Usuario")
-                      label(for="tipoInput")
-                        |Tipo de Usuario:
-                        select.form-control#selectTipo(type="text", name="tipo") 
+                      label(for="tipoInput") Tipo de Usuario:
+                        br
+                        select.form-control#selectTipo.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="tipo") 
                           option Empleado
                           option Supervisor
                           option Administrador
 
                       label(for='horario') Horario:
-                        select.form-control#textInput(type="text", name="idHorario") 
+                        br
+                        select.form-control#textInput.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="idHorario") 
                           each horario, i in horarios
                               option(value= horario.id) #{horario.nombre} 
 
                       label(for='departamento') Departamento:
                         br
-                        select.form-control#selectDepartamentos.selectpicker(data-style="btn-success", data-width="200px", type="text", name="idDepartamento", multiple="multiple") 
+                        select.form-control#selectDepartamentos.selectpicker(data-style="btn-success", data-width="200px", data-selected-text-format="count>2", type="text", name="idDepartamento", multiple="multiple") 
                           each departamento, i in departamentos
                               option(value= departamento.id) #{departamento.nombre} 
 
