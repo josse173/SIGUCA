@@ -432,7 +432,7 @@ module.exports = function(app, io) {
                 var epochDesde = (date1.getTime() - date1.getMilliseconds())/1000;
 
                 var splitDate2 = req.body.fechaHasta.split('/');
-                var date2 = new Date(splitDate2[2], splitDate2[1]-1, splitDate2[0]);
+                var date2 = new Date(splitDate2[2], splitDate2[1]-1, parseInt(splitDate2[0])+1);
                 var epochHasta = (date2.getTime() - date2.getMilliseconds())/1000;
 
                 var fechaCreada = {
@@ -601,7 +601,7 @@ module.exports = function(app, io) {
                 var epochDesde = (date1.getTime() - date1.getMilliseconds())/1000;
 
                 var splitDate2 = req.body.fechaHasta.split('/');
-                var date2 = new Date(splitDate2[2], splitDate2[1]-1, splitDate2[0]);
+                var date2 = new Date(splitDate2[2], splitDate2[1]-1, parseInt(splitDate2[0])+1);
                 var epochHasta = (date2.getTime() - date2.getMilliseconds())/1000;
 
                 var fechaCreada = {
@@ -932,7 +932,7 @@ module.exports = function(app, io) {
     *  Crea un nuevo usuario
     */
     app.post('/empleado', autentificado, function(req, res) {
-    
+        
         if (req.session.name == "Administrador") {
             var e = req.body; 
             var array = [];
@@ -1703,7 +1703,7 @@ module.exports = function(app, io) {
         *  Elimina un horario en específico
         */
         socket.on('eliminarHorario', function (horarioId){
-            Usuario.find({"horario": horarioId, "estado": "Activo"}).exec(function(error, usuario) {
+            Usuario.find({"horario": horarioId}).exec(function(error, usuario) {
                 if(usuario.length === 0){
                     Horario.findByIdAndRemove(horarioId, function(error, horarios) {
 
@@ -1720,7 +1720,7 @@ module.exports = function(app, io) {
         *  Elimina un departamento en específico
         */
         socket.on('eliminarDepartamento', function (departamentoId){
-            Usuario.find({"departamentos.departamento": departamentoId, "estado": "Activo"}).exec(function(error, usuario) {
+            Usuario.find({"departamentos.departamento": departamentoId}).exec(function(error, usuario) {
                 if(usuario.length === 0){
                     Departamento.findByIdAndRemove(departamentoId, function(error, departamentos) {
 

@@ -36,18 +36,18 @@ block content
       .col-xs-12
         h3 Justificaciones
         if(justificaciones.length != 0)
-          table.footable(data-page-navigation=".pagination" data-page-size="5" data-page-first-text="first" data-page-previous-text="prev" data-page-next-text="next" data-page-last-text="last")
+          table.footable(data-page-navigation=".pagination" data-page-size="5")
               thead
                 tr
-                  th Fecha
+                  th(data-type="numeric" data-sort-initial="descending") Fecha
                   th Motivo
-                  th(data-hide="phone,small") Detalle
-                  th(data-hide="phone,small") Comentario
+                  th(data-hide="phone,small" data-sort-ignore="true") Detalle
+                  th(data-hide="phone,small" data-sort-ignore="true") Comentario
                   th Estado
               tbody 
                 each justificacion, i in justificaciones
                   tr
-                    td #{justificacion.fecha} 
+                    td(data-value=justificacion.fechaCreada) #{justificacion.fecha} 
                     td #{justificacion.motivo} 
                     td #{justificacion.detalle} 
                     td #{justificacion.comentarioSupervisor} 
@@ -63,21 +63,21 @@ block content
         br
         h3 Solicitudes Horas Extraordinarias
         if(extras.length != 0)
-          table.footable(data-page-navigation=".pagination" data-page-size="5" data-page-first-text="first" data-page-previous-text="prev" data-page-next-text="next" data-page-last-text="last")
+          table.footable(data-page-navigation=".pagination")
               thead
                 tr
-                  th Fecha
+                  th(data-type="numeric" data-sort-initial="descending") Fecha
                   th Día
-                  th Hora Entrada 
-                  th Hora Salida
+                  th(data-sort-ignore="true") Hora Entrada 
+                  th(data-sort-ignore="true") Hora Salida
                   th(data-hide="phone,small,medium") Cantidad de Horas
                   th(data-hide="phone,small,medium") Motivo
-                  th(data-hide="phone,small,medium") Comentario
+                  th(data-hide="phone,small,medium" data-sort-ignore="true") Comentario
                   th Estado
               tbody 
                 each extra, i in extras
                   tr
-                    td #{extra.fecha} 
+                    td(data-value=extra.fechaCreada) #{extra.fecha} 
                     td #{extra.diaInicio} 
                     td #{extra.horaInicio} 
                     td #{extra.horaFinal} 
@@ -90,26 +90,26 @@ block content
                   td(colspan='8')
                     .pagination.pagination-centered.hide-if-no-paging
         else
-          p No se existen justificaciones hasta el momento.
+          p No se existen extras hasta el momento.
 
         br
         h3 Solicitudes Permisos
         if(permisos.length != 0)
-          table.footable(data-page-navigation=".pagination" data-page-size="5" data-page-first-text="first" data-page-previous-text="prev" data-page-next-text="next" data-page-last-text="last")
+          table.footable(data-page-navigation=".pagination")
               thead
                 tr
-                  th Fecha
+                  th(data-type="numeric" data-sort-initial="descending") Fecha
                   th Día Inicial
                   th Día Final 
                   th(data-hide="phone,small,medium") Cantidad Días
                   th(data-hide="phone,small,medium") Motivo
-                  th(data-hide="phone,small,medium") Detalle
-                  th(data-hide="phone,small,medium") Comentario
+                  th(data-hide="phone,small,medium" data-sort-ignore="true") Detalle
+                  th(data-hide="phone,small,medium" data-sort-ignore="true") Comentario
                   th Estado
               tbody 
                 each permiso, i in permisos
                   tr
-                    td #{permiso.fecha} 
+                    td(data-value=permiso.fechaCreada) #{permiso.fecha} 
                     td #{permiso.diaInicio} 
                     td #{permiso.diaFinal} 
                     td #{permiso.cantidadDias} 
@@ -122,7 +122,7 @@ block content
                   td(colspan='8')
                     .pagination.pagination-centered.hide-if-no-paging
         else
-          p No se existen justificaciones hasta el momento.
+          p No se existen permisos hasta el momento.
                   
 block sigucaJS
   script(src="/js/bootstrap-datepicker.min.js")

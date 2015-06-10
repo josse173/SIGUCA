@@ -42,22 +42,22 @@ block content
       .col-xs-12
         h3 Justificaciones
         if(justificaciones.length != 0)
-          table.footable(data-page-navigation=".pagination" data-page-size="5" data-page-first-text="first" data-page-previous-text="prev" data-page-next-text="next" data-page-last-text="last")
+          table.footable(data-page-navigation=".pagination" data-page-size="5" )
               thead
                 tr
-                  th Fecha
+                  th(data-type="numeric" data-sort-initial="descending")  Fecha
                   th Usuario
                   th(data-hide="phone") Motivo
-                  th(data-hide="phone") Detalle
-                  th(data-hide="phone,small,medium") Comentario
-                  th(data-hide="phone,small,medium") Estado
-                  th(data-hide="phone,small,medium") Gestionar
+                  th(data-hide="phone" data-sort-ignore="true") Detalle
+                  th(data-hide="phone,small,medium" data-sort-ignore="true") Comentario
+                  th(data-hide="phone,small,medium" data-sort-ignore="true") Estado
+                  th(data-hide="phone,small,medium" data-sort-ignore="true") Gestionar
 
               tbody 
                 each justificacion, i in justificaciones
                   form(role='form', method="POST", action="/getionarJustificacion/"+justificacion.id)
                     tr
-                      td #{justificacion.fecha} 
+                      td(data-value=justificacion.fechaCreada) #{justificacion.fecha} 
                       td #{justificacion.usuario.nombre} #{justificacion.usuario.apellido1}
                       td #{justificacion.motivo} 
                       td #{justificacion.detalle} 
@@ -81,39 +81,39 @@ block content
         br
         h3 Solicitudes Horas Extraordinarias
         if(extras.length != 0)
-          table.footable(data-page-navigation=".pagination" data-page-size="5" data-page-first-text="first" data-page-previous-text="prev" data-page-next-text="next" data-page-last-text="last")
+          table.footable(data-page-navigation=".pagination" data-page-size="5" )
               thead
                 tr
-                  th Fecha
+                  th(data-type="numeric" data-sort-initial="descending") Fecha
                   th Usuario
                   th(data-hide="phone") Día
-                  th(data-hide="phone") Hora Entrada 
-                  th(data-hide="phone") Hora Salida
+                  th(data-hide="phone" data-sort-ignore="true") Hora Entrada 
+                  th(data-hide="phone" data-sort-ignore="true") Hora Salida
                   th(data-hide="phone,small,medium") Cantidad de Horas
                   th(data-hide="phone,small,medium") Motivo
-                  th(data-hide="phone,small,medium") Comentario
-                  th(data-hide="phone,small,medium") Estado
-                  th(data-hide="phone,small,medium") Gestionar
+                  th(data-hide="phone,small,medium" data-sort-ignore="true") Comentario
+                  th(data-hide="phone,small,medium" data-sort-ignore="true") Estado
+                  th(data-hide="phone,small,medium" data-sort-ignore="true") Gestionar
 
               tbody 
                 each extra, i in extras
                   form(role='form', method="POST", action="/getionarSolicitud/"+extra.id)
                     tr
-                      td #{extra.fecha} 
+                      td(data-value=extra.fechaCreada) #{extra.fecha} 
                       td #{extra.usuario.nombre} #{extra.usuario.apellido1} 
                       td #{extra.diaInicio} 
                       td #{extra.horaInicio} 
                       td #{extra.horaFinal} 
                       td #{extra.cantHoras} 
-                      td(data-sort-ignore="true") #{extra.motivo} 
-                      td(data-sort-ignore="true")
+                      td #{extra.motivo} 
+                      td
                         textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
-                      td(data-sort-ignore="true")
+                      td
                         select.selectpicker(name='estado' data-width="auto"  data-style="btn-inverse")
                           option(value='Aceptada') Aceptar
                           option(value='Rechazada') Rechazar
                           option(value='Pendiente') Pendiente
-                      td(data-sort-ignore="true")
+                      td
                         button.btn.btn-default(type='submit', name='gestionar') 
                           i.icon-ok.icon-large  
               tfoot
@@ -126,25 +126,25 @@ block content
         br
         h3 Solicitudes Permisos
         if(permisos.length != 0)
-          table.footable(data-page-navigation=".pagination" data-page-size="5" data-page-first-text="first" data-page-previous-text="prev" data-page-next-text="next" data-page-last-text="last")
+          table.footable(data-page-navigation=".pagination" data-page-size="5" )
               thead
                 tr
-                  th Fecha
+                  th(data-type="numeric" data-sort-initial="descending") Fecha
                   th Usuario
                   th(data-hide="phone") Día Inicial
                   th(data-hide="phone") Día Final 
                   th(data-hide="phone") Cantidad Días
                   th(data-hide="phone,small,medium") Motivo
-                  th(data-hide="phone,small,medium") Detalle
-                  th(data-hide="phone,small,medium") Comentario
-                  th(data-hide="phone,small,medium") Estado
-                  th(data-hide="phone,small,medium") Gestionar
+                  th(data-hide="phone,small,medium" data-sort-ignore="true") Detalle
+                  th(data-hide="phone,small,medium" data-sort-ignore="true") Comentario
+                  th(data-hide="phone,small,medium" data-sort-ignore="true") Estado
+                  th(data-hide="phone,small,medium" data-sort-ignore="true") Gestionar
 
               tbody 
                 each permiso, i in permisos
                   form(role='form', method="POST", action="/getionarSolicitud/"+permiso.id)
                     tr
-                      td #{permiso.fecha} 
+                      td(data-value=permiso.fechaCreada) #{permiso.fecha} 
                       td #{permiso.usuario.nombre} #{permiso.usuario.apellido1} 
                       td #{permiso.diaInicio} 
                       td #{permiso.diaFinal} 
@@ -166,7 +166,7 @@ block content
                   td(colspan='10')
                     .pagination.pagination-centered.hide-if-no-paging
         else
-          p No se han enviado extras hasta el momento. 
+          p No se han enviado permisos hasta el momento. 
                                  
 block sigucaJS
   script(src="/js/bootstrap-datepicker.min.js")

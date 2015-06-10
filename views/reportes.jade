@@ -42,16 +42,16 @@ block content
       .col-xs-12
         h3 Marcas
         if(marcas.length != 0)
-          table.footable(data-page-navigation=".pagination" data-page-size="5" data-page-first-text="first" data-page-previous-text="prev" data-page-next-text="next" data-page-last-text="last")
+          table.footable(data-page-navigation=".pagination" data-page-size="5")
               thead
                 tr
-                  th Fecha
+                  th(data-type="numeric" data-sort-initial="descending") Fecha
                   th Usuario
                   th Tipo
               tbody
                 each marca, i in marcas
                   tr
-                    td #{marca.fecha} 
+                    td(data-value=marca.epoch) #{marca.fecha} 
                     td #{marca.usuario.nombre} #{marca.usuario.apellido1}
                     td #{marca.tipoMarca} 
               tfoot
@@ -65,19 +65,19 @@ block content
         br
         h3 Justificaciones
         if(justificaciones.length != 0)
-          table.footable(data-page-navigation=".pagination" data-page-size="5" data-page-first-text="first" data-page-previous-text="prev" data-page-next-text="next" data-page-last-text="last")
+          table.footable(data-page-navigation=".pagination" data-page-size="5")
               thead
                 tr
-                  th Fecha
+                  th(data-type="numeric" data-sort-initial="descending") Fecha
                   th Usuario
                   th(data-hide="phone,small") Motivo
-                  th(data-hide="phone,small") Detalle
-                  th(data-hide="phone,small") Comentario
+                  th(data-hide="phone,small" data-sort-ignore="true") Detalle
+                  th(data-hide="phone,small" data-sort-ignore="true") Comentario
                   th Estado
               tbody
                 each justificacion, i in justificaciones
                   tr
-                    td #{justificacion.fecha} 
+                    td(data-value=justificacion.fechaCreada) #{justificacion.fecha} 
                     td #{justificacion.usuario.nombre} #{justificacion.usuario.apellido1}
                     td #{justificacion.motivo} 
                     td #{justificacion.detalle} 
@@ -88,27 +88,27 @@ block content
                   td(colspan='6')
                     .pagination.pagination-centered.hide-if-no-paging
         else
-          p No se gestionado justificaciones hasta el momento.
+          p No se han enviado justificaciones hasta el momento.
 
         br
         h3 Solicitudes Horas Extraordinarias
         if(extras.length != 0)
-          table.footable(data-page-navigation=".pagination" data-page-size="5" data-page-first-text="first" data-page-previous-text="prev" data-page-next-text="next" data-page-last-text="last")
+          table.footable(data-page-navigation=".pagination" data-page-size="5")
               thead
                 tr
-                  th Fecha
+                  th(data-type="numeric" data-sort-initial="descending") Fecha
                   th Usuario
                   th Día
-                  th Hora Inicio 
-                  th Hora Final
+                  th(data-sort-ignore="true") Hora Inicio 
+                  th(data-sort-ignore="true") Hora Final
                   th(data-hide="phone,small,medium") Cantidad de Horas
                   th(data-hide="phone,small,medium") Motivo
-                  th(data-hide="phone,small,medium") Comentario
+                  th(data-hide="phone,small,medium" data-sort-ignore="true") Comentario
                   th Estado
               tbody
                 each extra, i in extras
                   tr
-                    td #{extra.fecha} 
+                    td(data-value=extra.fechaCreada) #{extra.fecha} 
                     td #{extra.usuario.nombre} #{extra.usuario.apellido1} 
                     td #{extra.diaInicio} 
                     td #{extra.horaInicio} 
@@ -122,27 +122,27 @@ block content
                   td(colspan='9')
                     .pagination.pagination-centered.hide-if-no-paging
         else
-          p No se gestionado extras hasta el momento.
+          p No se han enviado extras hasta el momento.
 
         br
         h3 Solicitudes Permisos
         if(permisos.length != 0)
-          table.footable(data-page-navigation=".pagination" data-page-size="5" data-page-first-text="first" data-page-previous-text="prev" data-page-next-text="next" data-page-last-text="last")
+          table.footable(data-page-navigation=".pagination" data-page-size="5")
               thead
                 tr
-                  th Fecha
+                  th(data-type="numeric" data-sort-initial="descending") Fecha
                   th Usuario
                   th Día Inicial
                   th Día Final 
                   th Cantidad Días
                   th(data-hide="phone,small,medium") Motivo
-                  th(data-hide="phone,small,medium") Detalle
-                  th(data-hide="phone,small,medium") Comentario
+                  th(data-hide="phone,small,medium" data-sort-ignore="true") Detalle
+                  th(data-hide="phone,small,medium" data-sort-ignore="true") Comentario
                   th Estado
               tbody
                 each permiso, i in permisos
                   tr
-                    td #{permiso.fecha} 
+                    td(data-value=permiso.fechaCreada) #{permiso.fecha} 
                     td #{permiso.usuario.nombre} #{permiso.usuario.apellido1} 
                     td #{permiso.diaInicio} 
                     td #{permiso.diaFinal} 
@@ -156,7 +156,7 @@ block content
                   td(colspan='9')
                     .pagination.pagination-centered.hide-if-no-paging
         else
-          p No se gestionado permisos hasta el momento.
+          p No se han enviado permisos hasta el momento.
               
                                      
 block sigucaJS
