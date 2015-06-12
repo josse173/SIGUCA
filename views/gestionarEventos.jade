@@ -42,7 +42,7 @@ block content
       .col-xs-12
         h3 Justificaciones
         if(justificaciones.length != 0)
-          table.footable(data-page-navigation=".pagination" data-page-size="5" )
+          table.tableJustificaciones.footable(data-page-navigation=".pagination" data-page-size="5" )
               thead
                 tr
                   th(data-type="numeric" data-sort-initial="descending")  Fecha
@@ -69,7 +69,7 @@ block content
                           option(value='Rechazada') Rechazar
                           option(value='Pendiente') Pendiente
                       td
-                        button.btn.btn-default(type='submit', name='gestionar') 
+                        button.row-delete.btn.btn-default(value=justificacion.id, name='gestionar') 
                             i.icon-ok.icon-large  
               tfoot
                 tr
@@ -81,7 +81,7 @@ block content
         br
         h3 Solicitudes Horas Extraordinarias
         if(extras.length != 0)
-          table.footable(data-page-navigation=".pagination" data-page-size="5" )
+          table.tableSolicitudes.footable(data-page-navigation=".pagination" data-page-size="5" )
               thead
                 tr
                   th(data-type="numeric" data-sort-initial="descending") Fecha
@@ -93,7 +93,7 @@ block content
                   th(data-hide="phone,small,medium") Motivo
                   th(data-hide="phone,small,medium" data-sort-ignore="true") Comentario
                   th(data-hide="phone,small,medium" data-sort-ignore="true") Estado
-                  th(data-hide="phone,small,medium" data-sort-ignore="true") Gestionar
+                  th(data-hide="phone,small,medium" data-sort-ignore="true" data-name="Delete") Gestionar
 
               tbody 
                 each extra, i in extras
@@ -114,7 +114,7 @@ block content
                           option(value='Rechazada') Rechazar
                           option(value='Pendiente') Pendiente
                       td
-                        button.btn.btn-default(type='submit', name='gestionar') 
+                        button.row-delete.btn.btn-default(value=extra.id, name='gestionar') 
                           i.icon-ok.icon-large  
               tfoot
                 tr
@@ -126,7 +126,7 @@ block content
         br
         h3 Solicitudes Permisos
         if(permisos.length != 0)
-          table.footable(data-page-navigation=".pagination" data-page-size="5" )
+          table.tableSolicitudes.footable(data-page-navigation=".pagination" data-page-size="5" )
               thead
                 tr
                   th(data-type="numeric" data-sort-initial="descending") Fecha
@@ -159,7 +159,7 @@ block content
                           option(value='Rechazada') Rechazar
                           option(value='Pendiente') Pendiente
                       td
-                        button.btn.btn-default(type='submit', name='gestionar') 
+                        button.row-delete.btn.btn-default(value=permiso.id, name='gestionar') 
                           i.icon-ok.icon-large  
               tfoot
                 tr

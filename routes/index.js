@@ -773,18 +773,15 @@ module.exports = function(app, io) {
     /*
     *  Actualiza el estado y el comentario del supervisor a una solicitud en específico
     */
-    app.post('/getionarSolicitud/:id', autentificado, function(req, res) {
+    app.post('/getionarSolicitudAjax/:id', autentificado, function(req, res) {
         var solicitud = req.body,
             solicitudId = req.params.id;
-
-        delete solicitud.id;
-        delete solicitud._id;
 
         Solicitudes.findByIdAndUpdate(solicitudId, {estado: solicitud.estado, comentarioSupervisor: solicitud.comentarioSupervisor}, function(error, solicitudes) { 
 
             if (error) return res.json(error);
 
-            res.redirect('/gestionarEventos');
+            res.send('Se elimino');
 
         });
     });
@@ -792,22 +789,20 @@ module.exports = function(app, io) {
     /*
     *  Actualiza el estado y el comentario del supervisor a una justificacion en específico
     */
-    app.post('/getionarJustificacion/:id', autentificado, function(req, res) {
+    app.post('/getionarJustificacionAjax/:id', autentificado, function(req, res) {
         var justificacion = req.body,
             justificacionId = req.params.id;
 
-        delete justificacion.id;
-        delete justificacion._id;
 
         Justificaciones.findByIdAndUpdate(justificacionId, {estado: justificacion.estado, comentarioSupervisor: justificacion.comentarioSupervisor}, function(error, justificaciones) { 
 
             if (error) return res.json(error);
 
-            res.redirect('/gestionarEventos');
+            res.send('Se elimino');
 
         });
     });
-
+    
     /*
     *  Crea un nuevo horario
     */
@@ -932,7 +927,7 @@ module.exports = function(app, io) {
     *  Crea un nuevo usuario
     */
     app.post('/empleado', autentificado, function(req, res) {
-        
+    
         if (req.session.name == "Administrador") {
             var e = req.body; 
             var array = [];
@@ -1567,14 +1562,14 @@ module.exports = function(app, io) {
                                         var fechaEntrada= new Date(0);
                                         fechaEntrada.setUTCSeconds(epochEntrada);  
                                         var horaEntrada = fechaEntrada.getHours();
-                                        var minEntrada = fechaEntrada.getMinutes();
+                                        var minEntrada = fechaEntrada.getMinutes() - 5;
                                         var sInicio = (+horaEntrada) * 60 * 60 + (+minEntrada) * 60 + 00; 
 
                                         var epochSalida = user.epochSalida;
                                         var fechaSalida= new Date(0);
                                         fechaSalida.setUTCSeconds(epochSalida);  
                                         var horaSalida = fechaSalida.getHours();
-                                        var minSalida = fechaSalida.getMinutes();
+                                        var minSalida = fechaSalida.getMinutes() + 5;
                                         var sFinal = (+horaSalida) * 60 * 60 + (+minSalida) * 60 + 00; 
 
                                         var seg = sFinal - sInicio;
@@ -1703,7 +1698,7 @@ module.exports = function(app, io) {
         *  Elimina un horario en específico
         */
         socket.on('eliminarHorario', function (horarioId){
-            Usuario.find({"horario": horarioId}).exec(function(error, usuario) {
+            Usuario.find({"horario": horarioId, "estado": "Activo"}).exec(function(error, usuario) {
                 if(usuario.length === 0){
                     Horario.findByIdAndRemove(horarioId, function(error, horarios) {
 
@@ -1720,7 +1715,7 @@ module.exports = function(app, io) {
         *  Elimina un departamento en específico
         */
         socket.on('eliminarDepartamento', function (departamentoId){
-            Usuario.find({"departamentos.departamento": departamentoId}).exec(function(error, usuario) {
+            Usuario.find({"departamentos.departamento": departamentoId, "estado": "Activo"}).exec(function(error, usuario) {
                 if(usuario.length === 0){
                     Departamento.findByIdAndRemove(departamentoId, function(error, departamentos) {
 
