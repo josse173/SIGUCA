@@ -101,8 +101,9 @@ block content
                   th Día
                   th(data-sort-ignore="true") Hora Inicio 
                   th(data-sort-ignore="true") Hora Final
-                  th(data-hide="phone,small,medium") Cantidad de Horas
-                  th(data-hide="phone,small,medium") Motivo
+                  th(data-hide="phone,small,medium" data-sort-ignore="true") Cantidad de Horas
+                  th(data-hide="phone,small,medium") Cliente
+                  th(data-hide="phone,small,medium" data-sort-ignore="true") Motivo
                   th(data-hide="phone,small,medium" data-sort-ignore="true") Comentario
                   th Estado
               tbody
@@ -114,12 +115,13 @@ block content
                     td #{extra.horaInicio} 
                     td #{extra.horaFinal} 
                     td #{extra.cantHoras} 
+                    td #{extra.cliente} 
                     td #{extra.motivo} 
                     td #{extra.comentarioSupervisor} 
                     td #{extra.estado} 
               tfoot
                 tr
-                  td(colspan='9')
+                  td(colspan='10')
                     .pagination.pagination-centered.hide-if-no-paging
         else
           p No se han enviado extras hasta el momento.

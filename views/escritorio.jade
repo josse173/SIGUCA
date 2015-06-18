@@ -107,16 +107,6 @@ block content
             a(data-toggle="modal" data-target="#addJustificacion")
               | Justificaciones
 
-
-      .col-xs-8
-        div#containerCentral
-          h3  Marca Mediante el Sistema
-          div#contBotones
-            div#Marca             
-             button#marca.btn.btn-success(name='marcar', onclick= "changeElemt('marca')", data-toggle="modal" data-target="#addMarca" value=usuario._id) Realizar Marca
-
-
-      .col-xs-4
         h3 Pendientes de revisar 
         ul.list-group
           li.list-group-item
@@ -127,6 +117,16 @@ block content
             a(href='/gestionarEventos')
               span.badge #{justificaciones} 
               |   Justificaciones
+
+      .col-xs-6
+        div#containerCentral
+          h3  Marca Mediante el Sistema
+          div#contBotones
+            div#Marca             
+             button#marca.btn.btn-success(name='marcar', onclick= "changeElemt('marca')", data-toggle="modal" data-target="#addMarca" value=usuario._id) Realizar Marca
+
+
+      .col-xs-4
 
       #addMarca.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
           .modal-dialog
@@ -188,8 +188,10 @@ block content
                           span.input-group-addon
                             i.icon-time
                     .form-group
+                      label(for='cliente') Cliente:
+                        input.input-small.form-control(type="text", name='cliente' required )
                       label(for='motivo') Motivo:
-                      textarea#motivo.form-control(rows="4" cols="50" name='motivo' required )
+                        textarea#motivo.form-control(rows="4" cols="50" name='motivo' required )
                       
                                                    
                     button.btn.btn-success(type='submit') Enviar

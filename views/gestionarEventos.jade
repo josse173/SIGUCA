@@ -89,8 +89,9 @@ block content
                   th(data-hide="phone") Día
                   th(data-hide="phone" data-sort-ignore="true") Hora Entrada 
                   th(data-hide="phone" data-sort-ignore="true") Hora Salida
-                  th(data-hide="phone,small,medium") Cantidad de Horas
-                  th(data-hide="phone,small,medium") Motivo
+                  th(data-hide="phone,small,medium" data-sort-ignore="true") Cantidad de Horas
+                  th(data-hide="phone,small,medium") Cliente
+                  th(data-hide="phone,small,medium" data-sort-ignore="true") Motivo
                   th(data-hide="phone,small,medium" data-sort-ignore="true") Comentario
                   th(data-hide="phone,small,medium" data-sort-ignore="true") Estado
                   th(data-hide="phone,small,medium" data-sort-ignore="true" data-name="Delete") Gestionar
@@ -105,6 +106,7 @@ block content
                       td #{extra.horaInicio} 
                       td #{extra.horaFinal} 
                       td #{extra.cantHoras} 
+                      td #{extra.cliente} 
                       td #{extra.motivo} 
                       td
                         textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
@@ -118,7 +120,7 @@ block content
                           i.icon-ok.icon-large  
               tfoot
                 tr
-                  td(colspan='10')
+                  td(colspan='11')
                     .pagination.pagination-centered.hide-if-no-paging
         else
           p No se han enviado extras hasta el momento. 

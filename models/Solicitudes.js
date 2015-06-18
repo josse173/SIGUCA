@@ -37,6 +37,10 @@ var SchemaSolicitudes = new Schema({
         type: Number,
         default: 0
     },
+    cliente: {
+        type: String,
+        default: ''
+    },
     motivo: {
         type: String,
         default: ''
