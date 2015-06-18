@@ -347,36 +347,60 @@ module.exports = function(app, io) {
                         *   - Si el evento es de un supervisor y no coinciden el evento y el supervisor,
                         *   muestra el evento.
                         */
-                        if(JSON.stringify(evento[x].usuario.departamentos[0].departamento) === JSON.stringify(supervisor.departamentos[y].departamento) 
-                            && JSON.stringify(evento[x].usuario._id) != JSON.stringify(supervisor._id)
-                            && notFound){
-                            array.push(evento[x]);
-                            count++;
-                            notFound = false;
-                        } 
-                        if(JSON.stringify(evento[x].usuario.tipo) === JSON.stringify("Supervisor") 
-                            && JSON.stringify(evento[x].usuario._id) != JSON.stringify(supervisor._id)
-                            && notFound){
-                            array.push(evento[x]);
-                            count++;
-                            notFound = false;
+                        if("reportes" == query){
+                            if(JSON.stringify(evento[x].usuario.departamentos[0].departamento) === JSON.stringify(supervisor.departamentos[y].departamento) 
+                                && notFound){
+                                array.push(evento[x]);
+                                count++;
+                                notFound = false;
+                            } 
+                            if(JSON.stringify(evento[x].usuario.tipo) === JSON.stringify("Supervisor") 
+                                && notFound){
+                                array.push(evento[x]);
+                                count++;
+                                notFound = false;
+                            }
+                        } else {
+                            if(JSON.stringify(evento[x].usuario.departamentos[0].departamento) === JSON.stringify(supervisor.departamentos[y].departamento) 
+                                && JSON.stringify(evento[x].usuario._id) != JSON.stringify(supervisor._id) && notFound){
+                                array.push(evento[x]);
+                                count++;
+                                notFound = false;
+                            } 
+                            if(JSON.stringify(evento[x].usuario.tipo) === JSON.stringify("Supervisor") 
+                                && JSON.stringify(evento[x].usuario._id) != JSON.stringify(supervisor._id) && notFound){
+                                array.push(evento[x]);
+                                count++;
+                                notFound = false;
+                            }
                         }
                     } else {
                         /*
                         *   - Filtra los usuarios por supervisor, sin mostrarse el mismo.
                         *   - Se utiliza en los reportes.
                         */
-                        if(JSON.stringify(evento[x].departamentos[0].departamento) === JSON.stringify(supervisor.departamentos[y].departamento) 
-                            && JSON.stringify(evento[x]._id) != JSON.stringify(supervisor._id)
-                            && notFound){
-                            array.push(evento[x]);
-                            notFound = false;
-                        } 
-                        if(JSON.stringify(evento[x].tipo) === JSON.stringify("Supervisor") 
-                            && JSON.stringify(evento[x]._id) != JSON.stringify(supervisor._id)
-                            && notFound){
-                            array.push(evento[x]);
-                            notFound = false;
+                        if("reportes" == query){
+                            if(JSON.stringify(evento[x].departamentos[0].departamento) === JSON.stringify(supervisor.departamentos[y].departamento) 
+                                && notFound){
+                                array.push(evento[x]);
+                                notFound = false;
+                            } 
+                            if(JSON.stringify(evento[x].tipo) === JSON.stringify("Supervisor") 
+                                && notFound){
+                                array.push(evento[x]);
+                                notFound = false;
+                            }
+                        } else {
+                            if(JSON.stringify(evento[x].departamentos[0].departamento) === JSON.stringify(supervisor.departamentos[y].departamento) 
+                                && JSON.stringify(evento[x]._id) != JSON.stringify(supervisor._id) && notFound){
+                                array.push(evento[x]);
+                                notFound = false;
+                            } 
+                            if(JSON.stringify(evento[x].tipo) === JSON.stringify("Supervisor") 
+                                && JSON.stringify(evento[x]._id) != JSON.stringify(supervisor._id) && notFound){
+                                array.push(evento[x]);
+                                notFound = false;
+                            }
                         }
                     }
                 } else {
@@ -547,34 +571,41 @@ module.exports = function(app, io) {
     */
     app.get('/eventosEmpl', autentificado, function(req, res) {
         if (req.session.name != "Administrador") {
-            Justificaciones.find({usuario: req.user.id}).exec(function(error, justificaciones) {
-                Solicitudes.find({usuario: req.user.id, tipoSolicitudes:'Extras'}).exec(function(error, extras) {
-                    Solicitudes.find({usuario: req.user.id, tipoSolicitudes:'Permisos'}).exec(function(error, permisos) {
+            Marca.find({usuario: req.user.id}).exec(function(error, marcas) {
+                Justificaciones.find({usuario: req.user.id}).exec(function(error, justificaciones) {
+                    Solicitudes.find({usuario: req.user.id, tipoSolicitudes:'Extras'}).exec(function(error, extras) {
+                        Solicitudes.find({usuario: req.user.id, tipoSolicitudes:'Permisos'}).exec(function(error, permisos) {
 
-                        var supervisor = {departamentos: [1]};
+                            var supervisor = {departamentos: [1]};
 
-                        var arrayJust = eventosAjuste(justificaciones,supervisor,"eventosEmpl");
-                        var arrayExtras = eventosAjuste(extras,supervisor,"eventosEmpl");
-                        var arrayPermisos = eventosAjuste(permisos,supervisor,"eventosEmpl");
+                            var arrayMarcas = eventosAjuste(marcas,supervisor,"eventosEmpl");
+                            var arrayJust = eventosAjuste(justificaciones,supervisor,"eventosEmpl");
+                            var arrayExtras = eventosAjuste(extras,supervisor,"eventosEmpl");
+                            var arrayPermisos = eventosAjuste(permisos,supervisor,"eventosEmpl");
 
-                        if (error) return res.json(error);
-                            if(req.session.name == "Empleado"){
-                                return res.render('eventosEmpl', {
-                                    title: 'Solicitudes/Justificaciones | SIGUCA',
-                                    usuario: req.user,
-                                    justificaciones: arrayJust,
-                                    extras: arrayExtras,
-                                    permisos: arrayPermisos
-                                });
-                            } else {
-                                return res.render('eventos', {
-                                    title: 'Solicitudes/Justificaciones | SIGUCA',
-                                    usuario: req.user,
-                                    justificaciones: arrayJust,
-                                    extras: arrayExtras,
-                                    permisos: arrayPermisos
-                                });
-                            }
+                            console.log(marcas)
+
+                            if (error) return res.json(error);
+                                if(req.session.name == "Empleado"){
+                                    return res.render('eventosEmpl', {
+                                        title: 'Solicitudes/Justificaciones | SIGUCA',
+                                        usuario: req.user,
+                                        justificaciones: arrayJust,
+                                        extras: arrayExtras,
+                                        permisos: arrayPermisos,
+                                        marcas: marcas
+                                    });
+                                } else {
+                                    return res.render('eventos', {
+                                        title: 'Solicitudes/Justificaciones | SIGUCA',
+                                        usuario: req.user,
+                                        justificaciones: arrayJust,
+                                        extras: arrayExtras,
+                                        permisos: arrayPermisos,
+                                        marcas: marcas
+                                    });
+                                }
+                        });
                     });
                 });
             });

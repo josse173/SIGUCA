@@ -30,7 +30,26 @@ block content
                                 i.icon-calendar
                         td
                           button.form-control.btn.btn-success(type='submit', name='filtrar') Filtrar
-      
+      .col-xs-12
+        h3 Marcas
+        if(marcas.length != 0)
+          table.footable(data-page-navigation=".pagination" data-page-size="6")
+              thead
+                tr
+                  th(data-type="numeric" data-sort-initial="descending") Fecha
+                  th Tipo
+              tbody
+                each marca, i in marcas
+                  tr
+                    td(data-value=marca.epoch) #{marca.fecha}
+                    td #{marca.tipoMarca} 
+              tfoot
+                tr
+                  td(colspan='2')
+                    .pagination.pagination-centered.hide-if-no-paging
+        else
+          p No se han realizado marcas hasta el momento.
+            
       .col-xs-12
         h3 Justificaciones
         if(justificaciones.length != 0)
