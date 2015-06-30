@@ -25,6 +25,8 @@ html
     link(rel='stylesheet', href='/stylesheets/sigucaAyuda.css')
     link(rel='stylesheet', href='/stylesheets/footable/footable.core.min.css')
     link(rel='stylesheet', href='/stylesheets/footable/footable.metro.min.css')
+    link(rel='stylesheet', href='/stylesheets/alertify.core.css')
+    link(rel='stylesheet', href='/stylesheets/alertify.default.css')
 
     title SIGUCA
 
@@ -109,4 +111,9 @@ html
     script(src="/js/footable.paginate.min.js") 
     script(src="/js/footable.sort.min.js") 
     script(src="/js/datepickerReportes.js")
+    script(src="/js/alertify.min.js")
+    if (usuario)
+      if(usuario.tipo == 'Administrador')
+        script(src="/socket.io/socket.io.js")
+        script(src='/js/sigucaHomeAdmin.js')
     block sigucaJS

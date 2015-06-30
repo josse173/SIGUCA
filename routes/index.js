@@ -1143,6 +1143,24 @@ module.exports = function(app, io) {
     });
 
     /*
+    *  Elimina una marca en específico si fue creada hace menos de 10 minutos
+    */
+    app.get('/marca/delete/:id', autentificado, function(req, res) {
+
+        var marcaId = req.params.id;
+        Marca.findById(marcaId, function(error, marca) {
+            var date = new Date();
+            var epoch = (date.getTime() - date.getMilliseconds())/1000;
+            if(epoch - marca.epoch <= 600){
+                Marca.findByIdAndRemove(marcaId, function(error, marca) {
+                    if (error) return res.json(error);
+                });
+            }
+            res.redirect('/eventos');
+        });
+    });
+
+    /*
     *  Crea un nuevo usuario
     */
     app.post('/empleado', autentificado, function(req, res) {
