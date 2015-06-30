@@ -22,6 +22,7 @@
     "hanson": "1.1.1",
     "socket.io": "*",
     "cron": "latest",
-    "bcrypt-nodejs" : "latest"
+    "bcrypt-nodejs" : "latest",
+    "nodemailer": "*"
   }
 }

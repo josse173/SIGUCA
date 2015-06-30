@@ -11,9 +11,13 @@ var Usuario = require('../models/Usuario');
 var Horario = require('../models/Horario');
 var Justificaciones = require('../models/Justificaciones');
 var Solicitudes = require('../models/Solicitudes');
+/*var Temporal = require('../models/Temporal');
+var Auxiliar = require('../models/Auxiliar');*/
 var Cierre = require('../models/Cierre');
 var CronJob = require('cron').CronJob;
+var nodemailer = require('nodemailer');
 
+var emailSIGUCA = 'siguca@greencore.co.cr';
 
 module.exports = function(app, io) {
 
@@ -135,7 +139,7 @@ module.exports = function(app, io) {
                 var arrayMarcas = eventosAjuste(marcas, supervisor, "escritorioEmpl");
 
                 if (error) return res.json(error);
-                return res.render('escritorioEmpl', {
+                return res.render('escritorio', {
                     title: 'Escritorio Empleado | SIGUCA',
                     usuario: req.user, 
                     marcas: arrayMarcas
@@ -157,7 +161,7 @@ module.exports = function(app, io) {
                 Departamento.find().exec(function(error, departamentos) {
 
                     if (error) return res.json(error);
-                    return res.render('escritorioAdmin', {
+                    return res.render('escritorio', {
                         title: 'Escritorio Administrador | SIGUCA',
                         usuario: req.user,
                         horarios: horarios,
@@ -175,24 +179,10 @@ module.exports = function(app, io) {
     *  Redirecciona a las distintas paginas de ayuda, dependiendo del tipo de usuario
     */
     app.get('/ayuda', autentificado, function(req, res) {
-        if (req.session.name == "Supervisor"){
-            res.render('ayuda', {
-                title: 'Ayuda | SIGUCA',
-                usuario: req.user
-            });
-        } else {
-            if(req.session.name == "Administrador"){
-                res.render('ayudaAdmin', {
-                    title: 'Ayuda | SIGUCA',
-                    usuario: req.user
-                });
-            } else {
-                res.render('ayudaEmpl', {
-                    title: 'Ayuda | SIGUCA',
-                    usuario: req.user
-                });
-            }
-        } 
+        res.render('ayuda', {
+            title: 'Ayuda | SIGUCA',
+            usuario: req.user
+        });
     });
 
     /*
@@ -547,29 +537,17 @@ module.exports = function(app, io) {
     /*
     *  Redirecciona a la configuración de empleado
     */
-    app.get('/configuracionEmpl', autentificado, function(req, res) {
-        if (req.session.name != "Administrador") {
-            if (req.session.name == "Empleado") {
-                res.render('configuracionEmpl', {
-                    title: 'Configuración | SIGUCA',
-                    usuario: req.user
-                });
-            } else {
-                res.render('configuracionSup', {
-                    title: 'Configuración | SIGUCA',
-                    usuario: req.user
-                });
-            }
-        } else {
-            req.logout();
-            res.redirect('/');
-        }
+    app.get('/configuracion', autentificado, function(req, res) {
+        res.render('configuracion', {
+            title: 'Configuración | SIGUCA',
+            usuario: req.user
+        });
     });
 
     /*
     *  Carga los eventos realizados por un empleado en específico
     */
-    app.get('/eventosEmpl', autentificado, function(req, res) {
+    app.get('/eventos', autentificado, function(req, res) {
         if (req.session.name != "Administrador") {
             Marca.find({usuario: req.user.id}).exec(function(error, marcas) {
                 Justificaciones.find({usuario: req.user.id}).exec(function(error, justificaciones) {
@@ -583,28 +561,17 @@ module.exports = function(app, io) {
                             var arrayExtras = eventosAjuste(extras,supervisor,"eventosEmpl");
                             var arrayPermisos = eventosAjuste(permisos,supervisor,"eventosEmpl");
 
-                            console.log(marcas)
 
                             if (error) return res.json(error);
-                                if(req.session.name == "Empleado"){
-                                    return res.render('eventosEmpl', {
-                                        title: 'Solicitudes/Justificaciones | SIGUCA',
-                                        usuario: req.user,
-                                        justificaciones: arrayJust,
-                                        extras: arrayExtras,
-                                        permisos: arrayPermisos,
-                                        marcas: marcas
-                                    });
-                                } else {
-                                    return res.render('eventos', {
-                                        title: 'Solicitudes/Justificaciones | SIGUCA',
-                                        usuario: req.user,
-                                        justificaciones: arrayJust,
-                                        extras: arrayExtras,
-                                        permisos: arrayPermisos,
-                                        marcas: marcas
-                                    });
-                                }
+                                
+                            return res.render('eventos', {
+                                title: 'Solicitudes/Justificaciones | SIGUCA',
+                                usuario: req.user,
+                                justificaciones: arrayJust,
+                                extras: arrayExtras,
+                                permisos: arrayPermisos,
+                                marcas: marcas
+                            });
                         });
                     });
                 });
@@ -703,7 +670,7 @@ module.exports = function(app, io) {
         Justificaciones.find({usuario: newjustificacion.usuario, fechaCreada: newjustificacion.fechaCreada}, function (err, just){
             if(just.length == 0){
                 newjustificacion.save(function(error, user) {
-                    if (error) return res.json(error);
+                    if (error) console.log(error);
                 });//save
             }
             if (req.session.name == "Empleado") {
@@ -711,6 +678,91 @@ module.exports = function(app, io) {
             } else res.redirect('/escritorio');
 
         });//verificar
+    });
+
+    /*
+    *  Carga la información de una justificación
+    */
+    app.get('/justificacion/edit/:id', autentificado, function(req, res) {
+        var justificacionId = req.params.id;
+
+        Justificaciones.findById(justificacionId, function(error, just) { 
+            if(just.estado == 'Pendiente'){
+                Justificaciones.findById(justificacionId, function(error, justificacion) { 
+                    if (error) return res.json(error);
+
+                    res.json(justificacion);
+                }); 
+            } else res.json({motivo:'seleccionar',detalle:''});
+        }); 
+    });
+
+    /*
+    *  Actualiza una justificación
+    */
+    app.post('/justificacion/:id', autentificado, function(req, res) {
+        var justificacionId = req.params.id;
+
+        var d = new Date();
+        var epochTime = (d.getTime() - d.getMilliseconds())/1000;
+        var e = req.body; 
+
+        var motivo = '';
+        if(e.motivoJust == 'otro'){
+            motivo = e.motivoOtroJust;
+        } else{
+            motivo = e.motivoJust;
+        } 
+
+        var justificacionActualizada = {
+            fechaCreada: epochTime,
+            motivo: motivo,
+            detalle: e.detalle
+        };
+
+        Justificaciones.findById(justificacionId).populate('usuario').exec(function(error, just) { 
+            Justificaciones.findByIdAndUpdate(justificacionId, justificacionActualizada, function(error, justificacion) { 
+                Usuarios.find({'tipo' : 'Supervisor', 'departamentos.departamento' : soli.usuario.departamentos[0].departamento}, {'departamentos.departamento' : 1}).exec(function(error, supervisor) { 
+
+                    if (error) return res.json(error);
+
+                    var transporter = nodemailer.createTransport();
+
+                    for (var i = 0; i < supervisor.length; i++) {
+                        transporter.sendMail({
+                            from: just.usuario.email,
+                            to: supervisor[i].email,
+                            subject: 'Modificación de una justificación en SIGUCA',
+                            text: " El usuario " + just.usuario.nombre 
+                                + " a modificado la justificación siguiente: "
+                                + " \r\n Motivo: " + just.motivo
+                                + " \r\n Detalle: " + just.detalle
+                                + "\r\n\r\n La justificación con las modificaciones es el siguiente: " 
+                                + " \r\n Motivo: " + justificacionActualizada.motivo
+                                + " \r\n Detalle: " + justificacionActualizada.detalle
+                        });
+                    }
+                    res.redirect('/eventos');
+                });
+            });
+        });
+    });
+
+    /*
+    *  Carga la información de una solicitud tipo hora extra
+    */
+    app.get('/solicitud/edit/:id', autentificado, function(req, res) {
+        var solicitudId = req.params.id;
+        
+        Solicitudes.findById(solicitudId, function(error, soli) { 
+            if(soli.estado == 'Pendiente'){
+                Solicitudes.findById(solicitudId, function(error, solicitud) { 
+                    if (error) return res.json(error);
+
+                    res.json(solicitud);
+                }); 
+            } else res.json({motivo:'seleccionar',detalle:''});
+        }); 
     });
 
     /*
@@ -747,16 +799,72 @@ module.exports = function(app, io) {
         Solicitudes.find({usuario: newSolicitud.usuario, fechaCreada: newSolicitud.fechaCreada}, function (err, soli){
             if(soli.length == 0){
                 newSolicitud.save(function(error, user) {
-
                     if (error) return res.json(error);
-
                 });//save
             }
             if (req.session.name == "Empleado") {
-
                 res.redirect('/escritorioEmpl');
             } else res.redirect('/escritorio');
         });//verificar
+    });
+
+    /*
+    *  Actualiza una solicitud tipo hora extra
+    */
+    app.post('/extra/:id', autentificado, function(req, res) {
+        var solicitudId = req.params.id;
+        
+        var d = new Date();
+        var epochTime = (d.getTime() - d.getMilliseconds())/1000; 
+        var e = req.body; 
+
+        var hmsInicio = e.horaInicio; 
+        var aInicio = hmsInicio.split(':'); 
+        var sInicio = (+aInicio[0]) * 60 * 60 + (+aInicio[1]) * 60 + 00; 
+
+        var hmsFinal = e.horaFinal; 
+        var aFinal = hmsFinal.split(':'); 
+        var sFinal = (+aFinal[0]) * 60 * 60 + (+aFinal[1]) * 60 + 00; 
+
+        var cantHoras = sFinal - sInicio;
+
+        var solicitudActualizada = {
+            fechaCreada: epochTime,
+            diaInicio: e.diaInicio,
+            horaInicio: e.horaInicio,
+            horaFinal: e.horaFinal,
+            cantidadHoras: cantHoras,
+            cliente: e.cliente,
+            motivo: e.motivo
+        };
+
+        Solicitudes.findById(solicitudId).populate('usuario').exec(function(error, soli) { 
+            Solicitudes.findByIdAndUpdate(solicitudId, solicitudActualizada, function(error, solicitud) { 
+                Usuarios.find({'tipo' : 'Supervisor', 'departamentos.departamento' : soli.usuario.departamentos[0].departamento}, {'departamentos.departamento' : 1}).exec(function(error, supervisor) { 
+                    if (error) return res.json(error);
+
+                    var transporter = nodemailer.createTransport();
+
+                    for (var i = 0; i < supervisor.length; i++) {
+                        transporter.sendMail({
+                            from: soli.usuario.email,
+                            to: supervisor[i].email,
+                            subject: 'Modificación de una solicitud de hora extraordiaria en SIGUCA',
+                            text: " El usuario " + soli.usuario.nombre 
+                                + " a modificado la solicitud de hora extraordiaria siguiente: "
+                                + "\r\n Día de Inicio: " + soli.diaInicio + ", día de termino: " + soli.diaFinal 
+                                + " \r\n Motivo: " + soli.motivo
+                                + " \r\n Detalle: " + soli.detalle
+                                + "\r\n\r\n La solicitud de hora extraordiaria con las modificaciones es el siguiente: "
+                                + "\r\n  Día de Inicio: " + solicitudActualizada.diaInicio + ", día de termino: " + solicitudActualizada.diaFinal 
+                                + " \r\n Motivo: " + solicitudActualizada.motivo
+                                + " \r\n Detalle: " + solicitudActualizada.detalle
+                        });
+                    }
+                    res.redirect('/eventos');
+                });
+            });
+        });
     });
 
     /*
@@ -771,7 +879,6 @@ module.exports = function(app, io) {
         var date2 = new Date(e.diaFinal);
         var timeDiff = Math.abs(date2.getTime() - date1.getTime());
         var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24)); 
-        
 
         var newSolicitud = Solicitudes({
             fechaCreada: epochTime,
@@ -790,37 +897,75 @@ module.exports = function(app, io) {
         Solicitudes.find({usuario: newSolicitud.usuario, fechaCreada: newSolicitud.fechaCreada}, function (err, soli){
             if(soli.length == 0){
                 newSolicitud.save(function(error, user) {
-
-                    if (error) return res.json(error);
-
+                    if (error) console.log(res.json(error));
                 });//save
             }
             if (req.session.name == "Empleado") {
-
                 res.redirect('/escritorioEmpl');
             } else res.redirect('/escritorio');
         });//verificar
     });
 
     /*
+    *  Actualiza una solicitud tipo permiso anticipado
+    */
+    app.post('/permiso/:id', autentificado, function(req, res) {
+        var solicitudId = req.params.id;
+
+        var d = new Date();
+        var epochTime = (d.getTime() - d.getMilliseconds())/1000; 
+        var e = req.body; 
+
+        var date1 = new Date(e.diaInicio);
+        var date2 = new Date(e.diaFinal);
+        var timeDiff = Math.abs(date2.getTime() - date1.getTime());
+        var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24)); 
+
+        var solicitudActualizada = {
+            fechaCreada: epochTime,
+            diaInicio: e.diaInicio,
+            diaFinal: e.diaFinal,
+            cantidadDias: e.cantidadDias,
+            detalle: e.detalle
+        };
+        if(e.motivo == 'otro')
+            solicitudActualizada.motivo = e.motivoOtro;
+        else
+            solicitudActualizada.motivo = e.motivo;
+
+        Solicitudes.findById(solicitudId).populate('usuario').exec(function(error, soli) { 
+            Solicitudes.findByIdAndUpdate(solicitudId, solicitudActualizada, function(error, solicitud) { 
+                Usuarios.find({'tipo' : 'Supervisor', 'departamentos.departamento' : soli.usuario.departamentos[0].departamento}, {'departamentos.departamento' : 1}).exec(function(error, supervisor) { 
+
+                    if (error) return res.json(error);
+
+                    var transporter = nodemailer.createTransport();
+                    for (var i = 0; i < supervisor.length; i++) {
+                        supervisor[i]
+                        transporter.sendMail({
+                            from: soli.usuario.email,
+                            to: supervisor[i].email,
+                            subject: 'Modificación de una solicitud de permiso anticipado en SIGUCA',
+                            text: " El usuario " + soli.usuario.nombre 
+                                + " a modificado el permiso siguiente: " 
+                                + "\r\n Día de Inicio: " + soli.diaInicio + ", día de termino: " + soli.diaFinal 
+                                + " \r\n Motivo: " + soli.motivo
+                                + " \r\n Detalle: " + soli.detalle
+                                + "\r\n\r\n El permiso con las modificaciones es el siguiente: " 
+                                + "\r\n  Día de Inicio: " + solicitudActualizada.diaInicio + ", día de termino: " + solicitudActualizada.diaFinal 
+                                + " \r\n Motivo: " + solicitudActualizada.motivo
+                                + " \r\n Detalle: " + solicitudActualizada.detalle
+                        });
+                    }
+                    res.redirect('/eventos');
+                });
+            });
+        });
+    });
+
+    /*
     *  Actualiza el estado y el comentario del supervisor a una solicitud en específico
     */
-/*    app.post('/getionarSolicitud/:id', autentificado, function(req, res) {
-        var solicitud = req.body,
-            solicitudId = req.params.id;
-
-        delete solicitud.id;
-        delete solicitud._id;
-
-        Solicitudes.findByIdAndUpdate(solicitudId, {estado: solicitud.estado, comentarioSupervisor: solicitud.comentarioSupervisor}, function(error, solicitudes) { 
-
-            if (error) return res.json(error);
-
-            res.redirect('/gestionarEventos');
-
-        });
-    });*/
-
     app.post('/getionarSolicitudAjax/:id', autentificado, function(req, res) {
         var solicitud = req.body,
             solicitudId = req.params.id;
@@ -829,9 +974,20 @@ module.exports = function(app, io) {
         // console.log(req.query)
         // console.log(req.body)
 
-        Solicitudes.findByIdAndUpdate(solicitudId, {estado: solicitud.estado, comentarioSupervisor: solicitud.comentarioSupervisor}, function(error, solicitudes) { 
+        Solicitudes.findByIdAndUpdate(solicitudId, {estado: solicitud.estado, comentarioSupervisor: solicitud.comentarioSupervisor}).populate('usuario').exec(function(error, solicitud) { 
 
             if (error) return res.json(error);
+                var transporter = nodemailer.createTransport();
+                
+                transporter.sendMail({
+                    from: emailSIGUCA,
+                    to: solicitud.usuario.email,
+                    subject: 'Respuesta a solicitud en SIGUCA',
+                    text: " Estimado(a) " + solicitud.usuario.nombre 
+                        + ",\r\n\r\n Por este medio se le notifica que su solicitud fue " + solicitud.estado + " por el supervisor, con el siguiente comentario"
+                        + "\r\n\r\n " + solicitud.comentarioSupervisor
+                        + "\r\n\r\n Saludos cordiales."
+                });
 
             res.send('Se elimino');
 
@@ -841,30 +997,26 @@ module.exports = function(app, io) {
     /*
     *  Actualiza el estado y el comentario del supervisor a una justificacion en específico
     */
-/*    app.post('/getionarJustificacion/:id', autentificado, function(req, res) {
-        var justificacion = req.body,
-            justificacionId = req.params.id;
-
-        delete justificacion.id;
-        delete justificacion._id;
-
-        Justificaciones.findByIdAndUpdate(justificacionId, {estado: justificacion.estado, comentarioSupervisor: justificacion.comentarioSupervisor}, function(error, justificaciones) { 
-
-            if (error) return res.json(error);
-
-            res.redirect('/gestionarEventos');
-
-        });
-    });*/
-
     app.post('/getionarJustificacionAjax/:id', autentificado, function(req, res) {
         var justificacion = req.body,
             justificacionId = req.params.id;
 
 
-        Justificaciones.findByIdAndUpdate(justificacionId, {estado: justificacion.estado, comentarioSupervisor: justificacion.comentarioSupervisor}, function(error, justificaciones) { 
+        Justificaciones.findByIdAndUpdate(justificacionId, {estado: justificacion.estado, comentarioSupervisor: justificacion.comentarioSupervisor}, function(error, justificacion) { 
 
             if (error) return res.json(error);
+
+                var transporter = nodemailer.createTransport();
+
+                transporter.sendMail({
+                    from: emailSIGUCA,
+                    to: justificacion.usuario.email,
+                    subject: 'Respuesta a justificación en SIGUCA',
+                    text: " Estimado(a) " + justificacion.usuario.nombre 
+                        + ",\r\n\r\n Por este medio se le notifica que su justificación fue " + justificacion.estado + " por el supervisor, con el siguiente comentario"
+                        + "\r\n\r\n " + justificacion.comentarioSupervisor
+                        + "\r\n\r\n Saludos cordiales."
+                });
 
             res.send('Se elimino');
 
@@ -1241,7 +1393,7 @@ module.exports = function(app, io) {
 
             Usuario.findByIdAndUpdate(userId, user, function(error, user) { 
                 if (error) return res.json(error);
-                res.redirect('/configuracionEmpl');
+                res.redirect('/configuracion');
             });
         }
     });
@@ -1250,26 +1402,24 @@ module.exports = function(app, io) {
     *   Cambia la contraseña de los usuarios
     */
     app.post('/cambioPassword/:id', autentificado, function(req, res) {
-        if(req.session.name != "Administrador"){
-            var userId = req.params.id,
-                currentPassword = Usuario.generateHash(req.body.currentPassword);
+        var userId = req.params.id,
+            currentPassword = Usuario.generateHash(req.body.currentPassword);
 
-            Usuario.findById(userId, function(error, user){
-                if(!user.validPassword(currentPassword)){
-                    if(req.body.newPassword != "" && req.body.newPassword != null && req.body.newPassword === req.body.repeatNewPassword){
-                        
-                        var user = {};
-                        user.password = Usuario.generateHash(req.body.newPassword);
+        Usuario.findById(userId, function(error, user){
+            if(!user.validPassword(currentPassword)){
+                if(req.body.newPassword != "" && req.body.newPassword != null && req.body.newPassword === req.body.repeatNewPassword){
+                    
+                    var user = {};
+                    user.password = Usuario.generateHash(req.body.newPassword);
 
-                        Usuario.findByIdAndUpdate(userId, user, function(error, user) { 
-                            if (error) return res.json(error);
-                            console.log("Se actualizo la contraseña con exito");
-                        });
-                    } else console.log("Nueva contraseña inválida.");
-                } else console.log("Contraseña inválida.");
-            });
-            res.redirect('/configuracionEmpl');
-        }
+                    Usuario.findByIdAndUpdate(userId, user, function(error, user) { 
+                        if (error) return res.json(error);
+                        console.log("Se actualizo la contraseña con exito");
+                        res.redirect('/configuracion');
+                    });
+                } else { console.log("Nueva contraseña inválida."); res.redirect('/configuracion');}
+            } else { console.log("Contraseña inválida."); res.redirect('/configuracion');}
+        });
     });
 
 

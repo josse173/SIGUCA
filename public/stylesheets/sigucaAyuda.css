@@ -95,3 +95,7 @@ body {
 .i-danger {
   color: #D2322D;
 }
+
+.well {
+  margin-bottom: 0;
+}

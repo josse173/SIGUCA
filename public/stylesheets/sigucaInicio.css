@@ -26,9 +26,6 @@ input:not([type=submit]) {
 }
 #login-container button {
   width: 137px;
-  padding: 6px 40px 6px 40px;
-  float: left;
-  margin-top: 4px;
 }
 #login-container .checkbox {
   margin: 23px 0 0 180px;
@@ -38,3 +35,7 @@ input:not([type=submit]) {
   
 }
 .navbar {visibility:hidden;}
+
+.well {
+  margin-bottom: 0;
+}
