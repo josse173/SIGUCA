@@ -57,23 +57,35 @@ html
           if (usuario)
             ul.nav.navbar-nav
               li
-                a(href="/escritorio")
-                  i.icon-home.icon-large
-                  |&nbsp;Escritorio
+                if(usuario.tipo == 'Supervisor')
+                  a(href="/escritorio")
+                    i.icon-home.icon-large
+                    |&nbsp;Escritorio
+                else
+                  if(usuario.tipo == 'Empleado')
+                    a(href="/escritorioEmpl")
+                      i.icon-home.icon-large
+                      |&nbsp;Escritorio
+                  else
+                    a(href="/escritorioAdmin")
+                      i.icon-home.icon-large
+                      |&nbsp;Escritorio
+              if(usuario.tipo == 'Supervisor')
+                li
+                  a(href="/gestionarEventos")
+                    i.icon-cogs.icon-large
+                    |&nbsp;Acciones
+                li
+                  a(href="/reportes")
+                    i.icon-edit.icon-large
+                    |&nbsp;Reportes
+              if(usuario.tipo == 'Supervisor' || usuario.tipo == 'Empleado')
+                li
+                  a(href="/eventos")
+                    i.icon-book.icon-large  
+                    |&nbsp;Mis Eventos 
               li
-                a(href="/gestionarEventos")
-                  i.icon-cogs.icon-large
-                  |&nbsp;Acciones
-              li
-                a(href="/reportes")
-                  i.icon-edit.icon-large
-                  |&nbsp;Reportes
-              li
-                a(href="/eventosEmpl")
-                  i.icon-book.icon-large  
-                  |&nbsp;Mis Eventos 
-              li
-                a(href="/configuracionEmpl")
+                a(href="/configuracion")
                   i.icon-cog.icon-large
                   |&nbsp;Configuración
               li
@@ -92,6 +104,7 @@ html
     script(src='js/respond-min.js')  
     script(src="/js/bootstrap-datepicker.min.js")
     script(src="/js/bootstrap-timepicker.min.js")
+    script(src="/js/bootstrap-select.min.js")
     script(src="/js/footable.js")
     script(src="/js/footable.paginate.min.js") 
     script(src="/js/footable.sort.min.js") 

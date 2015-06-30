@@ -8,266 +8,453 @@ block sigucaCSS
 
 block content   
     .container
-      .col-xs-8
-        .col-xs-3
-          h3 Gráfico de:  #{usuario.username}
-          button#previous.btn.btn-default
-            i.icon.icon-chevron-left
-          button#next.btn.btn-default 
-            i.icon.icon-chevron-right
-          div#cal
+      if(usuario.tipo != 'Administrador')
+        .col-xs-8
+          if(usuario.tipo == 'Supervisor')
+            .col-xs-3
+              h3 Gráfico de:  #{usuario.username}
+              button#previous.btn.btn-default
+                i.icon.icon-chevron-left
+              button#next.btn.btn-default 
+                i.icon.icon-chevron-right
+              div#cal
+          else
+            .col-xs-7
+              h3 Gráfico de:  #{usuario.username}
+              button#previous.btn.btn-default
+                i.icon.icon-chevron-left
+              button#next.btn.btn-default 
+                i.icon.icon-chevron-right
+              div#cal
+          if(usuario.tipo == 'Supervisor')
+            .col-xs-4.bordered(style="margin: 10px 20px;")
+              h3 Detalle diario por departamento
+              br
+              div.table-responsive.table.bordered
+                table
+                  thead
+                    tr
+                      th Acciones
+                      th Cantidad
+                  tbody#calDetalle
+                      tr
+                        td Justificaciones
+                        td -
+                      tr
+                        td Solicitudes
+                        td -
+                      tr
+                        td Ausencias o Tardías
+                        td -
 
-        .col-xs-4.bordered(style="margin: 10px 20px;")
-          h3 Detalle diario por departamento
-          br
-          div.table-responsive.table.bordered
-            table
+          .col-xs-4.bordered(style="margin: 10px;")
+            h3 Registro de Marcas
+            br
+            div.table-responsive.table.bordered
+              table#tablaMarcas
+                thead
+                  tr
+                    th Tipo
+                    th Hora
+                tbody#marcasDetalle
+                  each marca, i in marcas
+                    case marca.tipoMarca
+                      when "Entrada"
+                        tr
+                          td Entrada
+                          td #{marca.fecha}
+                      when "Salida a Receso"
+                        tr
+                          td Salida a Receso
+                          td #{marca.fecha}
+                      when "Entrada de Receso"
+                        tr
+                          td Entrada de Receso
+                          td #{marca.fecha}
+                      when "Salida al Almuerzo"
+                        tr
+                          td Salida al Almuerzo
+                          td #{marca.fecha}
+                      when "Entrada de Almuerzo"
+                        tr
+                          td Entrada del Almuerzo
+                          td #{marca.fecha}
+                      when "Salida"
+                        tr
+                          td Salida
+                          td #{marca.fecha}
+
+        .col-xs-4
+          h3 Filtros   
+          div.filter
+               div.filter
+                    if(usuario.tipo == 'Supervisor')
+                      label#departamento(for='departamento') 
+                      .btn-group
+                         .btn-group
+                        select.form-control#selectFiltro.selectpicker(data-style="btn-success", type="text", name="idSupervisor") 
+                            optgroup(label="Departamentos")
+                              option(value= "Supervisor,todos," + todos) Todos los departamentos
+                              each item, i in departamentos
+                                option(value= "Supervisor," + item.departamento.id) #{item.departamento.nombre}
+                            optgroup(label="Personales")
+                              option#supervisor(value= "Empleado,todos," + usuario.id) Mi gráfico
+                              option(value= "Empleado,justificaciones," + usuario.id) Justificaciones
+                              option(value= "Empleado,solicitudes," + usuario.id) Solicitudes
+                              option(value= "Empleado,marcas," + usuario.id) Tardías o Ausencias
+                    else
+                      .btn-group
+                         .btn-group
+                        select.form-control#selectFiltro.selectpicker(data-style="btn-success",type="text", name="idSupervisor") 
+                            option(value= "Empleado,todos," + usuario.id) Mi gráfico
+                            option(value= "Empleado,justificaciones," + usuario.id) Justificaciones
+                            option(value= "Empleado,solicitudes," + usuario.id) Solicitudes
+                            option(value= "Empleado,marcas," + usuario.id) Tardías o Ausencias
+          
+        .col-xs-4
+          h3 Acciones 
+          ul.list-group
+            li.list-group-item
+              a(data-toggle="modal" data-target="#horaExtra")
+                | Solicitud de hora extraordinaria
+            li.list-group-item
+              a(data-toggle="modal" data-target="#permiso")
+                | Solicitud de permiso anticipado
+            li.list-group-item
+              a(data-toggle="modal" data-target="#addJustificacion")
+                | Justificaciones
+          if(usuario.tipo == 'Supervisor')
+            h3 Pendientes de revisar 
+            ul.list-group
+              li.list-group-item
+                a(href='/gestionarEventos')
+                  span.badge #{solicitudes}
+                  |   Solicitudes
+              li.list-group-item
+                a(href='/gestionarEventos')
+                  span.badge #{justificaciones} 
+                  |   Justificaciones
+
+        .col-xs-6
+          div#containerCentral
+            h3  Marca Mediante el Sistema
+            div#contBotones
+              div#Marca             
+               button#marca.btn.btn-success(name='marcar', onclick= "changeElemt('marca')", data-toggle="modal" data-target="#addMarca" value=usuario._id) Realizar Marca
+
+        #addMarca.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+            .modal-dialog
+                .modal-content
+                  .modal-header
+                    button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+                    h3#myModalLabel.modal-title Marcar Mediante Sistema
+                  .modal-body
+                    form(role='form', method="POST", action="/marca")#login-form.well.span4
+                      table.table
+                        tr
+                          modal.group     
+                             label-info( name= codTarjeta) Supervisor #{usuario.apellido1} #{usuario.nombre}
+                        tr
+                          modal.group 
+                            td
+                              button.btn.btn-success(style="width: 150px;" type='submit', value = 'Entrada', name = 'marca') Entrada
+                            td
+                              button.btn.btn-success(style="width: 150px;" type='submit', value = 'Salida', name = 'marca') Salida
+                        tr
+                          modal.group 
+                            td
+                              button.btn.btn-warning(style="width: 150px;" type='submit', value = 'Salida a Receso', name = 'marca') Salida a Receso 
+                            td
+                              button.btn.btn-warning(style="width: 150px;" type='submit', value = 'Entrada de Receso', name = 'marca') Entrada de Receso
+                        tr
+                          modal.group 
+                            td
+                              button.btn.btn-primary(style="width: 150px;" type='submit', value = 'Salida al Almuerzo', name = 'marca') Salida al Almuerzo
+                            td
+                              button.btn.btn-primary(style="width: 150px;" type='submit', value = 'Entrada de Almuerzo', name = 'marca') Entrada del Almuerzo
+                      .form-group
+                        label()
+                          button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
+
+        #horaExtra.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+            .modal-dialog
+                .modal-content
+                  .modal-header
+                    button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+                    h4#myModalLabel.modal-title Solicitar hora extraordinaria
+                  .modal-body
+                    form(role='form', method="POST", action="/solicitud_extra")#login-form.well.span4
+                      .form-group
+                        label(for='fecha') Día:
+                          div#datepicker.input-group
+                            input.form-control(type='text', name='diaInicio', placeholder='Fecha' required )
+                            span.input-group-addon
+                              i.icon-calendar
+                      .form-group
+                        label(for='horaInicio') Hora de Inicio:
+                          div#timepicker.input-group
+                            input.input-small.form-control(data-format="hh:mm:ss", type="text", name= 'horaInicio')
+                            span.input-group-addon
+                              i.icon-time
+                        label(for='horaFinal') Hora de Salida:
+                          div#timepicker.input-group
+                            input.input-small.form-control(type="text", name= 'horaFinal')
+                            span.input-group-addon
+                              i.icon-time
+                      .form-group
+                        label(for='cliente') Cliente:
+                          input.input-small.form-control(type="text", name='cliente' required )
+                        label(for='motivo') Motivo:
+                          textarea#motivo.form-control(rows="4" cols="50" name='motivo' required )
+                        
+                                                     
+                      button.btn.btn-success(type='submit') Enviar
+                      button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
+       
+         
+        #permiso.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+            .modal-dialog
+                .modal-content
+                  .modal-header
+                    button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+                    h4#myModalLabel.modal-title Solicitar permiso anticipado
+                  .modal-body
+                    form(role='form', method="POST", action="/solicitud_permisos")#login-form.well.span4
+                      .form-group
+                        label(for='diaInicio') Día Inicial:
+                          div#datepicker.input-group
+                            input#diaInicio.form-control(type='text', name='diaInicio', placeholder='Fecha Inicial' required)
+                            span.input-group-addon
+                              i.icon-calendar
+                        label(for='diaFinal') Día Final:
+                          div#datepicker.input-group
+                            input#diaFinal.form-control(type= 'text', placeholder='Fecha Final', name= 'diaFinal' required)
+                            span.input-group-addon
+                              i.icon-calendar
+                        label(for='cantidadDias')  Días:
+                          input#cantidadDias.form-control(type= 'text', placeholder='3', name= 'cantidadDias' required)
+                      .form-group
+                        label(for='motivo') Motivo:
+                          select#selectMotivo.form-control(type= 'text', name= 'motivo' style='float:left' required)
+                            option(value='seleccionar') Seleccione una opción
+                            option(value='Vacaciones') Vacaciones
+                            option(value='Permiso Médico') Permiso Médico
+                            option(value='Permiso Estudio') Permiso de Estudio
+                            option(value='Familiar') Familiar
+                            option(value='otro') Otro
+                        label(for='motivoOtro') Otro:
+                          input#motivoOtro.form-control(type= 'text', placeholder='Otro', name= 'motivoOtro' style='float:left' disabled)
+                      .form-group
+                        label(for='detalle') Detalle:
+                          textarea#detalle.form-control(rows="4" cols="50" name='detalle' required)
+                                                                           
+                      button.btn.btn-success(type='submit') Enviar
+                      button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
+       
+                 
+        #addJustificacion.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+          .modal-dialog
+            .modal-content
+              .modal-header
+                button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+                h4#myModalLabel.modal-title Justificación
+              .modal-body
+                form(role='form', method="POST", action="justificacion_nueva")#login-form.well.span4
+                  .form-group
+                    label(for='motivoJust') Motivo:
+                      select#selectMotivoJust.form-control(type= 'text', name= 'motivoJust' style='float:left' required)
+                        option(value='seleccionar') Seleccione una opción
+                        option(value='Tardía') Tardía
+                        option(value='Omisión de Marca') Omisión de Marca
+                        option(value='Ausencia') Ausencia
+                        option(value='otro') Otro
+                    label(for='motivoOtroJust') Otro:
+                      input#motivoOtroJust.form-control(type= 'text', placeholder='Otro', name= 'motivoOtroJust' style='float:left' disabled)
+                  .form-group
+                      label(for='detalles') Detalles:
+                      textarea#detalles.form-control(rows="4" cols="50" name='detalle' required)
+                         
+                  button.btn.btn-success(type='submit') Enviar
+                  button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
+    
+
+      if(usuario.tipo == 'Administrador')               
+        .col-xs-4(style="margin: 20px;")
+
+            h3#labelIMEC
+              |IMEC:
+            table.footable
               thead
                 tr
-                  th Acciones
-                  th Cantidad
-              tbody#calDetalle
-                  tr
-                    td Justificaciones
-                    td -
-                  tr
-                    td Solicitudes
-                    td -
-                  tr
-                    td Ausencias o Tardías
-                    td -
-
-        .col-xs-4.bordered(style="margin: 10px;")
-          h3 Registro de Marcas
-          br
-          div.table-responsive.table.bordered
-            table#tablaMarcas
-              thead
+                  th Acción
+                  th Nuevo
+                  th Modificar o eliminar
+              tbody
                 tr
-                  th Tipo
-                  th Hora
-              tbody#marcasDetalle
-                each marca, i in marcas
-                  case marca.tipoMarca
-                    when "Entrada"
-                      tr
-                        td Entrada
-                        td #{marca.fecha}
-                    when "Salida a Receso"
-                      tr
-                        td Salida a Receso
-                        td #{marca.fecha}
-                    when "Entrada de Receso"
-                      tr
-                        td Entrada de Receso
-                        td #{marca.fecha}
-                    when "Salida al Almuerzo"
-                      tr
-                        td Salida al Almuerzo
-                        td #{marca.fecha}
-                    when "Entrada de Almuerzo"
-                      tr
-                        td Entrada del Almuerzo
-                        td #{marca.fecha}
-                    when "Salida"
-                      tr
-                        td Salida
-                        td #{marca.fecha}
+                  td Departamento:
+                  form(action= '/departamento')
+                    td
+                      button#empleados.btn.btn-success(name='agregar', data-toggle="modal" data-target="#addDep")
+                        i.icon-plus.icon-large
+                    td
+                      button#areas.btn.btn-primary(type = 'submit', name='eliminar',  onclick= "/departamento")
+                        i.icon-edit.icon-large
+                tr
+                  td Horario:
+                  form(action= '/horarioN')    
+                    td
+                      button#empleados.btn.btn-success(name='agregar', data-toggle="modal" data-target="#addHorario")
+                        i.icon-plus.icon-large       
+                    td
+                      button#areas.btn.btn-primary(type = 'submit', name='eliminar',  onclick= "/horarioN")
+                        i.icon-edit.icon-large
+                tr
+                  td Empleado:
+                  form(action= '/empleado')     
+                    td
+                      button#empleados.btn.btn-success(name='agregar', data-toggle="modal" data-target="#addEmpl") 
+                        i.icon-plus.icon-large
+                    td
+                      button#areas.btn.btn-primary(type = 'submit', name='eliminar',  onclick= "/empleado")
+                        i.icon-edit.icon-large
+         
+        .col-xs-2
+          #addHorario.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+            .modal-dialog
+                .modal-content
+                  .modal-header
+                    button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+                    h4#myModalLabel.modal-title Añadir nuevo horario
+                  .modal-body
+                    form(action='/horarioN', method='post')#login-form.well.span4
+                      .form-group
+                        h4 Información Básica
+                        label(for='nombre' style="float:left") Nombre del Horario:
+                          input.form-control#textInput( type="text", name="nombre", placeholder='Nombre del horario')
+                        label(for='tipo') Tipo jornada  
+                          .checkboxAwesome.checkbox-success          
+                            input(type='checkbox', name= "tipo", id="tipoJornada")
+                            label(for='tipoJornada', id="tipoJornadaLabel") Libre         
+                      .form-group
+                        h4 Información de jornada
+                        label(for='horaEntrada') Hora de Inicio:
+                          div#timepicker.input-group
+                            input.input-small.form-control(type="text", name= 'horaEntrada')
+                            span.input-group-addon
+                              i.icon-time
+                        label(for='horaSalida') Hora de salida:
+                          div#timepicker1.input-group
+                            input.input-small.form-control(type="text", name= 'horaSalida')
+                            span.input-group-addon
+                              i.icon-time
+                        label(for='rangoJornada') Rango de horas:
+                          label.form-control#rangoJornada()
+                          div#timepicker4.input-group
+                            input.form-control#inputRango(type="text", name="rangoJornada")
+                            span.input-group-addon
+                              i.icon-time  
+                      .form-group
+                        h4 Información de descansos
+                        label(for='tiempoReceso') Rango de receso:
+                          div#timepicker2.input-group
+                            input.input-small.form-control(type="text", name= 'tiempoReceso')
+                            span.input-group-addon
+                              i.icon-time  
+                        label(for='tiempoAlmuerzo') Rango de almuerzo:
+                          div#timepicker3.input-group
+                            input.input-small.form-control(type="text", name= 'tiempoAlmuerzo')
+                            span.input-group-addon
+                              i.icon-time
+                         
+                      button.btn.btn-success(type='submit') Ingresar
+                      button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
+          
 
-      .col-xs-4
-       h3 Filtros   
-       div.filter
-            
-             div.filter
-                  label#departamento(for='departamento') 
-                  .btn-group
-                     .btn-group
-                    select.form-control#selectFiltro.selectpicker(data-style="btn-success", type="text", name="idSupervisor") 
-                        optgroup(label="Departamentos")
-                          option(value= "Supervisor,todos," + todos) Todos los departamentos
-                          each item, i in departamentos
-                            option(value= "Supervisor," + item.departamento.id) #{item.departamento.nombre}
-                        optgroup(label="Personales")
-                          option#supervisor(value= "Empleado,todos," + usuario.id) Mi gráfico
-                          option(value= "Empleado,justificaciones," + usuario.id) Justificaciones
-                          option(value= "Empleado,solicitudes," + usuario.id) Solicitudes
-                          option(value= "Empleado,marcas," + usuario.id) Tardías o Ausencias
-      
-        
-      .col-xs-4
-        h3 Acciones 
-        ul.list-group
-          li.list-group-item
-            a(data-toggle="modal" data-target="#horaExtra")
-              | Solicitud de hora extraordinaria
-          li.list-group-item
-            a(data-toggle="modal" data-target="#permiso")
-              | Solicitud de permiso anticipado
-          li.list-group-item
-            a(data-toggle="modal" data-target="#addJustificacion")
-              | Justificaciones
-
-        h3 Pendientes de revisar 
-        ul.list-group
-          li.list-group-item
-            a(href='/gestionarEventos')
-              span.badge #{solicitudes}
-              |   Solicitudes
-          li.list-group-item
-            a(href='/gestionarEventos')
-              span.badge #{justificaciones} 
-              |   Justificaciones
-
-      .col-xs-6
-        div#containerCentral
-          h3  Marca Mediante el Sistema
-          div#contBotones
-            div#Marca             
-             button#marca.btn.btn-success(name='marcar', onclick= "changeElemt('marca')", data-toggle="modal" data-target="#addMarca" value=usuario._id) Realizar Marca
+          //agregar departamento            
+          #addDep.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+            .modal-dialog
+                .modal-content
+                  .modal-header
+                    button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+                    h4#myModalLabel.modal-title Añadir nuevo departamento
+                  .modal-body
+                    form(role='form', method="POST", action="/departamento")#login-form.well.span4
+                      .form-group
+                          label(for='nombre') Nombre:
+                            input#group.form-control( type="text", placeholder='Nombre del area', name= "nombre")
+                      button.btn.btn-success(type='submit') Ingresar
+                      button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar                
 
 
-      .col-xs-4
-
-      #addMarca.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
-          .modal-dialog
+          //agregar empleados
+          #addEmpl.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+            .modal-dialog
               .modal-content
-                .modal-header
-                  button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-                  h3#myModalLabel.modal-title Marcar Mediante Sistema
                 .modal-body
-                  form(role='form', method="POST", action="/marca")#login-form.well.span4
-                    table.table
-                      tr
-                        modal.group     
-                           label-info( name= codTarjeta) Supervisor #{usuario.apellido1} #{usuario.nombre}
-                      tr
-                        modal.group 
-                          td
-                            button.btn.btn-success(style="width: 150px;" type='submit', value = 'Entrada', name = 'marca') Entrada
-                          td
-                            button.btn.btn-success(style="width: 150px;" type='submit', value = 'Salida', name = 'marca') Salida
-                      tr
-                        modal.group 
-                          td
-                            button.btn.btn-warning(style="width: 150px;" type='submit', value = 'Salida a Receso', name = 'marca') Salida a Receso 
-                          td
-                            button.btn.btn-warning(style="width: 150px;" type='submit', value = 'Entrada de Receso', name = 'marca') Entrada de Receso
-                      tr
-                        modal.group 
-                          td
-                            button.btn.btn-primary(style="width: 150px;" type='submit', value = 'Salida al Almuerzo', name = 'marca') Salida al Almuerzo
-                          td
-                            button.btn.btn-primary(style="width: 150px;" type='submit', value = 'Entrada de Almuerzo', name = 'marca') Entrada del Almuerzo
-                    .form-group
-                      label()
-                        button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
+                  button.close(type='button', data-dismiss='modal', aria-hidden='true') × 
+                  h3#myModalLabel.modal-title Añadir nuevo Empleado
+                  form(role='form', method="POST", action="/empleado")#login-form.well.span4
+                      .form-group
+                        h3 Información Básica
+                        label(for='nombre') Nombre:
+                          input#group.form-control(type= 'text', placeholder='Carlos', name= 'nombre')
+                        label(for='cedula') Cédula:
+                         input#cedula.form-control(type= 'text', placeholder='110459625', name='cedula') 
+                      .form-group
+                        label(for='apellido1') Primer Apellido:
+                          input#apellido1.form-control(type= 'text', placeholder='Corella', name= 'apellido1')
+                        label(for='apellido2') Segundo Apellido:
+                         input#apellido2.form-control(type= 'text', placeholder='Sandi', name='apellido2')   
+                        label(for='email') Correo Eléctronico:
+                          input#email.form-control(type= 'email', placeholder='alguien@ejemplo.com', name='email')
+                         
 
-      #horaExtra.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
-          .modal-dialog
-              .modal-content
-                .modal-header
-                  button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-                  h4#myModalLabel.modal-title Solicitar hora extraordinaria
-                .modal-body
-                  form(role='form', method="POST", action="/solicitud_extra")#login-form.well.span4
-                    .form-group
-                      label(for='fecha') Día:
-                        div#datepicker.input-group
-                          input.form-control(type='text', name='diaInicio', placeholder='Fecha' required )
-                          span.input-group-addon
-                            i.icon-calendar
-                    .form-group
-                      label(for='horaInicio') Hora de Inicio:
-                        div#timepicker.input-group
-                          input.input-small.form-control(data-format="hh:mm:ss", type="text", name= 'horaInicio')
-                          span.input-group-addon
-                            i.icon-time
-                      label(for='horaFinal') Hora de Salida:
-                        div#timepicker.input-group
-                          input.input-small.form-control(type="text", name= 'horaFinal')
-                          span.input-group-addon
-                            i.icon-time
-                    .form-group
-                      label(for='cliente') Cliente:
-                        input.input-small.form-control(type="text", name='cliente' required )
-                      label(for='motivo') Motivo:
-                        textarea#motivo.form-control(rows="4" cols="50" name='motivo' required )
-                      
-                                                   
-                    button.btn.btn-success(type='submit') Enviar
-                    button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
-     
-                .modal-footer  
-      #permiso.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
-          .modal-dialog
-              .modal-content
-                .modal-header
-                  button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-                  h4#myModalLabel.modal-title Solicitar permiso anticipado
-                .modal-body
-                  form(role='form', method="POST", action="/solicitud_permisos")#login-form.well.span4
-                    .form-group
-                      label(for='diaInicio') Día Inicial:
-                        div#datepicker.input-group
-                          input#diaInicio.form-control(type='text', name='diaInicio', placeholder='Fecha Inicial' required)
-                          span.input-group-addon
-                            i.icon-calendar
-                      label(for='diaFinal') Día Final:
-                        div#datepicker.input-group
-                          input#diaFinal.form-control(type= 'text', placeholder='Fecha Final', name= 'diaFinal' required)
-                          span.input-group-addon
-                            i.icon-calendar
-                      label(for='cantidadDias')  Días:
-                        input#cantidadDias.form-control(type= 'text', placeholder='3', name= 'cantidadDias' required)
-                    .form-group
-                      label(for='motivo') Motivo:
-                        select#selectMotivo.form-control(type= 'text', name= 'motivo' style='float:left' required)
-                          option(value='seleccionar') Seleccione una opción
-                          option(value='Vacaciones') Vacaciones
-                          option(value='Permiso Médico') Permiso Médico
-                          option(value='Permiso Estudio') Permiso de Estudio
-                          option(value='Familiar') Familiar
-                          option(value='otro') Otro
-                      label(for='motivoOtro') Otro:
-                        input#motivoOtro.form-control(type= 'text', placeholder='Otro', name= 'motivoOtro' style='float:left' disabled)
-                    .form-group
-                      label(for='detalle') Detalle:
-                        textarea#detalle.form-control(rows="4" cols="50" name='detalle' required)
-                                                                         
-                    button.btn.btn-success(type='submit') Enviar
-                    button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
-     
-                .modal-footer          
-      #addJustificacion.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
-        .modal-dialog
-          .modal-content
-            .modal-header
-              button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-              h4#myModalLabel.modal-title Justificación
-            .modal-body
-              form(role='form', method="POST", action="justificacion_nueva")#login-form.well.span4
-                .form-group
-                  label(for='motivoJust') Motivo:
-                    select#selectMotivoJust.form-control(type= 'text', name= 'motivoJust' style='float:left' required)
-                      option(value='seleccionar') Seleccione una opción
-                      option(value='Tardía') Tardía
-                      option(value='Omisión de Marca') Omisión de Marca
-                      option(value='Ausencia') Ausencia
-                      option(value='otro') Otro
-                  label(for='motivoOtroJust') Otro:
-                    input#motivoOtroJust.form-control(type= 'text', placeholder='Otro', name= 'motivoOtroJust' style='float:left' disabled)
-                .form-group
-                    label(for='detalles') Detalles:
-                    textarea#detalles.form-control(rows="4" cols="50" name='detalle' required)
-                       
-                button.btn.btn-success(type='submit') Enviar
-                button.btn.btn-default(type='button', data-dismiss='modal') Cancelar 
+                      .form-group 
+                        h3 Información Laboral
+                        label(for='codTarjeta') Código de Empleado:
+                          input#codTarjeta.form-control(type= 'text', placeholder='Código de Empleado', name='codTarjeta')
+                        label(for="usernameInput")
+                          |Usuario:
+                          input.form-control#textInput(type="text", name="username", placeholder="Usuario")
+                        label(for="tipoInput") Tipo de Usuario:
+                          br
+                          select.form-control#selectTipo.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="tipo") 
+                            option Empleado
+                            option Supervisor
+                            option Administrador
 
-            .modal-footer  
+                        label(for='horario') Horario:
+                          br
+                          select.form-control#textInput.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="idHorario") 
+                            each horario, i in horarios
+                                option(value= horario.id) #{horario.nombre} 
+
+                        label(for='departamento') Departamento:
+                          br
+                          select.form-control#selectDepartamentos.selectpicker(data-style="btn-success", data-width="200px", data-selected-text-format="count>2", type="text", name="idDepartamento", multiple="multiple") 
+                            each departamento, i in departamentos
+                                option(value= departamento.id) #{departamento.nombre} 
+
+                      .form-group
+                        label(for="passwordInput")
+                          |Contraseña:
+                          input.form-control#passInput(type='text', size='18', name="password", placeholder="Contraseña")
+                          button.btn.btn-default(type='button', onclick='generatepass(8)') Generar Contraseña
+                                      
+                      button.btn.btn-success(type='submit') Ingresar
+                      button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
                 
 block sigucaJS
-  script(src="/socket.io/socket.io.js")
-  script( src='/js/sigucaHome.js')
-  script(src="/js/d3.min.js")
-  script(src="/js/cal-heatmap.js")
-  script(src="/js/bootstrap-select.min.js")
+  if(usuario.tipo != 'Administrador')
+    script(src="/socket.io/socket.io.js")
+    script(src="/js/d3.min.js")
+    script(src="/js/cal-heatmap.js")
+    if(usuario.tipo == 'Supervisor')
+      script( src='/js/sigucaHome.js')
+    else
+      script( src='/js/sigucaHomeEmpl.js')
+
+  if(usuario.tipo == 'Administrador')
+    script(src="/js/mailgun_validator.js")
+    script(src="/js/generarPassword.js")
+    script( src='/js/timepickerAdmin.js')
