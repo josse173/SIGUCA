@@ -13,31 +13,27 @@ block content
       .col-xs-12
        h3 Filtros   
        div.filter
-             div.filter
-                  label#departamento(for='departamento') 
-                  .btn-group
-                     .btn-group
-                     table
-                       form(role='form', method="POST", action="/filtrarEventos/")
-                        td
-                          select.form-control#selectFiltro.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro") 
-                            option(value= usuario._id + "|" + departamentos + "|todos|reportes") Todos los usuarios
-                            each user in usuarios
-                              option(value= usuario._id + "|" + departamentos + "|" + user._id + "|reportes") #{user.apellido1} #{user.apellido2}, #{user.nombre}
-                        td
-                          label(for='fechaDesde') Desde:
-                            div#datepicker.input-group
-                              input.form-control(type='text', name='fechaDesde')
-                              span.input-group-addon
-                                i.icon-calendar
-                        td
-                          label(for='fechaHasta') Hasta:
-                            div#datepicker.input-group
-                              input.form-control(type='text', name='fechaHasta')
-                              span.input-group-addon
-                                i.icon-calendar
-                        td
-                          button.form-control.btn.btn-success(type='submit', name='gestionar') Buscar
+        table
+          form(role='form', method="POST", action="/filtrarEventos/")
+            td
+              select.form-control#selectFiltro.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro") 
+                option(value= usuario._id + "|" + departamentos + "|todos|gestionarEventos") Todos los usuarios
+                each user in usuarios
+                  option(value= usuario._id + "|" + departamentos + "|" + user._id + "|gestionarEventos") #{user.apellido1} #{user.apellido2}, #{user.nombre}
+            td
+              label.labelFiltro(for='fechaDesde' style="margin-left: 5px;") Desde:
+                div#datepicker.input-group
+                  input.form-control(type='text', name='fechaDesde')
+                  span.input-group-addon
+                    i.icon-calendar
+            td
+              label.labelFiltro(for='fechaHasta') Hasta:
+                div#datepicker.input-group
+                  input.form-control(type='text', name='fechaHasta')
+                  span.input-group-addon
+                    i.icon-calendar
+            td
+              button.filtro.form-control.btn.btn-success(type='submit', name='gestionar') Buscar
                         
       .col-xs-12
         h3 Marcas

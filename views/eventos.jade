@@ -13,25 +13,23 @@ block content
       .col-xs-12
        h3 Filtros   
        div.filter
-             div.filter
-                  .btn-group
-                     .btn-group
-                     table
-                       form(role='form', method="POST", action="/filtrarEventosEmpl")
-                        td
-                          label(for='fechaDesde') Desde:
-                            div#datepicker.input-group
-                              input.form-control(type='text', name='fechaDesde')
-                              span.input-group-addon
-                                i.icon-calendar
-                        td
-                          label(for='fechaHasta') Hasta:
-                            div#datepicker.input-group
-                              input.form-control(type='text', name='fechaHasta')
-                              span.input-group-addon
-                                i.icon-calendar
-                        td
-                          button.form-control.btn.btn-success(type='submit', name='filtrar') Filtrar
+        table
+         form(role='form', method="POST", action="/filtrarEventosEmpl")
+          td
+            label.labelFiltro(for='fechaDesde') Desde:
+              div#datepicker.input-group
+                input.form-control(type='text', name='fechaDesde')
+                span.input-group-addon
+                  i.icon-calendar
+          td
+            label.labelFiltro(for='fechaHasta') Hasta:
+              div#datepicker.input-group
+                input.form-control(type='text', name='fechaHasta')
+                span.input-group-addon
+                  i.icon-calendar
+          td
+            button.form-control.btn.btn-success(type='submit', name='filtrar') Filtrar
+
         .col-xs-12
           h3 Marcas
           if(marcas.length != 0)
