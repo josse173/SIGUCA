@@ -35,7 +35,7 @@ block content
         .col-xs-12
           h3 Marcas
           if(marcas.length != 0)
-            table.footable(data-page-navigation=".pagination" data-page-size="6")
+            table.footable.tableMarcas(data-page-navigation=".pagination" data-page-size="6")
                 thead
                   tr
                     th(data-type="numeric" data-sort-initial="descending") Fecha
@@ -50,7 +50,7 @@ block content
                         - var date = new Date();
                         - var epoch = (date.getTime() - date.getMilliseconds())/1000;
                         if(epoch - marca.epoch <= 600)
-                          a.btn.btn-default(href="/marca/delete/"+marca.id)
+                          button.btn.btn-default.marcaDelete(value=marca.fecha+","+marca.id)
                             i.icon-trash.icon-large.i-danger 
 
                 tfoot
@@ -267,7 +267,3 @@ block content
                                                                          
                     button.btn.btn-success(type='submit') Enviar
                     button.btn.btn-default(type='button', data-dismiss='modal') Cancelar                
-
-block sigucaJS
-  script(src="/js/bootstrap-timepicker.min.js")
-  script(src="/js/datepickerReportes.js")

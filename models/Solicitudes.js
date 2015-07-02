@@ -13,7 +13,7 @@ var SchemaSolicitudes = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Usuario'
     },
-    tipoSolicitudes: { //día libre - tadía
+    tipoSolicitudes: { 
         type: String,
         default: ''
     },

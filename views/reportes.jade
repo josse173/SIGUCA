@@ -37,7 +37,7 @@ block content
                               span.input-group-addon
                                 i.icon-calendar
                         td
-                          button.form-control.btn.btn-success(type='submit', name='gestionar') Filtrar
+                          button.form-control.btn.btn-success(type='submit', name='gestionar') Buscar
                         
       .col-xs-12
         h3 Marcas
@@ -65,7 +65,7 @@ block content
         br
         h3 Justificaciones
         if(justificaciones.length != 0)
-          table.footable(data-page-navigation=".pagination" data-page-size="5")
+          table.tableJustificaciones.footable(data-page-navigation=".pagination" data-page-size="5")
               thead
                 tr
                   th(data-type="numeric" data-sort-initial="descending") Fecha
@@ -74,6 +74,7 @@ block content
                   th(data-hide="phone,small" data-sort-ignore="true") Detalle
                   th(data-hide="phone,small" data-sort-ignore="true") Comentario
                   th Estado
+                  th(data-hide="phone,small" data-sort-ignore="true") Eliminar
               tbody
                 each justificacion, i in justificaciones
                   tr
@@ -83,9 +84,12 @@ block content
                     td #{justificacion.detalle} 
                     td #{justificacion.comentarioSupervisor} 
                     td #{justificacion.estado}  
+                    td
+                      button.btn.btn-default.justificacionDelete(value=justificacion.usuario.nombre+' '+justificacion.usuario.apellido1+' '+justificacion.usuario.apellido2+','+justificacion.id+','+justificacion.fecha, name='eliminar') 
+                        i.icon-trash.icon-large.i-danger 
               tfoot
                 tr
-                  td(colspan='6')
+                  td(colspan='7')
                     .pagination.pagination-centered.hide-if-no-paging
         else
           p No se han enviado justificaciones hasta el momento.
@@ -93,7 +97,7 @@ block content
         br
         h3 Solicitudes Horas Extraordinarias
         if(extras.length != 0)
-          table.footable(data-page-navigation=".pagination" data-page-size="5")
+          table.tableSolicitudes.footable(data-page-navigation=".pagination" data-page-size="5")
               thead
                 tr
                   th(data-type="numeric" data-sort-initial="descending") Fecha
@@ -106,6 +110,7 @@ block content
                   th(data-hide="phone,small,medium" data-sort-ignore="true") Motivo
                   th(data-hide="phone,small,medium" data-sort-ignore="true") Comentario
                   th Estado
+                  th(data-hide="phone,small,medium" data-sort-ignore="true") Eliminar
               tbody
                 each extra, i in extras
                   tr
@@ -119,9 +124,12 @@ block content
                     td #{extra.motivo} 
                     td #{extra.comentarioSupervisor} 
                     td #{extra.estado} 
+                    td
+                      button.btn.btn-default.solicitudDelete(value=extra.usuario.nombre+' '+extra.usuario.apellido1+' '+extra.usuario.apellido2+','+extra.id+','+extra.fecha, name='eliminar') 
+                        i.icon-trash.icon-large.i-danger 
               tfoot
                 tr
-                  td(colspan='10')
+                  td(colspan='11')
                     .pagination.pagination-centered.hide-if-no-paging
         else
           p No se han enviado extras hasta el momento.
@@ -129,7 +137,7 @@ block content
         br
         h3 Solicitudes Permisos
         if(permisos.length != 0)
-          table.footable(data-page-navigation=".pagination" data-page-size="5")
+          table.tableSolicitudes.footable(data-page-navigation=".pagination" data-page-size="5")
               thead
                 tr
                   th(data-type="numeric" data-sort-initial="descending") Fecha
@@ -141,6 +149,7 @@ block content
                   th(data-hide="phone,small,medium" data-sort-ignore="true") Detalle
                   th(data-hide="phone,small,medium" data-sort-ignore="true") Comentario
                   th Estado
+                  th(data-hide="phone,small,medium" data-sort-ignore="true") Eliminar
               tbody
                 each permiso, i in permisos
                   tr
@@ -153,15 +162,12 @@ block content
                     td #{permiso.detalle} 
                     td #{permiso.comentarioSupervisor} 
                     td #{permiso.estado} 
+                    td
+                      button.btn.btn-default.solicitudDelete(value=permiso.usuario.nombre+' '+permiso.usuario.apellido1+' '+permiso.usuario.apellido2+','+permiso.id+','+permiso.fecha, name='eliminar') 
+                        i.icon-trash.icon-large.i-danger 
               tfoot
                 tr
-                  td(colspan='9')
+                  td(colspan='10')
                     .pagination.pagination-centered.hide-if-no-paging
         else
           p No se han enviado permisos hasta el momento.
-              
-                                     
-block sigucaJS
-  script(src="/js/bootstrap-datepicker.min.js")
-  script(src="/js/bootstrap-select.min.js")
-  script(src="/js/datepickerReportes.js")
