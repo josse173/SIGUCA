@@ -99,3 +99,12 @@ body {
 .well {
   margin-bottom: 0;
 }
+
+.clock {
+  color: #FFF; 
+  background-color: #398439; 
+  border-color: #419641; 
+  padding: 4px; 
+  border-radius:3px;
+  margin-left: 37px; 
+}

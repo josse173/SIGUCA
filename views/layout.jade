@@ -25,9 +25,9 @@ html
     link(rel='stylesheet', href='/stylesheets/sigucaAyuda.css')
     link(rel='stylesheet', href='/stylesheets/footable/footable.core.min.css')
     link(rel='stylesheet', href='/stylesheets/footable/footable.metro.min.css')
-    link(rel='stylesheet', href='/stylesheets/alertify.core.css')
-    link(rel='stylesheet', href='/stylesheets/alertify.default.css')
-
+    link(rel='stylesheet', href='/stylesheets/alertify/alertify.css')
+    link(rel='stylesheet', href='/stylesheets/alertify/themes/bootstrap.css')
+ 
     title SIGUCA
 
     block sigucaCSS
@@ -101,19 +101,16 @@ html
       br     
     block content
 
-    script(src="/js/jquery-2.0.3.min.js")
-    script(src="/js/bootstrap.min.js")
-    script(src='js/respond-min.js')  
-    script(src="/js/bootstrap-datepicker.min.js")
-    script(src="/js/bootstrap-timepicker.min.js")
-    script(src="/js/bootstrap-select.min.js")
-    script(src="/js/footable.js")
-    script(src="/js/footable.paginate.min.js") 
-    script(src="/js/footable.sort.min.js") 
-    script(src="/js/datepickerReportes.js")
-    script(src="/js/alertify.min.js")
-    if (usuario)
-      if(usuario.tipo == 'Administrador')
-        script(src="/socket.io/socket.io.js")
-        script(src='/js/sigucaHomeAdmin.js')
+    script(src="/js/components/jquery-2.0.3.min.js")
+    script(src="/js/components/bootstrap.min.js")
+    script(src='/js/components/respond-min.js')  
+    script(src="/js/components/bootstrap-datepicker.min.js")
+    script(src="/js/components/bootstrap-timepicker.min.js")
+    script(src="/js/components/bootstrap-select.min.js")
+    script(src="/js/components/footable.js")
+    script(src="/js/components/footable.paginate.min.js") 
+    script(src="/js/components/footable.sort.min.js") 
+    script(src="/js/components/footable.filter.min.js") 
+    script(src="/js/components/alertify.min.js")
+    script(src="/js/app/routes.js")
     block sigucaJS

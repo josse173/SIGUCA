@@ -12,7 +12,7 @@ block content
         .col-xs-8
           if(usuario.tipo == 'Supervisor')
             .col-xs-3
-              h3 Gráfico de:  #{usuario.username}
+              h3 Gráfico de:  #{usuario.nombre} #{usuario.apellido1}
               button#previous.btn.btn-default
                 i.icon.icon-chevron-left
               button#next.btn.btn-default 
@@ -20,7 +20,7 @@ block content
               div#cal
           else
             .col-xs-7
-              h3 Gráfico de:  #{usuario.username}
+              h3 Gráfico de:  #{usuario.nombre} #{usuario.apellido1}
               button#previous.btn.btn-default
                 i.icon.icon-chevron-left
               button#next.btn.btn-default 
@@ -49,6 +49,9 @@ block content
 
           .col-xs-4.bordered(style="margin: 10px;")
             h3 Registro de Marcas
+            div
+              label Hora oficial 
+                span.clock
             br
             div.table-responsive.table.bordered
               table#tablaMarcas
@@ -84,6 +87,7 @@ block content
                           td Salida
                           td #{marca.fecha}
 
+
         .col-xs-4
           h3 Filtros   
           div.filter
@@ -110,8 +114,7 @@ block content
                             option(value= "Empleado,justificaciones," + usuario.id) Justificaciones
                             option(value= "Empleado,solicitudes," + usuario.id) Solicitudes
                             option(value= "Empleado,marcas," + usuario.id) Tardías o Ausencias
-          
-        .col-xs-4
+
           h3 Acciones 
           ul.list-group
             li.list-group-item
@@ -135,12 +138,10 @@ block content
                   span.badge #{justificaciones} 
                   |   Justificaciones
 
-        .col-xs-6
-          div#containerCentral
-            h3  Marca Mediante el Sistema
-            div#contBotones
-              div#Marca             
-               button#marca.btn.btn-success(name='marcar', onclick= "changeElemt('marca')", data-toggle="modal" data-target="#addMarca" value=usuario._id) Realizar Marca
+          h3  Marca Mediante el Sistema
+          div#contBotones
+            div#Marca             
+             button#marca.btn.btn-success(name='marcar', onclick= "changeElemt('marca')", data-toggle="modal" data-target="#addMarca" value=usuario._id) Realizar Marca
 
         #addMarca.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
             .modal-dialog
@@ -153,7 +154,7 @@ block content
                       table.table
                         tr
                           modal.group     
-                             label-info( name= codTarjeta) Supervisor #{usuario.apellido1} #{usuario.nombre}
+                             label-info( name= codTarjeta) #{usuario.tipo} #{usuario.nombre} #{usuario.apellido1}
                         tr
                           modal.group 
                             td
@@ -447,14 +448,15 @@ block content
 block sigucaJS
   if(usuario.tipo != 'Administrador')
     script(src="/socket.io/socket.io.js")
-    script(src="/js/d3.min.js")
-    script(src="/js/cal-heatmap.js")
+    script(src="/js/components/d3.min.js")
+    script(src="/js/components/cal-heatmap.js")
+    script(src="/js/app/clock.js")
     if(usuario.tipo == 'Supervisor')
-      script( src='/js/sigucaHome.js')
+      script( src='/js/app/sigucaHome.js')
     else
-      script( src='/js/sigucaHomeEmpl.js')
+      script( src='/js/app/sigucaHomeEmpl.js')
 
   if(usuario.tipo == 'Administrador')
-    script(src="/js/mailgun_validator.js")
-    script(src="/js/generarPassword.js")
-    script( src='/js/timepickerAdmin.js')
+    script(src="/js/components/mailgun_validator.js")
+    script(src="/js/components/generarPassword.js")
+    script( src='/js/app/timepickerAdmin.js')
