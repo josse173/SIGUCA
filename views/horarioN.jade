@@ -9,7 +9,7 @@ block content
     
     br
     h3 Lista de Horarios
-    table.footable
+    table.footable.tableHorario
         thead
           tr
             th Nombre
@@ -36,7 +36,7 @@ block content
                 button.btn.btn-default(data-toggle="modal" data-target="#editHorario" value=horario.id)
                   i.icon-pencil.icon-large.i-success
               td
-                button.deleteHorario.btn.btn-default(value=horario.id)
+                button.horarioDelete.btn.btn-default(value=horario.nombre+','+horario.id)
                   i.icon-trash.icon-large.i-danger
 
 
@@ -92,6 +92,4 @@ block content
                 button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
 
 block sigucaJS
-  script(src="/js/bootstrap-timepicker.min.js")
-  script( src='/js/timepickerAdminEdit.js')
-  script(src="/js/adminEdit.js")
+  script( src='/js/app/timepickerAdminEdit.js')

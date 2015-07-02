@@ -4,7 +4,7 @@ block content
   .container
     br
     h3 Lista de Departamentos
-    table.footable
+    table.footable.tableDepartamento
         thead
           tr
             th Nombre
@@ -18,7 +18,7 @@ block content
                 button.btn.btn-default(data-toggle="modal" data-target="#editDep" value=departamento._id)
                   i.icon-pencil.icon-large.i-success
               td
-                button.deleteDepartamento.btn.btn-default(value=departamento.id)   
+                button.departamentoDelete.btn.btn-default(value=departamento.nombre+','+departamento.id)   
                   i.icon-trash.icon-large.i-danger
 
     //muestra departamento         
@@ -35,6 +35,3 @@ block content
                       input#nombreDepa.form-control( type="text", placeholder='Nombre del area', name= "nombre")
                 button.btn.btn-success(type='submit') Actualizar
                 button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar   
-
-block sigucaJS
-  script(src="/js/adminEdit.js")

@@ -8,7 +8,7 @@ block content
     
     br
     h3 Lista de Empleados
-    table.footable.footable(data-page-navigation=".pagination" data-page-size="20")
+    table.footable.tableEmpleado(data-page-navigation=".pagination" data-page-size="20")
         thead
           tr
             th Código Tarjeta
@@ -17,11 +17,11 @@ block content
             th(data-hide="phone") Cédula
             th(data-hide="phone,small,medium,large") Email
             th(data-hide="phone") Tipo
-            th(data-hide="phone,small,medium") Departamento
+            th(data-hide="phone,small,medium" data-sort-ignore="true") Departamento
             th(data-hide="phone,small,medium") Horario
             th(data-hide="phone,small") Estado
-            th(data-hide="phone,small") Editar
-            th(data-hide="phone,small") Eliminar
+            th(data-hide="phone,small" data-sort-ignore="true") Editar
+            th(data-hide="phone,small" data-sort-ignore="true") Eliminar
 
         tbody 
           each empleado, i in empleados
@@ -42,7 +42,7 @@ block content
                 button.btn.btn-default(data-toggle="modal" data-target="#editEmpl" value=empleado.id)
                   i.icon-pencil.icon-large.i-success
               td
-                a.delete.btn.btn-default(href="/empleado/delete/"+empleado.id)
+                button.empleadoDelete.btn.btn-default(value=empleado.nombre+' '+empleado.apellido1+' '+empleado.apellido2+','+empleado.id)
                   i.icon-trash.icon-large.i-danger
         tfoot
           tr
@@ -76,8 +76,7 @@ block content
                     h3 Información Laboral
                     label(for='codTarjeta') Código de Empleado:
                       input#codTarjeta.form-control(type= 'text', placeholder='Código de Empleado', name='codTarjeta')
-                    label(for="usernameInput") Usuario:
-                      input.form-control#username(type="text", name="username", placeholder="Usuario")
+                    br   
                     label(for="tipoInput") Tipo de Usuario:
                       br
                       select.form-control#selectTipo.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="tipo") 
@@ -99,6 +98,3 @@ block content
                                   
                   button.btn.btn-success(type='submit') Actualizar
                   button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
-block sigucaJS
-  script(src="/js/adminEdit.js")
-  script(src="/js/bootstrap-select.min.js")

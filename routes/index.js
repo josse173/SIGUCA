@@ -733,7 +733,7 @@ module.exports = function(app, io) {
                             from: just.usuario.email,
                             to: supervisor[i].email,
                             subject: 'Modificación de una justificación en SIGUCA',
-                            text: " El usuario " + just.usuario.nombre 
+                            text: " El usuario " + just.usuario.nombre + " " + just.usuario.apellido1 + " " + just.usuario.apellido2
                                 + " a modificado la justificación siguiente: "
                                 + " \r\n Motivo: " + just.motivo
                                 + " \r\n Detalle: " + just.detalle
@@ -745,6 +745,35 @@ module.exports = function(app, io) {
                     res.redirect('/eventos');
                 });
             });
+        });
+    });
+
+    /*
+    *  El supervisor elimina una justificación y se le envia un correo al dueño de la justificación
+    */
+    app.get('/justificacion/delete/:id', autentificado, function(req, res) {
+        var justificacionId = req.params.id;
+        Justificaciones.findByIdAndRemove(justificacionId).populate('usuario').exec(function(error, just) { 
+            if (error) res.json(error);
+
+            var epochTime = just.fechaCreada;
+            var fecha = new Date(0);
+            fecha.setUTCSeconds(epochTime); 
+
+            var transporter = nodemailer.createTransport();
+
+            transporter.sendMail({
+                from: emailSIGUCA,
+                to: just.usuario.email,
+                subject: 'Se ha eliminado una justificación en SIGUCA',
+                text: " Estimado(a) " + just.usuario.nombre + " " + just.usuario.apellido1 + " " + just.usuario.apellido2
+                    + " \r\n Su supervisor ha eliminado una de sus justificaciones, en la cuál se indicabá lo siguiente: " 
+                    + " \r\n Fecha: " + fecha
+                    + " \r\n Motivo: " + just.motivo
+                    + " \r\n Detalle: " + just.detalle
+            });
+
+            res.send('Se elimino');
         });
     });
 
@@ -964,6 +993,58 @@ module.exports = function(app, io) {
     });
 
     /*
+    *  El supervisor elimina una solicitud y se le envia un correo al dueño de la solicitud
+    */
+    app.get('/solicitud/delete/:id', autentificado, function(req, res) {
+        var solicitudId = req.params.id;
+        Solicitudes.findByIdAndRemove(solicitudId).populate('usuario').exec(function(error, soli) { 
+            if (error) res.json(error);
+
+            var epochTime = soli.fechaCreada;
+            var fecha = new Date(0);
+            fecha.setUTCSeconds(epochTime); 
+
+            var transporter = nodemailer.createTransport();
+
+            if(soli.tipoSolicitudes == 'Extras'){
+                transporter.sendMail({
+                    from: emailSIGUCA,
+                    to: soli.usuario.email,
+                    subject: 'Se ha eliminado una solicitud de hora extraordiaria en SIGUCA',
+                    text: " Estimado(a) " + soli.usuario.nombre + " " + soli.usuario.apellido1 + " " + soli.usuario.apellido2
+                        + " \r\n Su supervisor ha eliminado una de sus solicitudes de hora extraordiaria, en la cuál se indicabá lo siguiente: " 
+                        + " \r\n Fecha de creación: " + fecha
+                        + " \r\n Día Inicio: " + soli.diaInicio
+                        + " \r\n Hora Inicio: " + soli.horaInicio
+                        + " \r\n Hora Final: " + soli.horaFinal
+                        + " \r\n Cantidad de horas: " + soli.cantidadHoras
+                        + " \r\n Cliente: " + soli.cliente
+                        + " \r\n Motivo: " + soli.motivo
+                        + " \r\n Estado: " + soli.estado
+                        + " \r\n Comentario supervisor: " + soli.comentarioSupervisor
+                });
+            } else {
+                transporter.sendMail({
+                    from: emailSIGUCA,
+                    to: soli.usuario.email,
+                    subject: 'Se ha eliminado una solicitud de permiso anticipado en SIGUCA',
+                    text: " Estimado(a) " + soli.usuario.nombre + " " + soli.usuario.apellido1 + " " + soli.usuario.apellido2
+                        + " \r\n Su supervisor ha eliminado una de sus solicitudes de permiso anticipado, en la cuál se indicabá lo siguiente: " 
+                        + " \r\n Fecha de creación: " + fecha
+                        + " \r\n Día Inicio: " + soli.diaInicio
+                        + " \r\n Día Final: " + soli.diaFinal
+                        + " \r\n Cantidad de días: " + soli.cantidadDias
+                        + " \r\n Motivo: " + soli.motivo
+                        + " \r\n Detalle: " + soli.detalle
+                        + " \r\n Estado: " + soli.estado
+                        + " \r\n Comentario supervisor: " + soli.comentarioSupervisor
+                });
+            }
+            res.send('Se elimino');
+        });
+    });
+
+    /*
     *  Actualiza el estado y el comentario del supervisor a una solicitud en específico
     */
     app.post('/getionarSolicitudAjax/:id', autentificado, function(req, res) {
@@ -1108,6 +1189,24 @@ module.exports = function(app, io) {
     });
 
     /*
+    *  Elimina un horario en específico
+    */
+    app.get('/horarioN/delete/:id', autentificado, function(req, res) { 
+        var horarioId = req.params.id;
+        Usuario.find({"horario": horarioId, "estado": "Activo"}).exec(function(error, usuario) {
+            if(usuario.length === 0){
+                Horario.findByIdAndRemove(horarioId, function(error, horarios) {
+
+                    res.send('Se elimino');
+
+                });
+            } else{
+                res.send('false');
+            }
+        });
+    });
+
+    /*
     *  Crea una nueva marca vía página web
     */
     app.post('/marca', autentificado, function(req, res) {
@@ -1153,10 +1252,12 @@ module.exports = function(app, io) {
             var epoch = (date.getTime() - date.getMilliseconds())/1000;
             if(epoch - marca.epoch <= 600){
                 Marca.findByIdAndRemove(marcaId, function(error, marca) {
-                    if (error) return res.json(error);
+                    if (error) res.json(error);
+                    res.send('Se elimino');
                 });
+            } else {
+                res.send('No se eliminó la marca <strong>' + marca.tipoMarca + '</strong>');
             }
-            res.redirect('/eventos');
         });
     });
 
@@ -1291,11 +1392,8 @@ module.exports = function(app, io) {
         var empleadoId = req.params.id;
 
         Usuario.findByIdAndUpdate(empleadoId, {estado:'Inactivo'}, function(error, empleados) { 
-
-            if (error) return res.json(error);
-
-            res.redirect('/empleado');
-
+            if (error) res.json(error);
+            res.send('Se elimino');
         });
     });
 
@@ -1373,6 +1471,22 @@ module.exports = function(app, io) {
 
             res.redirect('/departamento');
 
+        });
+    });
+
+    /*
+    *  Elimina un departamento en específico
+    */
+    app.get('/departamento/delete/:id', autentificado, function(req, res) {
+        var departamentoId = req.params.id;
+        Usuario.find({"departamentos.departamento": departamentoId, "estado": "Activo"}).exec(function(error, usuario) {
+            if(usuario.length === 0){
+                Departamento.findByIdAndRemove(departamentoId, function(error, departamentos) {
+                    res.send('Se elimino');
+                });
+            } else{
+                res.send('false');
+            }
         });
     });
 
@@ -1930,43 +2044,6 @@ module.exports = function(app, io) {
             });
         }
 
-        /*
-        *  Elimina un horario en específico
-        */
-        socket.on('eliminarHorario', function (horarioId){
-            Usuario.find({"horario": horarioId, "estado": "Activo"}).exec(function(error, usuario) {
-                if(usuario.length === 0){
-                    Horario.findByIdAndRemove(horarioId, function(error, horarios) {
-
-                        socket.emit('reload', 'Se elimino el horario con éxito');
-
-                    });
-                } else{
-                    notificar("No se puede eliminar el horario, ya que un empleado lo tiene asignado")
-                }
-            });
-        });
-
-        /*
-        *  Elimina un departamento en específico
-        */
-        socket.on('eliminarDepartamento', function (departamentoId){
-            Usuario.find({"departamentos.departamento": departamentoId, "estado": "Activo"}).exec(function(error, usuario) {
-                if(usuario.length === 0){
-                    Departamento.findByIdAndRemove(departamentoId, function(error, departamentos) {
-
-                        socket.emit('reload', 'Se elimino el departamento con éxito');
-
-                    });
-                } else{
-                    notificar("No se puede eliminar el departamento, ya que un empleado lo tiene asignado")
-                }
-            });
-        });
-
-        function notificar(msg){
-            socket.emit('notificar', msg );
-        }
     });//io.sockets
 
 };//modules
