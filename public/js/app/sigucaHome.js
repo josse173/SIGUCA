@@ -3,16 +3,48 @@
     //var socket = io.connect('http://siguca.greencore.int');
     var socket = io.connect('http://localhost:3000');
 
+    socket.emit('connected');
 
     //Si estamos conectados, muestra el log y cambia el mensaje
-    socket.on('connected', function () {
+    socket.on('connected', function (epoch) {
         selectValue();
+        clock(epoch);
     });
 
     function selectValue(){
         var value = $('#selectFiltro').val();
         //alert(value);
         socket.emit('listar', value);
+    }
+
+    function clock(epoch){
+        setInterval(function(){
+            var currentTime = new Date(0);
+            currentTime.setUTCSeconds(epoch)
+            var currentHours = currentTime.getHours ( );
+            var currentMinutes = currentTime.getMinutes ( );
+            var currentSeconds = currentTime.getSeconds ( );
+
+            // Pad the minutes and seconds with leading zeros, if required
+            currentMinutes = ( currentMinutes < 10 ? "0" : "" ) + currentMinutes;
+            currentSeconds = ( currentSeconds < 10 ? "0" : "" ) + currentSeconds;
+
+            // Choose either "AM" or "PM" as appropriate
+            var timeOfDay = ( currentHours < 12 ) ? "AM" : "PM";
+
+            // Convert the hours component to 12-hour format if needed
+            currentHours = ( currentHours > 12 ) ? currentHours - 12 : currentHours;
+
+            // Convert an hours component of "0" to "12"
+            currentHours = ( currentHours == 0 ) ? 12 : currentHours;
+
+            // Compose the string for display
+            var currentTimeString = currentHours + ":" + currentMinutes + ":" + currentSeconds + " " + timeOfDay;
+
+            // Update the time display
+            $(".clock").text(currentTimeString);
+            epoch++;
+        }, 1000 );
     }
 
     $('#selectFiltro').change(function(){

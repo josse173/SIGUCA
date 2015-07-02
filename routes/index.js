@@ -1972,7 +1972,11 @@ module.exports = function(app, io) {
         /*
         *   Emitimos nuestro evento connected
         */
-        socket.emit('connected');
+        socket.on('connected', function (){
+            var date = new Date();
+            var epoch = (date.getTime() - date.getMilliseconds())/1000;
+            socket.emit('connected', epoch);
+        });
 
         /*
         *   Recibe la orden de lista y filtra cierres por tipo de usuario

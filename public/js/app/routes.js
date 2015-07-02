@@ -280,7 +280,7 @@
           .set({
             'labels':{ok:'Eliminar', cancel:'Cancelar'},
             'transition': 'slide',
-            'message': '¿Está seguro de eliminar la marca de <br/><strong>' +  split[0] + '</strong> creada el día <i><b> ' + split[2] + ' </b></i>?',
+            'message': '¿Está seguro de eliminar la marca de <br/><strong>' +  split[0] + '</strong>?',
             'onok': function(){ 
                 $.get('/marca/delete/'+split[1], function (data){
                    if(data == 'Se elimino'){
