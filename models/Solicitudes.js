@@ -58,12 +58,12 @@ var SchemaSolicitudes = new Schema({
         default: ''
     },
     cantidadHoras: { 
-        type: Number,
-        default: 0
+        type: String,
+        default: ''
     },
     cantidadDias: { 
-        type: Number,
-        default: 0
+        type: String,
+        default: ''
     }
 });
 

@@ -14,6 +14,10 @@
 
     $('.footable').footable();
 
+    alertify.defaults.theme.ok = "btn btn-danger";
+    alertify.defaults.theme.cancel = "btn btn-default";
+    alertify.defaults.theme.input = "form-control";
+
 /*--------------------------------------------------------------------
     Carga información a los modal
 ---------------------------------------------------------------------*/
@@ -177,9 +181,6 @@
 /*--------------------------------------------------------------------
     Notificaciones y gestión de eventos
 ---------------------------------------------------------------------*/
-    alertify.defaults.theme.ok = "btn btn-danger";
-    alertify.defaults.theme.cancel = "btn btn-default";
-    alertify.defaults.theme.input = "form-control";
 
     $('.tableSolicitudes').footable().on('click', '.row-delete', function(e) {
         e.preventDefault();
