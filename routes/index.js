@@ -1821,7 +1821,7 @@ module.exports = function(app, io) {
                             } else cierrePersonal.solicitudes = 0;
 
                             cierrePersonal.marcas = 0;
-                            if("marcas" in usuario.value){
+                            if("epochEntrada" in usuario.value){
                                 if(usuario.tipo === 'Fijo'){
                                     var epochTime = usuario.epochEntrada;
                                     var fechaEpoch= new Date(0);
@@ -1835,14 +1835,14 @@ module.exports = function(app, io) {
                                         cierrePersonal.marcas += 1;   
                                     }//if
                                 } else {
-                                    var epochEntrada = user.epochEntrada;
+                                    var epochEntrada = usuario.epochEntrada;
                                     var fechaEntrada= new Date(0);
                                     fechaEntrada.setUTCSeconds(epochEntrada);  
                                     var horaEntrada = fechaEntrada.getHours();
                                     var minEntrada = fechaEntrada.getMinutes() - 5;
                                     var sInicio = (+horaEntrada) * 60 * 60 + (+minEntrada) * 60 + 00; 
 
-                                    var epochSalida = user.epochSalida;
+                                    var epochSalida = usuario.epochSalida;
                                     var fechaSalida= new Date(0);
                                     fechaSalida.setUTCSeconds(epochSalida);  
                                     var horaSalida = fechaSalida.getHours();
@@ -1851,7 +1851,7 @@ module.exports = function(app, io) {
 
                                     var seg = sFinal - sInicio;
 
-                                    var sJornada = (+user.hora) * 60 * 60 + (+user.minutos) * 60 + 00; 
+                                    var sJornada = (+usuario.hora) * 60 * 60 + (+usuario.minutos) * 60 + 00; 
                                     if(sJornada > seg){
                                         estado += 1;   
                                     }//if
@@ -1864,7 +1864,7 @@ module.exports = function(app, io) {
                             newCierre.save(function(error, user) {
 
                                 if (error) console.log(error);
-                                else console.log("exito al guardar cierre personal");
+                                else console.log("éxito al guardar cierre personal");
                             });
                         });
                     });
@@ -1880,8 +1880,8 @@ module.exports = function(app, io) {
                                 },
                                 "usuarios" : {
                                     "$push" : {
-                                        "marcaEntrada" : "$value.epochEntrada",
-                                        "marcaSalida" : "$value.epochSalida",
+                                        "epochEntrada" : "$value.epochEntrada",
+                                        "epochSalida" : "$value.epochSalida",
                                         "hora" : "$value.hora",
                                         "minutos" : "$value.min",
                                         "tipo" : "$value.tipo"
@@ -1894,7 +1894,7 @@ module.exports = function(app, io) {
                         temporal.forEach(function (departamento){
                             var estado = 0;
                             departamento.usuarios.forEach(function (user){
-                                if("marca" in user){
+                                if("epochEntrada" in user){
                                     if(user.tipo === 'Fijo'){
                                         var epochTime = user.epochEntrada;
                                         var fechaEpoch= new Date(0);
@@ -1950,7 +1950,7 @@ module.exports = function(app, io) {
                             newCierre.save(function(error, user) {
 
                                 if (error) console.log(error);
-                                else console.log("exito al guardar");
+                                else console.log("éxito al guardar");
                             });//cierre
                             epochToday++;
                         });// for each departamento
@@ -1977,7 +1977,6 @@ module.exports = function(app, io) {
             var epoch = (date.getTime() - date.getMilliseconds())/1000;
             socket.emit('connected', epoch);
         });
-
         /*
         *   Recibe la orden de lista y filtra cierres por tipo de usuario
         */

@@ -16,7 +16,7 @@ html
     meta(charset='utf-8')
     //To ensure proper rendering and touch zooming (boostrap)
     //Para garantizar una adecuada renderización  en caso de dispositivos móviles
-    meta(content="width = device-width, initial-scale = 1.0, minimum-scale = 1.0, maximum-scale = 1.0, user-scalable = no")
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
 
     //Style sheets used
     link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
@@ -27,6 +27,9 @@ html
     link(rel='stylesheet', href='/stylesheets/footable/footable.metro.min.css')
     link(rel='stylesheet', href='/stylesheets/alertify/alertify.css')
     link(rel='stylesheet', href='/stylesheets/alertify/themes/bootstrap.css')
+    link(rel='stylesheet', href='/stylesheets/bootstrap-select.min.css')
+    link(rel='stylesheet', href='/stylesheets/bootstrap-timepicker.min.css')
+    link(rel='stylesheet', href='/stylesheets/bootstrap-datepicker.min.css')
  
     title SIGUCA
 
@@ -41,64 +44,61 @@ html
 
  
   body
-    div.navbar.navbar-nav.navbar-fixed-top(role="navigation")
-      div.navbar-header
-        button.navbar-toggle(type="button" data-toggle="collapse" data-target=".navbar-ex1-collapse")
-          span.sr-only
-          span.icon-bar
-          span.icon-bar
-          span.icon-bar
-        span.navbar-brand(href="#")          
+    nav.navbar.navbar-nav.navbar-default.navbar-fixed-top(role='navigation')
+      .navbar-header
+          button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-ex1-collapse')
+              span.sr-only Desplegar navegación
+              span.icon-bar
+              span.icon-bar
+              span.icon-bar
           span#barLogo
             img(src='/images/logo-siguca.png',  href="/Ayuda")#sigucaLogo
             img(src='/images/logo-greencore.png',  href="/Ayuda")#sigucaLogo
-         
-        
-      div.collapse.navbar-collapse.navbar-ex1-collapse.navbar-right
-        block sigucaNavbarItems 
-          if (usuario)
-            ul.nav.navbar-nav
-              li
-                if(usuario.tipo == 'Supervisor')
-                  a(href="/escritorio")
-                    i.icon-home.icon-large
-                    |&nbsp;Escritorio
-                else
-                  if(usuario.tipo == 'Empleado')
-                    a(href="/escritorioEmpl")
-                      i.icon-home.icon-large
-                      |&nbsp;Escritorio
-                  else
-                    a(href="/escritorioAdmin")
-                      i.icon-home.icon-large
-                      |&nbsp;Escritorio
-              if(usuario.tipo == 'Supervisor')
-                li
-                  a(href="/gestionarEventos")
-                    i.icon-cogs.icon-large
-                    |&nbsp;Acciones
-                li
-                  a(href="/reportes")
-                    i.icon-edit.icon-large
-                    |&nbsp;Reportes
-              if(usuario.tipo == 'Supervisor' || usuario.tipo == 'Empleado')
-                li
-                  a(href="/eventos")
-                    i.icon-book.icon-large  
-                    |&nbsp;Mis Eventos 
-              li
-                a(href="/configuracion")
-                  i.icon-cog.icon-large
-                  |&nbsp;Configuración
-              li
-                a(href='/Ayuda')
-                  i.icon-question-sign.icon-large     
-                  |&nbsp;Acerca de SIGUCA  
-              li
-                a(href='/logout')
-                  img(src='/images/cerrar.jpg', alt='something')      
-                  |&nbsp;#{usuario.tipo}: #{usuario.username}  
-      br     
+      .collapse.navbar-collapse.navbar-ex1-collapse
+          ul.nav.navbar-nav
+          ul.nav.navbar-nav.navbar-right
+            if (usuario)
+                ul.nav.nav-pills
+                  li
+                    if(usuario.tipo == 'Supervisor')
+                      a(href="/escritorio")
+                        i.icon-home.icon-large
+                        |&nbsp;Escritorio
+                    else
+                      if(usuario.tipo == 'Empleado')
+                        a(href="/escritorioEmpl")
+                          i.icon-home.icon-large
+                          |&nbsp;Escritorio
+                      else
+                        a(href="/escritorioAdmin")
+                          i.icon-home.icon-large
+                          |&nbsp;Escritorio
+                  if(usuario.tipo == 'Supervisor')
+                    li
+                      a(href="/gestionarEventos")
+                        i.icon-cogs.icon-large
+                        |&nbsp;Acciones
+                    li
+                      a(href="/reportes")
+                        i.icon-edit.icon-large
+                        |&nbsp;Reportes
+                  if(usuario.tipo == 'Supervisor' || usuario.tipo == 'Empleado')
+                    li
+                      a(href="/eventos")
+                        i.icon-book.icon-large  
+                        |&nbsp;Mis Eventos 
+                  li
+                    a(href="/configuracion")
+                      i.icon-cog.icon-large
+                      |&nbsp;Configuración
+                  li
+                    a(href='/Ayuda')
+                      i.icon-question-sign.icon-large     
+                      |&nbsp;Acerca de SIGUCA  
+                  li
+                    a(href='/logout')
+                      img(src='/images/cerrar.jpg', alt='something')      
+                      |&nbsp;#{usuario.tipo}: #{usuario.username}  
     block content
 
     script(src="/js/components/jquery-2.0.3.min.js")

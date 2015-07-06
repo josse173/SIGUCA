@@ -1,18 +1,13 @@
 extends layout
 
-block sigucaCSS
-  link(rel='stylesheet', href='/stylesheets/bootstrap-select.min.css')
-  link(rel='stylesheet', href='/stylesheets/bootstrap-datepicker.min.css')
-
 block content
     div.container
-      .col-xs-3
+      .info
        h3 Gestionar eventos
        h4 #{empleado}   
 
-      .col-xs-12
-       h3 Filtros   
-       div.filter
+      div.filter
+        h3 Filtros   
         table
           form(role='form', method="POST", action="/filtrarEventos/")
             td
@@ -21,7 +16,7 @@ block content
                 each user in usuarios
                   option(value= usuario._id + "|" + departamentos + "|" + user._id + "|gestionarEventos") #{user.apellido1} #{user.apellido2}, #{user.nombre}
             td
-              label.labelFiltro(for='fechaDesde' style="margin-left: 5px;") Desde:
+              label.labelFiltro.labFilLeft(for='fechaDesde') Desde:
                 div#datepicker.input-group
                   input.form-control(type='text', name='fechaDesde')
                   span.input-group-addon

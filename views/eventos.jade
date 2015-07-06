@@ -1,18 +1,13 @@
 extends layout
 
-block sigucaCSS
-  link(rel='stylesheet', href='/stylesheets/bootstrap-datepicker.min.css')
-  link(rel='stylesheet', href='/stylesheets/footable/footable.core.min.css')
-  link(rel='stylesheet', href='/stylesheets/footable/footable.metro.min.css')
-
 block content  
   div.container
-      .col-xs-3
+      .info
        h3 Mis eventos
        h4 #{usuario.apellido1} #{usuario.apellido2}, #{usuario.nombre}   
-      .col-xs-12
-       h3 Filtros   
-       div.filter
+      
+      div.filter
+        h3 Filtros   
         table
          form(role='form', method="POST", action="/filtrarEventosEmpl")
           td
@@ -37,8 +32,8 @@ block content
                 thead
                   tr
                     th(data-type="numeric" data-sort-initial="descending") Fecha
-                    th Tipo
-                    th(data-hide="phone,small" data-sort-ignore="true")
+                    th(data-hide="phone") Tipo
+                    th(data-hide="phone,small") Eliminar
                 tbody
                   each marca, i in marcas
                     tr

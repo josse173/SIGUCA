@@ -2,16 +2,13 @@ extends layout
 
 block sigucaCSS
   link(rel='stylesheet', href='/stylesheets/cal-heatmap.css')
-  link(rel='stylesheet', href='/stylesheets/bootstrap-select.min.css')
-  link(rel='stylesheet', href='/stylesheets/bootstrap-timepicker.min.css')
-  link(rel='stylesheet', href='/stylesheets/bootstrap-datepicker.min.css')
 
 block content   
     .container
       if(usuario.tipo != 'Administrador')
         .col-xs-8
           if(usuario.tipo == 'Supervisor')
-            .col-xs-3
+            div#calSupervisor
               h3 Gráfico de:  #{usuario.nombre} #{usuario.apellido1}
               button#previous.btn.btn-default
                 i.icon.icon-chevron-left
@@ -27,7 +24,7 @@ block content
                 i.icon.icon-chevron-right
               div#cal
           if(usuario.tipo == 'Supervisor')
-            .col-xs-4.bordered(style="margin: 10px 20px;")
+            div.eventosCierre.bordered
               h3 Detalle diario por departamento
               br
               div.table-responsive.table.bordered
@@ -47,7 +44,7 @@ block content
                         td Ausencias o Tardías
                         td -
 
-          .col-xs-4.bordered(style="margin: 10px;")
+          div.marcasTable.bordered
             h3 Registro de Marcas
             div
               label Hora oficial 
@@ -87,6 +84,9 @@ block content
                           td Salida
                           td #{marca.fecha}
 
+          div.clockDiv
+            p Hora oficial 
+            span.clock
 
         .col-xs-4
           h3 Filtros   
