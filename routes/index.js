@@ -589,6 +589,7 @@ module.exports = function(app, io) {
     app.post('/filtrarEventosEmpl', autentificado, function(req, res) {
         if (req.session.name != "Administrador") {
             
+            var marcaQuery = {usuario: req.user.id};
             var justQuery = {usuario: req.user.id};
             var extraQuery = {usuario: req.user.id, tipoSolicitudes:'Extras'};
             var permisosQuery = {usuario: req.user.id, tipoSolicitudes:'Permisos'};
@@ -607,41 +608,36 @@ module.exports = function(app, io) {
                     "$lt": epochHasta
                 }
 
+                marcaQuery.epoch = {"$gte": epochDesde, "$lt": epochHasta};
                 justQuery.fechaCreada = fechaCreada;
                 extraQuery.fechaCreada = fechaCreada;
                 permisosQuery.fechaCreada = fechaCreada;  
             } 
-            Justificaciones.find(justQuery).exec(function(error, justificaciones) {
-                Solicitudes.find(extraQuery).exec(function(error, extras) {
-                    Solicitudes.find(permisosQuery).exec(function(error, permisos) {
-                        
-                        var supervisor = {departamentos: [1]};
+            Marca.find(marcaQuery).exec(function(error, marcas) {
+                Justificaciones.find(justQuery).exec(function(error, justificaciones) {
+                    Solicitudes.find(extraQuery).exec(function(error, extras) {
+                        Solicitudes.find(permisosQuery).exec(function(error, permisos) {
+                            
+                            var supervisor = {departamentos: [1]};
 
-                        var arrayJust = eventosAjuste(justificaciones,supervisor,"filtrarEventosEmpl");
-                        var arrayExtras = eventosAjuste(extras,supervisor,"filtrarEventosEmpl");
-                        var arrayPermisos = eventosAjuste(permisos,supervisor,"filtrarEventosEmpl");
+                            var arrayMarcas = eventosAjuste(marcas,supervisor,"eventosEmpl");
+                            var arrayJust = eventosAjuste(justificaciones,supervisor,"filtrarEventosEmpl");
+                            var arrayExtras = eventosAjuste(extras,supervisor,"filtrarEventosEmpl");
+                            var arrayPermisos = eventosAjuste(permisos,supervisor,"filtrarEventosEmpl");
 
-                        if (error) return res.json(error);
-                        if(req.session.name == "Empleado"){
-                            return res.render('eventosEmpl', {
-                                title: 'Solicitudes/Justificaciones | SIGUCA',
-                                usuario: req.user,
-                                justificaciones: arrayJust,
-                                extras: arrayExtras,
-                                permisos: arrayPermisos
-                            });
-                        } else {
+                            if (error) return res.json(error);
                             return res.render('eventos', {
                                 title: 'Solicitudes/Justificaciones | SIGUCA',
                                 usuario: req.user,
                                 justificaciones: arrayJust,
                                 extras: arrayExtras,
-                                permisos: arrayPermisos
+                                permisos: arrayPermisos,
+                                marcas: marcas
                             });//render
-                        }//else
-                    });//Permisos
-                });//Extras
-            });//Justificaciones
+                        });//Permisos
+                    });//Extras
+                });//Justificaciones
+            });
         } else {
             req.logout();
             res.redirect('/');
