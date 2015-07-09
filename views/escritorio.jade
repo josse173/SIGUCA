@@ -9,7 +9,7 @@ block content
         .col-xs-8
           if(usuario.tipo == 'Supervisor')
             div#calSupervisor
-              h3 Gráfico de:  #{usuario.nombre} #{usuario.apellido1}
+              h3 #{usuario.nombre} #{usuario.apellido1}
               button#previous.btn.btn-default
                 i.icon.icon-chevron-left
               button#next.btn.btn-default 
@@ -17,7 +17,7 @@ block content
               div#cal
           else
             .col-xs-7
-              h3 Gráfico de:  #{usuario.nombre} #{usuario.apellido1}
+              h3 #{usuario.nombre} #{usuario.apellido1}
               button#previous.btn.btn-default
                 i.icon.icon-chevron-left
               button#next.btn.btn-default 
@@ -83,10 +83,6 @@ block content
                         tr
                           td Salida
                           td #{marca.fecha}
-
-          div.clockDiv
-            p Hora oficial 
-            span.clock
 
         .col-xs-4
           h3 Filtros   

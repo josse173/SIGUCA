@@ -162,13 +162,13 @@ body {
 	padding-bottom: 15px;
 }
 /** Media Queries **/
-@media all and (min-width: 993px) and (max-width: 1200px) {
+@media(max-width: 1200px) {
 	.col-xs-8, .col-xs-4 {
 		width: 50%;
 	}
 }
 
-@media all and (min-width: 710px) and (max-width: 992px) {
+@media(max-width: 992px) {
 	.col-xs-8{
 		width: 40%;
 	}
@@ -191,86 +191,30 @@ body {
 	}
 }
 
-@media all and (min-width: 660px) and (max-width: 710px) {
+@media(max-width: 710px) {
 	.col-xs-8, .col-xs-4 {
 		width: 100%;
 	}
-	.marcasTable {
+	.eventosCierre {
 		display: none;
 	}
 	.clockDiv {
 		display: inline-block;
 	}
-	.filter table td {
-		float: left;
-		width: 250px;
-	}
-	.filter table td button {
-		width: 200px;
-		margin-top: 3px;
-	}
-	.labelFiltro, .labFilLeft {
-		margin: 0px;
-	}
-	.col-xs-6 {
-		width: 500px;
-	}
 }
 
-@media all and (max-width: 659px) {
-	.col-xs-8, .col-xs-4 {
-		width: 100%;
-	}
-	.marcasTable {
-		display: none;
-	}
+@media(max-width: 659px){
 	.clockDiv {
 		display: inline-block;
 		margin-left: 10%;
 		margin-top: 30px;
 	}
-	.filter table td {
-		float: left;
-		width: 250px;
-	}
-	.filter table td button {
-		width: 200px;
-		margin-top: 3px;
-	}
-	.labelFiltro, .labFilLeft {
-		margin: 0px;
-	}
-	.col-xs-6 {
-		width: 500px;
-	}
 }
 
-@media all and (max-width: 589px) {
-	.col-xs-8, .col-xs-4 {
-		width: 100%;
-	}
-	.marcasTable {
-		display: none;
-	}
-	.clockDiv {
-		display: inline-block;
-		margin-left: 10%;
-		margin-top: 30px;
-	}
+@media(max-width: 589px) {
 	.filter {
 	    padding-right: 15px;
 		padding-left: 15px;
-	}
-	.filter table td {
-		float: left;
-		width: 250px;
-	}
-	.filter table td button {
-		width: 200px;
-		margin-top: 3px;
-	}
-	.labelFiltro, .labFilLeft {
-		margin: 0px;
 	}
 	.info {
 		float: none;

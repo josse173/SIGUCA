@@ -16,7 +16,7 @@
         options: {
             delay: 100, // The number of millseconds to wait before triggering the react event
             breakpoints: { // The different screen resolution breakpoints
-                phone: 480,
+                phone: 550,
                 small: 750,
                 medium: 994,
                 tablet: 1024,

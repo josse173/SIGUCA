@@ -94,13 +94,13 @@ block content
                   th(data-type="numeric" data-sort-initial="descending") Fecha
                   th Usuario
                   th Día
-                  th(data-sort-ignore="true") Hora Inicio 
-                  th(data-sort-ignore="true") Hora Final
+                  th(data-hide="phone,small" data-sort-ignore="true") Hora Inicio 
+                  th(data-hide="phone,small" data-sort-ignore="true") Hora Final
                   th(data-hide="phone,small,medium" data-sort-ignore="true") Cantidad de Horas
                   th(data-hide="phone,small,medium") Cliente
                   th(data-hide="phone,small,medium" data-sort-ignore="true") Motivo
                   th(data-hide="phone,small,medium" data-sort-ignore="true") Comentario
-                  th Estado
+                  th(data-hide="phone,small") Estado
                   th(data-hide="phone,small,medium" data-sort-ignore="true") Eliminar
               tbody
                 each extra, i in extras
@@ -133,9 +133,9 @@ block content
                 tr
                   th(data-type="numeric" data-sort-initial="descending") Fecha
                   th Usuario
-                  th Día Inicial
-                  th Día Final 
-                  th Cantidad Días
+                  th(data-hide="phone,small") Día Inicial
+                  th(data-hide="phone,small") Día Final 
+                  th(data-hide="phone,small") Cantidad Días
                   th(data-hide="phone,small,medium") Motivo
                   th(data-hide="phone,small,medium" data-sort-ignore="true") Detalle
                   th(data-hide="phone,small,medium" data-sort-ignore="true") Comentario
