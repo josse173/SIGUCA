@@ -7,84 +7,110 @@ block content
     .container
       if(usuario.tipo != 'Administrador')
         .col-xs-8
-          if(usuario.tipo == 'Supervisor')
-            div#calSupervisor
-              h3 #{usuario.nombre} #{usuario.apellido1}
-              button#previous.btn.btn-default
-                i.icon.icon-chevron-left
-              button#next.btn.btn-default 
-                i.icon.icon-chevron-right
-              div#cal
-          else
-            .col-xs-7
-              h3 #{usuario.nombre} #{usuario.apellido1}
-              button#previous.btn.btn-default
-                i.icon.icon-chevron-left
-              button#next.btn.btn-default 
-                i.icon.icon-chevron-right
-              div#cal
-          if(usuario.tipo == 'Supervisor')
-            div.eventosCierre.bordered
-              h3 Detalle diario por departamento
+          h3 #{usuario.nombre} #{usuario.apellido1}
+          br
+          div.marcaResponsive
+            div.marcasTable
+              h3 Registro de Marcas
+              div
+                label Hora oficial 
+                  span.clock
               br
-              div.table-responsive.table.bordered
-                table
+              div
+                table#tablaMarcas.footable
                   thead
                     tr
-                      th Acciones
-                      th Cantidad
-                  tbody#calDetalle
-                      tr
-                        td Justificaciones
-                        td -
-                      tr
-                        td Solicitudes
-                        td -
-                      tr
-                        td Ausencias o Tardías
-                        td -
+                      th(data-sort-ignore="true") Tipo
+                      th(data-sort-ignore="true") Hora
+                  tbody.marcasDetalle
+                    each marca, i in marcas
+                      case marca.tipoMarca
+                        when "Entrada"
+                          tr
+                            td Entrada
+                            td #{marca.fecha}
+                        when "Salida a Receso"
+                          tr
+                            td Salida a Receso
+                            td #{marca.fecha}
+                        when "Entrada de Receso"
+                          tr
+                            td Entrada de Receso
+                            td #{marca.fecha}
+                        when "Salida al Almuerzo"
+                          tr
+                            td Salida al Almuerzo
+                            td #{marca.fecha}
+                        when "Entrada de Almuerzo"
+                          tr
+                            td Entrada del Almuerzo
+                            td #{marca.fecha}
+                        when "Salida"
+                          tr
+                            td Salida
+                            td #{marca.fecha}
+            .col-xs-4
+              h3  Marca Mediante el Sistema
+              div#contBotones
+                div          
+                 button.marcaResponsive.btn.btn-success(name='marcar', onclick= "changeElemt('marca')", data-toggle="modal" data-target="#addMarcaResponsive" value=usuario._id) Realizar Marca
 
-          div.marcasTable.bordered
-            h3 Registro de Marcas
-            div
-              label Hora oficial 
-                span.clock
-            br
-            div.table-responsive.table.bordered
-              table#tablaMarcas
-                thead
-                  tr
-                    th Tipo
-                    th Hora
-                tbody#marcasDetalle
-                  each marca, i in marcas
-                    case marca.tipoMarca
-                      when "Entrada"
-                        tr
-                          td Entrada
-                          td #{marca.fecha}
-                      when "Salida a Receso"
-                        tr
-                          td Salida a Receso
-                          td #{marca.fecha}
-                      when "Entrada de Receso"
-                        tr
-                          td Entrada de Receso
-                          td #{marca.fecha}
-                      when "Salida al Almuerzo"
-                        tr
-                          td Salida al Almuerzo
-                          td #{marca.fecha}
-                      when "Entrada de Almuerzo"
-                        tr
-                          td Entrada del Almuerzo
-                          td #{marca.fecha}
-                      when "Salida"
-                        tr
-                          td Salida
-                          td #{marca.fecha}
+          div#calSupervisor
+            button#previous.btn.btn-default
+              i.icon.icon-chevron-left
+            button#next.btn.btn-default 
+              i.icon.icon-chevron-right
+            div#cal
+
+          .marca
+            div.marcasTable
+              h3 Registro de Marcas
+              div
+                label Hora oficial 
+                  span.clock
+              br
+              div
+                table#tablaMarcas.footable
+                  thead
+                    tr
+                      th(data-sort-ignore="true") Tipo
+                      th(data-sort-ignore="true") Hora
+                  tbody.marcasDetalle
+                    each marca, i in marcas
+                      case marca.tipoMarca
+                        when "Entrada"
+                          tr
+                            td Entrada
+                            td #{marca.fecha}
+                        when "Salida a Receso"
+                          tr
+                            td Salida a Receso
+                            td #{marca.fecha}
+                        when "Entrada de Receso"
+                          tr
+                            td Entrada de Receso
+                            td #{marca.fecha}
+                        when "Salida al Almuerzo"
+                          tr
+                            td Salida al Almuerzo
+                            td #{marca.fecha}
+                        when "Entrada de Almuerzo"
+                          tr
+                            td Entrada del Almuerzo
+                            td #{marca.fecha}
+                        when "Salida"
+                          tr
+                            td Salida
+                            td #{marca.fecha}
+
 
         .col-xs-4
+          .marca
+            h3  Marca Mediante el Sistema
+            div#contBotones
+              div           
+               button#btn-marca.btn.btn-success(name='marcar', onclick= "changeElemt('marca')", data-toggle="modal" data-target="#addMarca" value=usuario._id) Realizar Marca
+
           h3 Filtros   
           div.filter
                div.filter
@@ -111,17 +137,6 @@ block content
                             option(value= "Empleado,solicitudes," + usuario.id) Solicitudes
                             option(value= "Empleado,marcas," + usuario.id) Tardías o Ausencias
 
-          h3 Acciones 
-          ul.list-group
-            li.list-group-item
-              a(data-toggle="modal" data-target="#horaExtra")
-                | Solicitud de hora extraordinaria
-            li.list-group-item
-              a(data-toggle="modal" data-target="#permiso")
-                | Solicitud de permiso anticipado
-            li.list-group-item
-              a(data-toggle="modal" data-target="#addJustificacion")
-                | Justificaciones
           if(usuario.tipo == 'Supervisor')
             h3 Pendientes de revisar 
             ul.list-group
@@ -134,10 +149,17 @@ block content
                   span.badge #{justificaciones} 
                   |   Justificaciones
 
-          h3  Marca Mediante el Sistema
-          div#contBotones
-            div#Marca             
-             button#marca.btn.btn-success(name='marcar', onclick= "changeElemt('marca')", data-toggle="modal" data-target="#addMarca" value=usuario._id) Realizar Marca
+          h3 Acciones 
+          ul.list-group
+            li.list-group-item
+              a(data-toggle="modal" data-target="#horaExtra")
+                | Solicitud de hora extraordinaria
+            li.list-group-item
+              a(data-toggle="modal" data-target="#permiso")
+                | Solicitud de permiso anticipado
+            li.list-group-item
+              a(data-toggle="modal" data-target="#addJustificacion")
+                | Justificaciones
 
         #addMarca.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
             .modal-dialog
@@ -154,21 +176,62 @@ block content
                         tr
                           modal.group 
                             td
-                              button.btn.btn-success(style="width: 150px;" type='submit', value = 'Entrada', name = 'marca') Entrada
+                              button.btn.btn-success.btn-(style="width: 150px;" type='submit', value = 'Entrada', name = 'marca') Entrada
                             td
-                              button.btn.btn-success(style="width: 150px;" type='submit', value = 'Salida', name = 'marca') Salida
+                              button.btn.btn-success.btn-(style="width: 150px;" type='submit', value = 'Salida', name = 'marca') Salida
                         tr
                           modal.group 
                             td
-                              button.btn.btn-warning(style="width: 150px;" type='submit', value = 'Salida a Receso', name = 'marca') Salida a Receso 
+                              button.btn.btn-warning.btn-(style="width: 150px;" type='submit', value = 'Salida a Receso', name = 'marca') Salida a Receso 
                             td
-                              button.btn.btn-warning(style="width: 150px;" type='submit', value = 'Entrada de Receso', name = 'marca') Entrada de Receso
+                              button.btn.btn-warning.btn-(style="width: 150px;" type='submit', value = 'Entrada de Receso', name = 'marca') Entrada de Receso
                         tr
                           modal.group 
                             td
-                              button.btn.btn-primary(style="width: 150px;" type='submit', value = 'Salida al Almuerzo', name = 'marca') Salida al Almuerzo
+                              button.btn.btn-primary.btn-(style="width: 150px;" type='submit', value = 'Salida al Almuerzo', name = 'marca') Salida al Almuerzo
                             td
-                              button.btn.btn-primary(style="width: 150px;" type='submit', value = 'Entrada de Almuerzo', name = 'marca') Entrada del Almuerzo
+                              button.btn.btn-primary.btn-(style="width: 150px;" type='submit', value = 'Entrada de Almuerzo', name = 'marca') Entrada del Almuerzo
+                      .form-group
+                        label()
+                          button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
+        
+        #addMarcaResponsive.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+            .modal-dialog
+                .modal-content
+                  .modal-header
+                    button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+                    h3#myModalLabel.modal-title Marcar Mediante Sistema
+                  .modal-body
+                    form(role='form', method="POST", action="/marca")#login-form.well.span4
+                      table.table
+                        tr
+                          modal.group     
+                             label-info( name= codTarjeta) #{usuario.tipo} #{usuario.nombre} #{usuario.apellido1}
+                        tr
+                          modal.group 
+                            td
+                              button.btn.btn-success.btn-(style="width: 100%" type='submit', value = 'Entrada', name = 'marca') Entrada
+                        tr
+                          modal.group 
+                            td
+                              button.btn.btn-warning.btn-(style="width: 100%" type='submit', value = 'Salida a Receso', name = 'marca') Salida a Receso 
+                        tr
+                          modal.group 
+                            td
+                              button.btn.btn-warning.btn-(style="width: 100%" type='submit', value = 'Entrada de Receso', name = 'marca') Entrada de Receso
+                        tr
+                          modal.group 
+                            td
+                              button.btn.btn-primary.btn-(style="width: 100%" type='submit', value = 'Salida al Almuerzo', name = 'marca') Salida al Almuerzo
+                        tr
+                          modal.group 
+                            td
+                              button.btn.btn-primary.btn-(style="width: 100%" type='submit', value = 'Entrada de Almuerzo', name = 'marca') Entrada del Almuerzo
+
+                        tr
+                          modal.group 
+                            td
+                              button.btn.btn-success.btn-(style="width: 100%" type='submit', value = 'Salida', name = 'marca') Salida
                       .form-group
                         label()
                           button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar

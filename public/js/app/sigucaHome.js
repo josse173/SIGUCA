@@ -13,7 +13,7 @@
 
     function selectValue(){
         var value = $('#selectFiltro').val();
-        //alert(value);
+        // alert(value);
         socket.emit('listar', value);
     }
 
@@ -139,7 +139,7 @@ function calendario(stats, array){
         itemName: "evento",
         onClick: function(date, nb) {
             var departamento = $('#selectFiltro').val();
-            var usuario = $('#marca').val();
+            var usuario = $('#btn-marca').val();
             $.get('/reportarEventos', {dia: date, departamentoId: departamento, id: usuario}, function( data ) {
                 $( "#calDetalle" ).html('<tr><td> Justificaciones </td><td>' + data.justificaciones+  '</td></tr>' +
                                         '<tr><td> Solicitudes </td><td>' + data.solicitudes +  '</td></tr>' +
@@ -157,7 +157,7 @@ function calendario(stats, array){
                         s < 10 ? data.marcasPersonales[i].fecha += ":0" + s : data.marcasPersonales[i].fecha += ":" + s ;
                     html += '<tr><td>' + data.marcasPersonales[i].tipoMarca + '</td><td>' + data.marcasPersonales[i].fecha + '</td></tr>';
                 };
-                $( "#marcasDetalle" ).html(html);
+                $( ".marcasDetalle" ).html(html);
             });
 
         }

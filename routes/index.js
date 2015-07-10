@@ -247,30 +247,39 @@ module.exports = function(app, io) {
                     Justificaciones.find({estado:{"$nin": ['Pendiente']}}).populate('usuario').exec(function(error, justificaciones) {
                         Solicitudes.find({tipoSolicitudes:'Extras', estado:{"$nin": ['Pendiente']}}).populate('usuario').exec(function(error, extras) {
                             Solicitudes.find({tipoSolicitudes:'Permisos', estado:{"$nin": ['Pendiente']}}).populate('usuario').exec(function(error, permisos) {
-                            
-                                var arrayDepa = [];
-                                req.user.departamentos.forEach(function (departamento){
-                                    arrayDepa.push(departamento.departamento);
-                                });
+                                Usuario.find({_id:req.user.id},{_id:0,departamentos: 1}).populate('departamentos.departamento').exec(function(error, result){
+                                    result.forEach(function(supervisor){
+                                        var arrayDepa = [];
+                                        req.user.departamentos.forEach(function (departamento){
+                                            arrayDepa.push(departamento.departamento);
+                                        });
 
-                                var arrayUsuario = eventosAjuste(usuarios, req.user, "reportes");
-                                var arrayJust = eventosAjuste(justificaciones, req.user, "reportes");
-                                var arrayExtras = eventosAjuste(extras, req.user, "reportes");
-                                var arrayPermisos = eventosAjuste(permisos, req.user, "reportes");
-                                var arrayMarcas = eventosAjuste(marcas, req.user, "reportes");
-                               
-                                if (error) return res.json(error);
-                                return res.render('reportes', {
-                                    title: 'Reportes | SIGUCA',
-                                    usuario: req.user,
-                                    justificaciones: arrayJust,
-                                    extras: arrayExtras,
-                                    permisos: arrayPermisos,
-                                    usuarios: arrayUsuario,
-                                    departamentos: arrayDepa,
-                                    marcas: arrayMarcas,
-                                    empleado: 'Todos los usuarios'
-                                });//res.render
+                                        var array = [];
+                                        for(var y = 0; y < req.user.departamentos.length; y++){
+                                            array.push(req.user.departamentos[y].departamento);
+                                        }
+
+                                        var arrayUsuario = eventosAjuste(usuarios, req.user, "reportes");
+                                        var arrayJust = eventosAjuste(justificaciones, req.user, "reportes");
+                                        var arrayExtras = eventosAjuste(extras, req.user, "reportes");
+                                        var arrayPermisos = eventosAjuste(permisos, req.user, "reportes");
+                                        var arrayMarcas = eventosAjuste(marcas, req.user, "reportes");
+                                       
+                                        if (error) return res.json(error);
+                                        return res.render('reportes', {
+                                            title: 'Reportes | SIGUCA',
+                                            usuario: req.user,
+                                            justificaciones: arrayJust,
+                                            extras: arrayExtras,
+                                            permisos: arrayPermisos,
+                                            usuarios: arrayUsuario,
+                                            departamentos: supervisor.departamentos,
+                                            todos: array, 
+                                            marcas: arrayMarcas,
+                                            empleado: 'Todos los usuarios'
+                                        });//res.render
+                                    });//forEach
+                                });//Supervisor
                             });//Permisos
                         });//Extras
                     });//Marcas

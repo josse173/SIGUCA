@@ -66,8 +66,13 @@ body {
 	width: 200px;
 }
 
-#marca {
+.marca {
 	margin-bottom: 20px;
+}
+
+.marcaResponsive{
+	display: none;
+	margin-bottom: 30px;
 }
 
 .pagination {
@@ -119,9 +124,14 @@ body {
 	margin-left: 5px; 
 }
 
-#calSupervisor{
+#calSupervisor, #calSupervisorResponsive{
 	float: left;
 	width: 187px;
+	margin: 0 86px 15px 85px;
+}
+
+#calSupervisorResponsive {
+	display: none;
 }
 
 .eventosCierre{
@@ -130,14 +140,19 @@ body {
     width: 249px;
     padding-right: 15px;
 	padding-left: 15px;
+	margin-left: 70px;
 }
 
 .marcasTable{
 	float: left;
-	margin: 15px 0 15px 20px;
+	margin: -92px 0 15px 20px;
     width: 249px;
-    padding-right: 15px;
-	padding-left: 15px;
+    padding: 15px;
+}
+
+.filtroCierres {
+	float: left;
+	width: 33.3333%;
 }
 
 .clockDiv {
@@ -161,10 +176,22 @@ body {
 .col-xs-6 {
 	padding-bottom: 15px;
 }
+.tablasReportes {
+	display: inline-block;
+}
 /** Media Queries **/
 @media(max-width: 1200px) {
 	.col-xs-8, .col-xs-4 {
 		width: 50%;
+	}
+    #calSupervisor {
+		margin-right: 31px;
+    }
+    .eventosCierre {
+    	margin-left: 50px;
+    }
+	.marcasTable{
+		margin-top: 0;
 	}
 }
 
@@ -189,18 +216,41 @@ body {
 	.col-xs-6 {
 		width: 500px;
 	}
+    #calSupervisor {
+    	margin-left: 5px;
+    }
+    .eventosCierre {
+    	margin-left: 0;
+    }
 }
-
+@media(max-width: 750px) {
+	.filtroCierres {
+		width: 56.333%;
+	}
+    #calSupervisor {
+    	margin-left: 25px;
+    }
+    .eventosCierre {
+    	display: inline;
+    	margin-right: 150px;
+    }
+    .info {
+    	float: none;
+    }
+    #calSupervisor {
+	    margin-top: 15px;
+	}
+}
 @media(max-width: 710px) {
 	.col-xs-8, .col-xs-4 {
 		width: 100%;
 	}
-	.eventosCierre {
-		display: none;
-	}
 	.clockDiv {
 		display: inline-block;
 	}
+    .eventosCierre {
+    	margin: 0 60px;
+    }
 }
 
 @media(max-width: 659px){
@@ -208,6 +258,12 @@ body {
 		display: inline-block;
 		margin-left: 10%;
 		margin-top: 30px;
+	}
+	.marca{
+		display: none;
+	}
+	.marcaResponsive{
+		display: block;
 	}
 }
 
@@ -222,4 +278,15 @@ body {
 	.col-xs-6 {
 		width: 300px;
 	}
+	.filtroCierres {
+		width: 310px;
+	}
+    .eventosCierre {
+    	margin: 0;
+    }
+}
+@media(max-width: 350px) {
+    #calSupervisor {
+		margin-left: 20px;
+    }
 }

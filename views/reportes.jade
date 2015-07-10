@@ -1,5 +1,8 @@
 extends layout
 
+block sigucaCSS
+  link(rel='stylesheet', href='/stylesheets/cal-heatmap.css')
+
 block content
     div.container
       .info
@@ -11,7 +14,7 @@ block content
         table
           form(role='form', method="POST", action="/filtrarEventos/")
             td
-              select.form-control#selectFiltro.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro") 
+              select.form-control.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro") 
                 option(value= usuario._id + "|" + departamentos + "|todos|reportes") Todos los usuarios
                 each user in usuarios
                   option(value= usuario._id + "|" + departamentos + "|" + user._id + "|reportes") #{user.apellido1} #{user.apellido2}, #{user.nombre}
@@ -29,136 +32,186 @@ block content
                     i.icon-calendar
             td
               button.filtro.form-control.btn.btn-success(type='submit', name='gestionar') Buscar
-                        
-      .col-xs-12
-        h3 Marcas
-        if(marcas.length != 0)
-          table.footable(data-page-navigation=".pagination" data-page-size="25")
-              thead
-                tr
-                  th(data-type="numeric" data-sort-initial="descending") Fecha
-                  th Usuario
-                  th Tipo
-              tbody
-                each marca, i in marcas
-                  tr
-                    td(data-value=marca.epoch) #{marca.fecha} 
-                    td #{marca.usuario.nombre} #{marca.usuario.apellido1}
-                    td #{marca.tipoMarca} 
-              tfoot
-                tr
-                  td(colspan='3')
-                    .pagination.pagination-centered.hide-if-no-paging
-        else
-          p No se han realizado marcas hasta el momento.
-              
-      .col-xs-12
-        br
-        h3 Justificaciones
-        if(justificaciones.length != 0)
-          table.tableJustificaciones.footable(data-page-navigation=".pagination" data-page-size="5")
-              thead
-                tr
-                  th(data-type="numeric" data-sort-initial="descending") Fecha
-                  th Usuario
-                  th(data-hide="phone,small") Motivo
-                  th(data-hide="phone,small" data-sort-ignore="true") Detalle
-                  th(data-hide="phone,small" data-sort-ignore="true") Comentario
-                  th Estado
-                  th(data-hide="phone,small" data-sort-ignore="true") Eliminar
-              tbody
-                each justificacion, i in justificaciones
-                  tr
-                    td(data-value=justificacion.fechaCreada) #{justificacion.fecha} 
-                    td #{justificacion.usuario.nombre} #{justificacion.usuario.apellido1}
-                    td #{justificacion.motivo} 
-                    td #{justificacion.detalle} 
-                    td #{justificacion.comentarioSupervisor} 
-                    td #{justificacion.estado}  
-                    td
-                      button.btn.btn-default.justificacionDelete(value=justificacion.usuario.nombre+' '+justificacion.usuario.apellido1+' '+justificacion.usuario.apellido2+','+justificacion.id+','+justificacion.fecha, name='eliminar') 
-                        i.icon-trash.icon-large.i-danger 
-              tfoot
-                tr
-                  td(colspan='7')
-                    .pagination.pagination-centered.hide-if-no-paging
-        else
-          p No se han enviado justificaciones hasta el momento.
 
-        br
-        h3 Solicitudes Horas Extraordinarias
-        if(extras.length != 0)
-          table.tableSolicitudes.footable(data-page-navigation=".pagination" data-page-size="5")
-              thead
-                tr
-                  th(data-type="numeric" data-sort-initial="descending") Fecha
-                  th Usuario
-                  th Día
-                  th(data-hide="phone,small" data-sort-ignore="true") Hora Inicio 
-                  th(data-hide="phone,small" data-sort-ignore="true") Hora Final
-                  th(data-hide="phone,small,medium" data-sort-ignore="true") Cantidad de Horas
-                  th(data-hide="phone,small,medium") Cliente
-                  th(data-hide="phone,small,medium" data-sort-ignore="true") Motivo
-                  th(data-hide="phone,small,medium" data-sort-ignore="true") Comentario
-                  th(data-hide="phone,small") Estado
-                  th(data-hide="phone,small,medium" data-sort-ignore="true") Eliminar
-              tbody
-                each extra, i in extras
-                  tr
-                    td(data-value=extra.fechaCreada) #{extra.fecha} 
-                    td #{extra.usuario.nombre} #{extra.usuario.apellido1} 
-                    td #{extra.diaInicio} 
-                    td #{extra.horaInicio} 
-                    td #{extra.horaFinal} 
-                    td #{extra.cantHoras} 
-                    td #{extra.cliente} 
-                    td #{extra.motivo} 
-                    td #{extra.comentarioSupervisor} 
-                    td #{extra.estado} 
-                    td
-                      button.btn.btn-default.solicitudDelete(value=extra.usuario.nombre+' '+extra.usuario.apellido1+' '+extra.usuario.apellido2+','+extra.id+','+extra.fecha, name='eliminar') 
-                        i.icon-trash.icon-large.i-danger 
-              tfoot
-                tr
-                  td(colspan='11')
-                    .pagination.pagination-centered.hide-if-no-paging
-        else
-          p No se han enviado extras hasta el momento.
+      .col-xs-12
+        div#calSupervisor
+          button#previous.btn.btn-default
+            i.icon.icon-chevron-left
+          button#next.btn.btn-default 
+            i.icon.icon-chevron-right
+          div#cal
 
+
+        .filtroCierres
+          h3 Filtros   
+          div.filter
+             div.filter
+                label#departamento(for='departamento') 
+                .btn-group
+                   .btn-group
+                  select.form-control#selectFiltro.selectpicker(data-style="btn-success", type="text", name="idSupervisor") 
+                      optgroup(label="Departamentos")
+                        option(value= "Supervisor,todos," + todos) Todos los departamentos
+                        each item, i in departamentos
+                          option(value= "Supervisor," + item.departamento.id) #{item.departamento.nombre}
+                      optgroup(label="Personales")
+                        option#supervisor(value= "Empleado,todos," + usuario.id) Mi gráfico
+                        option(value= "Empleado,justificaciones," + usuario.id) Justificaciones
+                        option(value= "Empleado,solicitudes," + usuario.id) Solicitudes
+                        option(value= "Empleado,marcas," + usuario.id) Tardías o Ausencias
+
+        div.eventosCierre
+          h3 Detalle diario por departamento
+          table.footable
+            thead
+              tr
+                th(data-sort-ignore="true") Acciones
+                th(data-sort-ignore="true") Cantidad
+            tbody#calDetalle
+                tr
+                  td Justificaciones
+                  td -
+                tr
+                  td Solicitudes
+                  td -
+                tr
+                  td Ausencias o Tardías
+                  td -
         br
-        h3 Solicitudes Permisos
-        if(permisos.length != 0)
-          table.tableSolicitudes.footable(data-page-navigation=".pagination" data-page-size="5")
-              thead
-                tr
-                  th(data-type="numeric" data-sort-initial="descending") Fecha
-                  th Usuario
-                  th(data-hide="phone,small") Día Inicial
-                  th(data-hide="phone,small") Día Final 
-                  th(data-hide="phone,small") Cantidad Días
-                  th(data-hide="phone,small,medium") Motivo
-                  th(data-hide="phone,small,medium" data-sort-ignore="true") Detalle
-                  th(data-hide="phone,small,medium" data-sort-ignore="true") Comentario
-                  th Estado
-                  th(data-hide="phone,small,medium" data-sort-ignore="true") Eliminar
-              tbody
-                each permiso, i in permisos
+        div.tablasReportes
+          h3.h3Marcas Marcas
+          if(marcas.length != 0)
+            table.footable(data-page-navigation=".pagination" data-page-size="25")
+                thead
                   tr
-                    td(data-value=permiso.fechaCreada) #{permiso.fecha} 
-                    td #{permiso.usuario.nombre} #{permiso.usuario.apellido1} 
-                    td #{permiso.diaInicio} 
-                    td #{permiso.diaFinal} 
-                    td #{permiso.cantidadDias} 
-                    td #{permiso.motivo} 
-                    td #{permiso.detalle} 
-                    td #{permiso.comentarioSupervisor} 
-                    td #{permiso.estado} 
-                    td
-                      button.btn.btn-default.solicitudDelete(value=permiso.usuario.nombre+' '+permiso.usuario.apellido1+' '+permiso.usuario.apellido2+','+permiso.id+','+permiso.fecha, name='eliminar') 
-                        i.icon-trash.icon-large.i-danger 
-              tfoot
-                tr
-                  td(colspan='10')
-                    .pagination.pagination-centered.hide-if-no-paging
-        else
-          p No se han enviado permisos hasta el momento.
+                    th(data-type="numeric" data-sort-initial="descending") Fecha
+                    th Usuario
+                    th Tipo
+                tbody
+                  each marca, i in marcas
+                    tr
+                      td(data-value=marca.epoch) #{marca.fecha} 
+                      td #{marca.usuario.nombre} #{marca.usuario.apellido1}
+                      td #{marca.tipoMarca} 
+                tfoot
+                  tr
+                    td(colspan='3')
+                      .pagination.pagination-centered.hide-if-no-paging
+          else
+            p No se han realizado marcas hasta el momento.
+                
+          br
+          h3 Justificaciones
+          if(justificaciones.length != 0)
+            table.tableJustificaciones.footable(data-page-navigation=".pagination" data-page-size="5")
+                thead
+                  tr
+                    th(data-type="numeric" data-sort-initial="descending") Fecha
+                    th Usuario
+                    th(data-hide="phone,small") Motivo
+                    th(data-hide="phone,small" data-sort-ignore="true") Detalle
+                    th(data-hide="phone,small" data-sort-ignore="true") Comentario
+                    th Estado
+                    th(data-hide="phone,small" data-sort-ignore="true") Eliminar
+                tbody
+                  each justificacion, i in justificaciones
+                    tr
+                      td(data-value=justificacion.fechaCreada) #{justificacion.fecha} 
+                      td #{justificacion.usuario.nombre} #{justificacion.usuario.apellido1}
+                      td #{justificacion.motivo} 
+                      td #{justificacion.detalle} 
+                      td #{justificacion.comentarioSupervisor} 
+                      td #{justificacion.estado}  
+                      td
+                        button.btn.btn-default.justificacionDelete(value=justificacion.usuario.nombre+' '+justificacion.usuario.apellido1+' '+justificacion.usuario.apellido2+','+justificacion.id+','+justificacion.fecha, name='eliminar') 
+                          i.icon-trash.icon-large.i-danger 
+                tfoot
+                  tr
+                    td(colspan='7')
+                      .pagination.pagination-centered.hide-if-no-paging
+          else
+            p No se han enviado justificaciones hasta el momento.
+
+          br
+          h3 Solicitudes Horas Extraordinarias
+          if(extras.length != 0)
+            table.tableSolicitudes.footable(data-page-navigation=".pagination" data-page-size="5")
+                thead
+                  tr
+                    th(data-type="numeric" data-sort-initial="descending") Fecha
+                    th Usuario
+                    th Día
+                    th(data-hide="phone,small" data-sort-ignore="true") Hora Inicio 
+                    th(data-hide="phone,small" data-sort-ignore="true") Hora Final
+                    th(data-hide="phone,small,medium" data-sort-ignore="true") Cantidad de Horas
+                    th(data-hide="phone,small,medium") Cliente
+                    th(data-hide="phone,small,medium" data-sort-ignore="true") Motivo
+                    th(data-hide="phone,small,medium" data-sort-ignore="true") Comentario
+                    th(data-hide="phone,small") Estado
+                    th(data-hide="phone,small,medium" data-sort-ignore="true") Eliminar
+                tbody
+                  each extra, i in extras
+                    tr
+                      td(data-value=extra.fechaCreada) #{extra.fecha} 
+                      td #{extra.usuario.nombre} #{extra.usuario.apellido1} 
+                      td #{extra.diaInicio} 
+                      td #{extra.horaInicio} 
+                      td #{extra.horaFinal} 
+                      td #{extra.cantHoras} 
+                      td #{extra.cliente} 
+                      td #{extra.motivo} 
+                      td #{extra.comentarioSupervisor} 
+                      td #{extra.estado} 
+                      td
+                        button.btn.btn-default.solicitudDelete(value=extra.usuario.nombre+' '+extra.usuario.apellido1+' '+extra.usuario.apellido2+','+extra.id+','+extra.fecha, name='eliminar') 
+                          i.icon-trash.icon-large.i-danger 
+                tfoot
+                  tr
+                    td(colspan='11')
+                      .pagination.pagination-centered.hide-if-no-paging
+          else
+            p No se han enviado extras hasta el momento.
+
+          br
+          h3 Solicitudes Permisos
+          if(permisos.length != 0)
+            table.tableSolicitudes.footable(data-page-navigation=".pagination" data-page-size="5")
+                thead
+                  tr
+                    th(data-type="numeric" data-sort-initial="descending") Fecha
+                    th Usuario
+                    th(data-hide="phone,small") Día Inicial
+                    th(data-hide="phone,small") Día Final 
+                    th(data-hide="phone,small") Cantidad Días
+                    th(data-hide="phone,small,medium") Motivo
+                    th(data-hide="phone,small,medium" data-sort-ignore="true") Detalle
+                    th(data-hide="phone,small,medium" data-sort-ignore="true") Comentario
+                    th Estado
+                    th(data-hide="phone,small,medium" data-sort-ignore="true") Eliminar
+                tbody
+                  each permiso, i in permisos
+                    tr
+                      td(data-value=permiso.fechaCreada) #{permiso.fecha} 
+                      td #{permiso.usuario.nombre} #{permiso.usuario.apellido1} 
+                      td #{permiso.diaInicio} 
+                      td #{permiso.diaFinal} 
+                      td #{permiso.cantidadDias} 
+                      td #{permiso.motivo} 
+                      td #{permiso.detalle} 
+                      td #{permiso.comentarioSupervisor} 
+                      td #{permiso.estado} 
+                      td
+                        button.btn.btn-default.solicitudDelete(value=permiso.usuario.nombre+' '+permiso.usuario.apellido1+' '+permiso.usuario.apellido2+','+permiso.id+','+permiso.fecha, name='eliminar') 
+                          i.icon-trash.icon-large.i-danger 
+                tfoot
+                  tr
+                    td(colspan='10')
+                      .pagination.pagination-centered.hide-if-no-paging
+          else
+            p No se han enviado permisos hasta el momento.
+
+block sigucaJS     
+  script(src="/socket.io/socket.io.js")
+  script(src="/js/components/d3.min.js")
+  script(src="/js/components/cal-heatmap.js")
+  script( src='/js/app/sigucaHome.js')

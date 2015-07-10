@@ -92,18 +92,6 @@
         else $("#motivoOtroJust").attr('disabled','disabled');
     });
 
-
-    $('#datepicker input').datepicker({
-        format: "dd/mm/yyyy",
-        daysOfWeekDisabled: "0",
-        autoclose: true,
-        language: "es",
-        todayHighlight: true
-    });
-
-    $('#timepicker input').timepicker();
-
-
     //Si nos desconectamos, muestra el log y cambia el mensaje.
     socket.on('disconnect', function () {
         console.log('Desconectado!');
@@ -119,7 +107,7 @@ function calendario(stats, array){
         subDomain: "x_day", //"x_hour",
         subDomainTextFormat: "%d",
         weekStartOnMonday: false,
-        range: 2,
+        range: 1,
         cellSize: 24,
         domainGutter:   5, // separa los meses
         tooltip: true, // muestra el fecha y hora de cada cuadro
@@ -149,7 +137,7 @@ function calendario(stats, array){
         //legendVerticalPosition: "top",
         itemName: "evento",
         onClick: function(date, nb) {
-            var usuario = $('#marca').val();
+            var usuario = $('#btn-marca').val();
             $.get('/reportarEventos', {dia: date, id: usuario}, function( data ) {
                 var html = '';
                 for (var i = 0; i < data.marcasPersonales.length; i++) {
@@ -164,7 +152,7 @@ function calendario(stats, array){
                         s < 10 ? data.marcasPersonales[i].fecha += ":0" + s : data.marcasPersonales[i].fecha += ":" + s ;
                     html += '<tr><td>' + data.marcasPersonales[i].tipoMarca + '</td><td>' + data.marcasPersonales[i].fecha + '</td></tr>';
                 };
-                $( "#marcasDetalle" ).html(html);
+                $( ".marcasDetalle" ).html(html);
             });
 
         }
