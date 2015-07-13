@@ -12,9 +12,9 @@ block content
           form(role='form', method="POST", action="/filtrarEventos/")
             td
               select.form-control#selectFiltro.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro") 
-                option(value= usuario._id + "|" + departamentos + "|todos|gestionarEventos") Todos los usuarios
+                option(value= "todos|gestionarEventos") Todos los usuarios
                 each user in usuarios
-                  option(value= usuario._id + "|" + departamentos + "|" + user._id + "|gestionarEventos") #{user.apellido1} #{user.apellido2}, #{user.nombre}
+                  option(value= user._id + "|gestionarEventos") #{user.apellido1} #{user.apellido2}, #{user.nombre}
             td
               label.labelFiltro.labFilLeft(for='fechaDesde') Desde:
                 div#datepicker.input-group

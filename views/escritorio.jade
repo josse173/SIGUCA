@@ -10,6 +10,11 @@ block content
           h3 #{usuario.nombre} #{usuario.apellido1}
           br
           div.marcaResponsive
+            .col-xs-4
+              h3  Marca Mediante el Sistema
+              div#contBotones
+                div          
+                 button.marcaResponsive.btn.btn-success(name='marcar', onclick= "changeElemt('marca')", data-toggle="modal" data-target="#addMarcaResponsive" value=usuario._id) Realizar Marca
             div.marcasTable
               h3 Registro de Marcas
               div
@@ -49,11 +54,6 @@ block content
                           tr
                             td Salida
                             td #{marca.fecha}
-            .col-xs-4
-              h3  Marca Mediante el Sistema
-              div#contBotones
-                div          
-                 button.marcaResponsive.btn.btn-success(name='marcar', onclick= "changeElemt('marca')", data-toggle="modal" data-target="#addMarcaResponsive" value=usuario._id) Realizar Marca
 
           div#calSupervisor
             button#previous.btn.btn-default

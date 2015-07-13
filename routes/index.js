@@ -247,38 +247,32 @@ module.exports = function(app, io) {
                     Justificaciones.find({estado:{"$nin": ['Pendiente']}}).populate('usuario').exec(function(error, justificaciones) {
                         Solicitudes.find({tipoSolicitudes:'Extras', estado:{"$nin": ['Pendiente']}}).populate('usuario').exec(function(error, extras) {
                             Solicitudes.find({tipoSolicitudes:'Permisos', estado:{"$nin": ['Pendiente']}}).populate('usuario').exec(function(error, permisos) {
-                                Usuario.find({_id:req.user.id},{_id:0,departamentos: 1}).populate('departamentos.departamento').exec(function(error, result){
-                                    result.forEach(function(supervisor){
-                                        var arrayDepa = [];
-                                        req.user.departamentos.forEach(function (departamento){
-                                            arrayDepa.push(departamento.departamento);
-                                        });
+                                Usuario.find({_id:req.user.id},{_id:0,departamentos: 1}).populate('departamentos.departamento').exec(function(error, supervisor){
+                                        
+                                    var array = [];
+                                    for(var y = 0; y < req.user.departamentos.length; y++){
+                                        array.push(req.user.departamentos[y].departamento);
+                                    }
 
-                                        var array = [];
-                                        for(var y = 0; y < req.user.departamentos.length; y++){
-                                            array.push(req.user.departamentos[y].departamento);
-                                        }
-
-                                        var arrayUsuario = eventosAjuste(usuarios, req.user, "reportes");
-                                        var arrayJust = eventosAjuste(justificaciones, req.user, "reportes");
-                                        var arrayExtras = eventosAjuste(extras, req.user, "reportes");
-                                        var arrayPermisos = eventosAjuste(permisos, req.user, "reportes");
-                                        var arrayMarcas = eventosAjuste(marcas, req.user, "reportes");
-                                       
-                                        if (error) return res.json(error);
-                                        return res.render('reportes', {
-                                            title: 'Reportes | SIGUCA',
-                                            usuario: req.user,
-                                            justificaciones: arrayJust,
-                                            extras: arrayExtras,
-                                            permisos: arrayPermisos,
-                                            usuarios: arrayUsuario,
-                                            departamentos: supervisor.departamentos,
-                                            todos: array, 
-                                            marcas: arrayMarcas,
-                                            empleado: 'Todos los usuarios'
-                                        });//res.render
-                                    });//forEach
+                                    var arrayUsuario = eventosAjuste(usuarios, req.user, "reportes");
+                                    var arrayJust = eventosAjuste(justificaciones, req.user, "reportes");
+                                    var arrayExtras = eventosAjuste(extras, req.user, "reportes");
+                                    var arrayPermisos = eventosAjuste(permisos, req.user, "reportes");
+                                    var arrayMarcas = eventosAjuste(marcas, req.user, "reportes");
+                                   
+                                    if (error) return res.json(error);
+                                    return res.render('reportes', {
+                                        title: 'Reportes | SIGUCA',
+                                        usuario: req.user,
+                                        justificaciones: arrayJust,
+                                        extras: arrayExtras,
+                                        permisos: arrayPermisos,
+                                        usuarios: arrayUsuario,
+                                        departamentos: supervisor[0].departamentos,
+                                        todos: array, 
+                                        marcas: arrayMarcas,
+                                        empleado: 'Todos los usuarios'
+                                    });//res.render
                                 });//Supervisor
                             });//Permisos
                         });//Extras
@@ -423,19 +417,8 @@ module.exports = function(app, io) {
 
             var usuarios = req.body.filtro;
             var option = usuarios.split('|');
-            
-            var opt = option[1].split(',');
-            var arrayDepa = [];
-                for (var i = 0; i < opt.length; i++) {
-                    arrayDepa.push({departamento:opt[i]});
-                };
 
-            var supervisor = {
-                _id: option[0],
-                departamentos: arrayDepa
-            } 
-            
-            usuarioId = option[2];
+            usuarioId = option[0];
             
             var justQuery = {};
             var extraQuery = {tipoSolicitudes:'Extras'};
@@ -480,7 +463,7 @@ module.exports = function(app, io) {
              marcaQuery.epoch = {"$gte": epochDesde, "$lt": epochHasta};
 
             var titulo;
-            if(option[3] === "reportes"){
+            if(option[1] === "reportes"){
                 var estado = {
                     "$nin": ['Pendiente']
                 }
@@ -501,37 +484,43 @@ module.exports = function(app, io) {
                     Justificaciones.find(justQuery).populate('usuario').exec(function(error, justificaciones) {
                         Solicitudes.find(extraQuery).populate('usuario').exec(function(error, extras) {
                             Solicitudes.find(permisosQuery).populate('usuario').exec(function(error, permisos) {
-                               
-                                var arrayUsuario = eventosAjuste(usuarios, supervisor, "filtro")
-                                var arrayJust = eventosAjuste(justificaciones, supervisor, "filtro");
-                                var arrayExtras = eventosAjuste(extras, supervisor, "filtro");
-                                var arrayPermisos = eventosAjuste(permisos, supervisor, "filtro");
-                                var arrayMarcas = eventosAjuste(marcas, supervisor, "filtro");
-                               
-                                var filtro = {
-                                    title: titulo,
-                                    usuario: req.user,
-                                    justificaciones: arrayJust,
-                                    extras: arrayExtras,
-                                    permisos: arrayPermisos,
-                                    usuarios: arrayUsuario,
-                                    departamentos: option[1],
-                                    marcas: arrayMarcas
-                                };
-
-                                if(usuarioId != "todos"){
-                                    Usuario.find({"_id":usuarioId},{"nombre":1, "apellido1":1,"apellido2":1, "_id":0}).exec(function(error, usuario) {
-                                        filtro.empleado = usuario[0].apellido1 + ' ' + usuario[0].apellido2 + ', ' + usuario[0].nombre;
+                                Usuario.find({_id:req.user.id},{_id:0,departamentos: 1}).populate('departamentos.departamento').exec(function(error, supervisor){
                                         
-                                        if (error) return res.json(error);
-                                        return (option[3] === "reportes") ? res.render('reportes', filtro) : res.render('gestionarEventos', filtro); 
-                                    });
-                                } else {
-                                    filtro.empleado = 'Todos los usuarios';
+                                    var array = [];
+                                    for(var y = 0; y < req.user.departamentos.length; y++){
+                                        array.push(req.user.departamentos[y].departamento);
+                                    }
+                                    var arrayUsuario = eventosAjuste(usuarios, req.user, "filtro")
+                                    var arrayJust = eventosAjuste(justificaciones, req.user, "filtro");
+                                    var arrayExtras = eventosAjuste(extras, req.user, "filtro");
+                                    var arrayPermisos = eventosAjuste(permisos, req.user, "filtro");
+                                    var arrayMarcas = eventosAjuste(marcas, req.user, "filtro");
 
-                                    if (error) return res.json(error);
-                                    return (option[3] === "reportes") ? res.render('reportes', filtro) : res.render('gestionarEventos', filtro); 
-                                }
+                                    var filtro = {
+                                        title: titulo,
+                                        usuario: req.user,
+                                        justificaciones: arrayJust,
+                                        extras: arrayExtras,
+                                        permisos: arrayPermisos,
+                                        usuarios: arrayUsuario,
+                                        departamentos: supervisor[0].departamentos,
+                                        todos: array,
+                                        marcas: arrayMarcas
+                                    };
+                                    if(usuarioId != "todos"){
+                                        Usuario.find({"_id":usuarioId},{"nombre":1, "apellido1":1,"apellido2":1, "_id":0}).exec(function(error, usuario) {
+                                            filtro.empleado = usuario[0].apellido1 + ' ' + usuario[0].apellido2 + ', ' + usuario[0].nombre;
+                                            
+                                            if (error) return res.json(error);
+                                            return (option[1] === "reportes") ? res.render('reportes', filtro) : res.render('gestionarEventos', filtro); 
+                                        });
+                                    } else {
+                                        filtro.empleado = 'Todos los usuarios';
+
+                                        if (error) return res.json(error);
+                                        return (option[1] === "reportes") ? res.render('reportes', filtro) : res.render('gestionarEventos', filtro); 
+                                    }
+                                });//Supervisor
                             });//Permisos
                         });//Extras
                     });//Justificaciones
@@ -725,9 +714,9 @@ module.exports = function(app, io) {
             detalle: e.detalle
         };
 
-        Justificaciones.findById(justificacionId).populate('usuario').exec(function(error, just) { 
+        Justificaciones.findById(justificacionId).exec(function(error, just) { 
             Justificaciones.findByIdAndUpdate(justificacionId, justificacionActualizada, function(error, justificacion) { 
-                Usuarios.find({'tipo' : 'Supervisor', 'departamentos.departamento' : soli.usuario.departamentos[0].departamento}, {'departamentos.departamento' : 1}).exec(function(error, supervisor) { 
+                Usuario.find({'tipo' : 'Supervisor', 'departamentos.departamento' : req.user.departamentos[0].departamento}, {'email' : 1}).exec(function(error, supervisor) { 
 
                     if (error) return res.json(error);
 
@@ -735,11 +724,11 @@ module.exports = function(app, io) {
 
                     for (var i = 0; i < supervisor.length; i++) {
                         transporter.sendMail({
-                            from: just.usuario.email,
+                            from: emailSIGUCA,
                             to: supervisor[i].email,
                             subject: 'Modificación de una justificación en SIGUCA',
-                            text: " El usuario " + just.usuario.nombre + " " + just.usuario.apellido1 + " " + just.usuario.apellido2
-                                + " a modificado la justificación siguiente: "
+                            text: " El usuario " + req.user.nombre + " " + req.user.apellido1 + " " + req.user.apellido2
+                                + " ha modificado la siguiente justificación: "
                                 + " \r\n Motivo: " + just.motivo
                                 + " \r\n Detalle: " + just.detalle
                                 + "\r\n\r\n La justificación con las modificaciones es el siguiente: " 
@@ -872,20 +861,20 @@ module.exports = function(app, io) {
             motivo: e.motivo
         };
 
-        Solicitudes.findById(solicitudId).populate('usuario').exec(function(error, soli) { 
+        Solicitudes.findById(solicitudId).exec(function(error, soli) { 
             Solicitudes.findByIdAndUpdate(solicitudId, solicitudActualizada, function(error, solicitud) { 
-                Usuarios.find({'tipo' : 'Supervisor', 'departamentos.departamento' : soli.usuario.departamentos[0].departamento}, {'departamentos.departamento' : 1}).exec(function(error, supervisor) { 
+                Usuario.find({'tipo' : 'Supervisor', 'departamentos.departamento' : req.user.departamentos[0].departamento}, {'email' : 1}).exec(function(error, supervisor) { 
                     if (error) return res.json(error);
 
                     var transporter = nodemailer.createTransport();
 
                     for (var i = 0; i < supervisor.length; i++) {
                         transporter.sendMail({
-                            from: soli.usuario.email,
+                            from: emailSIGUCA,
                             to: supervisor[i].email,
                             subject: 'Modificación de una solicitud de hora extraordiaria en SIGUCA',
-                            text: " El usuario " + soli.usuario.nombre 
-                                + " a modificado la solicitud de hora extraordiaria siguiente: "
+                            text: " El usuario " + req.user.nombre 
+                                + " ha modificado la siguiente solicitud de hora extraordiaria: "
                                 + "\r\n Día de Inicio: " + soli.diaInicio + ", día de termino: " + soli.diaFinal 
                                 + " \r\n Motivo: " + soli.motivo
                                 + " \r\n Detalle: " + soli.detalle
@@ -928,15 +917,31 @@ module.exports = function(app, io) {
             newSolicitud.motivo = e.motivoOtro;
         else
             newSolicitud.motivo = e.motivo;
-        Solicitudes.find({usuario: newSolicitud.usuario, fechaCreada: newSolicitud.fechaCreada}, function (err, soli){
-            if(soli.length == 0){
-                newSolicitud.save(function(error, user) {
-                    if (error) console.log(res.json(error));
+        Solicitudes.find({usuario: newSolicitud.usuario, fechaCreada: newSolicitud.fechaCreada}, function (err, solicitud){
+            if(solicitud.length == 0){
+                newSolicitud.save(function(error, soli) {
+                    Usuario.find({'tipo' : 'Supervisor', 'departamentos.departamento' : req.user.departamentos[0].departamento}, {'email' : 1}).exec(function(error, supervisor) { 
+                        if (error) console.log(res.json(error));
+
+                        var transporter = nodemailer.createTransport();
+                        for (var i = 0; i < supervisor.length; i++) {
+
+                            transporter.sendMail({
+                                from: emailSIGUCA,
+                                to: supervisor[i].email,
+                                subject: 'Nueva solicitud de permiso anticipado en SIGUCA',
+                                text: " El usuario " + req.user.nombre + " " + req.user.apellido1 + " " + req.user.apellido2 + " ha enviado el siguiente permiso anticipado: " 
+                                    + "\r\n Día de Inicio: " + soli.diaInicio + ", día de termino: " + soli.diaFinal 
+                                    + " \r\n Motivo: " + soli.motivo
+                                    + " \r\n Detalle: " + soli.detalle
+                            });
+                        }
+                        if (req.session.name == "Empleado") {
+                            res.redirect('/escritorioEmpl');
+                        } else res.redirect('/escritorio');            
+                    });//supervisores
                 });//save
             }
-            if (req.session.name == "Empleado") {
-                res.redirect('/escritorioEmpl');
-            } else res.redirect('/escritorio');
         });//verificar
     });
 
@@ -967,21 +972,20 @@ module.exports = function(app, io) {
         else
             solicitudActualizada.motivo = e.motivo;
 
-        Solicitudes.findById(solicitudId).populate('usuario').exec(function(error, soli) { 
+        Solicitudes.findById(solicitudId).exec(function(error, soli) { 
             Solicitudes.findByIdAndUpdate(solicitudId, solicitudActualizada, function(error, solicitud) { 
-                Usuarios.find({'tipo' : 'Supervisor', 'departamentos.departamento' : soli.usuario.departamentos[0].departamento}, {'departamentos.departamento' : 1}).exec(function(error, supervisor) { 
+                Usuario.find({'tipo' : 'Supervisor', 'departamentos.departamento' : req.user.departamentos[0].departamento}, {'email' : 1}).exec(function(error, supervisor) { 
 
                     if (error) return res.json(error);
 
                     var transporter = nodemailer.createTransport();
                     for (var i = 0; i < supervisor.length; i++) {
-                        supervisor[i]
+
                         transporter.sendMail({
-                            from: soli.usuario.email,
+                            from: emailSIGUCA,
                             to: supervisor[i].email,
                             subject: 'Modificación de una solicitud de permiso anticipado en SIGUCA',
-                            text: " El usuario " + soli.usuario.nombre 
-                                + " a modificado el permiso siguiente: " 
+                            text: " El usuario " + req.user.nombre + " " + req.user.apellido1 + " " + req.user.apellido2 + " ha modificado el siguiente permiso anticipado: " 
                                 + "\r\n Día de Inicio: " + soli.diaInicio + ", día de termino: " + soli.diaFinal 
                                 + " \r\n Motivo: " + soli.motivo
                                 + " \r\n Detalle: " + soli.detalle
@@ -1060,16 +1064,16 @@ module.exports = function(app, io) {
         // console.log(req.query)
         // console.log(req.body)
 
-        Solicitudes.findByIdAndUpdate(solicitudId, {estado: solicitud.estado, comentarioSupervisor: solicitud.comentarioSupervisor}).populate('usuario').exec(function(error, solicitud) { 
+        Solicitudes.findByIdAndUpdate(solicitudId, {estado: solicitud.estado, comentarioSupervisor: solicitud.comentarioSupervisor}).populate('usuario').exec(function(error, soli) { 
 
             if (error) return res.json(error);
                 var transporter = nodemailer.createTransport();
                 
                 transporter.sendMail({
                     from: emailSIGUCA,
-                    to: solicitud.usuario.email,
+                    to: soli.usuario.email,
                     subject: 'Respuesta a solicitud en SIGUCA',
-                    text: " Estimado(a) " + solicitud.usuario.nombre 
+                    text: " Estimado(a) " + soli.usuario.nombre 
                         + ",\r\n\r\n Por este medio se le notifica que su solicitud fue " + solicitud.estado + " por el supervisor, con el siguiente comentario"
                         + "\r\n\r\n " + solicitud.comentarioSupervisor
                         + "\r\n\r\n Saludos cordiales."
@@ -1088,7 +1092,7 @@ module.exports = function(app, io) {
             justificacionId = req.params.id;
 
 
-        Justificaciones.findByIdAndUpdate(justificacionId, {estado: justificacion.estado, comentarioSupervisor: justificacion.comentarioSupervisor}, function(error, justificacion) { 
+        Justificaciones.findByIdAndUpdate(justificacionId, {estado: justificacion.estado, comentarioSupervisor: justificacion.comentarioSupervisor}).populate('usuario').exec(function(error, just) { 
 
             if (error) return res.json(error);
 
@@ -1096,9 +1100,9 @@ module.exports = function(app, io) {
 
                 transporter.sendMail({
                     from: emailSIGUCA,
-                    to: justificacion.usuario.email,
+                    to: just.usuario.email,
                     subject: 'Respuesta a justificación en SIGUCA',
-                    text: " Estimado(a) " + justificacion.usuario.nombre 
+                    text: " Estimado(a) " + just.usuario.nombre 
                         + ",\r\n\r\n Por este medio se le notifica que su justificación fue " + justificacion.estado + " por el supervisor, con el siguiente comentario"
                         + "\r\n\r\n " + justificacion.comentarioSupervisor
                         + "\r\n\r\n Saludos cordiales."
