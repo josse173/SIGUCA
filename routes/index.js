@@ -16,29 +16,31 @@ var Auxiliar = require('../models/Auxiliar');*/
 var Cierre = require('../models/Cierre');
 var CronJob = require('cron').CronJob;
 var nodemailer = require('nodemailer');
+var moment = require('moment');
+var crud = require('./crud');
 
 var emailSIGUCA = 'siguca@greencore.co.cr';
 
 module.exports = function(app, io) {
 
-    /*
-    *   Redirecciona al index
-    */
-    app.get('/', function(req, res) {
+/*
+*   Redirecciona al index
+*/
+    app.get('/', function (req, res) {
         res.render('index', {
             usuario: req.user
         });
     });
 
-    /*
-    *   Verifica el login dependiendo del tipo de usuario
-    */
+/*
+*   Verifica el login dependiendo del tipo de usuario
+*/
     app.post('/login', passport.authenticate('login', 
             {
                 failureRedirect: '/'
             }
         ), 
-        function(req, res) {
+        function (req, res) {
             req.session.name = req.user.tipo;
             if (req.session.name == "Administrador") {
                 res.redirect('/escritorioAdmin');
@@ -53,60 +55,58 @@ module.exports = function(app, io) {
     );
 
 
-    /*
-    *   Cierra sessión de usuario
-    */
-    app.get('/logout',autentificado, function(req, res) {
+/*
+*   Cierra sessión de usuario
+*/
+    app.get('/logout',autentificado, function (req, res) {
         req.logout();
         res.redirect('/');
     });
 
-    /*
-    *  Se cuentan las solicitudes y justificaciones pendientes y se filtran por supervisor
-    */
-    app.get('/escritorio', autentificado, function(req, res) {
+/*
+*  Se cuentan las solicitudes y justificaciones pendientes y se filtran por supervisor
+*/
+    app.get('/escritorio', autentificado, function (req, res) {
         if (req.session.name == "Supervisor") {
-            var diaGte = new Date(),
-                diaLt = new Date();
-            diaGte.setHours(0);
-            diaGte.setMinutes(1);
-            diaGte.setSeconds(0);
-            diaGte.setMilliseconds(0);
+            var epochGte = moment().hours(0).minutes(0).seconds(0);
 
-            diaLt.setDate(diaGte.getDate() + 1);
+            var epochYesterday = moment().subtract(1, 'days').hours(23).minutes(59).seconds(59);
 
-            var epochGte = (diaGte.getTime() - diaGte.getMilliseconds())/1000,
-                epochLt = (diaLt.getTime() - diaLt.getMilliseconds())/1000;
-
-            Marca.find({usuario: req.user.id, epoch:{"$gte": epochGte, "$lt": epochLt}},{_id:0,tipoMarca:1,epoch:1}).exec(function(error, marcas) {
+            Marca.find({usuario: req.user.id, epoch:{"$gte": epochGte.unix()}},{_id:0,tipoMarca:1,epoch:1}).exec(function(error, marcas) {
                 Justificaciones.find({estado:'Pendiente'}).populate('usuario').exec(function(error, justificaciones) {
                     Solicitudes.find({estado:'Pendiente'}).populate('usuario').exec(function(error, solicitudes) {                        
                         Usuario.find({_id:req.user.id},{_id:0,departamentos: 1}).populate('departamentos.departamento').exec(function(error, result){
-                            
-                            result.forEach(function(supervisor){
-                                var sup = {departamentos: [1]};
-                                
-                                var arrayMarcas = eventosAjuste(marcas, sup, "escritorioEmpl");
+                            Cierre.find({usuario: req.user.id, epoch:{"$gte": epochYesterday.unix() }},{_id:0,horasSemanales:1}).exec(function(err, cierres) {
 
-                                var array = [];
-                                for(var y = 0; y < req.user.departamentos.length; y++){
-                                    array.push(req.user.departamentos[y].departamento);
-                                }
+                                result.forEach(function(supervisor){
+                                    var sup = {departamentos: [1]};
+                                    
+                                    var arrayMarcas = eventosAjuste(marcas, sup, "escritorioEmpl");
 
-                                just = eventosAjuste(justificaciones, req.user, "count");
-                                soli = eventosAjuste(solicitudes, req.user, "count");
-                                
-                                if (error) return res.json(error);
-                                return res.render('escritorio', {
-                                    title: 'Escritorio Supervisor | SIGUCA',
-                                    departamentos: supervisor.departamentos, 
-                                    justificaciones: just, 
-                                    solicitudes: soli,
-                                    todos: array,
-                                    usuario: req.user,
-                                    marcas: marcas
-                                });
-                            });//Supervisor
+                                    var array = [];
+                                    for(var y = 0; y < req.user.departamentos.length; y++){
+                                        array.push(req.user.departamentos[y].departamento);
+                                    }
+
+                                    just = eventosAjuste(justificaciones, req.user, "count");
+                                    soli = eventosAjuste(solicitudes, req.user, "count");
+                                    
+                                    var horasSemanales;
+                                    (epochGte.day() === 1) ? horasSemanales = 0 : (cierres.length == 0) ? horasSemanales = '' : horasSemanales = cierres[0].horasSemanales;
+
+                                    if (error) return res.json(error);
+                                    return res.render('escritorio', {
+                                        title: 'Escritorio Supervisor | SIGUCA',
+                                        departamentos: supervisor.departamentos, 
+                                        justificaciones: just, 
+                                        solicitudes: soli,
+                                        todos: array,
+                                        usuario: req.user,
+                                        marcas: marcas,
+                                        horasSemanales: horasSemanales
+                                    });
+                                });//Supervisor
+                            });//Horas Semanales
                         });//Departamentos    
                     });//solicitudes
                 });//Justificaciones
@@ -118,21 +118,17 @@ module.exports = function(app, io) {
         }
     });
 
-    /*
-    *  Redirecciona al escritorio del empleado
-    */
-    app.get('/escritorioEmpl', autentificado, function(req, res) {
+/*
+*  Redirecciona al escritorio del empleado
+*/
+    app.get('/escritorioEmpl', autentificado, function (req, res) {
         if (req.session.name == "Empleado") {
-            var diaGte = new Date(),
-                diaLt = new Date();
-            diaGte.setHours(0);
-            diaGte.setMinutes(1);
-            diaGte.setSeconds(0);
-            diaGte.setMilliseconds(0);
-            var epochGte = (diaGte.getTime() - diaGte.getMilliseconds())/1000,
-                epochLt = (diaLt.getTime() - diaLt.getMilliseconds())/1000;
+            var epochGte = moment();
+            epochGte.hours(0);
+            epochGte.minutes(0);
+            epochGte.seconds(0);
 
-            Marca.find({usuario: req.user.id, epoch:{"$gte": epochGte, "$lt": epochLt}},{_id:0,tipoMarca:1,epoch:1}).exec(function(error, marcas) {
+            Marca.find({usuario: req.user.id, epoch:{"$gte": epochGte.unix()}},{_id:0,tipoMarca:1,epoch:1}).exec(function(error, marcas) {
                 
                 var supervisor = {departamentos: [1]};
 
@@ -151,11 +147,11 @@ module.exports = function(app, io) {
         }
     });
 
-    /*
-    *  Envia los departamentos y horarios al escritorio del administrador, 
-    *  para la posterior creación de usuarios 
-    */
-    app.get('/escritorioAdmin', autentificado, function(req, res) {
+/*
+*  Envia los departamentos y horarios al escritorio del administrador, 
+*  para la posterior creación de usuarios 
+*/
+    app.get('/escritorioAdmin', autentificado, function (req, res) {
         if (req.session.name ==="Administrador") {
             Horario.find().exec(function(error, horarios) {
                 Departamento.find().exec(function(error, departamentos) {
@@ -175,21 +171,39 @@ module.exports = function(app, io) {
         }
     });
 
-    /*
-    *  Redirecciona a las distintas paginas de ayuda, dependiendo del tipo de usuario
-    */
-    app.get('/ayuda', autentificado, function(req, res) {
+/*
+* 
+*  para la posterior creación de usuarios 
+*/
+    app.get('/rfidReader', function (req, res) {
+        //pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta=123&tipoMarca=6
+        var pwd1 = req.param('pwd1');
+        var pwd2 = req.param('pwd2');
+        var codTarjeta = req.param('codTarjeta');
+        var tipoMarca = req.param('tipoMarca');
+        if(pwd1 == 'ooKa6ieC' && pwd2 == 'of2Oobai' ) {
+            crud.rfidReader(codTarjeta, tipoMarca, function (msj) {
+                console.log(msj);
+                res.send(msj);
+            });
+        }
+    });
+
+/*
+*  Redirecciona a las distintas páginas de ayuda, dependiendo del tipo de usuario
+*/
+    app.get('/ayuda', autentificado, function (req, res) {
         res.render('ayuda', {
             title: 'Ayuda | SIGUCA',
             usuario: req.user
         });
     });
 
-    /*
-    *  Carga las justificaciones, solicitudes de horas extra y solicitudes de permisos pendientes, 
-    *  a cada consulta se le realiza la conversion de epoch a la CST Standard.
-    */
-    app.get('/gestionarEventos', autentificado, function(req, res) {
+/*
+*  Carga las justificaciones, solicitudes de horas extra y solicitudes de permisos pendientes, 
+*  a cada consulta se le realiza la conversion de epoch a la CST Standard.
+*/
+    app.get('/gestionarEventos', autentificado, function (req, res) {
         if (req.session.name == "Supervisor") {
             Usuario.find({tipo:{"$nin": ['Administrador']}}).exec(function(error, usuarios) {
                 Justificaciones.find({estado:'Pendiente'}).populate('usuario').exec(function(error, justificaciones) {
@@ -226,53 +240,51 @@ module.exports = function(app, io) {
         }
     });
 
-    /*
-    *  Carga las justificaciones, solicitudes de horas extra y solicitudes de permisos NO pendientes,
-    *  a cada consulta se le realiza la conversion de epoch a la CST Standard.
-    *  
-    */
-    app.get('/reportes', autentificado, function(req, res) {
+/*
+*  Carga las justificaciones, solicitudes de horas extra y solicitudes de permisos NO pendientes,
+*  a cada consulta se le realiza la conversion de epoch a la CST Standard.
+*  
+*/
+    app.get('/reportes', autentificado, function (req, res) {
         if (req.session.name == "Supervisor") {
-            var diaGte = new Date(),
-                diaLt = new Date();
-            diaGte.setHours(0);
-            diaGte.setMinutes(1);
-            diaGte.setSeconds(0);
-            diaGte.setMilliseconds(0);
-            var epochGte = (diaGte.getTime() - diaGte.getMilliseconds())/1000,
-                epochLt = (diaLt.getTime() - diaLt.getMilliseconds())/1000;
+            var epochGte = moment().hours(0).minutes(0).seconds(0);
+            var inicioMes = moment().date(1);//primer dia del mes
 
             Usuario.find({tipo:{"$nin": ['Administrador']}}).exec(function(error, usuarios) {
-                Marca.find({epoch:{"$gte": epochGte, "$lt": epochLt}}).populate('usuario').exec(function(error, marcas) {
+                Marca.find({epoch:{"$gte": epochGte.unix()}}).populate('usuario').exec(function(error, marcas) {
                     Justificaciones.find({estado:{"$nin": ['Pendiente']}}).populate('usuario').exec(function(error, justificaciones) {
                         Solicitudes.find({tipoSolicitudes:'Extras', estado:{"$nin": ['Pendiente']}}).populate('usuario').exec(function(error, extras) {
                             Solicitudes.find({tipoSolicitudes:'Permisos', estado:{"$nin": ['Pendiente']}}).populate('usuario').exec(function(error, permisos) {
                                 Usuario.find({_id:req.user.id},{_id:0,departamentos: 1}).populate('departamentos.departamento').exec(function(error, supervisor){
-                                        
-                                    var array = [];
-                                    for(var y = 0; y < req.user.departamentos.length; y++){
-                                        array.push(req.user.departamentos[y].departamento);
-                                    }
+                                    Cierre.find({tipo: 'Personal', epoch: {'$gte' : inicioMes.unix()}}).populate('usuario').exec(function(error, cierres) {
+                                        var array = [];
+                                        for(var y = 0; y < req.user.departamentos.length; y++){
+                                            array.push(req.user.departamentos[y].departamento);
+                                        }
 
-                                    var arrayUsuario = eventosAjuste(usuarios, req.user, "reportes");
-                                    var arrayJust = eventosAjuste(justificaciones, req.user, "reportes");
-                                    var arrayExtras = eventosAjuste(extras, req.user, "reportes");
-                                    var arrayPermisos = eventosAjuste(permisos, req.user, "reportes");
-                                    var arrayMarcas = eventosAjuste(marcas, req.user, "reportes");
-                                   
-                                    if (error) return res.json(error);
-                                    return res.render('reportes', {
-                                        title: 'Reportes | SIGUCA',
-                                        usuario: req.user,
-                                        justificaciones: arrayJust,
-                                        extras: arrayExtras,
-                                        permisos: arrayPermisos,
-                                        usuarios: arrayUsuario,
-                                        departamentos: supervisor[0].departamentos,
-                                        todos: array, 
-                                        marcas: arrayMarcas,
-                                        empleado: 'Todos los usuarios'
-                                    });//res.render
+                                        var arrayUsuario = eventosAjuste(usuarios, req.user, "reportes");
+                                        var arrayJust = eventosAjuste(justificaciones, req.user, "reportes");
+                                        var arrayExtras = eventosAjuste(extras, req.user, "reportes");
+                                        var arrayPermisos = eventosAjuste(permisos, req.user, "reportes");
+                                        var arrayMarcas = eventosAjuste(marcas, req.user, "reportes");
+                                        var arrayCierres = eventosAjuste(cierres, {departamentos: [1]}, "reportes");
+                                       
+                                        if (error) return res.json(error);
+                                        return res.render('reportes', {
+                                            title: 'Reportes | SIGUCA',
+                                            usuario: req.user,
+                                            justificaciones: arrayJust,
+                                            extras: arrayExtras,
+                                            permisos: arrayPermisos,
+                                            usuarios: arrayUsuario,
+                                            departamentos: supervisor[0].departamentos,
+                                            todos: array, 
+                                            marcas: arrayMarcas,
+                                            empleado: 'Todos los usuarios',
+                                            horasSemanales: cierres
+                                        });//res.render
+
+                                    });//HorasSemanales
                                 });//Supervisor
                             });//Permisos
                         });//Extras
@@ -285,10 +297,10 @@ module.exports = function(app, io) {
         }
     });
 
-    /*
-    *  Resultados de configuracion y reportes se filtran por supervisor, finalmente se direcciona a la página 
-    *  correspondiente, donde se gestionaran cada uno de los resultados. 
-    */
+/*
+*  Resultados de configuracion y reportes se filtran por supervisor, finalmente se direcciona a la página 
+*  correspondiente, donde se gestionaran cada uno de los resultados. 
+*/
     function eventosAjuste(evento, supervisor, query){
         var notFound = true;
         var array = [];
@@ -408,11 +420,11 @@ module.exports = function(app, io) {
         return array;
     }
 
-    /*
-    *   - Filtra los eventos por usuario y rango de fecha. 
-    *   - Dependiendo si es reporte o gestión de eventos, filtra los eventos por distintos estados.
-    */
-    app.post('/filtrarEventos', autentificado, function(req, res) {
+/*
+*   - Filtra los eventos por usuario y rango de fecha. 
+*   - Dependiendo si es reporte o gestión de eventos, filtra los eventos por distintos estados.
+*/
+    app.post('/filtrarEventos', autentificado, function (req, res) {
         if (req.session.name == "Supervisor") {
 
             var usuarios = req.body.filtro;
@@ -424,12 +436,10 @@ module.exports = function(app, io) {
             var extraQuery = {tipoSolicitudes:'Extras'};
             var permisosQuery = {tipoSolicitudes:'Permisos'};
             var marcaQuery = {};
+            var cierresQuery = {tipo: 'Personal'};
 
-            if(usuarioId != "todos"){
-                justQuery.usuario = usuarioId;
-                extraQuery.usuario = usuarioId;
-                permisosQuery.usuario = usuarioId;
-                marcaQuery.usuario = usuarioId;
+            if(usuarioId != 'todos'){
+                justQuery.usuario = extraQuery.usuario = permisosQuery.usuario = marcaQuery.usuario = cierresQuery.usuario = usuarioId;
             } 
             var epochDesde, epochHasta;
             if(req.body.fechaDesde != '' && req.body.fechaHasta != ''){
@@ -442,13 +452,12 @@ module.exports = function(app, io) {
                 var epochHasta = (date2.getTime() - date2.getMilliseconds())/1000;
 
                 var fechaCreada = {
-                    "$gte": epochDesde, 
-                    "$lt": epochHasta
+                    '$gte': epochDesde, 
+                    '$lte': epochHasta
                 }
 
-                justQuery.fechaCreada = fechaCreada;
-                extraQuery.fechaCreada = fechaCreada;
-                permisosQuery.fechaCreada = fechaCreada;  
+                justQuery.fechaCreada = extraQuery.fechaCreada = permisosQuery.fechaCreada =  cierresQuery.epoch = fechaCreada;  
+
             } else {
                 var diaGte = new Date(),
                     diaLt = new Date();
@@ -460,66 +469,70 @@ module.exports = function(app, io) {
                 epochHasta = (diaLt.getTime() - diaLt.getMilliseconds())/1000;
             }
 
-             marcaQuery.epoch = {"$gte": epochDesde, "$lt": epochHasta};
+             marcaQuery.epoch = {'$gte': epochDesde, '$lte': epochHasta};
 
-            var titulo;
-            if(option[1] === "reportes"){
-                var estado = {
-                    "$nin": ['Pendiente']
+            var titulo, estado;
+            if(option[1] === 'reportes'){
+                estado = {
+                    '$nin': ['Pendiente']
                 }
-                justQuery.estado = estado;
-                extraQuery.estado = estado;
-                permisosQuery.estado = estado;
                 titulo = 'Reportes | SIGUCA';
             } else {
-                var estado = 'Pendiente';
-                justQuery.estado = estado;
-                extraQuery.estado = estado;
-                permisosQuery.estado = estado;
+                estado = 'Pendiente';
                 titulo = 'Gestionar eventos | SIGUCA';
             }
+            justQuery.estado = estado;
+            extraQuery.estado = estado;
+            permisosQuery.estado = estado;
 
-            Usuario.find({tipo:{"$nin": ['Administrador']}}).exec(function(error, usuarios) {
+            Usuario.find({tipo:{'$nin': ['Administrador']}}).exec(function(error, usuarios) {
                 Marca.find(marcaQuery).populate('usuario').exec(function(error, marcas) {
                     Justificaciones.find(justQuery).populate('usuario').exec(function(error, justificaciones) {
                         Solicitudes.find(extraQuery).populate('usuario').exec(function(error, extras) {
                             Solicitudes.find(permisosQuery).populate('usuario').exec(function(error, permisos) {
                                 Usuario.find({_id:req.user.id},{_id:0,departamentos: 1}).populate('departamentos.departamento').exec(function(error, supervisor){
-                                        
-                                    var array = [];
-                                    for(var y = 0; y < req.user.departamentos.length; y++){
-                                        array.push(req.user.departamentos[y].departamento);
-                                    }
-                                    var arrayUsuario = eventosAjuste(usuarios, req.user, "filtro")
-                                    var arrayJust = eventosAjuste(justificaciones, req.user, "filtro");
-                                    var arrayExtras = eventosAjuste(extras, req.user, "filtro");
-                                    var arrayPermisos = eventosAjuste(permisos, req.user, "filtro");
-                                    var arrayMarcas = eventosAjuste(marcas, req.user, "filtro");
+                                    Cierre.find(cierresQuery).populate('usuario').exec(function (err, cierres) { 
 
-                                    var filtro = {
-                                        title: titulo,
-                                        usuario: req.user,
-                                        justificaciones: arrayJust,
-                                        extras: arrayExtras,
-                                        permisos: arrayPermisos,
-                                        usuarios: arrayUsuario,
-                                        departamentos: supervisor[0].departamentos,
-                                        todos: array,
-                                        marcas: arrayMarcas
-                                    };
-                                    if(usuarioId != "todos"){
-                                        Usuario.find({"_id":usuarioId},{"nombre":1, "apellido1":1,"apellido2":1, "_id":0}).exec(function(error, usuario) {
-                                            filtro.empleado = usuario[0].apellido1 + ' ' + usuario[0].apellido2 + ', ' + usuario[0].nombre;
-                                            
+                                        var array = [];
+                                        for(var y = 0; y < req.user.departamentos.length; y++){
+                                            array.push(req.user.departamentos[y].departamento);
+                                        }
+                                        var arrayUsuario = eventosAjuste(usuarios, req.user, 'reportes')
+                                        var arrayJust = eventosAjuste(justificaciones, req.user, 'reportes');
+                                        var arrayExtras = eventosAjuste(extras, req.user, 'reportes');
+                                        var arrayPermisos = eventosAjuste(permisos, req.user, 'reportes');
+                                        var arrayMarcas = eventosAjuste(marcas, req.user, 'reportes');
+                                        var arrayCierres = eventosAjuste(cierres, req.user, 'reportes');
+
+                                        var filtro = {
+                                            title: titulo,
+                                            usuario: req.user,
+                                            justificaciones: arrayJust,
+                                            extras: arrayExtras,
+                                            permisos: arrayPermisos,
+                                            usuarios: arrayUsuario,
+                                            departamentos: supervisor[0].departamentos,
+                                            todos: array,
+                                            marcas: arrayMarcas,
+                                            horasSemanales: cierres
+                                        };
+
+
+                                        if(usuarioId != 'todos'){
+                                            console.log(usuarioId)
+                                            Usuario.find({'_id':usuarioId}).exec(function(error, usuario) {
+                                                if (error) return res.json(error);
+                                                console.log(usuario)
+                                                filtro.empleado = usuario[0].apellido1 + ' ' + usuario[0].apellido2 + ', ' + usuario[0].nombre;
+                                                return (option[1] === 'reportes') ? res.render('reportes', filtro) : res.render('gestionarEventos', filtro); 
+                                            });
+                                        } else {
+                                            filtro.empleado = 'Todos los usuarios';
+
                                             if (error) return res.json(error);
-                                            return (option[1] === "reportes") ? res.render('reportes', filtro) : res.render('gestionarEventos', filtro); 
-                                        });
-                                    } else {
-                                        filtro.empleado = 'Todos los usuarios';
-
-                                        if (error) return res.json(error);
-                                        return (option[1] === "reportes") ? res.render('reportes', filtro) : res.render('gestionarEventos', filtro); 
-                                    }
+                                            return (option[1] === 'reportes') ? res.render('reportes', filtro) : res.render('gestionarEventos', filtro); 
+                                        }
+                                    });//Cierres
                                 });//Supervisor
                             });//Permisos
                         });//Extras
@@ -532,22 +545,23 @@ module.exports = function(app, io) {
         } 
     });
 
-    /*
-    *  Redirecciona a la configuración de empleado
-    */
-    app.get('/configuracion', autentificado, function(req, res) {
+/*
+*  Redirecciona a la configuración de empleado
+*/
+    app.get('/configuracion', autentificado, function (req, res) {
         res.render('configuracion', {
             title: 'Configuración | SIGUCA',
             usuario: req.user
         });
     });
 
-    /*
-    *  Carga los eventos realizados por un empleado en específico
-    */
-    app.get('/eventos', autentificado, function(req, res) {
+/*
+*  Carga los eventos realizados por un empleado en específico
+*/
+    app.get('/eventos', autentificado, function (req, res) {
+        var inicioMes = moment().date(1);
         if (req.session.name != "Administrador") {
-            Marca.find({usuario: req.user.id}).exec(function(error, marcas) {
+            Marca.find({usuario: req.user.id, epoch: {'$gte' : inicioMes.unix()}}).exec(function(error, marcas) {
                 Justificaciones.find({usuario: req.user.id}).exec(function(error, justificaciones) {
                     Solicitudes.find({usuario: req.user.id, tipoSolicitudes:'Extras'}).exec(function(error, extras) {
                         Solicitudes.find({usuario: req.user.id, tipoSolicitudes:'Permisos'}).exec(function(error, permisos) {
@@ -581,10 +595,10 @@ module.exports = function(app, io) {
         }
     });
 
-    /*
-    *  Filtra los eventos de un usuario en específico por rango de fecha
-    */
-    app.post('/filtrarEventosEmpl', autentificado, function(req, res) {
+/*
+*  Filtra los eventos de un usuario en específico por rango de fecha
+*/
+    app.post('/filtrarEventosEmpl', autentificado, function (req, res) {
         if (req.session.name != "Administrador") {
             
             var marcaQuery = {usuario: req.user.id};
@@ -642,798 +656,304 @@ module.exports = function(app, io) {
         }
     });
 
-    /*
-    *  Crea una justificación
-    */
-    app.post('/justificacion_nueva', autentificado, function(req, res) {
-        var d = new Date();
-        var epochTime = (d.getTime() - d.getMilliseconds())/1000;
-        var e = req.body; 
-        var newjustificacion = Justificaciones({
-            usuario: req.user.id,
-            fechaCreada: epochTime,
-            detalle: e.detalle,
-            comentarioSupervisor: ""
-        });
-
-        if(e.motivoJust == 'otro')
-            newjustificacion.motivo = e.motivoOtroJust;
-        else
-            newjustificacion.motivo = e.motivoJust;
-
-        Justificaciones.find({usuario: newjustificacion.usuario, fechaCreada: newjustificacion.fechaCreada}, function (err, just){
-            if(just.length == 0){
-                newjustificacion.save(function(error, user) {
-                    if (error) console.log(error);
-                });//save
-            }
-            if (req.session.name == "Empleado") {
-                res.redirect('/escritorioEmpl');
-            } else res.redirect('/escritorio');
-
-        });//verificar
-    });
-
-    /*
-    *  Carga la información de una justificación
-    */
-    app.get('/justificacion/edit/:id', autentificado, function(req, res) {
-        var justificacionId = req.params.id;
-
-        Justificaciones.findById(justificacionId, function(error, just) { 
-            if(just.estado == 'Pendiente'){
-                Justificaciones.findById(justificacionId, function(error, justificacion) { 
-                    if (error) return res.json(error);
-
-                    res.json(justificacion);
-                }); 
-            } else res.json({motivo:'seleccionar',detalle:''});
-        }); 
-    });
-
-    /*
-    *  Actualiza una justificación
-    */
-    app.post('/justificacion/:id', autentificado, function(req, res) {
-        var justificacionId = req.params.id;
-
-        var d = new Date();
-        var epochTime = (d.getTime() - d.getMilliseconds())/1000;
-        var e = req.body; 
-
-        var motivo = '';
-        if(e.motivoJust == 'otro'){
-            motivo = e.motivoOtroJust;
-        } else{
-            motivo = e.motivoJust;
-        } 
-
-        var justificacionActualizada = {
-            fechaCreada: epochTime,
-            motivo: motivo,
-            detalle: e.detalle
-        };
-
-        Justificaciones.findById(justificacionId).exec(function(error, just) { 
-            Justificaciones.findByIdAndUpdate(justificacionId, justificacionActualizada, function(error, justificacion) { 
-                Usuario.find({'tipo' : 'Supervisor', 'departamentos.departamento' : req.user.departamentos[0].departamento}, {'email' : 1}).exec(function(error, supervisor) { 
-
-                    if (error) return res.json(error);
-
-                    var transporter = nodemailer.createTransport();
-
-                    for (var i = 0; i < supervisor.length; i++) {
-                        transporter.sendMail({
-                            from: emailSIGUCA,
-                            to: supervisor[i].email,
-                            subject: 'Modificación de una justificación en SIGUCA',
-                            text: " El usuario " + req.user.nombre + " " + req.user.apellido1 + " " + req.user.apellido2
-                                + " ha modificado la siguiente justificación: "
-                                + " \r\n Motivo: " + just.motivo
-                                + " \r\n Detalle: " + just.detalle
-                                + "\r\n\r\n La justificación con las modificaciones es el siguiente: " 
-                                + " \r\n Motivo: " + justificacionActualizada.motivo
-                                + " \r\n Detalle: " + justificacionActualizada.detalle
-                        });
-                    }
-                    res.redirect('/eventos');
-                });
-            });
-        });
-    });
-
-    /*
-    *  El supervisor elimina una justificación y se le envia un correo al dueño de la justificación
-    */
-    app.get('/justificacion/delete/:id', autentificado, function(req, res) {
-        var justificacionId = req.params.id;
-        Justificaciones.findByIdAndRemove(justificacionId).populate('usuario').exec(function(error, just) { 
-            if (error) res.json(error);
-
-            var epochTime = just.fechaCreada;
-            var fecha = new Date(0);
-            fecha.setUTCSeconds(epochTime); 
-
-            var transporter = nodemailer.createTransport();
-
-            transporter.sendMail({
-                from: emailSIGUCA,
-                to: just.usuario.email,
-                subject: 'Se ha eliminado una justificación en SIGUCA',
-                text: " Estimado(a) " + just.usuario.nombre + " " + just.usuario.apellido1 + " " + just.usuario.apellido2
-                    + " \r\n Su supervisor ha eliminado una de sus justificaciones, en la cuál se indicabá lo siguiente: " 
-                    + " \r\n Fecha: " + fecha
-                    + " \r\n Motivo: " + just.motivo
-                    + " \r\n Detalle: " + just.detalle
-            });
-
-            res.send('Se elimino');
-        });
-    });
-
-    /*
-    *  Carga la información de una solicitud tipo hora extra
-    */
-    app.get('/solicitud/edit/:id', autentificado, function(req, res) {
-        var solicitudId = req.params.id;
-        
-        Solicitudes.findById(solicitudId, function(error, soli) { 
-            if(soli.estado == 'Pendiente'){
-                Solicitudes.findById(solicitudId, function(error, solicitud) { 
-                    if (error) return res.json(error);
-
-                    res.json(solicitud);
-                }); 
-            } else res.json({motivo:'seleccionar',detalle:''});
-        }); 
-    });
-
-    /*
-    *  Crea una solicitud tipo hora extra
-    */
-    app.post('/solicitud_extra', autentificado, function(req, res) {
-        var d = new Date();
-        var epochTime = (d.getTime() - d.getMilliseconds())/1000; 
-        var e = req.body; 
-
-        var hmsInicio = e.horaInicio; 
-        var aInicio = hmsInicio.split(':'); 
-        var sInicio = (+aInicio[0]) * 60 * 60 + (+aInicio[1]) * 60 + 00; 
-
-        var hmsFinal = e.horaFinal; 
-        var aFinal = hmsFinal.split(':'); 
-        var sFinal = (+aFinal[0]) * 60 * 60 + (+aFinal[1]) * 60 + 00; 
-
-        var cantHoras = sFinal - sInicio;
-
-        var newSolicitud = Solicitudes({
-            fechaCreada: epochTime,
-            tipoSolicitudes: "Extras",
-            diaInicio: e.diaInicio,
-            horaInicio: e.horaInicio,
-            horaFinal: e.horaFinal,
-            cantidadHoras: cantHoras,
-            cliente: e.cliente,
-            motivo: e.motivo,
-            usuario: req.user.id,
-            comentarioSupervisor: ""
-        });
-
-        Solicitudes.find({usuario: newSolicitud.usuario, fechaCreada: newSolicitud.fechaCreada}, function (err, soli){
-            if(soli.length == 0){
-                newSolicitud.save(function(error, user) {
-                    if (error) return res.json(error);
-                });//save
-            }
+/*
+*  Crea una justificación
+*/
+    app.post('/justificacion_nueva', autentificado, function (req, res) {
+        var just = req.body; 
+        just.id = req.user.id;
+        crud.addJust(just, function (){
             if (req.session.name == "Empleado") {
                 res.redirect('/escritorioEmpl');
             } else res.redirect('/escritorio');
         });//verificar
     });
 
-    /*
-    *  Actualiza una solicitud tipo hora extra
-    */
-    app.post('/extra/:id', autentificado, function(req, res) {
-        var solicitudId = req.params.id;
-        
-        var d = new Date();
-        var epochTime = (d.getTime() - d.getMilliseconds())/1000; 
-        var e = req.body; 
+/*
+*  Carga la información de una justificación
+*/
+    app.get('/justificacion/edit/:id', autentificado, function (req, res) {
+        crud.loadJust(req.params.id, function(just) { 
+            res.json(just);
+        }); 
+    });
 
-        var hmsInicio = e.horaInicio; 
-        var aInicio = hmsInicio.split(':'); 
-        var sInicio = (+aInicio[0]) * 60 * 60 + (+aInicio[1]) * 60 + 00; 
+/*
+*  Actualiza una justificación
+*/
+    app.post('/justificacion/:id', autentificado, function (req, res) {
+        var just = req.body; 
+        just.id = req.params.id;
+        crud.updateJust(just, function (err){
+            res.redirect('/eventos');
+        });
+    });
 
-        var hmsFinal = e.horaFinal; 
-        var aFinal = hmsFinal.split(':'); 
-        var sFinal = (+aFinal[0]) * 60 * 60 + (+aFinal[1]) * 60 + 00; 
+/*
+*  El supervisor elimina una justificación y se le envia un correo al dueño de la justificación
+*/
+    app.get('/justificacion/delete/:id', autentificado, function (req, res) {
+        var id = req.params.id;
+        crud.deleteJust(id, function (err, msj) {
+            if(err) res.json(err);
+            else res.send(msj);
+        });
+    });
 
-        var cantHoras = sFinal - sInicio;
+/*
+*  Crea una solicitud tipo hora extra
+*/
+    app.post('/solicitud_extra', autentificado, function (req, res) {
+        var extra = req.body; 
+        extra.id = req.user.id;
+        crud.addExtra(extra, function(){
+            if (req.session.name == "Empleado") {
+                res.redirect('/escritorioEmpl');
+            } else res.redirect('/escritorio');
+        });
+    });
 
-        var solicitudActualizada = {
-            fechaCreada: epochTime,
-            diaInicio: e.diaInicio,
-            horaInicio: e.horaInicio,
-            horaFinal: e.horaFinal,
-            cantidadHoras: cantHoras,
-            cliente: e.cliente,
-            motivo: e.motivo
-        };
+/*
+*  Carga la información de una solicitud tipo hora extra
+*/
+    app.get('/solicitud/edit/:id', autentificado, function (req, res) {
+        crud.loadSoli(req.params.id, function(soli) { 
+            res.json(soli);
+        }); 
+    });
 
-        Solicitudes.findById(solicitudId).exec(function(error, soli) { 
-            Solicitudes.findByIdAndUpdate(solicitudId, solicitudActualizada, function(error, solicitud) { 
-                Usuario.find({'tipo' : 'Supervisor', 'departamentos.departamento' : req.user.departamentos[0].departamento}, {'email' : 1}).exec(function(error, supervisor) { 
-                    if (error) return res.json(error);
+/*
+*  Actualiza una solicitud tipo hora extra
+*/
+    app.post('/extra/:id', autentificado, function (req, res) {
+        var extra = req.body;
+        extra.id = req.params.id;
+        crud.updateExtra(extra, function (err) { 
+            res.redirect('/eventos');
+        });
+    });
 
-                    var transporter = nodemailer.createTransport();
+/*
+*  Crea una solicitud tipo permiso anticipado
+*/
+    app.post('/solicitud_permisos', autentificado, function (req, res) {
+        var permiso = req.body; 
+        permiso.usuario = req.user;
+        crud.addPermiso(permiso, function (){
+            if (req.session.name == "Empleado") {
+                res.redirect('/escritorioEmpl');
+            } else res.redirect('/escritorio');  
+        });
+    });
 
-                    for (var i = 0; i < supervisor.length; i++) {
-                        transporter.sendMail({
-                            from: emailSIGUCA,
-                            to: supervisor[i].email,
-                            subject: 'Modificación de una solicitud de hora extraordiaria en SIGUCA',
-                            text: " El usuario " + req.user.nombre 
-                                + " ha modificado la siguiente solicitud de hora extraordiaria: "
-                                + "\r\n Día de Inicio: " + soli.diaInicio + ", día de termino: " + soli.diaFinal 
-                                + " \r\n Motivo: " + soli.motivo
-                                + " \r\n Detalle: " + soli.detalle
-                                + "\r\n\r\n La solicitud de hora extraordiaria con las modificaciones es el siguiente: "
-                                + "\r\n  Día de Inicio: " + solicitudActualizada.diaInicio + ", día de termino: " + solicitudActualizada.diaFinal 
-                                + " \r\n Motivo: " + solicitudActualizada.motivo
-                                + " \r\n Detalle: " + solicitudActualizada.detalle
-                        });
-                    }
-                    res.redirect('/eventos');
-                });
+/*
+*  Actualiza una solicitud tipo permiso anticipado
+*/
+    app.post('/permiso/:id', autentificado, function (req, res) {
+        var permiso = req.body;
+        permiso.id = req.params.id;
+        crud.updatePermiso(permiso, function (err) { 
+            res.redirect('/eventos');
+        });
+    });
+
+/*
+*  El supervisor elimina una solicitud y se le envia un correo al dueño de la solicitud
+*/
+    app.get('/solicitud/delete/:id', autentificado, function (req, res) {
+        crud.deleteSoli(req.params.id, function (err, msj) { 
+            if (err) res.json(err);
+            else res.send(msj);
+        });
+    });
+
+/*
+*  Actualiza el estado y el comentario del supervisor a una solicitud en específico
+*/
+    app.post('/getionarSolicitudAjax/:id', autentificado, function (req, res) {
+        var solicitud = req.body;
+        solicitud.id = req.params.id;
+        if(solicitud.estado != 'Pendiente') {
+            crud.gestionarSoli(solicitud, function (err, msj) { 
+                if (err) res.json(err);
+                else res.send(msj);
             });
-        });
+        } else {
+            res.send('');
+        }
     });
 
-    /*
-    *  Crea una solicitud tipo permiso anticipado
-    */
-    app.post('/solicitud_permisos', autentificado, function(req, res) {
-        var d = new Date();
-        var epochTime = (d.getTime() - d.getMilliseconds())/1000; 
-        var e = req.body; 
-
-        var date1 = new Date(e.diaInicio);
-        var date2 = new Date(e.diaFinal);
-        var timeDiff = Math.abs(date2.getTime() - date1.getTime());
-        var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24)); 
-
-        var newSolicitud = Solicitudes({
-            fechaCreada: epochTime,
-            tipoSolicitudes: "Permisos",
-            diaInicio: e.diaInicio,
-            diaFinal: e.diaFinal,
-            cantidadDias: e.cantidadDias,
-            detalle: e.detalle,
-            usuario: req.user.id,
-            comentarioSupervisor: ""
-        });
-        if(e.motivo == 'otro')
-            newSolicitud.motivo = e.motivoOtro;
-        else
-            newSolicitud.motivo = e.motivo;
-        Solicitudes.find({usuario: newSolicitud.usuario, fechaCreada: newSolicitud.fechaCreada}, function (err, solicitud){
-            if(solicitud.length == 0){
-                newSolicitud.save(function(error, soli) {
-                    Usuario.find({'tipo' : 'Supervisor', 'departamentos.departamento' : req.user.departamentos[0].departamento}, {'email' : 1}).exec(function(error, supervisor) { 
-                        if (error) console.log(res.json(error));
-
-                        var transporter = nodemailer.createTransport();
-                        for (var i = 0; i < supervisor.length; i++) {
-
-                            transporter.sendMail({
-                                from: emailSIGUCA,
-                                to: supervisor[i].email,
-                                subject: 'Nueva solicitud de permiso anticipado en SIGUCA',
-                                text: " El usuario " + req.user.nombre + " " + req.user.apellido1 + " " + req.user.apellido2 + " ha enviado el siguiente permiso anticipado: " 
-                                    + "\r\n Día de Inicio: " + soli.diaInicio + ", día de termino: " + soli.diaFinal 
-                                    + " \r\n Motivo: " + soli.motivo
-                                    + " \r\n Detalle: " + soli.detalle
-                            });
-                        }
-                        if (req.session.name == "Empleado") {
-                            res.redirect('/escritorioEmpl');
-                        } else res.redirect('/escritorio');            
-                    });//supervisores
-                });//save
-            }
-        });//verificar
-    });
-
-    /*
-    *  Actualiza una solicitud tipo permiso anticipado
-    */
-    app.post('/permiso/:id', autentificado, function(req, res) {
-        var solicitudId = req.params.id;
-
-        var d = new Date();
-        var epochTime = (d.getTime() - d.getMilliseconds())/1000; 
-        var e = req.body; 
-
-        var date1 = new Date(e.diaInicio);
-        var date2 = new Date(e.diaFinal);
-        var timeDiff = Math.abs(date2.getTime() - date1.getTime());
-        var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24)); 
-
-        var solicitudActualizada = {
-            fechaCreada: epochTime,
-            diaInicio: e.diaInicio,
-            diaFinal: e.diaFinal,
-            cantidadDias: e.cantidadDias,
-            detalle: e.detalle
-        };
-        if(e.motivo == 'otro')
-            solicitudActualizada.motivo = e.motivoOtro;
-        else
-            solicitudActualizada.motivo = e.motivo;
-
-        Solicitudes.findById(solicitudId).exec(function(error, soli) { 
-            Solicitudes.findByIdAndUpdate(solicitudId, solicitudActualizada, function(error, solicitud) { 
-                Usuario.find({'tipo' : 'Supervisor', 'departamentos.departamento' : req.user.departamentos[0].departamento}, {'email' : 1}).exec(function(error, supervisor) { 
-
-                    if (error) return res.json(error);
-
-                    var transporter = nodemailer.createTransport();
-                    for (var i = 0; i < supervisor.length; i++) {
-
-                        transporter.sendMail({
-                            from: emailSIGUCA,
-                            to: supervisor[i].email,
-                            subject: 'Modificación de una solicitud de permiso anticipado en SIGUCA',
-                            text: " El usuario " + req.user.nombre + " " + req.user.apellido1 + " " + req.user.apellido2 + " ha modificado el siguiente permiso anticipado: " 
-                                + "\r\n Día de Inicio: " + soli.diaInicio + ", día de termino: " + soli.diaFinal 
-                                + " \r\n Motivo: " + soli.motivo
-                                + " \r\n Detalle: " + soli.detalle
-                                + "\r\n\r\n El permiso con las modificaciones es el siguiente: " 
-                                + "\r\n  Día de Inicio: " + solicitudActualizada.diaInicio + ", día de termino: " + solicitudActualizada.diaFinal 
-                                + " \r\n Motivo: " + solicitudActualizada.motivo
-                                + " \r\n Detalle: " + solicitudActualizada.detalle
-                        });
-                    }
-                    res.redirect('/eventos');
-                });
+/*
+*  Actualiza el estado y el comentario del supervisor a una justificacion en específico
+*/
+    app.post('/getionarJustificacionAjax/:id', autentificado, function (req, res) {
+        var justificacion = req.body;
+        justificacion.id = req.params.id;
+        if(justificacion.estado != 'Pendiente') {
+            crud.gestionarJust(justificacion, function (err, msj) { 
+                if (err) res.json(err);
+                else res.send(msj);
             });
-        });
+        } else {
+            res.send('');
+        }
     });
 
-    /*
-    *  El supervisor elimina una solicitud y se le envia un correo al dueño de la solicitud
-    */
-    app.get('/solicitud/delete/:id', autentificado, function(req, res) {
-        var solicitudId = req.params.id;
-        Solicitudes.findByIdAndRemove(solicitudId).populate('usuario').exec(function(error, soli) { 
-            if (error) res.json(error);
-
-            var epochTime = soli.fechaCreada;
-            var fecha = new Date(0);
-            fecha.setUTCSeconds(epochTime); 
-
-            var transporter = nodemailer.createTransport();
-
-            if(soli.tipoSolicitudes == 'Extras'){
-                transporter.sendMail({
-                    from: emailSIGUCA,
-                    to: soli.usuario.email,
-                    subject: 'Se ha eliminado una solicitud de hora extraordiaria en SIGUCA',
-                    text: " Estimado(a) " + soli.usuario.nombre + " " + soli.usuario.apellido1 + " " + soli.usuario.apellido2
-                        + " \r\n Su supervisor ha eliminado una de sus solicitudes de hora extraordiaria, en la cuál se indicabá lo siguiente: " 
-                        + " \r\n Fecha de creación: " + fecha
-                        + " \r\n Día Inicio: " + soli.diaInicio
-                        + " \r\n Hora Inicio: " + soli.horaInicio
-                        + " \r\n Hora Final: " + soli.horaFinal
-                        + " \r\n Cantidad de horas: " + soli.cantidadHoras
-                        + " \r\n Cliente: " + soli.cliente
-                        + " \r\n Motivo: " + soli.motivo
-                        + " \r\n Estado: " + soli.estado
-                        + " \r\n Comentario supervisor: " + soli.comentarioSupervisor
-                });
-            } else {
-                transporter.sendMail({
-                    from: emailSIGUCA,
-                    to: soli.usuario.email,
-                    subject: 'Se ha eliminado una solicitud de permiso anticipado en SIGUCA',
-                    text: " Estimado(a) " + soli.usuario.nombre + " " + soli.usuario.apellido1 + " " + soli.usuario.apellido2
-                        + " \r\n Su supervisor ha eliminado una de sus solicitudes de permiso anticipado, en la cuál se indicabá lo siguiente: " 
-                        + " \r\n Fecha de creación: " + fecha
-                        + " \r\n Día Inicio: " + soli.diaInicio
-                        + " \r\n Día Final: " + soli.diaFinal
-                        + " \r\n Cantidad de días: " + soli.cantidadDias
-                        + " \r\n Motivo: " + soli.motivo
-                        + " \r\n Detalle: " + soli.detalle
-                        + " \r\n Estado: " + soli.estado
-                        + " \r\n Comentario supervisor: " + soli.comentarioSupervisor
-                });
-            }
-            res.send('Se elimino');
-        });
-    });
-
-    /*
-    *  Actualiza el estado y el comentario del supervisor a una solicitud en específico
-    */
-    app.post('/getionarSolicitudAjax/:id', autentificado, function(req, res) {
-        var solicitud = req.body,
-            solicitudId = req.params.id;
-
-        // console.log(req.params.id)
-        // console.log(req.query)
-        // console.log(req.body)
-
-        Solicitudes.findByIdAndUpdate(solicitudId, {estado: solicitud.estado, comentarioSupervisor: solicitud.comentarioSupervisor}).populate('usuario').exec(function(error, soli) { 
-
-            if (error) return res.json(error);
-                var transporter = nodemailer.createTransport();
-                
-                transporter.sendMail({
-                    from: emailSIGUCA,
-                    to: soli.usuario.email,
-                    subject: 'Respuesta a solicitud en SIGUCA',
-                    text: " Estimado(a) " + soli.usuario.nombre 
-                        + ",\r\n\r\n Por este medio se le notifica que su solicitud fue " + solicitud.estado + " por el supervisor, con el siguiente comentario"
-                        + "\r\n\r\n " + solicitud.comentarioSupervisor
-                        + "\r\n\r\n Saludos cordiales."
-                });
-
-            res.send('Se elimino');
-
-        });
-    });
-
-    /*
-    *  Actualiza el estado y el comentario del supervisor a una justificacion en específico
-    */
-    app.post('/getionarJustificacionAjax/:id', autentificado, function(req, res) {
-        var justificacion = req.body,
-            justificacionId = req.params.id;
-
-
-        Justificaciones.findByIdAndUpdate(justificacionId, {estado: justificacion.estado, comentarioSupervisor: justificacion.comentarioSupervisor}).populate('usuario').exec(function(error, just) { 
-
-            if (error) return res.json(error);
-
-                var transporter = nodemailer.createTransport();
-
-                transporter.sendMail({
-                    from: emailSIGUCA,
-                    to: just.usuario.email,
-                    subject: 'Respuesta a justificación en SIGUCA',
-                    text: " Estimado(a) " + just.usuario.nombre 
-                        + ",\r\n\r\n Por este medio se le notifica que su justificación fue " + justificacion.estado + " por el supervisor, con el siguiente comentario"
-                        + "\r\n\r\n " + justificacion.comentarioSupervisor
-                        + "\r\n\r\n Saludos cordiales."
-                });
-
-            res.send('Se elimino');
-
-        });
-    });
-    /*
-    *  Crea un nuevo horario
-    */
-    app.post('/horarioN', autentificado, function(req, res) {
-
-        var h = req.body;
-        var horarioN = Horario({ 
-            nombre: h.nombre,
-            tipo: h.tipo,
-            horaEntrada: h.horaEntrada,
-            horaSalida: h.horaSalida,
-            rangoJornada: h.rangoJornada,
-            tiempoReceso: h.tiempoReceso,
-            tiempoAlmuerzo: h.tiempoAlmuerzo
-        });
-        horarioN.save(function(error, user) {
-
-            if (error) res.json(error);
+/*
+*  Crea un nuevo horario
+*/
+    app.post('/horarioN', autentificado, function (req, res) {
+        crud.addHorario(req.body, function() {
             if (req.session.name == "Administrador") {
-
                 res.redirect('/escritorioAdmin');
             } 
-
         });
     });
 
-    /*
-    *  Lista todos los horarios creados
-    */
-    app.get('/horarioN', autentificado, function(req, res) {
-
-        Horario.find().exec(function(error, horarios) {
-
-            if (error) return res.json(error);
-
+/*
+*  Lista todos los horarios creados
+*/
+    app.get('/horarioN', autentificado, function (req, res) {
+        crud.listHorario(function (err, horarios) {
+            if (err) return res.json(err);
             return res.render('horarioN', {
                 title: 'Nuevo Horario | SIGUCA',
                 horarios: horarios,
                 usuario: req.user
             });
-
-
         });
     });
 
-    /*
-    *  Carga los datos de un horario en específico
-    */
-    app.get('/horarioN/editHorario/:id', autentificado, function(req, res) { 
-        var horarioId = req.params.id;
-
-        Horario.findById(horarioId, function(error, horario) {
-
-            if (error) return res.json(error);
-            
-            /*res.render('editHorario', {
-                title: 'Editar Horario | SIGUCA',
-                horario: horario,
-                usuario: req.user});*/
-
-            res.json(horario);
-
+/*
+*  Carga los datos de un horario en específico
+*/
+    app.get('/horarioN/editHorario/:id', autentificado, function (req, res) { 
+        crud.loadHorario(req.params.id, function (err, horario) {
+            if (err) return res.json(err);
+            else res.json(horario);
         });
     });
 
-    /*
-    *  Actualiza los datos de un horario en específico
-    */
-    app.post('/horarioN/:id',autentificado, function(req, res) { 
-
-        var horario = req.body,
-            horarioId = req.params.id;
-
-        delete horario.id;
-        delete horario._id;
-
-        Horario.findByIdAndUpdate(horarioId, horario, function(error, horarios) {
-
-            if (error) return res.json(error);
-
+/*
+*  Actualiza los datos de un horario en específico
+*/
+    app.post('/horarioN/:id',autentificado, function (req, res) { 
+        var data = { horario: req.body, id: req.params.id }
+        crud.updateHorario(data, function (err, horarios) {
+            if (err) return res.json(err);
             res.redirect('/horarioN');
-
         });
     });
 
-    /*
-    *  Elimina un horario en específico
-    */
-    app.get('/horarioN/delete/:id', autentificado, function(req, res) { 
-        var horarioId = req.params.id;
-        Usuario.find({"horario": horarioId, "estado": "Activo"}).exec(function(error, usuario) {
-            if(usuario.length === 0){
-                Horario.findByIdAndRemove(horarioId, function(error, horarios) {
-
-                    res.send('Se elimino');
-
-                });
-            } else{
-                res.send('false');
-            }
+/*
+*  Elimina un horario en específico
+*/
+    app.get('/horarioN/delete/:id', autentificado, function (req, res) { 
+        crud.deleteHorario(req.params.id, function (err, msj) {
+            if (err) return res.json(err);
+            else res.send(msj);
         });
     });
 
-    /*
-    *  Crea una nueva marca vía página web
-    */
-    app.post('/marca', autentificado, function(req, res) {
-        var date = new Date();
-        var epochTime = (date.getTime() - date.getMilliseconds())/1000;
-        var fechaActual= new Date(0);
-        fechaActual.setUTCSeconds(epochTime); 
-
-        date.setHours(1);
-        date.setMinutes(0);
-        var epochTimeGte = (date.getTime() - date.getMilliseconds())/1000;
-        var epochTimeLt = epochTime + 1;
-
-        var newMarca = Marca({
-                    tipoMarca: req.body.marca,
-                    epoch: epochTime,
-                    usuario: req.user.id,
-                    fecha: fechaActual
-                });
-
-        Marca.find({epoch:{'$gte': epochTimeGte, '$lt': epochTimeLt}, tipoMarca: newMarca.tipoMarca, usuario:newMarca.usuario}).exec(function (err, marca){
-            if(marca.length == 0){
-                newMarca.save(function(error, user) {
-                    if (error) return res.json(error);
-                });//save
-            }
+/*
+*  Crea una nueva marca vía página web
+*/
+    app.post('/marca', autentificado, function (req, res) {
+        crud.addMarca({tipoMarca: req.body.marca, usuario: req.user.id}, function(msj){
             if(req.session.name == "Empleado"){
                 res.redirect('/escritorioEmpl');
             } else {
                 res.redirect('/escritorio')
             }
-        });//marca
-    });
-
-    /*
-    *  Elimina una marca en específico si fue creada hace menos de 10 minutos
-    */
-    app.get('/marca/delete/:id', autentificado, function(req, res) {
-
-        var marcaId = req.params.id;
-        Marca.findById(marcaId, function(error, marca) {
-            var date = new Date();
-            var epoch = (date.getTime() - date.getMilliseconds())/1000;
-            if(epoch - marca.epoch <= 600){
-                Marca.findByIdAndRemove(marcaId, function(error, marca) {
-                    if (error) res.json(error);
-                    res.send('Se elimino');
-                });
-            } else {
-                res.send('No se eliminó la marca <strong>' + marca.tipoMarca + '</strong>');
-            }
         });
     });
 
-    /*
-    *  Crea un nuevo usuario
-    */
-    app.post('/empleado', autentificado, function(req, res) {
-    
+/*
+*  Elimina una marca en específico si fue creada hace menos de 10 minutos
+*/
+    app.get('/marca/delete/:id', autentificado, function (req, res) {
+        crud.deleteMarca(req.params.id, function (msj) {
+            res.send(msj);
+        });
+    });
+
+/*
+*  Crea un nuevo usuario
+*/
+    app.post('/empleado', autentificado, function (req, res) {
         if (req.session.name == "Administrador") {
-            var e = req.body; 
-            var array = [];
-            
-            if(e.idDepartamento instanceof Array){
-                for( var i in e.idDepartamento){
-                   array.push({departamento: e.idDepartamento[i]}); 
-                }
-            } else {
-                array.push({departamento: e.idDepartamento});
-            }
-
-            Usuario.findOne({ 'username' :  e.username }, function(err, user) {
-                if (err) return res.json(error);
-                if (!user) {
-                    var newUser = new Usuario({
-                        username: e.username, 
-                        tipo: e.tipo,
-                        estado: "Activo",
-                        nombre: e.nombre,
-                        apellido1: e.apellido1,
-                        apellido2: e.apellido2,
-                        email: e.email,
-                        cedula: e.cedula,
-                        codTarjeta: e.codTarjeta,
-                        departamentos: array,
-                        horario: e.idHorario,
-                    });
-
-                    newUser.password = Usuario.generateHash(e.password);
-
-                    newUser.save(function(err) {
-                        if (err) return res.json(error);
-                        
-                    });//Crea Usuario
+            crud.addUsuario(req.body, function() {
+                if (req.session.name == "Administrador"){
+                   res.redirect('/escritorioAdmin'); 
                 }
             });//Busca Usuario
-            if (req.session.name == "Administrador"){
-               res.redirect('/escritorioAdmin'); 
-            }
         } else {
             req.logout();
             res.redirect('/');
         }
     });
 
-    /*
-    *  Lista todos los usuarios creados
-    */
-    app.get('/empleado', autentificado, function(req, res) {
-
-        Usuario.find().populate('departamentos.departamento').populate('horario').exec(function(error, empleados){
-            Horario.find().exec(function(error, horarios) {
-                Departamento.find().exec(function(error, departamentos) {
-                    if (error) return res.json(error);
-                    return res.render('empleado', {
-                        title: 'Gestionar empleados | SIGUCA',
-                        empleados: empleados, 
-                        usuario: req.user,
-                        horarios: horarios,
-                        departamentos: departamentos
-                    });
-                });//Departamento
-            });//Horario
-        });//Usuario       
+/*
+*  Lista todos los usuarios creados
+*/
+    app.get('/empleado', autentificado, function (req, res) {
+        crud.listUsuarios(function (err, render){
+            if (err) return res.json(err);
+            render.usuario = req.user;
+            return res.render('empleado', render);
+        });       
     });
 
-    /*
-    *  Carga los datos de un usuario en específico, además los horarios y departamentos creados
-    */
-    app.get('/empleado/edit/:id', autentificado, function(req, res) {
-        var empleadoId = req.params.id;
-
-        Usuario.findById(empleadoId, function(error, empleado) { 
-            if (error) return res.json(error);
-
-            /*res.render('edit', {
-                empleado: empleado, 
-                usuario: req.user,
-                horarios: horarios,
-                departamentos: departamentos
-            });*/
-
-            res.json(empleado);
+/*
+*  Carga los datos de un usuario en específico, además los horarios y departamentos creados
+*/
+    app.get('/empleado/edit/:id', autentificado, function (req, res) {
+        Usuario.findById(req.params.id, function (err, empleado) { 
+            if (err) return res.json(err);
+            else res.json(empleado);
         });        
     });
 
-    /*
-    *  Actualiza los datos de un usuario en específico
-    */
-    app.post('/empleado/:id', function(req, res) {
-
-        var empleadoId = req.params.id,
-            empleado = req.body;
-
-        delete empleado.id;
-        delete empleado._id;
-
-        var array = [];
-        if(empleado.departamentos instanceof Array && empleado.tipo == "Supervisor"){
-            for( var i in req.body.departamentos){
-                array.push({departamento:req.body.departamentos[i]});
-            }
-        } else {
-            array.push({departamento:req.body.departamentos});
-        }
-        empleado.departamentos = array;
-
-        Usuario.findByIdAndUpdate(empleadoId, empleado, function(error, empleados) { 
-
-            if (error) console.log(error);
-            else console.log("Se actualizo con exito");
-
+/*
+*  Actualiza los datos de un usuario en específico
+*/
+    app.post('/empleado/:id', function (req, res) {
+        var data = {
+            id: req.params.id,
+            empleado: req.body
+        };
+        crud.updateUsuario(data, function() { 
             res.redirect('/empleado');
-
         });
     });
 
-    /*
-    *  Modifica el estado de Activo a Inactivo de un usuario en específico
-    */
-    app.get('/empleado/delete/:id', autentificado, function(req, res) {
-
-        var empleadoId = req.params.id;
-
-        Usuario.findByIdAndUpdate(empleadoId, {estado:'Inactivo'}, function(error, empleados) { 
-            if (error) res.json(error);
-            res.send('Se elimino');
+/*
+*  Modifica el estado de Activo a Inactivo de un usuario en específico
+*/
+    app.get('/empleado/delete/:id', autentificado, function (req, res) {
+        crud.deleteUsuario(req.params.id, function (err, msj) { 
+            if (err) res.json(err);
+            res.send(msj);
         });
     });
 
-    /*
-    *  Crea un nuevo departamento
-    */
-    app.post('/departamento',autentificado, function(req, res) {
-
-        var e = req.body;
-        var newDepartamento = Departamento({ 
-            nombre: e.nombre
-        });
-        newDepartamento.save(function(error, user) {
-
-            if (error) res.json(error);
+/*
+*  Crea un nuevo departamento
+*/
+    app.post('/departamento',autentificado, function (req, res) {
+        crud.addDepa(req.body, function() {
             if (req.session.name == "Administrador") {
-
                 res.redirect('/escritorioAdmin');
             }
         });
     });
 
-    /*
-    *  Lista todos los departamentos creados
-    */
-    app.get('/departamento', autentificado, function(req, res) {
-
-        Departamento.find().exec(function(error, departamentos) {
-
-            if (error) return res.json(error);
-
+/*
+*  Lista todos los departamentos creados
+*/
+    app.get('/departamento', autentificado, function (req, res) {
+        crud.listDepa(function (err, departamentos) {
+            if (err) return res.json(err);
             return res.render('departamento', {
                 title: 'Nuevo Departamento | SIGUCA',
                 departamentos: departamentos,
@@ -1442,77 +962,51 @@ module.exports = function(app, io) {
         });
     });
 
-    /*
-    *  Carga los datos de un departamento en específico
-    */
-    app.get('/departamento/editDepartamento/:id', autentificado, function(req, res) {
-        var departamentoId = req.params.id;
-
-        Departamento.findById(departamentoId, function(error, departamento) {
-
-            if (error) return res.json(error);
-
-            /*res.render('editDepartamento', {
-                title: 'Editar Departamento | SIGUCA',
-                departamento: departamento,
-                usuario: req.user
-            });*/
-
+/*
+*  Carga los datos de un departamento en específico
+*/
+    app.get('/departamento/editDepartamento/:id', autentificado, function (req, res) {
+        crud.loadDepa(req.params.id, function (departamento) {
             res.json(departamento);
-
         });
     });
 
-    /*
-    *  Actualiza los datos de un departamento en específico
-    */
-    app.post('/departamento/:id',autentificado, function(req, res) {
-        var departamento = req.body,
-            departamentoId = req.params.id;
-
-        delete departamento.id;
-        delete departamento._id;
-
-
-        Departamento.findByIdAndUpdate(departamentoId, departamento, function(error, departamentos) {
-
-            if (error) return res.json(error);
-
+/*
+*  Actualiza los datos de un departamento en específico
+*/
+    app.post('/departamento/:id',autentificado, function (req, res) {
+        var data = {
+            departamento: req.body,
+            id: req.params.id
+        };
+        crud.updateDepa(data, function() {
             res.redirect('/departamento');
-
         });
     });
 
-    /*
-    *  Elimina un departamento en específico
-    */
-    app.get('/departamento/delete/:id', autentificado, function(req, res) {
-        var departamentoId = req.params.id;
-        Usuario.find({"departamentos.departamento": departamentoId, "estado": "Activo"}).exec(function(error, usuario) {
-            if(usuario.length === 0){
-                Departamento.findByIdAndRemove(departamentoId, function(error, departamentos) {
-                    res.send('Se elimino');
-                });
-            } else{
-                res.send('false');
-            }
+/*
+*  Elimina un departamento en específico
+*/
+    app.get('/departamento/delete/:id', autentificado, function (req, res) {
+        crud.deleteDepa(req.params.id, function (msj) {
+            res.send(msj);
         });
     });
 
-    /*
-    *  En caso de tener varias sedes, se pueden crear dispositivos para especificar en cual
-    *  sede se crearon las marcas manuales.
-    */
-    app.get('/dispositivos', autentificado, function(req, res) { 
+/*
+*  En caso de tener varias sedes, se pueden crear dispositivos para especificar en cual
+*  sede se crearon las marcas manuales.
+*/
+    app.get('/dispositivos', autentificado, function (req, res) { 
         res.render('dispositivos', {
             title: 'Dispositivos | SIGUCA',
             usuario: req.user
         });
     });
 
-    /*
-    *   Verifica si el usuario es valido, utiliza una función de passport
-    */
+/*
+*   Verifica si el usuario es valido, utiliza una función de passport
+*/
     function autentificado(req, res, next) {
         // Si no esta autentificado en la sesion, que prosiga con el enrutamiento 
         if (req.isAuthenticated())
@@ -1522,53 +1016,38 @@ module.exports = function(app, io) {
         res.redirect('/');
     }
     
-    /*
-    *   Cambia el username de los usuarios
-    */
-    app.post('/cambioUsername/:id', autentificado, function(req, res) {
+/*
+*   Cambia el username de los usuarios
+*/
+    app.post('/cambioUsername/:id', autentificado, function (req, res) {
         if(req.session.name != "Administrador"){
-            var userId = req.params.id;
-
-            var user = {};
-            user.username = req.body.username;
-
-            Usuario.findByIdAndUpdate(userId, user, function(error, user) { 
-                if (error) return res.json(error);
+            var user = {
+                id: req.params.id,
+                username: req.body.username
+            };
+            crud.changeUsername(user, function() { 
                 res.redirect('/configuracion');
             });
         }
     });
 
-    /*
-    *   Cambia la contraseña de los usuarios
-    */
-    app.post('/cambioPassword/:id', autentificado, function(req, res) {
-        var userId = req.params.id,
-            currentPassword = Usuario.generateHash(req.body.currentPassword);
-
-        Usuario.findById(userId, function(error, user){
-            if(!user.validPassword(currentPassword)){
-                if(req.body.newPassword != "" && req.body.newPassword != null && req.body.newPassword === req.body.repeatNewPassword){
-                    
-                    var user = {};
-                    user.password = Usuario.generateHash(req.body.newPassword);
-
-                    Usuario.findByIdAndUpdate(userId, user, function(error, user) { 
-                        if (error) return res.json(error);
-                        console.log("Se actualizo la contraseña con exito");
-                        res.redirect('/configuracion');
-                    });
-                } else { console.log("Nueva contraseña inválida."); res.redirect('/configuracion');}
-            } else { console.log("Contraseña inválida."); res.redirect('/configuracion');}
+/*
+*   Cambia la contraseña de los usuarios
+*/
+    app.post('/cambioPassword/:id', autentificado, function (req, res) {
+        var user = req.body;
+        user.id = req.params.id;
+        crud.changePassword(user, function () {
+            res.redirect('/configuracion');
         });
     });
 
 
 
-    /*
-    *   Detalla los eventos del calendario por día.
-    */
-    app.get('/reportarEventos', autentificado, function(req, res) {
+/*
+*   Detalla los eventos del calendario por día.
+*/
+    app.get('/reportarEventos', autentificado, function (req, res) {
         var diaGte = new Date(req.query.dia);
         var diaLt = new Date(diaGte);
         diaLt.setDate(diaGte.getDate() + 1);
@@ -1647,348 +1126,149 @@ module.exports = function(app, io) {
         });
     });
 
-    /*
-    *   A una hora determinada de lunes a sábado se crearán los estados de cierre general 
-    *   por cada departamento y los estados de cierre personales por cada usuario.
-    *   ****************************************************************************
-    *   Se utiliza MapReduce de mongoDB para simular los joins de SQL.
-    *   Los map filtraran cada collection. El emit consiste en enviar 2 valores,
-    *       El primero indicara cual sera la llave primaria de la nueva collection, el 
-    *       segundo incica cuales son los field de cada collection que se enviarán.
-    *   Los reduce organizarán cada emit realizado por los maps.
-    *   ****************************************************************************
-    *   Para crear los cierres personales se necesita organizar el resultado por usuario,
-    *   pero por el modelo de base de datos, primero se organizan los usuarios por horario. 
-    *   De esta manera se obtienen la hora y minutos de inicio de jornada, seguidamente se 
-    *   organizan las justificaciones, solicitudes y marcas por usuario; se valora si el 
-    *   usuario presenta una tardía o una ausencia. Finalmente se crea un cierre por cada 
-    *   usuario.
-    *   Para crear los cierres generales se necesita organizar el resultado por departamento,
-    *   por lo tanto se utiliza el mismo resultado de los cierres personales, pero en esta 
-    *   ocación emplea el método Aggregate de mongoDB, el cual organizá las collections a 
-    *   gusto del desarrollador. Finalmente se crea un cierre por cada departamento.
-    */
+/*
+*   A una hora determinada de lunes a sábado se crearán los estados de cierre general 
+*   por cada departamento y los estados de cierre personales por cada usuario.
+*   ****************************************************************************
+*   Se utiliza MapReduce de mongoDB para simular los joins de SQL.
+*   Los map filtraran cada collection. El emit consiste en enviar 2 valores,
+*       El primero indicara cual sera la llave primaria de la nueva collection, el 
+*       segundo incica cuales son los field de cada collection que se enviarán.
+*   Los reduce organizarán cada emit realizado por los maps.
+*   ****************************************************************************
+*   Para crear los cierres personales se necesita organizar el resultado por usuario,
+*   pero por el modelo de base de datos, primero se organizan los usuarios por horario. 
+*   De esta manera se obtienen la hora y minutos de inicio de jornada, seguidamente se 
+*   organizan las justificaciones, solicitudes y marcas por usuario; se valora si el 
+*   usuario presenta una tardía o una ausencia. Finalmente se crea un cierre por cada 
+*   usuario.
+*   Para crear los cierres generales se necesita organizar el resultado por departamento,
+*   por lo tanto se utiliza el mismo resultado de los cierres personales, pero en esta 
+*   ocación emplea el método Aggregate de mongoDB, el cual organizá las collections a 
+*   gusto del desarrollador. Finalmente se crea un cierre por cada departamento.
+*/
+
     var job = new CronJob({ 
-        cronTime: '00 00 23 * * 0-6',//'00 00 23 * * 0-6',
+        cronTime: '59 59 23 * * 1-5', //Lunes a Viernes
         onTick: function() {
-            // Runs every weekday
-            // at 12:00:00 AM.
-            var today = new Date(),
-                yesterday = new Date(today);
-            yesterday.setDate(today.getDate()-1);
-
-            var epochToday = (today.getTime() - today.getMilliseconds())/1000,
-                epochYesterday = (yesterday.getTime() - yesterday.getMilliseconds())/1000;
-
-            var mapJustificacion = function () {
-                var output= {
-                    detalle:this.detalle
-                }
-                emit(this.usuario, output);
-            };
-            var mapSolicitud = function () {
-                var output= {
-                    diaInicio: this.diaInicio
-                }
-                emit(this.usuario, output);
-            };
-            var mapMarca = function () {
-                if(this.tipoMarca === 'Entrada'){
-                    var output= {
-                        epochEntrada: this.epoch
-                    }
-                    emit(this.usuario, output);
+            var epochToday = moment().unix(),
+                epochYesterday = epochToday - 86400,
+                array = [];
+            console.log('Entro')
+            Cierre.find({tipo: "Personal", epoch: {'$gte': epochYesterday}}).populate('usuario').exec(function (cierresPersonales) {
+                var query = { }
+                if(cierresPersonales) {
+                    query = { estado: "Activo", tipo: {'$nin': ['Administrador']} }
+                    console.log('Hay cierres Iniciados')
+                    for (var i = 0; i < cierresPersonales.length; i++) {
+                        var cierre = cierresPersonales[i];
+                        array.push(cierre.usuario._id);
+                        if(cierre.etapa == 0) {
+                            Justificaciones.find({usuario: cierre.usuario._id, fechaCreada: {'$gte': cierre.epoch}}).count().exec(function (err, just) {
+                                Solicitudes.find({usuario: cierre.usuario._id, fechaCreada: {'$gte': cierre.epoch}}).count().exec(function (err, soli) {
+                                    Cierre.find({usuario: marca.usuario._id, tipo: 'Personal', etapa: 1}).sort({_id: -1}).limit(1).exec(function (err, cierreAnterior) {
+                                        var cierrePersonal = {
+                                                marcas : 1,
+                                                solicitudes : soli,
+                                                justificaciones : just,
+                                                estado : just + soli + 1,
+                                                etapa : 1,
+                                                horasSemanales: 0,
+                                                horasDiarias: 0
+                                            },
+                                            esLunes =  moment(cierre.epoch); 
+                                            if(esLunes.day() != 1){
+                                                cierrePersonal.horasSemanales = cierreAnterior.horasSemanales;
+                                            }
+                                        Cierre.findByIdAndUpdate(cierre._id, cierrePersonal, function (err, cierre){
+                                            var transporter = nodemailer.createTransport();
+                                            transporter.sendMail({
+                                                from: emailSIGUCA,
+                                                to: cierre.usuario.email,
+                                                subject: 'Omisión de marca en SIGUCA',
+                                                text: " Estimado(a) " + cierre.usuario.nombre + " " + cierre.usuario.apellido1 + " " + cierre.usuario.apellido2
+                                                    + " \r\n El día de hoy omitió realizar la marca de salida, por lo que no "
+                                                    + "se pudo calcular las horas trabajadas de este día, favor comunicarse con su "
+                                                    + "supervisor y enviar una justificación indicando la hora exacta de salida."
+                                                    + " \r\n\r\n Saludos cordiales."
+                                            });
+                                        });
+                                    });
+                                });
+                            });
+                        }
+                    };
                 } else {
-                    var output= {
-                        epochSalida: this.epoch
-                    }
-                    emit(this.usuario, output);
+                    query = {_id: {'$nin': array}, estado: "Activo", tipo: {'$nin': ['Administrador']} }
                 }
-            };
-            var mapHorario = function () {
-                if(this.tipo === 'Fijo'){
-                    var split = this.horaEntrada.split(':');
-                    var output= {
-                        hora: split[0],
-                        min: split[1],
-                        tipo: this.tipo
-                    }
-                    emit(this._id, output);
-                } else {
-                    var split = this.rangoJornada.split(':');
-                    var output= {
-                        hora: split[0],
-                        min: split[1],
-                        tipo: this.tipo
-                    }
-                    emit(this._id, output);
-                }
-            };
-            var mapUsuario = function() {
-                var values = {
-                    departamentos: this.departamentos,
-                    _id: this._id,
-                    count: 0
-                };
-                emit(this.horario, values);
-            };
-            var mapHoraUs = function() {
-                for (var x = 0; x < this.value.count; x++){
-                    emit(this.value.usuario[x]._id, {hora: this.value.hora, min: this.value.min, tipo: this.value.tipo, departamento: this.value.usuario[x].departamentos[this.value.usuario[x].count].departamento}); 
-                }
-            };
-            var reduceHoraUsuario =  function(k, values) {
-                var result = {};
-                values.forEach(function(value) {
-                var field;
-                    if ("departamentos" in value) {
-                        if (!("usuario" in result)) {
-                            result.usuario = [];
-                        }
-                        result.usuario.push(value);
-                        if (!("count" in result)) {
-                            result.count = 0;
-                        }
-                        result.count += 1;
-                    } else {
-                          for (field in value) {
-                              if (value.hasOwnProperty(field) ) {
-                                      result[field] = value[field];
-                              }//if
-                          };//for 
-                    }//else
-                });
-                return result;
-            };
-            var reduceJustUsuario =  function(k, values) {
-                var result = {};
-                values.forEach(function(value) {
-                var field;
-                    if ("detalle" in value) {
-                        if (!("justificaciones" in result)) {
-                            result.justificaciones = 0;
-                        }
-                        result.justificaciones += 1;
-                    } else {
-                        if ("diaInicio" in value) {
-                            if (!("solicitudes" in result)) {
-                                result.solicitudes = 0;
-                            }
-                            result.solicitudes += 1;
-                        } else {
-                            for (field in value) {
-                                if (value.hasOwnProperty(field) ) {
-                                    result[field] = value[field];
-                                }//if
-                            };//for 
-                        }//2do else
-                   }//else
-                });
-                return result;
-            };
-
-            var o = {};
-            o.map = mapHorario;
-            o.reduce = reduceHoraUsuario;
-            o.out = {"reduce": "Auxiliar"};
-            Horario.mapReduce(o);
-
-            o.map = mapUsuario;
-            o.query = {"tipo": {"$nin": ["Administrador"]}, "estado": "Activo"};
-
-            Usuario.mapReduce(o, function (err, Auxiliar) {
-                var o = {};
-                o.map = mapHoraUs;
-                o.reduce = reduceJustUsuario;
-                o.out = {"reduce": "Temporal"};
-                Auxiliar.mapReduce(o);
-
-                o.map = mapMarca;
-                o.query = {tipoMarca:{"$in": ["Entrada", "Salida"]}, epoch:{"$gte": epochYesterday, "$lt": epochToday}};
-                Marca.mapReduce(o);
-
-                o.map = mapSolicitud;
-                o.query = {fechaCreada:{"$gte": epochYesterday, "$lt": epochToday}, estado:{"$nin": ['Aceptada']}};
-                Solicitudes.mapReduce(o);
-
-                o.map = mapJustificacion;
-                Justificaciones.mapReduce(o, function (err, Temporal) {
-
-                    Temporal.find().exec(function (err, temporal){
-                        temporal.forEach(function (usuario){
-                            var cierrePersonal = {
-                                usuario: usuario._id,
-                                departamento: usuario.value.departamento,
-                                epoch: epochToday,
-                                tipo: "Personal"
-                            }
-                            if("justificaciones" in usuario.value){
-                                cierrePersonal.justificaciones = usuario.value.justificaciones;
-                            } else cierrePersonal.justificaciones = 0
-                            if("solicitudes" in usuario.value){
-                                cierrePersonal.solicitudes = usuario.value.solicitudes;
-                            } else cierrePersonal.solicitudes = 0;
-
-                            cierrePersonal.marcas = 0;
-                            if("epochEntrada" in usuario.value){
-                                if(usuario.tipo === 'Fijo'){
-                                    var epochTime = usuario.epochEntrada;
-                                    var fechaEpoch= new Date(0);
-                                    fechaEpoch.setUTCSeconds(epochTime);  
-                                    var hora = fechaEpoch.getHours();
-                                    var min = fechaEpoch.getMinutes() - 5;
-                                    var sInicio = (+horaEntrada) * 60 * 60 + (+minEntrada) * 60 + 00; 
-                                    var sHorarioEntrada = (+usuario.hora) * 60 * 60 + (+usuario.minutos) * 60 + 00; 
-
-                                    if(sHorarioEntrada < sInicio){
-                                        cierrePersonal.marcas += 1;   
-                                    }//if
-                                } else {
-                                    var epochEntrada = usuario.epochEntrada;
-                                    var fechaEntrada= new Date(0);
-                                    fechaEntrada.setUTCSeconds(epochEntrada);  
-                                    var horaEntrada = fechaEntrada.getHours();
-                                    var minEntrada = fechaEntrada.getMinutes() - 5;
-                                    var sInicio = (+horaEntrada) * 60 * 60 + (+minEntrada) * 60 + 00; 
-
-                                    var epochSalida = usuario.epochSalida;
-                                    var fechaSalida= new Date(0);
-                                    fechaSalida.setUTCSeconds(epochSalida);  
-                                    var horaSalida = fechaSalida.getHours();
-                                    var minSalida = fechaSalida.getMinutes() + 5;
-                                    var sFinal = (+horaSalida) * 60 * 60 + (+minSalida) * 60 + 00; 
-
-                                    var seg = sFinal - sInicio;
-
-                                    var sJornada = (+usuario.hora) * 60 * 60 + (+usuario.minutos) * 60 + 00; 
-                                    if(sJornada > seg){
-                                        estado += 1;   
-                                    }//if
-                                }
-                            } else cierrePersonal.marcas = 1;
-
-                            cierrePersonal.estado = cierrePersonal.justificaciones + cierrePersonal.solicitudes + cierrePersonal.marcas;;
-                            var newCierre = Cierre(cierrePersonal);
-
-                            newCierre.save(function(error, user) {
-
-                                if (error) console.log(error);
-                                else console.log("éxito al guardar cierre personal");
+                
+                Usuario.find(query).exec(function (err, usuarios) {
+                    console.log('Hay Ausentes')
+                    for (var i = 0; i < usuarios.length; i++) {
+                        console.log(i + ") " + usuarios[i])
+                        var usuario = usuarios[i];
+                        Justificaciones.find({usuario: usuario._id, fechaCreada: {'$gte': epochYesterday}}).count().exec(function (err, just) {
+                            Solicitudes.find({usuario: usuario._id, fechaCreada: {'$gte': epochYesterday}}).count().exec(function (err, soli) {
+                                Cierre.find({usuario: usuario._id, tipo: 'Personal', etapa: 1}).sort({_id: -1}).limit(1).exec(function (err, cierreAnterior) {
+                                    var newCierre =  new Cierre({
+                                        usuario: usuario._id, 
+                                        epoch: epochToday, 
+                                        departamento: usuario.departamentos[0].departamento, 
+                                        tipo: 'Personal',
+                                        etapa: 1,
+                                        marcas : 1,
+                                        solicitudes : soli,
+                                        justificaciones : just,
+                                        estado : just + soli + 1,
+                                        etapa : 1,
+                                        horasSemanales: 0,
+                                        horasDiarias: 0
+                                    }),
+                                    esLunes =  moment(epochToday); 
+                                    if(esLunes.day() != 1){
+                                        newCierre.horasSemanales = cierreAnterior.horasSemanales;
+                                    }
+                                    newCierre.save();
+                                });
                             });
                         });
-                    });
-                    var pipeline = [
-                        {
-                            "$group" : {
-                                "_id" : "$value.departamento",
-                                "justificaciones" : {
-                                    "$sum" : "$value.justificaciones"
-                                },
-                                "solicitudes" : {
-                                    "$sum" : "$value.solicitudes"
-                                },
-                                "usuarios" : {
-                                    "$push" : {
-                                        "epochEntrada" : "$value.epochEntrada",
-                                        "epochSalida" : "$value.epochSalida",
-                                        "hora" : "$value.hora",
-                                        "minutos" : "$value.min",
-                                        "tipo" : "$value.tipo"
-                                    }
-                                }
-                            }
-                        }
-                    ];
-                    Temporal.aggregate(pipeline).exec(function (err, temporal){
-                        temporal.forEach(function (departamento){
-                            var estado = 0;
-                            departamento.usuarios.forEach(function (user){
-                                if("epochEntrada" in user){
-                                    if(user.tipo === 'Fijo'){
-                                        var epochTime = user.epochEntrada;
-                                        var fechaEpoch= new Date(0);
-                                        fechaEpoch.setUTCSeconds(epochTime);  
-                                        var hora = fechaEpoch.getHours();
-                                        var min = fechaEpoch.getMinutes() - 5;
-                                        var sInicio = (+horaEntrada) * 60 * 60 + (+minEntrada) * 60 + 00; 
-                                        var sHorarioEntrada = (+user.hora) * 60 * 60 + (+user.minutos) * 60 + 00; 
-
-                                        if(sHorarioEntrada < sInicio){
-                                            estado += 1;   
-                                        }//if
-                                    } else {
-                                        var epochEntrada = user.epochEntrada;
-                                        var fechaEntrada= new Date(0);
-                                        fechaEntrada.setUTCSeconds(epochEntrada);  
-                                        var horaEntrada = fechaEntrada.getHours();
-                                        var minEntrada = fechaEntrada.getMinutes() - 5;
-                                        var sInicio = (+horaEntrada) * 60 * 60 + (+minEntrada) * 60 + 00; 
-
-                                        var epochSalida = user.epochSalida;
-                                        var fechaSalida= new Date(0);
-                                        fechaSalida.setUTCSeconds(epochSalida);  
-                                        var horaSalida = fechaSalida.getHours();
-                                        var minSalida = fechaSalida.getMinutes() + 5;
-                                        var sFinal = (+horaSalida) * 60 * 60 + (+minSalida) * 60 + 00; 
-
-                                        var seg = sFinal - sInicio;
-
-                                        var sJornada = (+user.hora) * 60 * 60 + (+user.minutos) * 60 + 00; 
-                                        if(sJornada > seg){
-                                            estado += 1;   
-                                        }//if
-                                    }
-                                } else {
-                                    estado += 1;
-                                } 
-                            });//for each usuario
-                            
-                            var marcas = estado;
-                            estado += departamento.justificaciones;
-                            estado += departamento.solicitudes;
-
-                            var newCierre = Cierre({
-                                        estado: estado,
-                                        epoch: epochToday,
-                                        departamento: departamento,
-                                        justificaciones: departamento.justificaciones,
-                                        solicitudes: departamento.solicitudes,
-                                        marcas: marcas 
-                                    });
-
-                            newCierre.save(function(error, user) {
-
-                                if (error) console.log(error);
-                                else console.log("éxito al guardar");
-                            });//cierre
-                            epochToday++;
-                        });// for each departamento
-                    });//Aggregate
-                 });//MapReduce
-            });//mapReduce
-                     
+                    }
+                });
+            });
+            Cierre.find({etapa:0, tipo: "General", epoch: {'$gte': epochYesterday}}, function (err, cierresGenerales){
+                console.log('No hay cierres Generales ?')
+                if(cierresGenerales) {
+                    for (var i = 0; i < cierresGenerales.length; i++) {
+                        Cierre.findByIdAndUpdate(cierresGenerales[i]._id, {etapa:1}, function (err, cierre){});
+                    };
+                }
+            });
+                  
         }, //funcion
         start: false,
         timeZone: "America/Costa_Rica"
     });
     job.start();
 
-    /*
-    *   Envia los resultados de los cierres a la función calendario.
-    *   Se inicia la conexión.
-    */
+
+
+/*
+*   Envia los resultados de los cierres a la función calendario.
+*   Se inicia la conexión.
+*/
     io.sockets.on('connection', function(socket){
-        /*
-        *   Emitimos nuestro evento connected
-        */
+    /*
+    *   Emitimos nuestro evento connected
+    */
         socket.on('connected', function (){
             var date = new Date();
             var epoch = (date.getTime() - date.getMilliseconds())/1000;
             socket.emit('connected', epoch);
         });
-        /*
-        *   Recibe la orden de lista y filtra cierres por tipo de usuario
-        */
+    
+    /*
+    *   Recibe la orden de lista y filtra cierres por tipo de usuario
+    */
         socket.on('listar', function (departamentoId){
             var option = departamentoId.split(',');
             if(option[0] == "Supervisor")
@@ -1997,9 +1277,9 @@ module.exports = function(app, io) {
                 listarEmpleado(departamentoId);
         });
 
-        /*
-        *   Filtra cierres por departamento
-        */
+    /*
+    *   Filtra cierres por departamento
+    */
         function listarSupervisor(departamentoId){
             var option = departamentoId.split(',');
             if(option[1] == "todos"){
@@ -2027,9 +1307,9 @@ module.exports = function(app, io) {
             }
         }
 
-        /*
-        *   Filtra cierres por evento (justificaciones, solicitudes y marcas)
-        */
+    /*
+    *   Filtra cierres por evento (justificaciones, solicitudes y marcas)
+    */
         function listarEmpleado(departamentoId){
             var option = departamentoId.split(',');
             Cierre.find({usuario: option[2]}).exec(function(err, cierre) {

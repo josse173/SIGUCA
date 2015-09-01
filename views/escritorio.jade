@@ -16,6 +16,7 @@ block content
                 div          
                  button.marcaResponsive.btn.btn-success(name='marcar', onclick= "changeElemt('marca')", data-toggle="modal" data-target="#addMarcaResponsive" value=usuario._id) Realizar Marca
             div.marcasTable
+              div
               h3 Registro de Marcas
               div
                 label Hora oficial 
@@ -26,34 +27,34 @@ block content
                   thead
                     tr
                       th(data-sort-ignore="true") Tipo
-                      th(data-sort-ignore="true") Hora
+                      th(data-sort-ignore="true" data-type="numeric" ) Hora
                   tbody.marcasDetalle
                     each marca, i in marcas
                       case marca.tipoMarca
                         when "Entrada"
                           tr
                             td Entrada
-                            td #{marca.fecha}
+                            td(data-value=marca.epoch) #{marca.fecha}
                         when "Salida a Receso"
                           tr
                             td Salida a Receso
-                            td #{marca.fecha}
+                            td(data-value=marca.epoch) #{marca.fecha}
                         when "Entrada de Receso"
                           tr
                             td Entrada de Receso
-                            td #{marca.fecha}
+                            td(data-value=marca.epoch) #{marca.fecha}
                         when "Salida al Almuerzo"
                           tr
                             td Salida al Almuerzo
-                            td #{marca.fecha}
+                            td(data-value=marca.epoch) #{marca.fecha}
                         when "Entrada de Almuerzo"
                           tr
                             td Entrada del Almuerzo
-                            td #{marca.fecha}
+                            td(data-value=marca.epoch) #{marca.fecha}
                         when "Salida"
                           tr
                             td Salida
-                            td #{marca.fecha}
+                            td(data-value=marca.epoch) #{marca.fecha}
 
           div#calSupervisor
             button#previous.btn.btn-default
@@ -68,6 +69,15 @@ block content
               div
                 label Hora oficial 
                   span.clock
+                label Horas trabajadas 
+                  - var seg = JSON.stringify(horasSemanales)
+                  - h = parseInt(seg / 60 / 60);
+                  - seg -= h*60*60;
+                  - m = parseInt(seg / 60);
+                  if( m < 10)
+                    span #{h} : 0#{m}
+                  else
+                    span #{h} : #{m}
               br
               div
                 table#tablaMarcas.footable
@@ -245,20 +255,14 @@ block content
                   .modal-body
                     form(role='form', method="POST", action="/solicitud_extra")#login-form.well.span4
                       .form-group
-                        label(for='fecha') Día:
-                          div#datepicker.input-group
-                            input.form-control(type='text', name='diaInicio', placeholder='Fecha' required )
-                            span.input-group-addon
-                              i.icon-calendar
-                      .form-group
-                        label(for='horaInicio') Hora de Inicio:
-                          div#timepicker.input-group
-                            input.input-small.form-control(data-format="hh:mm:ss", type="text", name= 'horaInicio')
+                        label(for='fecha') Inicio:
+                          div.input-group
+                            input#date_timepicker_start.form-control(type='text', name='epochInicio', placeholder='Fecha y hora de inicio' required )
                             span.input-group-addon
                               i.icon-time
-                        label(for='horaFinal') Hora de Salida:
-                          div#timepicker.input-group
-                            input.input-small.form-control(type="text", name= 'horaFinal')
+                        label(for='fecha') Termino:
+                          div.input-group
+                            input#date_timepicker_end.form-control(type='text', name='epochTermino', placeholder='Fecha y hora final' required )
                             span.input-group-addon
                               i.icon-time
                       .form-group
@@ -272,22 +276,22 @@ block content
                       button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
        
          
-        #permiso.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+        #permiso.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true' )
             .modal-dialog
                 .modal-content
                   .modal-header
                     button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
                     h4#myModalLabel.modal-title Solicitar permiso anticipado
                   .modal-body
-                    form(role='form', method="POST", action="/solicitud_permisos")#login-form.well.span4
+                    form.formSoli(role='form', method="POST")#login-form.well.span4
                       .form-group
                         label(for='diaInicio') Día Inicial:
-                          div#datepicker.input-group
+                          div.input-group
                             input#diaInicio.form-control(type='text', name='diaInicio', placeholder='Fecha Inicial' required)
                             span.input-group-addon
                               i.icon-calendar
                         label(for='diaFinal') Día Final:
-                          div#datepicker.input-group
+                          div.input-group
                             input#diaFinal.form-control(type= 'text', placeholder='Fecha Final', name= 'diaFinal' required)
                             span.input-group-addon
                               i.icon-calendar
@@ -308,7 +312,7 @@ block content
                         label(for='detalle') Detalle:
                           textarea#detalle.form-control(rows="4" cols="50" name='detalle' required)
                                                                            
-                      button.btn.btn-success(type='submit') Enviar
+                      button#btn-permiso.btn.btn-success Enviar
                       button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
        
                  
@@ -319,7 +323,7 @@ block content
                 button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
                 h4#myModalLabel.modal-title Justificación
               .modal-body
-                form(role='form', method="POST", action="justificacion_nueva")#login-form.well.span4
+                form.formJust(role='form', method="POST")#login-form.well.span4
                   .form-group
                     label(for='motivoJust') Motivo:
                       select#selectMotivoJust.form-control(type= 'text', name= 'motivoJust' style='float:left' required)
@@ -334,11 +338,11 @@ block content
                       label(for='detalles') Detalles:
                       textarea#detalles.form-control(rows="4" cols="50" name='detalle' required)
                          
-                  button.btn.btn-success(type='submit') Enviar
+                  button#btn-just.btn.btn-success(type='submit') Enviar
                   button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
     
 
-      if(usuario.tipo == 'Administrador')               
+      if(usuario.tipo == 'Administrador')
         .col-xs-4(style="margin: 20px;")
 
             h3#labelIMEC

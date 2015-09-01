@@ -6,7 +6,7 @@ block sigucaCSS
 block content
     div.container
       .info
-       h3 Reportes de eventos
+       h3 Reportes de eventos 
        h4 #{empleado}   
 
       div.filter
@@ -20,18 +20,21 @@ block content
                   option(value= user._id + "|reportes") #{user.apellido1} #{user.apellido2}, #{user.nombre}
             td
               label.labelFiltro.labFilLeft(for='fechaDesde') Desde:
-                div#datepicker.input-group
-                  input.form-control(type='text', name='fechaDesde')
+                div.input-group
+                  input#date_range_start.form-control(type='text', name='fechaDesde')
                   span.input-group-addon
                     i.icon-calendar
             td
               label.labelFiltro(for='fechaHasta') Hasta:
-                div#datepicker.input-group
-                  input.form-control(type='text', name='fechaHasta')
+                div.input-group
+                  input#date_range_end.form-control(type='text', name='fechaHasta')
                   span.input-group-addon
                     i.icon-calendar
             td
               button.filtro.form-control.btn.btn-success(type='submit', name='gestionar') Buscar
+            //
+              td
+                button#toPDF.form-control.btn.btn-primary(name='toPDF') PDF
 
       .col-xs-12
         div#calSupervisor
@@ -140,9 +143,8 @@ block content
                   tr
                     th(data-type="numeric" data-sort-initial="descending") Fecha
                     th Usuario
-                    th Día
-                    th(data-hide="phone,small" data-sort-ignore="true") Hora Inicio 
-                    th(data-hide="phone,small" data-sort-ignore="true") Hora Final
+                    th(data-hide="phone,small" data-sort-ignore="true") Día de Inicio 
+                    th(data-hide="phone,small" data-sort-ignore="true") Día de Termino
                     th(data-hide="phone,small,medium" data-sort-ignore="true") Cantidad de Horas
                     th(data-hide="phone,small,medium") Cliente
                     th(data-hide="phone,small,medium" data-sort-ignore="true") Motivo
@@ -155,8 +157,7 @@ block content
                       td(data-value=extra.fechaCreada) #{extra.fecha} 
                       td #{extra.usuario.nombre} #{extra.usuario.apellido1} 
                       td #{extra.diaInicio} 
-                      td #{extra.horaInicio} 
-                      td #{extra.horaFinal} 
+                      td #{extra.diaFinal} 
                       td #{extra.cantHoras} 
                       td #{extra.cliente} 
                       td #{extra.motivo} 
@@ -167,7 +168,7 @@ block content
                           i.icon-trash.icon-large.i-danger 
                 tfoot
                   tr
-                    td(colspan='11')
+                    td(colspan='10')
                       .pagination.pagination-centered.hide-if-no-paging
           else
             p No se han enviado extras hasta el momento.
@@ -209,6 +210,42 @@ block content
                       .pagination.pagination-centered.hide-if-no-paging
           else
             p No se han enviado permisos hasta el momento.
+
+          if(horasSemanales != '')
+            br
+            h3 Horas Semanales 
+            table.tableCierres.footable(data-page-navigation=".pagination" data-page-size="11")
+                thead
+                  tr
+                    th(data-type="numeric" data-sort-initial="descending") Fecha
+                    th Usuario
+                    th(data-sort-ignore="true") Cantidad de horas diarias
+                    th(data-sort-ignore="true") Acumulado de horas semanales
+                tbody
+                  each cierres, i in horasSemanales
+                    tr
+                      td(data-value=cierres.epoch) #{cierres.fecha} 
+                      td #{cierres.usuario.nombre} #{cierres.usuario.apellido1} 
+                      - var seg = JSON.stringify(cierres.horasDiarias)
+                      - h = parseInt(seg / 60 / 60);
+                      - seg -= h*60*60;
+                      - m = parseInt(seg / 60);
+                      if( m < 10) 
+                        td #{h} : 0#{m} 
+                      else
+                        td #{h} : #{m} 
+                      - var seg = JSON.stringify(cierres.horasSemanales)
+                      - h = parseInt(seg / 60 / 60);
+                      - seg -= h*60*60;
+                      - m = parseInt(seg / 60);
+                      if( m < 10) 
+                        td #{h} : 0#{m} 
+                      else
+                        td #{h} : #{m} 
+                tfoot
+                  tr
+                    td(colspan='10')
+                      .pagination.pagination-centered.hide-if-no-paging
 
 block sigucaJS     
   script(src="/socket.io/socket.io.js")

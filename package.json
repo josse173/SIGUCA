@@ -23,6 +23,7 @@
     "socket.io": "*",
     "cron": "latest",
     "bcrypt-nodejs" : "latest",
-    "nodemailer": "*"
+    "nodemailer": "*",
+    "moment": "*"
   }
 }

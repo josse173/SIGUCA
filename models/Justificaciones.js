@@ -5,8 +5,7 @@
  */
 
 var mongoose = require('mongoose'),
-    Schema = mongoose.Schema,
-    passportLocalMongoose = require('passport-local-mongoose');
+    Schema = mongoose.Schema;
 
 //Crear el esquema de justificación
 var SchemaJustificacion = new Schema({
@@ -35,7 +34,5 @@ var SchemaJustificacion = new Schema({
         default: ''
     }
 });
-
-SchemaJustificacion.plugin(passportLocalMongoose);
 
 module.exports = mongoose.model('Justificaciones', SchemaJustificacion);

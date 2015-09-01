@@ -12,14 +12,14 @@ block content
          form(role='form', method="POST", action="/filtrarEventosEmpl")
           td
             label.labelFiltro(for='fechaDesde') Desde:
-              div#datepicker.input-group
-                input.form-control(type='text', name='fechaDesde')
+              div.input-group
+                input#date_range_start.form-control(type='text', name='fechaDesde')
                 span.input-group-addon
                   i.icon-calendar
           td
             label.labelFiltro(for='fechaHasta') Hasta:
-              div#datepicker.input-group
-                input.form-control(type='text', name='fechaHasta')
+              div.input-group
+                input#date_range_end.form-control(type='text', name='fechaHasta')
                 span.input-group-addon
                   i.icon-calendar
           td
@@ -92,9 +92,8 @@ block content
               thead
                 tr
                   th(data-type="numeric" data-sort-initial="descending") Fecha
-                  th Día
-                  th(data-sort-ignore="true") Hora Entrada 
-                  th(data-sort-ignore="true") Hora Salida
+                  th(data-sort-ignore="true") Día de Inicio 
+                  th(data-sort-ignore="true") Día de Termino
                   th(data-hide="phone,small,medium" data-sort-ignore="true") Cantidad de Horas
                   th(data-hide="phone,small,medium") Cliente
                   th(data-hide="phone,small,medium" data-sort-ignore="true") Motivo
@@ -106,8 +105,7 @@ block content
                   tr
                     td(data-value=extra.fechaCreada) #{extra.fecha} 
                     td #{extra.diaInicio} 
-                    td #{extra.horaInicio} 
-                    td #{extra.horaFinal} 
+                    td #{extra.diaFinal} 
                     td #{extra.cantHoras} 
                     td #{extra.cliente} 
                     td #{extra.motivo} 
@@ -119,7 +117,7 @@ block content
                           i.icon-pencil.icon-large.i-success 
               tfoot
                 tr
-                  td(colspan='10')
+                  td(colspan='9')
                     .pagination.pagination-centered.hide-if-no-paging
         else
           p No se existen extras hasta el momento.
@@ -184,7 +182,7 @@ block content
                     label(for='detalles') Detalles:
                     textarea#detalles.form-control(rows="4" cols="50" name='detalle' required)
                        
-                button.btn.btn-success(type='submit') Actualizar
+                button#btn-editJust.btn.btn-success(type='submit') Actualizar
                 button.btnCancelar.btn.btn-default(type='button', data-dismiss='modal') Cancelar
 
       #editExtra.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
@@ -196,20 +194,14 @@ block content
                 .modal-body
                   form.formUpdateExtra(role='form', method="POST")#login-form.well.span4
                     .form-group
-                      label(for='fecha') Día:
-                        div#datepicker.input-group
-                          input.form-control(type='text', name='diaInicio', placeholder='Fecha' required )
-                          span.input-group-addon
-                            i.icon-calendar
-                    .form-group
-                      label(for='horaInicio') Hora de Inicio:
-                        div#timepicker.input-group
-                          input.input-small.form-control(data-format="hh:mm:ss", type="text", name= 'horaInicio')
+                      label(for='fecha') Inicio:
+                        div.input-group
+                          input#date_timepicker_start.form-control(type='text', name='epochInicio', placeholder='Fecha y hora de inicio' required )
                           span.input-group-addon
                             i.icon-time
-                      label(for='horaFinal') Hora de Salida:
-                        div#timepicker1.input-group
-                          input.input-small.form-control(type="text", name= 'horaFinal')
+                      label(for='fecha') Termino:
+                        div.input-group
+                          input#date_timepicker_end.form-control(type='text', name='epochTermino', placeholder='Fecha y hora final' required )
                           span.input-group-addon
                             i.icon-time
                     .form-group
@@ -232,12 +224,12 @@ block content
                   form.formUpdatePermiso(role='form', method="POST")#login-form.well.span4
                     .form-group
                       label(for='diaInicio') Día Inicial:
-                        div#datepicker.input-group
+                        div.input-group
                           input#diaInicio.form-control(type='text', name='diaInicio', placeholder='Fecha Inicial' required)
                           span.input-group-addon
                             i.icon-calendar
                       label(for='diaFinal') Día Final:
-                        div#datepicker.input-group
+                        div.input-group
                           input#diaFinal.form-control(type= 'text', placeholder='Fecha Final', name= 'diaFinal' required)
                           span.input-group-addon
                             i.icon-calendar
@@ -258,5 +250,5 @@ block content
                       label(for='detalle') Detalle:
                         textarea#detallePermiso.form-control(rows="4" cols="50" name='detalle' required)
                                                                          
-                    button.btn.btn-success(type='submit') Enviar
+                    button#btn-editPermiso.btn.btn-success(type='submit') Enviar
                     button.btn.btn-default(type='button', data-dismiss='modal') Cancelar                

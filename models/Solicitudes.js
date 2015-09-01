@@ -5,8 +5,7 @@
  */
 
 var mongoose = require('mongoose'),
-    Schema = mongoose.Schema,
-    passportLocalMongoose = require('passport-local-mongoose');
+    Schema = mongoose.Schema;
 
 var SchemaSolicitudes = new Schema({
     usuario: {
@@ -25,13 +24,21 @@ var SchemaSolicitudes = new Schema({
         type: String,
         default: ''
     },
-    horaInicio: { 
+    /*Inicio: { 
         type: String,
         default: ''
     },
-    horaFinal: { 
+    Termino: { 
         type: String,
         default: ''
+    },*/
+    epochInicio: { 
+        type: Number,
+        default: 0
+    },
+    epochTermino: { 
+        type: Number,
+        default: 0
     },
     fechaCreada: { //epoch
         type: Number,

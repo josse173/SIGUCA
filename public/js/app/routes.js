@@ -3,14 +3,50 @@
 /*--------------------------------------------------------------------
     Inicialización de componentes
 ---------------------------------------------------------------------*/
-    $('#datepicker input').datepicker({
-        format: "dd/mm/yyyy",
-        autoclose: true,
-        language: "es",
-        todayHighlight: true
+    // $('#datepicker input').datepicker({
+    //     format: "dd/mm/yyyy",
+    //     autoclose: true,
+    //     language: "es",
+    //     todayHighlight: true
+    // });
+
+    // $('#timepicker input').timepicker();
+
+    jQuery('#date_timepicker_start').datetimepicker({
+        format: 'd/m/Y H:i'
+    });
+    jQuery('#date_timepicker_end').datetimepicker({
+        format: 'd/m/Y H:i'
     });
 
-    $('#timepicker input').timepicker();
+    jQuery('#diaInicio').datetimepicker({
+        format:'Y/m/d',
+        onShow:function( ct ){
+            this.setOptions({
+                maxDate:jQuery('#diaFinal').val()?jQuery('#diaFinal').val():false
+            })
+        },
+        timepicker:false
+    });
+    jQuery('#diaFinal').datetimepicker({
+        format:'Y/m/d',
+        onShow:function( ct ){
+            this.setOptions({
+                minDate:jQuery('#diaInicio').val()?jQuery('#diaInicio').val():false
+            })
+        },
+        timepicker:false
+    });
+
+    jQuery('#date_range_start').datetimepicker({
+        format: 'd/m/Y',
+        timepicker: false
+    });
+    jQuery('#date_range_end').datetimepicker({
+        format: 'd/m/Y',
+        timepicker: false
+    });
+
 
     $('.footable').footable();
 
@@ -34,7 +70,6 @@
 
     $("button[data-target=#editJust]").click( function() {
         var id = $(this).val();
-        $('.formUpdateJust').attr('action', '/justificacion/'+id);
         $.get('/justificacion/edit/'+id, function( data ) {
 
             //$('#motivo').val(data.motivo);   
@@ -61,9 +96,10 @@
         var id = $(this).val();
         $('.formUpdateExtra').attr('action', '/extra/'+id);
         $.get('/solicitud/edit/'+id, function( data ) {
-            $('#datepicker input').val(data.diaInicio);
-            $('#timepicker input').timepicker('setTime', data.horaInicio);
-            $('#timepicker1 input').timepicker('setTime', data.horaFinal);
+            var epochInicio = moment.unix(data.epochInicio).format("YYYY/MM/DD HH:mm"),
+                epochTermino = moment.unix(data.epochTermino).format("YYYY/MM/DD HH:mm")
+            $('#date_timepicker_start').val(epochInicio);
+            $('#date_timepicker_end').val(epochTermino);
             $('#cliente').val(data.cliente);
             $('#motivo').val(data.motivo);
         });
@@ -71,10 +107,9 @@
 
     $("button[data-target=#editPermiso]").click( function() {
         var id = $(this).val();
-        $('.formUpdatePermiso').attr('action', '/permiso/'+id);
         $.get('/solicitud/edit/'+id, function( data ) {
-            $('#datepicker input').val(data.diaFinal);
             $('#diaInicio').val(data.diaInicio);
+            $('#diaFinal').val(data.diaFinal);
             $('#cantidadDias').val(data.cantidadDias);
             var optionValues = [];
 
@@ -167,7 +202,7 @@
         $('#selectMotivoJust').val("");
         $('#motivoOtroJust').val("");
         $('#detalles').val("");
-        $('#datepicker input').val("");
+        /*$('#datepicker input').val("");*/
         $('#timepicker input').timepicker('setTime', "");
         $('#timepicker1 input').timepicker('setTime', "");
         $('#motivo').val("");
@@ -176,6 +211,52 @@
         $('#selectMotivo').val("");
         $('#motivoOtro').val("");
         $('#detallePermiso').val(""); 
+    });
+
+    $("#btn-permiso").click(function(){
+        var val = $('#selectMotivo').val();
+        if(val == 'seleccionar') {
+            alertify.error('Motivo no valido');
+            return false;
+        } else {
+            $('.formSoli').attr('action', '/solicitud_permisos/');
+            $("#btn-permiso").submit();
+        }
+    });
+
+    $("#btn-just").click(function(){
+        var val = $('#selectMotivoJust').val();
+        if(val == 'seleccionar') {
+            alertify.error('Motivo no valido');
+            return false;
+        } else {
+            $('.formJust').attr('action', 'justificacion_nueva');
+            $("#btn-just").submit();
+        }
+    });
+
+    $("#btn-editPermiso").click(function(){
+        var id = $("button[data-target=#editPermiso]").val();
+        var val = $('#selectMotivo').val();
+        if(val == 'seleccionar') {
+            alertify.error('Motivo no valido');
+            return false;
+        } else {
+            $('.formUpdatePermiso').attr('action', '/permiso/'+id);
+            $("#btn-editPermiso").submit();
+        }
+    });
+
+    $("#btn-editJust").click(function(){
+        var id = $("button[data-target=#editJust]").val();
+        var val = $('#selectMotivoJust').val();
+        if(val == 'seleccionar') {
+            alertify.error('Motivo no valido');
+            return false;
+        } else {
+            $('.formUpdateJust').attr('action', '/justificacion/'+id);
+            $("#btn-editJust").submit();
+        }
     });
 
 /*--------------------------------------------------------------------
@@ -297,7 +378,7 @@
 
 /*--------------------------------------------------------------------
     Notificaciones y eliminación de departamentos/horarios/empleados
----------------------------------------------------------------------*/
+----------------------------------------------------------------    -----*/
     $('.tableDepartamento').footable().on('click', '.departamentoDelete', function(e) {
         var footable = $('.tableDepartamento').data('footable');
         var row = $(this).parents('tr:first');
@@ -369,3 +450,22 @@
             }
           }).show();        
     });
+
+/*--------------------------------------------------------------------
+    Exportar a PDF
+----------------------------------------------------------------    -----*/
+/*    var doc = new jsPDF();
+
+    // We'll make our own renderer to skip this editor
+    var specialElementHandlers = {
+        '#editor': function(element, renderer){
+            return true;
+        }
+    };
+
+    // All units are in the set measurement for the document
+    // This can be changed to "pt" (points), "mm" (Default), "cm", "in"
+    doc.fromHTML($('body').get(0), 15, 15, {
+        'width': 170, 
+        'elementHandlers': specialElementHandlers
+    });*/

@@ -1,6 +1,6 @@
 
     //Declaramos el objeto socket que se conectará en este caso a localhost
-    //var socket = io.connect('http://siguca.greencore.int');
+    // var socket = io.connect('http://siguca.greencore.int');
     var socket = io.connect('http://localhost:3000');
 
     socket.emit('connected');

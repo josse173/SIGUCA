@@ -4,8 +4,7 @@
  *
  */
 var mongoose = require('mongoose'),
-    Schema = mongoose.Schema,
-    passportLocalMongoose = require('passport-local-mongoose');
+    Schema = mongoose.Schema;
 
 //Crear el esquema de Marca
 var SchemaMarca = new Schema({ 

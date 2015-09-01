@@ -17,14 +17,14 @@ block content
                   option(value= user._id + "|gestionarEventos") #{user.apellido1} #{user.apellido2}, #{user.nombre}
             td
               label.labelFiltro.labFilLeft(for='fechaDesde') Desde:
-                div#datepicker.input-group
-                  input.form-control(type='text', name='fechaDesde')
+                div.input-group
+                  input#date_range_start.form-control(type='text', name='fechaDesde')
                   span.input-group-addon
                     i.icon-calendar
             td
               label.labelFiltro(for='fechaHasta') Hasta:
-                div#datepicker.input-group
-                  input.form-control(type='text', name='fechaHasta')
+                div.input-group
+                  input#date_range_end.form-control(type='text', name='fechaHasta')
                   span.input-group-addon
                     i.icon-calendar
             td
@@ -56,9 +56,9 @@ block content
                         textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
                       td
                         select.selectpicker(name='estado' data-width="auto" data-style="btn-inverse")
+                          option(value='Pendiente') Pendiente
                           option(value='Aceptada') Aprobar
                           option(value='Rechazada') Rechazar
-                          option(value='Pendiente') Pendiente
                       td
                         button.row-delete.btn.btn-default(value=justificacion.id, name='gestionar') 
                             i.icon-ok.icon-large  
@@ -80,9 +80,8 @@ block content
                 tr
                   th(data-type="numeric" data-sort-initial="descending") Fecha
                   th Usuario
-                  th(data-hide="phone") Día
-                  th(data-hide="phone" data-sort-ignore="true") Hora Entrada 
-                  th(data-hide="phone" data-sort-ignore="true") Hora Salida
+                  th(data-hide="phone" data-sort-ignore="true") Día de Inicio 
+                  th(data-hide="phone" data-sort-ignore="true") Día de Termino
                   th(data-hide="phone,small,medium" data-sort-ignore="true") Cantidad de Horas
                   th(data-hide="phone,small,medium") Cliente
                   th(data-hide="phone,small,medium" data-sort-ignore="true") Motivo
@@ -97,8 +96,7 @@ block content
                       td(data-value=extra.fechaCreada) #{extra.fecha} 
                       td #{extra.usuario.nombre} #{extra.usuario.apellido1} 
                       td #{extra.diaInicio} 
-                      td #{extra.horaInicio} 
-                      td #{extra.horaFinal} 
+                      td #{extra.diaFinal} 
                       td #{extra.cantHoras} 
                       td #{extra.cliente} 
                       td #{extra.motivo} 
@@ -106,9 +104,9 @@ block content
                         textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
                       td
                         select.selectpicker(name='estado' data-width="auto"  data-style="btn-inverse")
+                          option(value='Pendiente') Pendiente
                           option(value='Aceptada') Aprobar
                           option(value='Rechazada') Rechazar
-                          option(value='Pendiente') Pendiente
                       td
                         button.row-delete.btn.btn-default(value=extra.id, name='gestionar') 
                           i.icon-ok.icon-large  
@@ -117,7 +115,7 @@ block content
                           i.icon-trash.icon-large.i-danger 
               tfoot
                 tr
-                  td(colspan='12')
+                  td(colspan='11')
                     .pagination.pagination-centered.hide-if-no-paging
         else
           p No se han enviado extras hasta el momento. 
@@ -154,9 +152,9 @@ block content
                         textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
                       td
                         select.selectpicker(name='estado' data-width="auto"  data-style="btn-inverse")
+                          option(value='Pendiente') Pendiente
                           option(value='Aceptada') Aprobar
                           option(value='Rechazada') Rechazar
-                          option(value='Pendiente') Pendiente
                       td
                         button.row-delete.btn.btn-default(value=permiso.id, name='gestionar') 
                           i.icon-ok.icon-large  

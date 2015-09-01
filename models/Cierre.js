@@ -6,8 +6,7 @@
  */
 
 var mongoose = require('mongoose'),
-    Schema = mongoose.Schema,
-    passportLocalMongoose = require('passport-local-mongoose');
+    Schema = mongoose.Schema;
 
 var SchemaCierre = new Schema({
     epoch: { 
@@ -41,6 +40,18 @@ var SchemaCierre = new Schema({
     usuario: {
         type: Schema.Types.ObjectId,
         ref: 'Usuario'
+    },
+    horasDiarias: {
+        type: Number,
+        default: 0
+    },
+    horasSemanales: {
+        type: Number,
+        default: 0
+    },
+    etapa: {
+        type: Number,
+        default: 0
     }
 });
 
