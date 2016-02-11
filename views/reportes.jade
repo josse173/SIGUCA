@@ -202,7 +202,7 @@ block content
                         - if(cierre.tiempo.minutos<10) m = "0"+m;
                         - tiempo = h+":"+m;
                         - if(cierre.tiempo.horas<=0 && cierre.tiempo.minutos<=0) 
-                        -tiempo = "El usuario se ausentó o no marcó salida."
+                          -tiempo = "El usuario se ausentó o no marcó salida."
                         tr
                           td(data-value=cierre.epoch) #{cierre.fecha.str} 
                           td #{cierre.usuario.nombre} #{cierre.usuario.apellido1} 
