@@ -608,9 +608,6 @@ app.get('/horas/actualizar', autentificado, horas_actions.horasTrabajadas);
 *   Envia los resultados de los cierres a la función calendario.
 *   Se inicia la conexión.
 */
-var cookie = require('express/node_modules/cookie');
-var cookieParser = require('cookie-parser');
-var config = require('../config/config');
 io.sockets.on('connection', function(socket){
     /*
     *   Emitimos nuestro evento connected
