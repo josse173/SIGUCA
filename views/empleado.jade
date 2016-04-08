@@ -32,7 +32,10 @@ block content
               td 
                 each departamentos, i in empleado.departamentos
                   ul
-                    li #{departamentos.departamento.nombre} 
+                    if(departamentos.departamento)
+                      li #{departamentos.departamento.nombre}
+                    else
+                      li No tiene departamento asignado
               td #{empleado.horario.nombre} 
               td #{empleado.estado} 
               td
@@ -71,6 +74,9 @@ block content
 
                   .form-group 
                     h3 Información Laboral
+                    label(for="usernameInput")
+                       |Usuario:
+                       input.form-control#username(type="text", name="username", placeholder="Usuario")
                     label(for='codTarjeta') Código de Empleado:
                       input#codTarjeta.form-control(type= 'text', placeholder='Código de Empleado', name='codTarjeta')
                     br   
@@ -91,7 +97,16 @@ block content
                       br
                       select.form-control#selectDepartamentos.selectpicker(data-style="btn-success", data-width="200px", data-selected-text-format="count>2", type="text", name="departamentos", multiple="multiple") 
                         each departamento, i in departamentos
-                            option(value= departamento.id) #{departamento.nombre} 
-                                  
+                            option(value= departamento.id) #{departamento.nombre}
+                  .form-group
+                     label(for="passwordInput")
+                       |Contraseña:
+                       input.form-control#passInput(type='text', size='18', name="password", placeholder="Contraseña")
+                       button.btn.btn-default(type='button', onclick='generatepass(8)') Generar Contraseña
+                                
                   button.btn.btn-success(type='submit') Actualizar
                   button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
+block sigucaJS
+  script(src="/js/components/mailgun_validator.js")
+  script(src="/js/components/generarPassword.js")
+

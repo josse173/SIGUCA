@@ -69,15 +69,8 @@ block content
               div
                 label Hora oficial 
                   span.clock
-                label Horas trabajadas 
-                  - var seg = JSON.stringify(horasSemanales)
-                  - h = parseInt(seg / 60 / 60);
-                  - seg -= h*60*60;
-                  - m = parseInt(seg / 60);
-                  if( m < 10)
-                    span #{h} : 0#{m}
-                  else
-                    span #{h} : #{m}
+                label Tiempo trabajado 
+                  span#clockHorasTrab
               br
               div
                 table#tablaMarcas.footable

@@ -82,6 +82,21 @@ block content
                   td -
         br
         div.tablasReportes
+          if(resumen.length != 0)
+            h3.h3Marcas Resumen
+            table.footable
+                thead
+                    tr
+                      th Tipo
+                      th Cantidad
+                tbody
+                  each line in resumen
+                    tr
+                      td #{line.tipo}
+                      td #{line.cantidad}
+                tfoot
+                  tr
+                    td(colspan='2')
           h3.h3Marcas Marcas
           if(marcas.length != 0)
             table.footable(data-page-navigation=".pagination" data-page-size="25")

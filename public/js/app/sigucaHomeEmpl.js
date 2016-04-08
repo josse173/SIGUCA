@@ -1,15 +1,17 @@
 
     //Declaramos el objeto socket que se conectará en este caso a localhost
-    var socket = io.connect('http://siguca.greencore.int');
-    //var socket = io.connect('http://localhost:3000');
-
+    //var socket = io.connect('http://siguca.greencore.int');
+    var socket = io.connect('http://10.42.30.19:3000');
+    //var id = 
     socket.emit('connected');
 
     //Si estamos conectados, muestra el log y cambia el mensaje
     socket.on('connected', function (epoch) {
         selectValue();
         clock(epoch);
+        updateHorasTrabajadas();
     });
+
 
     function selectValue(){
         var value = $('#selectFiltro').val();
@@ -20,7 +22,7 @@
     function clock(epoch){
         setInterval(function(){
             var currentTime = new Date(0);
-            currentTime.setUTCSeconds(epoch)
+            currentTime.setUTCSeconds(epoch);
             var currentHours = currentTime.getHours ( );
             var currentMinutes = currentTime.getMinutes ( );
             var currentSeconds = currentTime.getSeconds ( );
@@ -43,14 +45,27 @@
 
             // Update the time display
             $(".clock").text(currentTimeString);
+            if(epoch%60==0)
+                updateHorasTrabajadas();
             epoch++;
         }, 1000 );
-    }
+}
 
-    $('#selectFiltro').change(function(){
-        $('#cal').empty();
-        selectValue();
+function updateHorasTrabajadas(){
+    $.get("horas/actualizar", function( data ) {
+        var currentHours = data.h;
+        var currentMinutes = data.m;
+        currentHours = ( currentHours < 10 ? "0" : "" ) + currentHours;
+        currentMinutes = ( currentMinutes < 10 ? "0" : "" ) + currentMinutes;
+        $("#clockHorasTrab").text(
+            ""+currentHours+ "h y "+currentMinutes+"m");
     });
+}
+
+$('#selectFiltro').change(function(){
+    $('#cal').empty();
+    selectValue();
+});
 
 
     //Se recibe result de la consulta
@@ -66,21 +81,21 @@
         if(result.tipo == "general")
             for (var d in result.cierre)
                 stats[result.cierre[d].epoch] = result.cierre[d].estado;
-        else{
-            if(result.tipo == "justificaciones")
-                for (var d in result.cierre)
-                    stats[result.cierre[d].epoch] = result.cierre[d].justificaciones;
             else{
-                if(result.tipo == "solicitudes")
+                if(result.tipo == "justificaciones")
                     for (var d in result.cierre)
-                        stats[result.cierre[d].epoch] = result.cierre[d].solicitudes;
-                else
-                    for (var d in result.cierre)
-                        stats[result.cierre[d].epoch] = result.cierre[d].marcas;
-            }
-        }
-        calendario(stats, [2, 5, 10]);
-    });
+                        stats[result.cierre[d].epoch] = result.cierre[d].justificaciones;
+                    else{
+                        if(result.tipo == "solicitudes")
+                            for (var d in result.cierre)
+                                stats[result.cierre[d].epoch] = result.cierre[d].solicitudes;
+                            else
+                                for (var d in result.cierre)
+                                    stats[result.cierre[d].epoch] = result.cierre[d].marcas;
+                            }
+                        }
+                        calendario(stats, [2, 5, 10]);
+                    });
 
     $('#selectMotivo').change(function (){
         if($('#selectMotivo').val() == 'otro') $("#motivoOtro").removeAttr('disabled');
@@ -98,12 +113,12 @@
     });
 
 
-function calendario(stats, array){
+    function calendario(stats, array){
 
-    var cal = new CalHeatMap();
-    cal.init({
-        itemSelector: "#cal",
-        domain: "month",
+        var cal = new CalHeatMap();
+        cal.init({
+            itemSelector: "#cal",
+            domain: "month",
         subDomain: "x_day", //"x_hour",
         subDomainTextFormat: "%d",
         weekStartOnMonday: false,
@@ -144,12 +159,12 @@ function calendario(stats, array){
 
                     var fecha = new Date(0);
                     fecha.setUTCSeconds(data.marcasPersonales[i].epoch);
-                        var m = fecha.getMinutes(),
-                            s = fecha.getSeconds();
+                    var m = fecha.getMinutes(),
+                    s = fecha.getSeconds();
 
-                        data.marcasPersonales[i].fecha = fecha.getHours();
-                        m < 10 ? data.marcasPersonales[i].fecha += ":0" + m : data.marcasPersonales[i].fecha += ":" + m ;
-                        s < 10 ? data.marcasPersonales[i].fecha += ":0" + s : data.marcasPersonales[i].fecha += ":" + s ;
+                    data.marcasPersonales[i].fecha = fecha.getHours();
+                    m < 10 ? data.marcasPersonales[i].fecha += ":0" + m : data.marcasPersonales[i].fecha += ":" + m ;
+                    s < 10 ? data.marcasPersonales[i].fecha += ":0" + s : data.marcasPersonales[i].fecha += ":" + s ;
                     html += '<tr><td>' + data.marcasPersonales[i].tipoMarca + '</td><td>' + data.marcasPersonales[i].fecha + '</td></tr>';
                 };
                 $( ".marcasDetalle" ).html(html);

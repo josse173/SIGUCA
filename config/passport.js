@@ -19,13 +19,14 @@ module.exports = function (passport, config) {
     })
   })
 
-  // Estrategia local
+  // Estrategia para realizar acción de logueo
   passport.use('login', new LocalStrategy({
         usernameField : 'username',
         passwordField : 'password',
-        passReqToCallback : true // allows us to pass back the entire request to the callback
+        passReqToCallback : true
     },
     function(req, username, password, done) {
+	//Valida el usuario y la contraseña de logueo
       Usuario.findOne({ 'username': username }, function (err, user) {
         if (err) { return done(err) }
         if (!user) {
@@ -35,16 +36,19 @@ module.exports = function (passport, config) {
           return done(null, false, { message: 'Contraseña inválida.' })
         }
         return done(null, user)
-      });//Usuario
-    }));//Estrategia 
+      });
+    }));
 
+  // Estrategia para realizar acción de registro
   passport.use('signup', new LocalStrategy({
         usernameField : 'username',
         passwordField : 'password',
-        passReqToCallback : true // allows us to pass back the entire request to the callback
+        passReqToCallback : true
     },
     function(req, username, password, done) {
         process.nextTick(function() {
+	//Valida que no exista otro usuario con el nombre de registro
+	//y guarda el usuario nuevo si no existió ningún error
           Usuario.findOne({ 'username' :  username }, function(err, user) {
               if (err)
                   return done(err);
@@ -61,7 +65,7 @@ module.exports = function (passport, config) {
                       return done(null, newUser);
                   });
               }
-          });//User    
-        });//nextTick
-    })); //Strategy
+          });   
+        });
+    })); 
 };

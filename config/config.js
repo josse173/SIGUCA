@@ -16,7 +16,7 @@ module.exports = {
 		}
 	},
 	'production': {
-		db: 'mongodb://localhost/sigucaDB',
+		db: 'mongodb://localhost/sigucaD',
 		root: rootPath,
 		app: {
 			name: 'SIGUCA'
