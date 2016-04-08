@@ -388,7 +388,6 @@ return cb();
 				).populate('usuario').exec(function (err, just) { 
 					if (err) return cb(err, '');
 					var transporter = nodemailer.createTransport();
-
 					var a = new Date(just.fechaCreada * 1000);
 					var date = ""+a.getDate()+"/"+a.getMonth()+"/"+a.getFullYear();
 
@@ -405,13 +404,14 @@ return cb();
 						+"la siguiente justificación ha sido respondida:"
 						+ justtext
 						+ "Le informamos que la justificación fue " + justificacion.estado 
-						+ " por el supervisor, con el siguiente comentario"
+						+ " por el supervisor "
+						+ ", con el siguiente comentario"
 						+ "\r\n\r\n " + justificacion.comentarioSupervisor
 						+ "\r\n\r\n Saludos cordiales."
 					});
 					return cb(err, 'Se elimino');
 				});
-}
+			}
 
 	/*--------------------------------------------------------------------
 		Métodos Horarios
