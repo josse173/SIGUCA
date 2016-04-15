@@ -1,4 +1,4 @@
-//Declaramos el objeto socket que se conectará en este caso a localhost
+    //Declaramos el objeto socket que se conectará en este caso a localhost
 var socket = io.connect('http://siguca.greencore.int');
 var x = "";
 //var socket = io.connect('http://10.42.30.19:3000');
@@ -18,7 +18,7 @@ function selectValue(){
     // alert(value);
     socket.emit('listar', value);
 }
-
+        
 function clock(epoch){
     setInterval(function(){
         var currentTime = new Date(0);

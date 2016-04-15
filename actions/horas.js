@@ -15,6 +15,7 @@ module.exports = {
         epochGte.hours(0);
         epochGte.minutes(0);
         epochGte.seconds(0);
+        //console.log(epochGte.unix());      
         var actualEpoch = moment();
         Marca.find( 
         {

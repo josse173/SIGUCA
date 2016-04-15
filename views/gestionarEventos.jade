@@ -16,6 +16,11 @@ block content
                 each user in usuarios
                   option(value= user._id + "|gestionarEventos") #{user.apellido1} #{user.apellido2}, #{user.nombre}
             td
+              select.form-control#selectFiltro.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro_departamento") 
+                option(value= "todos") Todos los departamentos
+                each dep in departamentos_todos
+                  option(value= dep._id ) #{dep.nombre}
+            td
               label.labelFiltro.labFilLeft(for='fechaDesde') Desde:
                 div.input-group
                   input#date_range_start.form-control(type='text', name='fechaDesde')
@@ -32,7 +37,7 @@ block content
        
       .col-xs-12
         h3 Justificaciones
-        if(justificaciones.length != 0)
+        if(justificaciones!=null && justificaciones.length != 0)
           table.tableJustificaciones.footable(data-page-navigation=".pagination" data-page-size="5" )
               thead
                 tr
@@ -74,7 +79,7 @@ block content
 
         br
         h3 Solicitudes Horas Extraordinarias
-        if(extras.length != 0)
+        if(extras && extras.length != 0)
           table.tableSolicitudes.footable(data-page-navigation=".pagination" data-page-size="5" )
               thead
                 tr
@@ -122,7 +127,7 @@ block content
 
         br
         h3 Solicitudes Permisos
-        if(permisos.length != 0)
+        if(permisos && permisos.length != 0)
           table.tableSolicitudes.footable(data-page-navigation=".pagination" data-page-size="5")
               thead
                 tr

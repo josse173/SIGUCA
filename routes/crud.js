@@ -361,15 +361,28 @@ return cb();
 		Gestionar Eventos
 		---------------------------------------------------------------------*/
 		exports.gestionarSoli = function(solicitud, cb){
-			Solicitudes.findByIdAndUpdate(solicitud.id, {estado: solicitud.estado, comentarioSupervisor: solicitud.comentarioSupervisor}).populate('usuario').exec(function (err, soli) { 
+			Solicitudes.findByIdAndUpdate(solicitud.id, 
+				{estado: solicitud.estado, comentarioSupervisor: 
+					solicitud.comentarioSupervisor}).populate('usuario').exec(function (err, soli) { 
 				if (err) return cb(err, '');
 				var transporter = nodemailer.createTransport();
+				console.log(soli);
+				var a = new Date(soli.fechaCreada * 1000);
+				var date = ""+a.getDate()+"/"+a.getMonth()+"/"+a.getFullYear();
+				var solitext = "\r\n\r\nFecha de creación:"+date+"\n"
+				+ "Motivo:"+soli.motivo+"\n"
+				+ "Detalle:"+soli.detalle+"\r\n\r\n";
 				transporter.sendMail({
 					from: emailSIGUCA,
 					to: soli.usuario.email,
 					subject: 'Respuesta a solicitud en SIGUCA',
 					text: " Estimado(a) " + soli.usuario.nombre 
-					+ ",\r\n\r\n Por este medio se le notifica que la solicitud presentada fue " + solicitud.estado + " por el supervisor, con el siguiente comentario "
+					+ ",\r\n\r\nPor este medio se le notifica que "
+					+"la siguiente solicitud ha sido respondida:"
+					+ solitext
+					+ "Le informamos que la justificación fue " + solicitud.estado 
+					+ " por el supervisor "
+					+ ", con el siguiente comentario"
 					+ "\r\n\r\n " + solicitud.comentarioSupervisor
 					+ "\r\n\r\n Saludos cordiales."
 				});

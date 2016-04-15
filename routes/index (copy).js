@@ -109,7 +109,7 @@ module.exports = function(app, io) {
     *  Carga las justificaciones, solicitudes de horas extra y solicitudes de permisos pendientes, 
     *  a cada consulta se le realiza la conversion de epoch a la CST Standard.
     */
-    app.get('/gestionarEventos', autentificado, event_actions.filtrarEventos);
+    app.get('/gestionarEventos', autentificado, event_actions.gestionarEventos);
 
     /*
     *  Carga las justificaciones, solicitudes de horas extra y solicitudes de permisos NO pendientes,
@@ -143,7 +143,7 @@ module.exports = function(app, io) {
     /*
     *  Filtra los eventos de un usuario en específico por rango de fecha
     */
-    app.post('/filtrarEventosEmpl', autentificado, event_actions.filtrarEventosEmpl);
+    app.post('/filtrarEventosEmpl', autentificado, event_actions.filtrarEventos);
 
     /*
     *  Crea una justificación

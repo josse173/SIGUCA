@@ -50,7 +50,8 @@ module.exports = {
 	    		if("eventosEmpl" != query && 
 	    			"filtrarEventosEmpl" != query &&
 	    			"escritorioEmpl" != query){
-	    			if("usuario" in evento[x]){
+
+	    			if(evento[x].usuario!=null){
 	    				if("reportes" == query){
 	    					if(JSON.stringify(evento[x].usuario.departamentos[0].departamento) === 
 	    						JSON.stringify(supervisor.departamentos[y].departamento) 
@@ -67,7 +68,8 @@ module.exports = {
 	    						notFound = false;
 	    						array.push(evento[x]);
 	    					}   
-	    				} else {
+	    				} 
+	    				else {
 	    					if(JSON.stringify(evento[x].usuario.departamentos[0].departamento) 
 	    						=== JSON.stringify(supervisor.departamentos[y].departamento) 
 	    						&& JSON.stringify(evento[x].usuario._id) 
@@ -198,6 +200,71 @@ module.exports = {
     		}
     	}
     	return marcas;
+    },
+    unixTimeToRegularDate: function(list){
+    	for(x in list){
+    		if("fechaCreada" in list[x]){
+    			var epochTime = list[x].fechaCreada;
+    			var fecha = new Date(0);
+    			fecha.setUTCSeconds(epochTime); 
+    			list[x].fecha = fecha;
+    		}
+    		if("cantidadHoras" in list[x]){
+    			var  s = list[x].cantidadHoras;
+    			var h  = Math.floor( s / ( 60 * 60 ) );
+    			s -= h * ( 60 * 60 );
+    			var m  = Math.floor( s / 60 );
+    			if(m < 10)
+    				list[x].cantHoras = h + ":0" + m;
+    			else
+    				list[x].cantHoras = h + ":" + m;
+
+    		} 
+    		if("epoch" in list[x]){
+    			var epochTime = list[x].epoch;
+    			var fecha = new Date(0);
+    			fecha.setUTCSeconds(epochTime);
+    			if("escritorioEmpl" === query){
+    				var m = fecha.getMinutes(),
+    				s = fecha.getSeconds();
+
+    				list[x].fecha = ""+fecha.getHours();
+    				m < 10 ? list[x].fecha += ":0" + m : list[x].fecha += ":" + m ;
+    				s < 10 ? list[x].fecha += ":0" + s : list[x].fecha += ":" + s ;
+    			} else{
+    				list[x].fecha = fecha;
+    			}
+    		}
+    	}
+    	return list;
+    },
+    filtrarDepartamentos : function(usuarios, depIds){
+    	var filtered = [];
+    	for(user in usuarios){
+    		var esta = false;
+    		for(dep in usuarios[user].departamentos){
+    			if(!esta){
+    				for(depSup in depIds){
+    					if(!esta){
+    						if(usuarios[user].departamentos[dep].departamento){
+    							if(usuarios[user].departamentos[dep].departamento.toString() == depIds[depSup]){
+    								filtered.push(usuarios[user]._id);
+    								esta = true;
+    							}
+    						}
+    					}
+    				}
+    			}            
+    		}
+    	}
+    	return filtered;
+    },
+    getPropValue : function(list, prop){
+    	var values = [];
+    	for(x in list){
+    		values.push(list[x][prop]);
+    	}
+    	return values;
     }
 
 }
