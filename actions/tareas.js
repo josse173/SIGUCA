@@ -156,11 +156,11 @@ module.exports = {
 //En la noche se busca si hay una marca no registrada antes de la hora estipulada
 jobMarcasNoRegistradas : new CronJob({
     //cronTime: '59 59 * * * 1-5', Lunes a Viernes a las 4:25:59
-    //cronTime: '* 50 23 * * 1-5',
-    cronTime: '* * * * * *',
+    cronTime: '00 51 16 * * 1-5',
+    //cronTime: '* * * * * *',
     onTick: function() {
         var hoy = new Date();
-        if(!once){
+        //if(!once){
             console.log("Actualizando cierre en la fecha: '"+hoy+"' y notificando a usuarios");
             var epochMin = moment();
             epochMin.hours(0);
@@ -186,14 +186,14 @@ jobMarcasNoRegistradas : new CronJob({
                     }
                 });
                 //
-            }
-            once =true;
+            /*}
+            once =true;*/
         },
         start: false,
         timeZone: "America/Costa_Rica"
     })
 }
-var once = false;
+//var once = false;
 
 function buscarHorarios(_idHorario, _idUser, epochMin, epochMax){
     //console.log("buscarHorarios: "+_idUser);
@@ -225,7 +225,8 @@ function buscarMarcasNoRegistradas(_idUser, epochMin, epochMax, horario){
                     estado:"Incompleto", motivoJust:"otro",
                     motivoOtroJust:"Omisión de marca de entrada y salida"},
                     function(){}
-                    );  
+                    ); 
+                agregarCierreAUsuario(_idUser,getHoraInicioCierreSemanal(), {h:0,m:0});
             } else if(!marcas.salida){
                 //
                 crud.addJust(
@@ -244,25 +245,27 @@ function buscarMarcasNoRegistradas(_idUser, epochMin, epochMax, horario){
                 //tiempoTotal = util.ajustarHoras(tiempoTotal, tiempoReceso);
                 var horas = horario.rangoJornada.split(":")[0];
                 var margenMin = 15;
-                if( (tiempoTotal.h-horas > 0) || 
-                    (tiempoTotal.h-horas == 0 && tiempoTotal.m > margenMin)
-                    ){
-                    crud.addJust(
-                        {id:_idUser, detalle:"", 
-                        estado:"Incompleto", motivoJust:"otro",
-                        motivoOtroJust:"Cantidad de horas trabajadas mayor a la jornada asignada"},
-                        function(){}
-                        );
-                    //
-                } else if( (horas-tiempoTotal.h > 1) || 
-                    (horas-tiempoTotal.h == 1 && 60-tiempoTotal.m > margenMin)
-                    ){
-                    crud.addJust(
-                        {id:_idUser, detalle:"", 
-                        estado:"Incompleto", motivoJust:"otro",
-                        motivoOtroJust:"Cantidad de horas trabajadas menor a la jornada asignada"},
-                        function(){}
-                        );
+                if(horas==0){
+                    if( (tiempoTotal.h-horas > 0) || 
+                        (tiempoTotal.h-horas == 0 && tiempoTotal.m > margenMin)
+                        ){
+                        crud.addJust(
+                            {id:_idUser, detalle:"", 
+                            estado:"Incompleto", motivoJust:"otro",
+                            motivoOtroJust:"Cantidad de horas trabajadas mayor a la jornada asignada"},
+                            function(){}
+                            );
+                        //
+                    } else if( (horas-tiempoTotal.h > 1) || 
+                        (horas-tiempoTotal.h == 1 && 60-tiempoTotal.m > margenMin)
+                        ){
+                        crud.addJust(
+                            {id:_idUser, detalle:"", 
+                            estado:"Incompleto", motivoJust:"otro",
+                            motivoOtroJust:"Cantidad de horas trabajadas menor a la jornada asignada"},
+                            function(){}
+                            );
+                    }
                 }
             }
         }
