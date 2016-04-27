@@ -19,6 +19,7 @@
  //**********************************************
 
  var crud = require('./crud');
+ var util = require('../util/util');
  var ObjectId = mongoose.Types.ObjectId;
 
 //Modelos para el manejo de objetos de la base de datos
@@ -33,7 +34,20 @@ var Cierre = require('../models/Cierre');
 var Auxiliar = require('../models/Auxiliar');*/
 
 var emailSIGUCA = 'siguca@greencore.co.cr';
-
+/*
+Marca.find().populate('usuario').exec(
+    function(error, just) {
+        for(j in just){
+            if(!just[j].usuario){
+                console.log(just[j].usuario);
+                console.log(just[j]._id);
+                crud.deleteMarca(just[j]._id, function(err, msg){
+                    console.log(msg);
+                });
+            }
+        }
+});
+*/
 module.exports = function(app, io) {
     /*
     *   Redirecciona a la página principal (index.html)
@@ -44,6 +58,7 @@ module.exports = function(app, io) {
         });
     });
 
+    //******************************************************************************
     /*
     *   Redirecciona a la página necesaria dependiendo del tipo de usuario
     */
@@ -52,12 +67,13 @@ module.exports = function(app, io) {
         admin_actions.login
         );
 
-
     /*
     *   Cierra sessión de usuario
     */
     app.get('/logout',autentificado, admin_actions.logout);
 
+
+    //******************************************************************************
     /*
     *  Se cuentan las solicitudes y justificaciones pendientes y se filtran por supervisor
     */
@@ -78,8 +94,74 @@ module.exports = function(app, io) {
     */
     app.get('/escritorioAdmin', autentificado, escritorio_actions.escritorioAdmin);
 
+
+    //******************************************************************************
     /*
-    * 
+    /*
+    *  Carga las justificaciones, solicitudes de horas extra y solicitudes de permisos pendientes, 
+    *  a cada consulta se le realiza la conversion de epoch a la CST Standard.
+    */
+    app.get('/gestionarEventos', autentificado, event_actions.filtrarEventos);
+
+    /*
+    *  Carga las justificaciones, solicitudes de horas extra y solicitudes de permisos NO pendientes,
+    *  a cada consulta se le realiza la conversión de epoch a la CST Standard.
+    *  
+    */
+    //app.get('/reportes', autentificado, actions.reportes);
+    app.get('/reportes', autentificado, event_actions.filtrarEventos);
+    app.post('/reportes', autentificado, event_actions.filtrarEventos);
+    /*
+    *   - Filtra los eventos por usuario y rango de fecha. 
+    *   - Dependiendo si es reporte o gestión de eventos, filtra los eventos por distintos estados.
+    */
+    app.post('/filtrarEventos', autentificado, event_actions.filtrarEventos);
+
+    /*
+    *  Carga los eventos realizados por un empleado en específico
+    */
+    app.get('/eventos', autentificado, event_actions.eventos);
+
+    /*
+    *  Filtra los eventos de un usuario en específico por rango de fecha
+    */
+    app.post('/filtrarEventosEmpl', autentificado, event_actions.filtrarEventosEmpl);
+
+
+    //******************************************************************************
+    /*
+    *  Crea una justificación
+    */
+    app.post('/justificacion_nueva', autentificado, justificacion_actions.nueva);
+
+    /*
+    *  Carga la información de una justificación
+    */
+    app.get('/justificacion/edit/:id', autentificado, justificacion_actions.edit);
+
+    /*
+    *  Actualiza una justificación
+    */
+    app.post('/justificacion/:id', autentificado, justificacion_actions.actualiza);
+
+    /*
+    *  El supervisor elimina una justificación y se le envia un correo al dueño de la justificación
+    */
+    app.get('/justificacion/delete/:id', autentificado, justificacion_actions._delete);
+
+
+    //******************************************************************************
+    /* 
+    *  Redirecciona a la configuración de empleado
+    */
+    app.get('/configuracion', autentificado, function (req, res) {
+        res.render('configuracion', {
+            title: 'Configuración | SIGUCA',
+            usuario: req.user
+        });
+    });
+
+    /*
     *  Crea marca desde RFID  
     */
     app.get('/rfidReader', function (req, res) {
@@ -105,66 +187,8 @@ module.exports = function(app, io) {
         });
     });
 
-    /*
-    *  Carga las justificaciones, solicitudes de horas extra y solicitudes de permisos pendientes, 
-    *  a cada consulta se le realiza la conversion de epoch a la CST Standard.
-    */
-    app.get('/gestionarEventos', autentificado, event_actions.filtrarEventos);
 
-    /*
-    *  Carga las justificaciones, solicitudes de horas extra y solicitudes de permisos NO pendientes,
-    *  a cada consulta se le realiza la conversión de epoch a la CST Standard.
-    *  
-    */
-    app.get('/reportes', autentificado, actions.reportes);
-
-
-    /*
-    *   - Filtra los eventos por usuario y rango de fecha. 
-    *   - Dependiendo si es reporte o gestión de eventos, filtra los eventos por distintos estados.
-    */
-    app.post('/filtrarEventos', autentificado, event_actions.filtrarEventos);
-
-    /*
-    *  Redirecciona a la configuración de empleado
-    */
-    app.get('/configuracion', autentificado, function (req, res) {
-        res.render('configuracion', {
-            title: 'Configuración | SIGUCA',
-            usuario: req.user
-        });
-    });
-
-    /*
-    *  Carga los eventos realizados por un empleado en específico
-    */
-    app.get('/eventos', autentificado, event_actions.eventos);
-
-    /*
-    *  Filtra los eventos de un usuario en específico por rango de fecha
-    */
-    app.post('/filtrarEventosEmpl', autentificado, event_actions.filtrarEventosEmpl);
-
-    /*
-    *  Crea una justificación
-    */
-    app.post('/justificacion_nueva', autentificado, justificacion_actions.nueva);
-
-    /*
-    *  Carga la información de una justificación
-    */
-    app.get('/justificacion/edit/:id', autentificado, justificacion_actions.edit);
-
-    /*
-    *  Actualiza una justificación
-    */
-    app.post('/justificacion/:id', autentificado, justificacion_actions.actualiza);
-
-    /*
-    *  El supervisor elimina una justificación y se le envia un correo al dueño de la justificación
-    */
-    app.get('/justificacion/delete/:id', autentificado, justificacion_actions._delete);
-
+    //******************************************************************************
     /*
     *  Crea una solicitud tipo hora extra
     */
@@ -211,6 +235,7 @@ module.exports = function(app, io) {
         });
     });
 
+
     /*
     *  Actualiza una solicitud tipo permiso anticipado
     */
@@ -232,6 +257,7 @@ module.exports = function(app, io) {
         });
     });
 
+    //******************************************************************************
     /*
     *  Actualiza el estado y el comentario del supervisor a una solicitud en específico
     */
@@ -264,6 +290,7 @@ module.exports = function(app, io) {
         }
     });
 
+    //******************************************************************************
     /*
     *  Crea un nuevo horario
     */
@@ -303,7 +330,7 @@ module.exports = function(app, io) {
     *  Actualiza los datos de un horario en específico
     */
     app.post('/horarioN/:id',autentificado, function (req, res) { 
-        var data = { horario: req.body, id: req.params.id }
+        var data = { horario: req.body, id: req.params.id };
         crud.updateHorario(data, function (err, horarios) {
             if (err) return res.json(err);
             res.redirect('/horarioN');
@@ -320,12 +347,14 @@ module.exports = function(app, io) {
         });
     });
 
+    //******************************************************************************
     /*
     *  Crea una nueva marca vía página web
     */
     app.post('/marca', autentificado, function (req, res) {
         crud.addMarca(
             {tipoMarca: req.body.marca, usuario: req.user.id}, function(msj){
+                //console.log(msj);
                 if(req.session.name == "Empleado"){
                     res.redirect('/escritorioEmpl');
                 } else {
@@ -344,6 +373,7 @@ module.exports = function(app, io) {
         });
     });
 
+    //******************************************************************************
     /*
     *  Crea un nuevo usuario
     */
@@ -353,7 +383,7 @@ module.exports = function(app, io) {
                 if (req.session.name == "Administrador"){
                  res.redirect('/escritorioAdmin'); 
              }
-                });//Busca Usuario
+            });//Busca Usuario
         } else {
             req.logout();
             res.redirect('/');
@@ -404,6 +434,7 @@ module.exports = function(app, io) {
         });
     });
 
+    //******************************************************************************
     /*
     *  Crea un nuevo departamento
     */
@@ -460,6 +491,7 @@ module.exports = function(app, io) {
         });
     });
 
+    //******************************************************************************
     /*
     *  En caso de tener varias sedes, se pueden crear dispositivos para especificar en cual
     *  sede se crearon las marcas manuales.
@@ -483,6 +515,7 @@ module.exports = function(app, io) {
             res.redirect('/');
         }
         
+    //******************************************************************************
     /*
     *   Cambia el username de los usuarios
     */
@@ -511,6 +544,7 @@ module.exports = function(app, io) {
 
 
 
+    //******************************************************************************
     /*
     *   Detalla los eventos del calendario por día.
     */
@@ -694,4 +728,6 @@ module.exports = function(app, io) {
 };//modules
 
 
-tareas_actions.cronJob.start();
+//tareas_actions.cronJob.start();
+tareas_actions.jobMarcasNoRegistradas.start();
+//tareas_actions.test();

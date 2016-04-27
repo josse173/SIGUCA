@@ -73,7 +73,7 @@ module.exports = {
         	var actualEpoch = moment();
 
 	        //Se busca en la base de datos todas las marcas realizadas por el usuario
-	        //
+    		//Se busca en la base de datos las marcas del mismo día
 	        //console.log(req.user.id);
 	        Marca.find(
 	        	{usuario: req.user.id, epoch:{"$gte": epochGte.unix()}},
@@ -81,16 +81,23 @@ module.exports = {
 	        	).exec(
 	        	function(error, marcas) {
 	        		if (error) return res.json(error);
-                //Se busca en la base de datos las marcas del mismo día
-                var supervisor = {departamentos: [1]};
-                var arrayMarcas = util.eventosAjuste(marcas, supervisor, "escritorioEmpl");
-                return res.render('escritorio', {
-                	title: 'Escritorio Empleado | SIGUCA',
-                	usuario: req.user, 
-                	marcas: arrayMarcas
-                });
-            });
-	    	//
+	        		Justificaciones.find(
+	        			{usuario: req.user.id, estado:'Incompleto'}
+	        			).exec(function(err, justificaciones) {
+	        			if (err) return res.json(err);
+                		var supervisor = {departamentos: [1]};
+                		var arrayMarcas = util.eventosAjuste(marcas, supervisor, "escritorioEmpl");
+                		var arrayJust = util.unixTimeToRegularDate(justificaciones);
+                		return res.render('escritorio', {
+                			title: 'Escritorio Empleado | SIGUCA',
+                			usuario: req.user, 
+                			marcas: arrayMarcas,
+                			justificaciones : arrayJust
+                		});
+                	});
+	        		//
+	        	});
+	    	//Buscar las justificaciones que se llamen "Pendiente "
 	    } else {
 	    	req.logout();
 	    	res.redirect('/');
@@ -100,7 +107,6 @@ module.exports = {
 		if (req.session.name ==="Administrador") {
 			Horario.find().exec(function(error, horarios) {
 				Departamento.find().exec(function(error, departamentos) {
-
 					if (error) return res.json(error);
 					return res.render('escritorio', {
 						title: 'Escritorio Administrador | SIGUCA',

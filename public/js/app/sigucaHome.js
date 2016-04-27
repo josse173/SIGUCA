@@ -56,7 +56,7 @@ function updateHorasTrabajadas(){
         var currentMinutes = data.m;
         currentHours = ( currentHours < 10 ? "0" : "" ) + currentHours;
         currentMinutes = ( currentMinutes < 10 ? "0" : "" ) + currentMinutes;
-        $("#clockHorasTrab").text(
+        $(".clockHorasTrab").text(
             ""+currentHours+ "h y "+currentMinutes+"m");
     });
 }

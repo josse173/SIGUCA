@@ -1,107 +1,123 @@
-	'use strict';
+'use strict';
 
-	var mongoose 		= require('mongoose'),
-	nodemailer 		= require('nodemailer'),
-	moment 			= require('moment'),
-	Marca 			= require('../models/Marca'),
-	Departamento 	= require('../models/Departamento'),
-	Usuario 		= require('../models/Usuario'),
-	Horario 		= require('../models/Horario'),
-	Justificaciones = require('../models/Justificaciones'),
-	Solicitudes 	= require('../models/Solicitudes'),
-	Cierre 			= require('../models/Cierre'),
-	util 			= require('../util/util'),
-	emailSIGUCA 	= 'siguca@greencore.co.cr';
+var mongoose 		= require('mongoose'),
+nodemailer 		= require('nodemailer'),
+moment 			= require('moment'),
+Marca 			= require('../models/Marca'),
+Departamento 	= require('../models/Departamento'),
+Usuario 		= require('../models/Usuario'),
+Horario 		= require('../models/Horario'),
+Justificaciones = require('../models/Justificaciones'),
+Solicitudes 	= require('../models/Solicitudes'),
+Cierre 			= require('../models/Cierre'),
+util 			= require('../util/util'),
+emailSIGUCA 	= 'siguca@greencore.co.cr';
 
-	/*--------------------------------------------------------------------
-		Métodos Justificaciones          
-		---------------------------------------------------------------------*/
-		exports.addJust = function(justificacion, cb){
-			var epochTime = moment().unix();
-			var newjustificacion = Justificaciones({
-				usuario: justificacion.id,
-				fechaCreada: epochTime,
-				detalle: justificacion.detalle,
-				comentarioSupervisor: ""
-			});
+//--------------------------------------------------------------------
+//	Métodos Justificaciones          
+//	---------------------------------------------------------------------*/
+exports.addJust = function(justificacion, cb){
+	var epochTime = moment().unix();
+	var newjustificacion = Justificaciones({
+		usuario: justificacion.id,
+		fechaCreada: epochTime,
+		detalle: justificacion.detalle,
+		comentarioSupervisor: ""
+	});
 
-			if(justificacion.motivoJust == 'otro')
-				newjustificacion.motivo = justificacion.motivoOtroJust;
-			else
-				newjustificacion.motivo = justificacion.motivoJust;
-
-			Justificaciones.find({usuario: newjustificacion.usuario, fechaCreada: newjustificacion.fechaCreada}, function (err, just){
-				if(just.length == 0){
-					newjustificacion.save(function (err, user) {
-						if (err) console.log(err);
-						return cb();
-				});//save
-				}
-
-		});//verificar
-		};
-
-		exports.loadJust = function(id, cb){
-			Justificaciones.findById(id, function (err, just) { 
-				if(just.estado == 'Pendiente'){
-					Justificaciones.findById(id, function (err, justificacion) { 
-						if (err) return cb(err);
-						cb(justificacion);
-					}); 
-				} else cb({motivo:'seleccionar',detalle:''});
-			}); 
+	if(justificacion.motivoJust == 'otro')
+		newjustificacion.motivo = justificacion.motivoOtroJust;
+	else
+		newjustificacion.motivo = justificacion.motivoJust;
+	if(justificacion.estado)
+		newjustificacion.estado = justificacion.estado;
+	Justificaciones.find(
+	{
+		usuario: newjustificacion.usuario, 
+		fechaCreada: newjustificacion.fechaCreada,
+		motivo:newjustificacion.motivo
+	}, 
+	function (err, just){
+		if(just.length == 0){
+			newjustificacion.save(function (err, user) {
+				if (err) console.log(err);
+				return cb();
+			});//save
 		}
+	});//verificar
+};
 
-		exports.updateJust = function(justificacion, cb){
-			var epochTime = moment().unix();
+exports.loadJust = function(id, cb){
+	Justificaciones.findById(id, function (err, just) { 
+		if(just.estado == 'Pendiente'){
+			Justificaciones.findById(id, function (err, justificacion) { 
+				if (err) return cb(err);
+				cb(justificacion);
+			}); 
+		} else if(just.estado == 'Incompleto'){
+			Justificaciones.findById(id, function (err, justificacion) { 
+				if (err) return cb(err);
+				cb(justificacion);
+			}); 
+		}else cb({motivo:'seleccionar',detalle:''});
+	}); 
+}
 
-			var motivo = '';
-			if(justificacion.motivoJust == 'otro'){
-				motivo = justificacion.motivoOtroJust;
-			} else{
-				motivo = justificacion.motivoJust;
-			} 
+exports.updateJust = function(justificacion, cb){
+	var epochTime = moment().unix();
 
-			var justificacionActualizada = {
-				fechaCreada: epochTime,
-				motivo: motivo,
-				detalle: justificacion.detalle
-			};
+	var motivo = '';
+	if(justificacion.motivoJust == 'otro'){
+		motivo = justificacion.motivoOtroJust;
+	} else{
+		motivo = justificacion.motivoJust;
+	} 
 
-			Justificaciones.findById(justificacion.id).populate('usuario').exec(function (err, just) { 
-				Justificaciones.findByIdAndUpdate(justificacion.id, justificacionActualizada, function (err, justActualizada) { 
-					if (!err) {
-						Usuario.find({'tipo' : 'Supervisor', 'departamentos.departamento' : just.usuario.departamentos[0].departamento}, {'email' : 1}).exec(function (err, supervisor) { 
-							if (err) return cb(err);
+	var justificacionActualizada = {
+		fechaCreada: epochTime,
+		motivo: motivo,
+		detalle: justificacion.detalle,
+		estado: "Pendiente"
+	};
 
-							var transporter = nodemailer.createTransport();
+	Justificaciones.findById(justificacion.id).populate('usuario').exec(function (err, just) { 
+		console.log(just);
+		Justificaciones.findByIdAndUpdate(justificacion.id, justificacionActualizada, function (err, justActualizada) { 
+			if (!err && just.estado!="Incompleto") {
+				Usuario.find({'tipo' : 'Supervisor', 'departamentos.departamento' : just.usuario.departamentos[0].departamento}, {'email' : 1}).exec(function (err, supervisor) { 
+					if (err) return cb(err);
 
-							for (var i = 0; i < supervisor.length; i++) {
-								transporter.sendMail({
-									from: emailSIGUCA,
-									to: supervisor[i].email,
-									subject: 'Modificación de una justificación en SIGUCA',
-									text: " El usuario " + just.usuario.nombre + " " + just.usuario.apellido1 + " " + just.usuario.apellido2
-									+ " ha modificado la siguiente justificación: "
-									+ " \r\n Motivo: " + just.motivo
-									+ " \r\n Detalle: " + just.detalle
-									+ "\r\n\r\n A continuación se muestra la justificación modificada" 
-									+ " \r\n Motivo: " + justActualizada.motivo
-									+ " \r\n Detalle: " + justActualizada.detalle
-								});
-							}
+					var transporter = nodemailer.createTransport();
+
+					for (var i = 0; i < supervisor.length; i++) {
+						transporter.sendMail({
+							from: emailSIGUCA,
+							to: supervisor[i].email,
+							subject: 'Modificación de una justificación en SIGUCA',
+							text: " El usuario " + just.usuario.nombre + " " + just.usuario.apellido1 + " " + just.usuario.apellido2
+							+ " ha modificado la siguiente justificación: "
+							+ " \r\n Motivo: " + just.motivo
+							+ " \r\n Detalle: " + just.detalle
+							+ "\r\n\r\n A continuación se muestra la justificación modificada" 
+							+ " \r\n Motivo: " + justActualizada.motivo
+							+ " \r\n Detalle: " + justActualizada.detalle
 						});
 					}
-					return cb(err);
 				});
+			}
+			return cb(err);
+		});
+
 });
+
 }
 
 exports.deleteJust = function(id, cb){
 	Justificaciones.findByIdAndRemove(id).populate('usuario').exec(function (err, just) { 
 		if (err) return cb(err,'');
-
-		var fecha = moment(just.fechaCreada);
+		var fecha = "";
+		if(just.fechaCreada)
+			fecha = moment(just.fechaCreada);
 
 		var transporter = nodemailer.createTransport();
 
@@ -314,11 +330,12 @@ return cb();
 		exports.deleteSoli = function(id, cb){
 			Solicitudes.findByIdAndRemove(id).populate('usuario').exec(function (err, soli) { 
 				if (err) return cb(err,'');
-
-				var fecha = moment(fechaCreada);
+				var fecha = "";
+				if(soli.fechaCreada)
+					fecha = moment(soli.fechaCreada);
 
 				var transporter = nodemailer.createTransport();
-
+				
 				if(soli.tipoSolicitudes == 'Extras'){
 					transporter.sendMail({
 						from: emailSIGUCA,
@@ -364,9 +381,9 @@ return cb();
 			Solicitudes.findByIdAndUpdate(solicitud.id, 
 				{estado: solicitud.estado, comentarioSupervisor: 
 					solicitud.comentarioSupervisor}).populate('usuario').exec(function (err, soli) { 
-				if (err) return cb(err, '');
-				var transporter = nodemailer.createTransport();
-				console.log(soli);
+						if (err) return cb(err, '');
+						var transporter = nodemailer.createTransport();
+				//console.log(soli);
 				var a = new Date(soli.fechaCreada * 1000);
 				var date = ""+a.getDate()+"/"+a.getMonth()+"/"+a.getFullYear();
 				var solitext = "\r\n\r\nFecha de creación:"+date+"\n"
@@ -389,42 +406,42 @@ return cb();
 				return cb(err, 'Se elimino');
 
 			});
-		}
-
-		exports.gestionarJust = function(justificacion, cb){
-			Justificaciones.findByIdAndUpdate(
-				justificacion.id, 
-				{
-					estado: justificacion.estado, 
-					comentarioSupervisor: justificacion.comentarioSupervisor
 				}
-				).populate('usuario').exec(function (err, just) { 
-					if (err) return cb(err, '');
-					var transporter = nodemailer.createTransport();
-					var a = new Date(just.fechaCreada * 1000);
-					var date = ""+a.getDate()+"/"+a.getMonth()+"/"+a.getFullYear();
 
-					var justtext = "\r\n\r\nFecha de creación:"+date+"\n"
-					+ "Motivo:"+just.motivo+"\n"
-					+ "Detalle:"+just.detalle+"\r\n\r\n";
+				exports.gestionarJust = function(justificacion, cb){
+					Justificaciones.findByIdAndUpdate(
+						justificacion.id, 
+						{
+							estado: justificacion.estado, 
+							comentarioSupervisor: justificacion.comentarioSupervisor
+						}
+						).populate('usuario').exec(function (err, just) { 
+							if (err) return cb(err, '');
+							var transporter = nodemailer.createTransport();
+							var a = new Date(just.fechaCreada * 1000);
+							var date = ""+a.getDate()+"/"+a.getMonth()+"/"+a.getFullYear();
 
-					transporter.sendMail({
-						from: emailSIGUCA,
-						to: just.usuario.email,
-						subject: 'Respuesta a justificación en SIGUCA',
-						text: " Estimado(a) " + just.usuario.nombre 
-						+ ",\r\n\r\nPor este medio se le notifica que "
-						+"la siguiente justificación ha sido respondida:"
-						+ justtext
-						+ "Le informamos que la justificación fue " + justificacion.estado 
-						+ " por el supervisor "
-						+ ", con el siguiente comentario"
-						+ "\r\n\r\n " + justificacion.comentarioSupervisor
-						+ "\r\n\r\n Saludos cordiales."
-					});
-					return cb(err, 'Se elimino');
-				});
-			}
+							var justtext = "\r\n\r\nFecha de creación:"+date+"\n"
+							+ "Motivo:"+just.motivo+"\n"
+							+ "Detalle:"+just.detalle+"\r\n\r\n";
+
+							transporter.sendMail({
+								from: emailSIGUCA,
+								to: just.usuario.email,
+								subject: 'Respuesta a justificación en SIGUCA',
+								text: " Estimado(a) " + just.usuario.nombre 
+								+ ",\r\n\r\nPor este medio se le notifica que "
+								+"la siguiente justificación ha sido respondida:"
+								+ justtext
+								+ "Le informamos que la justificación fue " + justificacion.estado 
+								+ " por el supervisor "
+								+ ", con el siguiente comentario"
+								+ "\r\n\r\n " + justificacion.comentarioSupervisor
+								+ "\r\n\r\n Saludos cordiales."
+							});
+							return cb(err, 'Se elimino');
+						});
+}
 
 	/*--------------------------------------------------------------------
 		Métodos Horarios
@@ -490,7 +507,7 @@ return cb();
 					tipo = 'Salida';
 				} else tipo = 'error';
 				marca({usuario: usuario, tipoMarca: tipo}, function(msj){
-					console.log(msj);
+					//	console.log(msj);
 					return cb(msj);
 				});
 			});
@@ -515,68 +532,74 @@ return cb();
 				{
 					epoch:{'$gte': epochTimeGte, '$lte': epochTimeLte}, 
 					usuario: newMarca.usuario
-				}).exec(function (err, marcas){
-					console.log(JSON.stringify(marcas));
-					for(marca in marcas){
-						if(newMarca.tipoMarca==marcas[marca].tipoMarca){
-							return cb('fail');
-						}
-					}
+				}).sort({epoch: 1}).exec(function (err, marcas){
 					var marcas = util.clasificarMarcas(marcas);
-					if(newMarca.tipoMarca=="Entrada" && !marcas.salida
+					if(newMarca.tipoMarca=="Entrada" 
+						&& !marcas.entrada && !marcas.salida
 						&& !marcas.almuerzoIn && !marcas.almuerzoOut
-						&& !marcas.recesoIn && !marcas.recesoOut){
+						&& marcas.recesos.length==0){
 						return saveMarca(newMarca,cb);
 						//
 					}
-					else if(newMarca.tipoMarca=="Salida" && marcas.entrada
+					else if(newMarca.tipoMarca=="Salida" 
+						&& marcas.entrada && !marcas.salida
 						&& (
 							(marcas.almuerzoIn && marcas.almuerzoOut) ||
 							(!marcas.almuerzoIn && !marcas.almuerzoOut)
 							)
 						&& (
-							(marcas.recesoIn && marcas.recesoOut) ||
-							(!marcas.recesoIn && !marcas.recesoOut)
+							marcas.recesos.length==0 ||
+							marcas.recesos[marcas.recesos.length-1].recesoIn
 							)
 						){
 						return saveMarca(newMarca,cb);
 						//
 					}
 					else if(newMarca.tipoMarca=="Salida a Receso" 
-						&& !marcas.recesoOut && marcas.entrada
+						&& marcas.entrada && !marcas.salida
 						&& (
 							(marcas.almuerzoIn && marcas.almuerzoOut) ||
 							(!marcas.almuerzoIn && !marcas.almuerzoOut)
+							)
+						&& (
+							marcas.recesos.length==0 ||
+							marcas.recesos[marcas.recesos.length-1].recesoIn
 							)
 						){
 						return saveMarca(newMarca,cb);
 						//
 					}
 					else if(newMarca.tipoMarca=="Entrada de Receso" 
-						&& marcas.recesoOut && marcas.entrada
+						&& marcas.entrada && !marcas.salida
 						&& (
 							(marcas.almuerzoIn && marcas.almuerzoOut) ||
 							(!marcas.almuerzoIn && !marcas.almuerzoOut)
+							)
+						&&  (
+							marcas.recesos.length>0 &&
+							!marcas.recesos[marcas.recesos.length-1].recesoIn
 							)
 						){
 						return saveMarca(newMarca,cb);
 						//
 					}
 					else if(newMarca.tipoMarca=="Salida al Almuerzo" 
-						&& !marcas.almuerzoOut && marcas.entrada
+						&& marcas.entrada && !marcas.salida
+						&& !marcas.almuerzoOut && !marcas.almuerzoIn
 						&& (
-							(marcas.recesoIn && marcas.recesoOut) ||
-							(!marcas.recesoIn && !marcas.recesoOut)
+							marcas.recesos.length==0 ||
+							marcas.recesos[marcas.recesos.length-1].recesoIn
 							)
 						){
 						return saveMarca(newMarca,cb);
 						//
 					}
 					else if(newMarca.tipoMarca=="Entrada de Almuerzo" 
-						&& marcas.almuerzoOut && marcas.entrada
+						&& marcas.entrada && !marcas.salida
+						&& marcas.almuerzoOut && !marcas.almuerzoIn
 						&& (
-							(marcas.recesoIn && marcas.recesoOut) ||
-							(!marcas.recesoIn && !marcas.recesoOut)
+							marcas.recesos.length==0 ||
+							marcas.recesos[marcas.recesos.length-1].recesoIn
 							)
 						){
 						return saveMarca(newMarca,cb);
@@ -594,7 +617,7 @@ return cb();
 			if(epoch - marca.epoch <= 600){
 				Marca.findByIdAndRemove(id, function (err, marca) {
 					if (err) cb(err);
-					return cb('Se elimino');
+					return cb(err, 'Se elimino');
 				});
 			} else {
 				return cb('No se eliminó la marca <strong>' + marca.tipoMarca + '</strong>');
@@ -834,6 +857,12 @@ return cb();
 	}
 
 /*--------------------------------------------------------------------
-	Inicialización de componentes
+	Métodos Pendiente
 	---------------------------------------------------------------------*/
-// exports. = function(){}
+	/*exports.addPendiente = function(pendiente, cb){
+		var newPendiente = Pendiente(pendiente);
+		newPendiente.save(function (err, pendiente) {
+			if (err) console.log(err);
+			return cb(pendiente);
+		})
+	}*/

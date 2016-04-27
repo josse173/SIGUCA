@@ -18,11 +18,12 @@ module.exports = {
 	nueva : function (req, res) {
 		var just = req.body; 
 		just.id = req.user.id;
+		console.log(just);
 		crud.addJust(just, function (){
 			if (req.session.name == "Empleado") {
 				res.redirect('/escritorioEmpl');
 			} else res.redirect('/escritorio');
-        });//verificar
+        });///verificar
 	},
 	actualiza: function (req, res) {
 		var just = req.body; 

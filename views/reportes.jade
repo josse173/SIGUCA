@@ -12,12 +12,17 @@ block content
       div.filter
         h3 Filtros   
         table
-          form(role='form', method="POST", action="/filtrarEventos/")
+          form(role='form', method="POST", action="/reportes")
             td
               select.form-control.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro") 
                 option(value= "todos|reportes") Todos los usuarios
                 each user in usuarios
                   option(value= user._id + "|reportes") #{user.apellido1} #{user.apellido2}, #{user.nombre}
+            td
+              select.form-control#selectFiltro.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro_departamento") 
+                option(value= "todos") Todos los departamentos
+                each dep in departamentos
+                  option(value=dep._id ) #{dep.nombre}
             td
               label.labelFiltro.labFilLeft(for='fechaDesde') Desde:
                 div.input-group
@@ -45,24 +50,6 @@ block content
           div#cal
 
 
-        .filtroCierres
-          h3 Filtros   
-          div.filter
-             div.filter
-                label#departamento(for='departamento') 
-                .btn-group
-                   .btn-group
-                  select.form-control#selectFiltro.selectpicker(data-style="btn-success", type="text", name="idSupervisor") 
-                      optgroup(label="Departamentos")
-                        option(value= "Supervisor,todos," + todos) Todos los departamentos
-                        each item, i in departamentos
-                          option(value= "Supervisor," + item.departamento.id) #{item.departamento.nombre}
-                      optgroup(label="Personales")
-                        option#supervisor(value= "Empleado,todos," + usuario.id) Mi gráfico
-                        option(value= "Empleado,justificaciones," + usuario.id) Justificaciones
-                        option(value= "Empleado,solicitudes," + usuario.id) Solicitudes
-                        option(value= "Empleado,marcas," + usuario.id) Tardías o Ausencias
-
         div.eventosCierre
           h3 Detalle diario por departamento
           table.footable
@@ -82,7 +69,7 @@ block content
                   td -
         br
         div.tablasReportes
-          if(resumen.length != 0)
+          if(resumen && resumen.length != 0)
             h3.h3Marcas Resumen
             table.footable
                 thead
@@ -98,7 +85,7 @@ block content
                   tr
                     td(colspan='2')
           h3.h3Marcas Marcas
-          if(marcas.length != 0)
+          if(marcas && marcas.length != 0)
             table.footable(data-page-navigation=".pagination" data-page-size="25")
                 thead
                   tr
@@ -108,7 +95,7 @@ block content
                 tbody
                   each marca, i in marcas
                     tr
-                      td(data-value=marca.epoch) #{marca.fecha} 
+                      td(data-value=marca.epoch) #{marca.fecha.str} 
                       td #{marca.usuario.nombre} #{marca.usuario.apellido1}
                       td #{marca.tipoMarca} 
                 tfoot
@@ -120,7 +107,7 @@ block content
                 
           br
           h3 Justificaciones
-          if(justificaciones.length != 0)
+          if(justificaciones && justificaciones.length != 0)
             table.tableJustificaciones.footable(data-page-navigation=".pagination" data-page-size="5")
                 thead
                   tr
@@ -134,14 +121,16 @@ block content
                 tbody
                   each justificacion, i in justificaciones
                     tr
-                      td(data-value=justificacion.fechaCreada) #{justificacion.fecha} 
-                      td #{justificacion.usuario.nombre} #{justificacion.usuario.apellido1}
+                      td(data-value=justificacion.fechaCreada) #{justificacion.fecha.str} 
+                      if(justificacion.usuario)
+                        td #{justificacion.usuario.nombre} #{justificacion.usuario.apellido1}
                       td #{justificacion.motivo} 
                       td #{justificacion.detalle} 
                       td #{justificacion.comentarioSupervisor} 
                       td #{justificacion.estado}  
                       td
-                        button.btn.btn-default.justificacionDelete(value=justificacion.usuario.nombre+' '+justificacion.usuario.apellido1+' '+justificacion.usuario.apellido2+','+justificacion.id+','+justificacion.fecha, name='eliminar') 
+                        if(justificacion.usuario)
+                          button.btn.btn-default.justificacionDelete(value=justificacion.usuario.nombre+' '+justificacion.usuario.apellido1+' '+justificacion.usuario.apellido2+','+justificacion.id+','+justificacion.fecha, name='eliminar') 
                           i.icon-trash.icon-large.i-danger 
                 tfoot
                   tr
@@ -152,7 +141,7 @@ block content
 
           br
           h3 Solicitudes Horas Extraordinarias
-          if(extras.length != 0)
+          if(extras && extras.length != 0)
             table.tableSolicitudes.footable(data-page-navigation=".pagination" data-page-size="5")
                 thead
                   tr
@@ -169,8 +158,9 @@ block content
                 tbody
                   each extra, i in extras
                     tr
-                      td(data-value=extra.fechaCreada) #{extra.fecha} 
-                      td #{extra.usuario.nombre} #{extra.usuario.apellido1} 
+                      td(data-value=extra.fechaCreada) #{extra.fecha.str} 
+                      if(extra.usuario)
+                        td #{extra.usuario.nombre} #{extra.usuario.apellido1} 
                       td #{extra.diaInicio} 
                       td #{extra.diaFinal} 
                       td #{extra.cantHoras} 
@@ -179,7 +169,8 @@ block content
                       td #{extra.comentarioSupervisor} 
                       td #{extra.estado} 
                       td
-                        button.btn.btn-default.solicitudDelete(value=extra.usuario.nombre+' '+extra.usuario.apellido1+' '+extra.usuario.apellido2+','+extra.id+','+extra.fecha, name='eliminar') 
+                        if(extra.usuario)
+                          button.btn.btn-default.solicitudDelete(value=extra.usuario.nombre+' '+extra.usuario.apellido1+' '+extra.usuario.apellido2+','+extra.id+','+extra.fecha, name='eliminar') 
                           i.icon-trash.icon-large.i-danger 
                 tfoot
                   tr
@@ -190,7 +181,7 @@ block content
 
           br
           h3 Solicitudes Permisos
-          if(permisos.length != 0)
+          if(permisos && permisos.length != 0)
             table.tableSolicitudes.footable(data-page-navigation=".pagination" data-page-size="5")
                 thead
                   tr
@@ -207,8 +198,9 @@ block content
                 tbody
                   each permiso, i in permisos
                     tr
-                      td(data-value=permiso.fechaCreada) #{permiso.fecha} 
-                      td #{permiso.usuario.nombre} #{permiso.usuario.apellido1} 
+                      td(data-value=permiso.fechaCreada) #{permiso.fecha.str} 
+                      if(permiso.usuario)
+                        td #{permiso.usuario.nombre} #{permiso.usuario.apellido1} 
                       td #{permiso.diaInicio} 
                       td #{permiso.diaFinal} 
                       td #{permiso.cantidadDias} 
@@ -217,7 +209,8 @@ block content
                       td #{permiso.comentarioSupervisor} 
                       td #{permiso.estado} 
                       td
-                        button.btn.btn-default.solicitudDelete(value=permiso.usuario.nombre+' '+permiso.usuario.apellido1+' '+permiso.usuario.apellido2+','+permiso.id+','+permiso.fecha, name='eliminar') 
+                        if(permiso.usuario)
+                          button.btn.btn-default.solicitudDelete(value=permiso.usuario.nombre+' '+permiso.usuario.apellido1+' '+permiso.usuario.apellido2+','+permiso.id+','+permiso.fecha.str, name='eliminar') 
                           i.icon-trash.icon-large.i-danger 
                 tfoot
                   tr
@@ -226,37 +219,25 @@ block content
           else
             p No se han enviado permisos hasta el momento.
 
-          if(horasSemanales != '')
+          if(cierres)
             br
             h3 Horas Semanales 
+            - var x = JSON.stringify(cierres);
+            - //#{x}
             table.tableCierres.footable(data-page-navigation=".pagination" data-page-size="11")
                 thead
                   tr
                     th(data-type="numeric" data-sort-initial="descending") Fecha
                     th Usuario
-                    th(data-sort-ignore="true") Cantidad de horas diarias
-                    th(data-sort-ignore="true") Acumulado de horas semanales
+                    th(data-sort-ignore="true") Horas
+                    th(data-sort-ignore="true") Minutos
                 tbody
-                  each cierres, i in horasSemanales
+                  each cierre, i in cierres
                     tr
-                      td(data-value=cierres.epoch) #{cierres.fecha} 
-                      td #{cierres.usuario.nombre} #{cierres.usuario.apellido1} 
-                      - var seg = JSON.stringify(cierres.horasDiarias)
-                      - h = parseInt(seg / 60 / 60);
-                      - seg -= h*60*60;
-                      - m = parseInt(seg / 60);
-                      if( m < 10) 
-                        td #{h} : 0#{m} 
-                      else
-                        td #{h} : #{m} 
-                      - var seg = JSON.stringify(cierres.horasSemanales)
-                      - h = parseInt(seg / 60 / 60);
-                      - seg -= h*60*60;
-                      - m = parseInt(seg / 60);
-                      if( m < 10) 
-                        td #{h} : 0#{m} 
-                      else
-                        td #{h} : #{m} 
+                      td(data-value=cierre.epoch) #{cierre.fecha.str} 
+                      td #{cierre.usuario.nombre} #{cierre.usuario.apellido1} 
+                      td #{cierre.tiempo.horas}
+                      td #{cierre.tiempo.minutos}
                 tfoot
                   tr
                     td(colspan='10')

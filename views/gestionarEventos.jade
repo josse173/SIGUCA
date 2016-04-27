@@ -18,7 +18,7 @@ block content
             td
               select.form-control#selectFiltro.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro_departamento") 
                 option(value= "todos") Todos los departamentos
-                each dep in departamentos_todos
+                each dep in departamentos
                   option(value= dep._id ) #{dep.nombre}
             td
               label.labelFiltro.labFilLeft(for='fechaDesde') Desde:
@@ -53,7 +53,7 @@ block content
                 each justificacion, i in justificaciones
                   form(role='form', method="POST", action="/getionarJustificacion/"+justificacion.id)
                     tr
-                      td(data-value=justificacion.fechaCreada) #{justificacion.fecha} 
+                      td(data-value=justificacion.fechaCreada) #{justificacion.fecha.str} 
                       td #{justificacion.usuario.nombre} #{justificacion.usuario.apellido1}
                       td #{justificacion.motivo} 
                       td #{justificacion.detalle} 
@@ -68,7 +68,7 @@ block content
                         button.row-delete.btn.btn-default(value=justificacion.id, name='gestionar') 
                             i.icon-ok.icon-large  
                       td
-                        button.btn.btn-default.justificacionDelete(value=justificacion.usuario.nombre+' '+justificacion.usuario.apellido1+' '+justificacion.usuario.apellido2+','+justificacion.id+','+justificacion.fecha, name='eliminar') 
+                        button.btn.btn-default.justificacionDelete(value=justificacion.usuario.nombre+' '+justificacion.usuario.apellido1+' '+justificacion.usuario.apellido2+','+justificacion.id+','+justificacion.fecha.str, name='eliminar') 
                           i.icon-trash.icon-large.i-danger 
               tfoot
                 tr

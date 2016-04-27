@@ -21,6 +21,8 @@ block content
               div
                 label Hora oficial 
                   span.clock
+                label Tiempo trabajado 
+                  span.clockHorasTrab
               br
               div
                 table#tablaMarcas.footable
@@ -55,7 +57,7 @@ block content
                           tr
                             td Salida
                             td(data-value=marca.epoch) #{marca.fecha}
-
+                              
           div#calSupervisor
             button#previous.btn.btn-default
               i.icon.icon-chevron-left
@@ -70,7 +72,7 @@ block content
                 label Hora oficial 
                   span.clock
                 label Tiempo trabajado 
-                  span#clockHorasTrab
+                  span.clockHorasTrab
               br
               div
                 table#tablaMarcas.footable
@@ -106,7 +108,22 @@ block content
                             td Salida
                             td #{marca.fecha}
 
-
+          br
+          .col-xs-4
+            div.justTable
+              div
+              h3 Justificaciones pendientes de detalle
+              div
+                table#tablaJust.footable
+                  thead
+                    tr
+                      th(data-sort-ignore="true") Motivo
+                      th(data-sort-ignore="true" data-type="numeric" ) Fecha
+                  tbody.justDetalle
+                    each just, i in justificaciones
+                      tr(data-toggle="modal" data-target="#updateJustificacion" data-value=just._id)
+                        td #{just.motivo}
+                        td() #{just.fecha.dia}, #{just.fecha.diaNum} de #{just.fecha.mes} #{just.fecha.año} 
         .col-xs-4
           .marca
             h3  Marca Mediante el Sistema
@@ -333,7 +350,24 @@ block content
                          
                   button#btn-just.btn.btn-success(type='submit') Enviar
                   button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
-    
+
+        #updateJustificacion.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+          .modal-dialog
+            .modal-content
+              .modal-header
+                button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+                h4#myModalLabel.modal-title Justificación
+              .modal-body
+                form.formJust#login-form.well.span4
+                  .form-group
+                    label(for='motivoOtroJust') Motivo:
+                      label#motivoOtroJust.form-control(style='float:left')
+                  .form-group
+                      label(for='detalles') Detalles:
+                      textarea#detalles.form-control(rows="4" cols="50" required)
+                         
+                  button#btn-just.btn.btn-success(type='submit') Enviar
+                  button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
 
       if(usuario.tipo == 'Administrador')
         .col-xs-4(style="margin: 20px;")

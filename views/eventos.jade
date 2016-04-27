@@ -68,7 +68,7 @@ block content
               tbody 
                 each justificacion, i in justificaciones
                   tr
-                    td(data-value=justificacion.fechaCreada) #{justificacion.fecha} 
+                    td(data-value=justificacion.fechaCreada) #{justificacion.fecha.toString} 
                     td #{justificacion.motivo} 
                     td #{justificacion.detalle} 
                     td #{justificacion.comentarioSupervisor} 
@@ -123,7 +123,7 @@ block content
           p No se existen extras hasta el momento.
 
         br
-        h3 Solicitudes Permisos
+        h3 Solicitudes Permisosxs
         if(permisos.length != 0)
           table.footable(data-page-navigation=".pagination")
               thead

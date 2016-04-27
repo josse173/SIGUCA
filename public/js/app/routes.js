@@ -90,82 +90,109 @@
             $('#detalles').val(data.detalle);    
         });
     });
-
-    $("button[data-target=#editExtra]").click( function() {
-        var id = $(this).val();
-        $('.formUpdateExtra').attr('action', '/extra/'+id);
-        $.get('/solicitud/edit/'+id, function( data ) {
-            var epochInicio = moment.unix(data.epochInicio).format("YYYY/MM/DD HH:mm"),
-            epochTermino = moment.unix(data.epochTermino).format("YYYY/MM/DD HH:mm")
-            $('#date_timepicker_start').val(epochInicio);
-            $('#date_timepicker_end').val(epochTermino);
-            $('#cliente').val(data.cliente);
-            $('#motivo').val(data.motivo);
-        });
-    });
-
-    $("button[data-target=#editPermiso]").click( function() {
-        var id = $(this).val();
-        $.get('/solicitud/edit/'+id, function( data ) {
-            $('#diaInicio').val(data.diaInicio);
-            $('#diaFinal').val(data.diaFinal);
-            $('#cantidadDias').val(data.cantidadDias);
-            var optionValues = [];
-
-            $('#selectMotivo option').each(function() {
-                optionValues.push($(this).val());
+    $("tr[data-target=#updateJustificacion]" ).click( function() {
+        var id = $(this).data('value').replace(/\"/g, "");
+        $.get('/justificacion/edit/'+id, function( data ) {
+            $("#updateJustificacion #motivoOtroJust").prop("readonly", true);
+            $("#updateJustificacion #motivoOtroJust").text(data.motivo);
+            //$("#updateJustificacion #idJust").text(id);
+            $("#updateJustificacion #btn-just" ).click( function() {
+                var updJust = {
+                    motivoJust: "otro",
+                    motivoOtroJust: $("#updateJustificacion #motivoOtroJust").text(),
+                    detalle: $("#updateJustificacion #detalles").val()
+                };
+                $.ajax({
+                    type: "POST",
+                    url: '/justificacion/'+id,
+                    processData: false,
+                    contentType: 'application/json',
+                    data: JSON.stringify(updJust),
+                    success: function(r) {
+                        console.log(r);
+                    }
+                });
             });
-
-            if(jQuery.inArray( data.motivo, optionValues ) == -1){
-                $("#motivoOtro").removeAttr('disabled');
-                $('#selectMotivo').val('otro');
-                $('#motivoOtro').val(data.motivo);
-            } else {
-                $("#motivoOtro").attr('disabled','disabled');
-                $('#selectMotivo').val(data.motivo);
-            }
-
-            $('#detallePermiso').val(data.detalle); 
+            //alert($("#updateJustificacion > #motivoOtroJust").text());
+            //alert(data);
         });
     });
 
-    $("button[data-target=#editDep]").click( function() {
-        var id = $(this).val();
-        $('.formUpdate').attr('action', '/departamento/'+id);
-
-        $.get('/departamento/editDepartamento/'+id, function( data ) {
-            $('#nombreDepa').val(data.nombre);            
-        });
+ $("button[data-target=#editExtra]").click( function() {
+    var id = $(this).val();
+    $('.formUpdateExtra').attr('action', '/extra/'+id);
+    $.get('/solicitud/edit/'+id, function( data ) {
+        var epochInicio = moment.unix(data.epochInicio).format("YYYY/MM/DD HH:mm"),
+        epochTermino = moment.unix(data.epochTermino).format("YYYY/MM/DD HH:mm")
+        $('#date_timepicker_start').val(epochInicio);
+        $('#date_timepicker_end').val(epochTermino);
+        $('#cliente').val(data.cliente);
+        $('#motivo').val(data.motivo);
     });
+});
 
-    $("button[data-target=#editHorario]").click( function() {
-        var id = $(this).val();
-        $('.formUpdate').attr('action', '/horarioN/'+id);
+ $("button[data-target=#editPermiso]").click( function() {
+    var id = $(this).val();
+    $.get('/solicitud/edit/'+id, function( data ) {
+        $('#diaInicio').val(data.diaInicio);
+        $('#diaFinal').val(data.diaFinal);
+        $('#cantidadDias').val(data.cantidadDias);
+        var optionValues = [];
 
-        $.get('/horarioN/editHorario/'+id, function( data ) {
-            $('#nombre').val(data.nombre);            
-            $('#tipoJornada').val(data.tipo);            
-            if(data.tipo == 'Libre'){
-                $('#tipoJornada').prop('checked', true);
-                $('#timepicker input').attr('disabled','disabled');
-                $('#timepicker1 input').attr('disabled','disabled');
-                $('#timepicker4').show();
-                $('#rangoJornada').hide();
-            }
-            else{
-                $('#tipoJornada').prop('checked', false);
-                $('#timepicker input').removeAttr('disabled');
-                $('#timepicker1 input').removeAttr('disabled');
-                $('#rangoJornada').show();
-                $('#timepicker4').hide();
-            }
-            $('#horaEntrada').val(data.horaEntrada);            
-            $('#horaSalida').val(data.horaSalida);            
-            $('#rangoJornada').text(data.rangoJornada);            
-            $('#inputRango').val(data.rangoJornada); 
-            $('#tiempoReceso').val(data.tiempoReceso); 
-            $('#tiempoAlmuerzo').val(data.tiempoAlmuerzo); 
+        $('#selectMotivo option').each(function() {
+            optionValues.push($(this).val());
         });
+
+        if(jQuery.inArray( data.motivo, optionValues ) == -1){
+            $("#motivoOtro").removeAttr('disabled');
+            $('#selectMotivo').val('otro');
+            $('#motivoOtro').val(data.motivo);
+        } else {
+            $("#motivoOtro").attr('disabled','disabled');
+            $('#selectMotivo').val(data.motivo);
+        }
+
+        $('#detallePermiso').val(data.detalle); 
+    });
+});
+
+ $("button[data-target=#editDep]").click( function() {
+    var id = $(this).val();
+    $('.formUpdate').attr('action', '/departamento/'+id);
+
+    $.get('/departamento/editDepartamento/'+id, function( data ) {
+        $('#nombreDepa').val(data.nombre);            
+    });
+});
+
+ $("button[data-target=#editHorario]").click( function() {
+    var id = $(this).val();
+    $('.formUpdate').attr('action', '/horarioN/'+id);
+
+    $.get('/horarioN/editHorario/'+id, function( data ) {
+        $('#nombre').val(data.nombre);            
+        $('#tipoJornada').val(data.tipo);            
+        if(data.tipo == 'Libre'){
+            $('#tipoJornada').prop('checked', true);
+            $('#timepicker input').attr('disabled','disabled');
+            $('#timepicker1 input').attr('disabled','disabled');
+            $('#timepicker4').show();
+            $('#rangoJornada').hide();
+        }
+        else{
+            $('#tipoJornada').prop('checked', false);
+            $('#timepicker input').removeAttr('disabled');
+            $('#timepicker1 input').removeAttr('disabled');
+            $('#rangoJornada').show();
+            $('#timepicker4').hide();
+        }
+        $('#horaEntrada').val(data.horaEntrada);            
+        $('#horaSalida').val(data.horaSalida);            
+        $('#rangoJornada').text(data.rangoJornada);            
+        $('#inputRango').val(data.rangoJornada); 
+        $('#tiempoReceso').val(data.tiempoReceso); 
+        $('#tiempoAlmuerzo').val(data.tiempoAlmuerzo); 
+    });
 });
 
  $("button[data-target=#editEmpl]").click( function() {
@@ -370,7 +397,7 @@
         'message': '¿Está seguro de eliminar la marca de <br/><strong>' +  split[0] + '</strong>?',
         'onok': function(){ 
             $.get('/marca/delete/'+split[1], function (data){
-             if(data == 'Se elimino'){
+               if(data == 'Se elimino'){
                 footable.removeRow(row);
                 alertify.message('Se eliminó la marca <strong>' +  split[0] + '</strong> con éxito');
             } else {
@@ -482,6 +509,15 @@
 //
 
 $(".bootstrap-select").click(function(){
+    alert("CLICK");
+    //$(this).addClass("active").siblings().removeClass("active");
+});
+
+//------------------------------------------------------------------------
+//CSS
+$("#horas").css("display", "inline-block");
+
+$("#horas").click(function(){
     alert("CLICK");
     //$(this).addClass("active").siblings().removeClass("active");
 });

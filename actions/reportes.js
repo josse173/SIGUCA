@@ -15,9 +15,10 @@ module.exports = {
 		if (req.session.name == "Supervisor") {
 			var epochGte = moment().hours(0).minutes(0).seconds(0);
             var inicioMes = moment().date(1);//primer dia del mes
-
+            var marcaQuery = {};
+            //marcaQuery = {epoch:{"$gte": epochGte.unix()}};
             Usuario.find({tipo:{"$nin": ['Administrador']}}).exec(function(error, usuarios) {
-            	Marca.find({epoch:{"$gte": epochGte.unix()}}).populate('usuario').exec(function(error, marcas) {
+            	Marca.find(marcaQuery).populate('usuario').exec(function(error, marcas) {
             		Justificaciones.find({estado:{"$nin": ['Pendiente']}}).populate('usuario').exec(function(error, justificaciones) {
             			Solicitudes.find({tipoSolicitudes:'Extras', estado:{"$nin": ['Pendiente']}}).populate('usuario').exec(function(error, extras) {
             				Solicitudes.find({tipoSolicitudes:'Permisos', estado:{"$nin": ['Pendiente']}}).populate('usuario').exec(function(error, permisos) {
@@ -28,12 +29,12 @@ module.exports = {
             								array.push(req.user.departamentos[y].departamento);
             							}
 
-            							var arrayUsuario = eventosAjuste(usuarios, req.user, "reportes");
-            							var arrayJust = eventosAjuste(justificaciones, req.user, "reportes");
-            							var arrayExtras = eventosAjuste(extras, req.user, "reportes");
-            							var arrayPermisos = eventosAjuste(permisos, req.user, "reportes");
-            							var arrayMarcas = eventosAjuste(marcas, req.user, "reportes");
-            							var arrayCierres = eventosAjuste(cierres, {departamentos: [1]}, "reportes");
+            							var arrayUsuario = util.eventosAjuste(usuarios, req.user, "reportes");
+            							var arrayJust = util.eventosAjuste(justificaciones, req.user, "reportes");
+            							var arrayExtras = util.eventosAjuste(extras, req.user, "reportes");
+            							var arrayPermisos = util.eventosAjuste(permisos, req.user, "reportes");
+            							var arrayMarcas = util.eventosAjuste(marcas, req.user, "reportes");
+            							var arrayCierres = util.eventosAjuste(cierres, {departamentos: [1]}, "reportes");
 
             							if (error) return res.json(error);
             							return res.render('reportes', {

@@ -31,9 +31,13 @@ module.exports = {
                 var marcas = util.clasificarMarcas(arrayMarcas);
                 var tiempoTotal = util.contarHoras(marcas.entrada, marcas.salida);
                 var tiempoAlmuerzo = util.contarHoras(marcas.almuerzoOut, marcas.almuerzoIn);
-                var tiempoReceso = util.contarHoras(marcas.recesoOut, marcas.recesoIn);
                 tiempoTotal = util.ajustarHoras(tiempoTotal, tiempoAlmuerzo);
-                tiempoTotal = util.ajustarHoras(tiempoTotal, tiempoReceso);
+                for(receso in marcas.recesos){
+                    var tiempoReceso = util.contarHoras(
+                        marcas.recesos[receso].recesoOut, 
+                        marcas.recesos[receso].recesoIn);
+                    tiempoTotal = util.ajustarHoras(tiempoTotal, tiempoReceso);
+                }
                 //------------------------------------------------------------//
                 res.json(tiempoTotal);
             }
