@@ -729,5 +729,5 @@ module.exports = function(app, io) {
 
 
 //tareas_actions.cronJob.start();
-tareas_actions.jobMarcasNoRegistradas.start();
+//tareas_actions.jobMarcasNoRegistradas.start();
 //tareas_actions.test();
