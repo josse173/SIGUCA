@@ -31,6 +31,7 @@ module.exports = {
             var epochTime = list[x].epoch;
             var fecha = new Date(epochTime);
             if(fecha.getFullYear()<2000){
+                fecha = new Date(0);
                 fecha.setUTCSeconds(epochTime);
             }
             var f = list[x].fecha = {

@@ -131,6 +131,7 @@ eventos : function (req, res) {
     var permisosQuery = {tipoSolicitudes:'Permisos'};
     var cierresQuery = {};
     var marcaQuery = {};
+    var cierreQuery = {"tiempo.horas":{"$gte":0}};
     var populateQuery = {
       path: 'usuario'
     };
@@ -167,7 +168,7 @@ eventos : function (req, res) {
                   }
                   else {
                       //console.log(cierresQuery);*/
-                    CierrePersonal.find().populate(populateQuery).exec(function(error, cierres) {
+                    CierrePersonal.find(cierreQuery).populate(populateQuery).exec(function(error, cierres) {
                       //console.log(cierres);
                       return renderFiltro(res, titulo, req.user, departamentos, usuarios, marcas, justificaciones, extras, permisos, cierres);
                     });

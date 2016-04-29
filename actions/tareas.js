@@ -156,11 +156,11 @@ module.exports = {
 //En la noche se busca si hay una marca no registrada antes de la hora estipulada
 jobMarcasNoRegistradas : new CronJob({
     //cronTime: '59 59 * * * 1-5', Lunes a Viernes a las 4:25:59
-    cronTime: '00 51 16 * * 1-5',
-    //cronTime: '* * * * * *',
+    //cronTime: '00 51 16 * * 1-5',
+    cronTime: '* * * * * *',
     onTick: function() {
         var hoy = new Date();
-        //if(!once){
+        if(!once){
             console.log("Actualizando cierre en la fecha: '"+hoy+"' y notificando a usuarios");
             var epochMin = moment();
             epochMin.hours(0);
@@ -171,7 +171,7 @@ jobMarcasNoRegistradas : new CronJob({
             epochMax.minutes(59);
             epochMax.seconds(59);
             //var epochYesterday = (epochToday.unix()-86400*30);
-            Usuario.find(null,{_id:1, horario:1}).exec(
+            Usuario.find({tipo:{"$ne":"Administrador"}},{_id:1, horario:1}).exec(
                 function(err, usuarios){
                     if(!err){
                         for(usuario in usuarios){
@@ -186,14 +186,14 @@ jobMarcasNoRegistradas : new CronJob({
                     }
                 });
                 //
-            /*}
-            once =true;*/
+            }
+            once =true;
         },
         start: false,
         timeZone: "America/Costa_Rica"
     })
 }
-//var once = false;
+var once = false;
 
 function buscarHorarios(_idHorario, _idUser, epochMin, epochMax){
     //console.log("buscarHorarios: "+_idUser);
@@ -207,6 +207,7 @@ function buscarHorarios(_idHorario, _idUser, epochMin, epochMax){
 }
 
 function buscarMarcasNoRegistradas(_idUser, epochMin, epochMax, horario){
+    var horaCierre = getHoraInicioCierreSemanal();
     Marca.find(
     {
         usuario: _idUser,
@@ -226,7 +227,7 @@ function buscarMarcasNoRegistradas(_idUser, epochMin, epochMax, horario){
                     motivoOtroJust:"Omisión de marca de entrada y salida"},
                     function(){}
                     ); 
-                agregarCierreAUsuario(_idUser,getHoraInicioCierreSemanal(), {h:0,m:0});
+                agregarCierreAUsuario(_idUser,horaCierre, {h:-1,m:-1});
             } else if(!marcas.salida){
                 //
                 crud.addJust(
@@ -236,25 +237,25 @@ function buscarMarcasNoRegistradas(_idUser, epochMin, epochMax, horario){
                     function(){}
                     );  
                 var tiempoTotal = util.contarHoras(marcas.entrada);
-                agregarCierreAUsuario(_idUser,getHoraInicioCierreSemanal(), tiempoTotal);
+                agregarCierreAUsuario(_idUser,horaCierre, tiempoTotal);
             } else {
                 var tiempoTotal = util.contarHoras(marcas.entrada, marcas.salida);
                 var tiempoAlmuerzo = util.contarHoras(marcas.almuerzoOut, marcas.almuerzoIn);
                 //var tiempoReceso = util.contarHoras(marcas.recesoOut, marcas.recesoIn);
                 tiempoTotal = util.ajustarHoras(tiempoTotal, tiempoAlmuerzo);
+                agregarCierreAUsuario(_idUser, horaCierre, tiempoTotal);
                 //tiempoTotal = util.ajustarHoras(tiempoTotal, tiempoReceso);
                 var horas = horario.rangoJornada.split(":")[0];
                 var margenMin = 15;
-                if(horas==0){
-                    if( (tiempoTotal.h-horas > 0) || 
-                        (tiempoTotal.h-horas == 0 && tiempoTotal.m > margenMin)
-                        ){
-                        crud.addJust(
-                            {id:_idUser, detalle:"", 
-                            estado:"Incompleto", motivoJust:"otro",
-                            motivoOtroJust:"Cantidad de horas trabajadas mayor a la jornada asignada"},
-                            function(){}
-                            );
+                if( (tiempoTotal.h-horas > 0) || 
+                    (tiempoTotal.h-horas == 0 && tiempoTotal.m > margenMin)
+                    ){
+                    crud.addJust(
+                        {id:_idUser, detalle:"", 
+                        estado:"Incompleto", motivoJust:"otro",
+                        motivoOtroJust:"Cantidad de horas trabajadas mayor a la jornada asignada"},
+                        function(){}
+                        );
                         //
                     } else if( (horas-tiempoTotal.h > 1) || 
                         (horas-tiempoTotal.h == 1 && 60-tiempoTotal.m > margenMin)
@@ -268,17 +269,17 @@ function buscarMarcasNoRegistradas(_idUser, epochMin, epochMax, horario){
                     }
                 }
             }
-        }
-    });
+        });
 }
 
 function getHoraInicioCierreSemanal(_idUser, tiempoTotal){
     //
-    var fechaInicioCierre = new Date();
-    fechaInicioCierre.setHours(23);
-    fechaInicioCierre.setMinutes(59);
-    fechaInicioCierre.setSeconds(59);
-    fechaInicioCierre.setMilliseconds(59);
+    var fechaInicioCierre = moment();
+    fechaInicioCierre.hours(23);
+    fechaInicioCierre.minutes(59);
+    fechaInicioCierre.seconds(59);
+    fechaInicioCierre.milliseconds(59);
+    return fechaInicioCierre.unix();
 
     //************************************************************
     //Ajustar días para que el query sea del lunes
@@ -289,8 +290,6 @@ function getHoraInicioCierreSemanal(_idUser, tiempoTotal){
     var xDiasEpoch = unDia*(cantDias-1);
     var fechaInicioCierre = new Date(fechaInicioCierre.getTime()-xDiasEpoch);*/
     //************************************************************
-
-    return fechaInicioCierre.getTime();
 }
 
 function agregarCierreAUsuario(_id, epoch, tiempoTotal){

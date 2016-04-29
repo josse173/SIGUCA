@@ -98,7 +98,7 @@ block content
                 each extra, i in extras
                   form(role='form', method="POST", action="/getionarSolicitud/"+extra.id)
                     tr
-                      td(data-value=extra.fechaCreada) #{extra.fecha} 
+                      td(data-value=extra.fechaCreada) #{extra.fecha.str}
                       td #{extra.usuario.nombre} #{extra.usuario.apellido1} 
                       td #{extra.diaInicio} 
                       td #{extra.diaFinal} 
@@ -146,7 +146,7 @@ block content
                 each permiso, i in permisos
                   form(role='form', method="POST", action="/getionarSolicitud/"+permiso.id)
                     tr
-                      td(data-value=permiso.fechaCreada) #{permiso.fecha} 
+                      td(data-value=permiso.fechaCreada) #{permiso.fecha.str} 
                       td #{permiso.usuario.nombre} #{permiso.usuario.apellido1} 
                       td #{permiso.diaInicio} 
                       td #{permiso.diaFinal} 
