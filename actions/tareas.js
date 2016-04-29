@@ -156,12 +156,12 @@ module.exports = {
 //En la noche se busca si hay una marca no registrada antes de la hora estipulada
 jobMarcasNoRegistradas : new CronJob({
     //cronTime: '59 59 * * * 1-5', Lunes a Viernes a las 4:25:59
-    //cronTime: '00 51 16 * * 1-5',
-    cronTime: '* * * * * *',
+    cronTime: '00 06 11 * * 1-6',
+    //cronTime: '* * * * * *',
     onTick: function() {
         var hoy = new Date();
-        if(!once){
-            console.log("Actualizando cierre en la fecha: '"+hoy+"' y notificando a usuarios");
+        //if(!once){
+            console.log("Actualizando cierre en la fecha '"+hoy+"' y notificando a usuarios");
             var epochMin = moment();
             epochMin.hours(0);
             epochMin.minutes(0);
@@ -186,14 +186,14 @@ jobMarcasNoRegistradas : new CronJob({
                     }
                 });
                 //
-            }
-            once =true;
+            /*}
+            once =true;*/
         },
         start: false,
         timeZone: "America/Costa_Rica"
     })
 }
-var once = false;
+//var once = false;
 
 function buscarHorarios(_idHorario, _idUser, epochMin, epochMax){
     //console.log("buscarHorarios: "+_idUser);
