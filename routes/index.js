@@ -84,10 +84,6 @@ module.exports = function(app, io) {
     */
     app.get('/escritorioEmpl', autentificado, escritorio_actions.escritorioEmpl);
 
-    /*function find(){
-        var epochGte = moment();
-    }*/ 
-
     /*
     *  Envia los departamentos y horarios al escritorio del administrador, 
     *  para la posterior creación de usuarios 
@@ -108,9 +104,10 @@ module.exports = function(app, io) {
     *  a cada consulta se le realiza la conversión de epoch a la CST Standard.
     *  
     */
-    //app.get('/reportes', autentificado, actions.reportes);
     app.get('/reportes', autentificado, event_actions.filtrarEventos);
+
     app.post('/reportes', autentificado, event_actions.filtrarEventos);
+
     /*
     *   - Filtra los eventos por usuario y rango de fecha. 
     *   - Dependiendo si es reporte o gestión de eventos, filtra los eventos por distintos estados.
@@ -729,5 +726,16 @@ module.exports = function(app, io) {
 
 
 //tareas_actions.cronJob.start();
-//tareas_actions.jobMarcasNoRegistradas.start();
-//tareas_actions.test();
+//tareas_actions.jobCierreAutomatico.start();
+
+/*
+var fecha = new moment();
+console.log(fecha.unix());
+fecha.utc().year(2016);
+fecha.utc().date(4);
+fecha.utc().month(4);
+fecha.utc().hours(8);
+fecha.utc().minutes(47);
+fecha.utc().seconds(17);
+console.log(fecha.unix());
+console.log(fecha.utc().unix());*/

@@ -2,24 +2,33 @@
 var mongoose = require('mongoose'),
 Schema = mongoose.Schema;
 var SchemaCierrePersonal = new Schema({
-    usuario: {
-        type: Schema.Types.ObjectId,
-        ref: 'Usuario'
-    },
     epoch: { 
         type: Number,
         default: 0
     },
-    tiempo:{
-        horas: {
-            type: Number,
-            default: 0
+    usuarios: [
+    {
+        usuario: {
+            type: Schema.Types.ObjectId,
+            ref: 'Usuario'
         },
-        minutos:{
-            type: Number,
-            default: 0
+        tiempo:{
+            horas: {
+                type: Number,
+                default: 0
+            },
+            minutos:{
+                type: Number,
+                default: 0
+            }
+        },
+        solicitudes: [
+        {
+            
         }
+        ]
     }
+    ]
 },
 { collection:"cierresPersonal"}
 );

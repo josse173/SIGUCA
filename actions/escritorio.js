@@ -18,7 +18,8 @@ module.exports = {
 			var epochYesterday = moment().subtract(1, 'days').hours(23).minutes(59).seconds(59);
 
 			Marca.find({usuario: req.user.id, epoch:{"$gte": epochGte.unix()}},{_id:0,tipoMarca:1,epoch:1}).exec(function(error, marcas) {
-				Justificaciones.find({estado:'Pendiente'}).populate('usuario').exec(function(error, justificaciones) {
+				//console.log({usuario: req.user.id, estado:'Incompleto'});
+				Justificaciones.find({usuario: req.user.id, estado:'Incompleto'}).populate('usuario').exec(function(error, justificaciones) {
 					Solicitudes.find({estado:'Pendiente'}).populate('usuario').exec(function(error, solicitudes) {                        
 						Usuario.find({_id:req.user.id},{_id:0,departamentos: 1}).populate('departamentos.departamento').exec(function(error, result){
 							Cierre.find({usuario: req.user.id, epoch:{"$gte": epochYesterday.unix() }},{_id:0,horasSemanales:1}).exec(function(err, cierres) {
@@ -39,11 +40,12 @@ module.exports = {
 									var horasSemanales;
 									(epochGte.day() === 1) ? horasSemanales = 0 : (cierres.length == 0) ? horasSemanales = '' : horasSemanales = cierres[0].horasSemanales;
 
+                					var arrayJust = util.unixTimeToRegularDate(justificaciones);
 									if (error) return res.json(error);
 									return res.render('escritorio', {
 										title: 'Escritorio Supervisor | SIGUCA',
 										departamentos: supervisor.departamentos, 
-										justificaciones: just, 
+										justificaciones: arrayJust, 
 										solicitudes: soli,
 										todos: array,
 										usuario: req.user,

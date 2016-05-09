@@ -26,20 +26,7 @@ module.exports = {
         ).exec(
         function(error, arrayMarcas) {
             if (!error){
-                ///--------------------------------------------------//
-                //Cálculo de horas trabajadas
-                var marcas = util.clasificarMarcas(arrayMarcas);
-                var tiempoTotal = util.contarHoras(marcas.entrada, marcas.salida);
-                var tiempoAlmuerzo = util.contarHoras(marcas.almuerzoOut, marcas.almuerzoIn);
-                tiempoTotal = util.ajustarHoras(tiempoTotal, tiempoAlmuerzo);
-                for(receso in marcas.recesos){
-                    var tiempoReceso = util.contarHoras(
-                        marcas.recesos[receso].recesoOut, 
-                        marcas.recesos[receso].recesoIn);
-                    tiempoTotal = util.ajustarHoras(tiempoTotal, tiempoReceso);
-                }
-                //------------------------------------------------------------//
-                res.json(tiempoTotal);
+                res.json(util.tiempoTotal(util.clasificarMarcas(arrayMarcas)));
             }
         });
         //

@@ -1,6 +1,6 @@
 var moment 	= require('moment');
 module.exports = {
-    unixTimeToRegularDate: function(list){
+    unixTimeToRegularDate: function(list, detail){
         for(x in list){
             if("fechaCreada" in list[x]){
              var epochTime = list[x].fechaCreada;
@@ -29,21 +29,23 @@ module.exports = {
         } 
         if("epoch" in list[x]){
             var epochTime = list[x].epoch;
-            var fecha = new Date(epochTime);
-            if(fecha.getFullYear()<2000){
-                fecha = new Date(0);
-                fecha.setUTCSeconds(epochTime);
-            }
+            var fecha = new moment.unix(epochTime);
             var f = list[x].fecha = {
                     //
-                    dia:this.getDia(fecha.getDay()),
-                    diaNum:fecha.getDate(),
-                    mes:this.getMes(fecha.getMonth()),
-                    año:fecha.getFullYear()
+                    dia:this.getDia(fecha.day()),
+                    diaNum:fecha.date(),
+                    mes:this.getMes(fecha.month()),
+                    año:fecha.year(),
+                    hora: fecha.hours(),
+                    minutos: fecha.minutes(),
+
                 };
             //
-            f.str = f.dia+", "+f.diaNum+" de "+f.mes+", "+f.año;}
-        }
+            f.str = f.diaNum+" de "+f.mes+" del "+f.año;
+            if (detail){
+                f.str = f.hora+":"+f.minutos+", "+f.str;
+            }
+        }}
         return list;
     },
     getDia: function(d){
@@ -90,33 +92,36 @@ module.exports = {
         return marcas;
     },
     contarHoras: function (inicio, fin){
-        var actualEpoch = moment();
-        var conteo = {h:0, m:0};
+        function execConteo(hInicio, hFin){
+            var conteo = {h:0, m:0};
+            var difHoras = hFin.hours()-hInicio.hours();
+            if(difHoras==0 && hFin.minutes()>=hInicio.minutes()){
+                conteo.m = hFin.minutes()-hInicio.minutes();
+            }
+            else if(difHoras==0 && hFin.minutes()<hInicio.minutes()){
+                conteo.m = hInicio.minutes()-hFin.minutes();
+            }
+            else if(hInicio.minutes() > hFin.minutes()){
+                conteo.h = difHoras - 1;
+                conteo.m = 60 - hInicio.minutes() +hFin.minutes();
+            }
+            else {
+                conteo.h = difHoras;
+                conteo.m = hFin.minutes()-hInicio.minutes();
+            }
+            return conteo;
+        }
+
         if(inicio && fin){
             var hInicio = moment.unix(inicio.epoch);
             var hFin = moment.unix(fin.epoch);
-            conteo.h = hFin.hours()-hInicio.hours();
-            if(conteo.h==1 && hInicio.minutes() >hFin.minutes()){
-                conteo.h = 0;
-            }
-            if(hInicio.minutes()>hFin.minutes()){
-                var dif = 60 - hInicio.minutes() +hFin.minutes();
-                conteo.m = dif;
-            }
-            else conteo.m = hFin.minutes()-hInicio.minutes();
+            return execConteo(hInicio,hFin);
         }else if(inicio){
             var hInicio = moment.unix(inicio.epoch);
-            conteo.h = actualEpoch.hours()-hInicio.hours();
-            if(conteo.h==1 && hInicio.minutes() >actualEpoch.minutes()){
-                conteo.h = 0;
-            }
-            if(hInicio.minutes()>actualEpoch.minutes()){
-                var dif = 60 - hInicio.minutes() +actualEpoch.minutes();
-                conteo.m = dif;
-            }
-            else conteo.m = actualEpoch.minutes()-hInicio.minutes();
+            var hFin = moment();
+            return execConteo(hInicio, hFin);
         }
-        return conteo;
+        return {h:0, m:0};
     },
     ajustarHoras: function (total, ajuste){
         if(total.m<ajuste.m){
@@ -128,6 +133,34 @@ module.exports = {
             total.h = total.h-ajuste.h;
         }
         return total;
+    },
+    tiempoTotal : function(marcas){
+        var tiempo = this.contarHoras(marcas.entrada, marcas.salida);
+        /*console.log("**TOTAL**");
+        console.log(tiempo);**/
+        var tiempoAlmuerzo = this.contarHoras(marcas.almuerzoOut, marcas.almuerzoIn);
+        /*console.log("**ALMUERZO**");
+        console.log(tiempoAlmuerzo);*/
+        tiempo = this.ajustarHoras(tiempo, tiempoAlmuerzo);
+        /*console.log("**TOTAL - ALMUERZO**");
+        console.log(tiempo);*/
+        for(receso in marcas.recesos){
+            /*console.log("**RECESO**");
+            console.log(this.contarHoras(
+                marcas.recesos[receso].recesoOut, 
+                marcas.recesos[receso].recesoIn)
+);*/
+tiempo = this.ajustarHoras(
+    tiempo, 
+    this.contarHoras(
+        marcas.recesos[receso].recesoOut, 
+        marcas.recesos[receso].recesoIn)
+    );
+            /*console.log("**TOTAL - RECESO**");
+            console.log(tiempo);
+            console.log("****");*/
+        }
+        return tiempo;
     },
 	/*
 	*  Resultados de configuracion y reportes se filtran por supervisor, finalmente se direcciona a la página 

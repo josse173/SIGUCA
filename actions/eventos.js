@@ -113,14 +113,14 @@ eventos : function (req, res) {
           }
         },
 
- filtrarEventos : function (req, res) {
-  if (req.session.name == "Supervisor") { 
-    var usuarioId;
-    var option;
-    if(req.body.filtro){
-      option = req.body.filtro.split('|');  
-      usuarioId = req.body.filtro.split('|')[0];
-    }
+        filtrarEventos : function (req, res) {
+          if (req.session.name == "Supervisor") { 
+            var usuarioId;
+            var option;
+            if(req.body.filtro){
+              option = req.body.filtro.split('|');  
+              usuarioId = req.body.filtro.split('|')[0];
+            }
 
     //**************************************************************************
     //Preparación de los queries para filtrar datos
@@ -132,12 +132,13 @@ eventos : function (req, res) {
     var cierresQuery = {};
     var marcaQuery = {};
     var cierreQuery = {"tiempo.horas":{"$gte":0}};
+    var usuarioQuery = {tipo:{'$nin': ['Administrador', 'Supervisor']}};
     var populateQuery = {
       path: 'usuario'
     };
 
     if(req.body.filtro_departamento && req.body.filtro_departamento!="todos"){
-        populateQuery.match = {departamentos:{$elemMatch:{departamento:req.body.filtro_departamento}}};
+      populateQuery.match = {departamentos:{$elemMatch:{departamento:req.body.filtro_departamento}}};
     }
     if(JSON.stringify(queryEpoch) !== JSON.stringify({})){
       cierresQuery.epoch = marcaQuery.epoch = justQuery.fechaCreada = extraQuery.fechaCreada = permisosQuery.fechaCreada =  queryEpoch;  
@@ -150,29 +151,30 @@ eventos : function (req, res) {
 
 
     Usuario.find({_id:req.user.id}).exec(function(error, supervisor){
-          var depIds = [];
-          for(depSup in supervisor[0].departamentos){
-            if(supervisor[0].departamentos[depSup].departamento)
-              depIds.push(supervisor[0].departamentos[depSup].departamento.toString());
-          }
+      var depIds = [];
+      for(depSup in supervisor[0].departamentos){
+        if(supervisor[0].departamentos[depSup].departamento)
+          depIds.push(supervisor[0].departamentos[depSup].departamento.toString());
+      }
       Departamento.find({_id:{"$in":depIds}}).exec(function(error, departamentos){
-        Usuario.find({tipo:{'$nin': ['Administrador', 'Supervisor']}, departamentos:{ $elemMatch:{departamento:{"$in":depIds}}}}).exec(function(error, usuarios){
+        usuarioQuery.departamentos = {$elemMatch:{departamento:{"$in":depIds}}};
+        Usuario.find(usuarioQuery).exec(function(error, usuarios){
           //**************************************************************************
           //Filtrar -departamento -usuario -fecha
           Marca.find(marcaQuery).populate(populateQuery).exec(function(error, marcas){
             Justificaciones.find(justQuery).populate(populateQuery).exec(function(error, justificaciones){
               Solicitudes.find(extraQuery).populate(populateQuery).exec(function(error, extras) {
                 Solicitudes.find(permisosQuery).populate(populateQuery).exec(function(error, permisos) {
-                  /*if(req.route.path!=='/reportes'){
+                  if(req.route.path!=='/reportes'){
                     return renderFiltro(res, titulo, req.user, departamentos, usuarios, marcas, justificaciones, extras, permisos);
                   }
                   else {
-                      //console.log(cierresQuery);*/
-                    CierrePersonal.find(cierreQuery).populate(populateQuery).exec(function(error, cierres) {
+                      //console.log(cierresQuery);
+                      CierrePersonal.find(cierreQuery).populate(populateQuery).exec(function(error, cierres) {
                       //console.log(cierres);
                       return renderFiltro(res, titulo, req.user, departamentos, usuarios, marcas, justificaciones, extras, permisos, cierres);
                     });
-                 // }
+                    }
                 });//Solicitudes permisos
               });//Solicitudes horas extra
             });//Justificaciones
@@ -180,18 +182,19 @@ eventos : function (req, res) {
           //**************************************************************************
         });//Usuario
       });//Departamentos
-    });
+});
     //
   } else {
    req.logout();
    res.redirect('/');
  } 
 }
-      };
+};
 
 
 
-function renderFiltro(res, titulo, usuario, departamentos, usuarios, marcas, justificaciones, extras, permisos, cierres){
+function renderFiltro(res, titulo, usuario, departamentos, 
+  usuarios, marcas, justificaciones, extras, permisos, cierres){
   var resumen = [];
   if(cierres){
     cierres = util.unixTimeToRegularDate(cierres.filter(function(m){
@@ -203,16 +206,16 @@ function renderFiltro(res, titulo, usuario, departamentos, usuarios, marcas, jus
     usuario: usuario,
     marcas: util.unixTimeToRegularDate(marcas.filter(function(m){
       return m.usuario;
-    })),
+    }), true),
     justificaciones: util.unixTimeToRegularDate(justificaciones.filter(function(m){
       return m.usuario;
-    })),
+    }), true),
     extras: util.unixTimeToRegularDate(extras.filter(function(m){
       return m.usuario;
-    })),
+    }), true),
     permisos: util.unixTimeToRegularDate(permisos.filter(function(m){
       return m.usuario;
-    })),
+    }), true),
     cierres: cierres,
     usuarios: usuarios,
     departamentos: departamentos,
@@ -240,17 +243,15 @@ function filtrarPorFecha(req){
       '$gte': epochDesde
     }
   }
-  var diaGte = new Date(),
-  diaLt = new Date();
-  diaGte.setHours(0);
-  diaGte.setMinutes(0);
-  diaGte.setSeconds(0);
-  diaGte.setMilliseconds(0);
-  var epochDesde = (diaGte.getTime() - diaGte.getMilliseconds())/1000 - 86400*7;
-  var epochHasta = (diaLt.getTime() - diaLt.getMilliseconds())/1000;
+  var diaGte = new moment();
+  diaGte.hours(0);
+  diaGte.minutes(0);
+  diaGte.seconds(0);
+  diaGte.milliseconds(0);
+  /*var epochDesde = (diaGte.getTime() - diaGte.getMilliseconds())/1000 - 86400*7;
+  var epochHasta = (diaLt.getTime() - diaLt.getMilliseconds())/1000;*/
   return {
-    '$gte': epochDesde, 
-    '$lte': epochHasta
+    '$gte': diaGte.unix()
   }
   //return {};
 }
@@ -267,5 +268,7 @@ function getEstado(titulo){
   if(titulo=='Gestionar eventos | SIGUCA'){
     return "Pendiente";
   }
-  return {'$nin': ['Pendiente']};
+  return {
+    "$nin": ["Pendiente", "Incompleto"]
+  };
 }
