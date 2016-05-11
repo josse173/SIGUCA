@@ -84,6 +84,11 @@ block content
                 tfoot
                   tr
                     td(colspan='2')
+
+          if(nombreUsuario && nombreUsuario!="todos")
+            h3 Búsqueda: #{nombreUsuario}
+          else
+            h3 Búsqueda: Todos los usuarios
           h3.h3Marcas Marcas
           if(marcas && marcas.length != 0)
             table.footable(data-page-navigation=".pagination" data-page-size="25")

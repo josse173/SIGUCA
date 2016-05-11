@@ -1,4 +1,4 @@
-
+         
     Usuario.find({_id:req.user.id}).exec(function(error, supervisor){
         //console.log(supervisor);
         //, "departamentos.departamento":{'$in': supervisor.departamentos}

@@ -1,0 +1,214 @@
+.col-xs-4(style="margin: 20px;")
+    h3#labelIMEC
+      |IMEC:
+    table.footable
+      thead
+        tr
+          th Acción
+          th Nuevo
+          th Modificar o eliminar
+      tbody
+        tr
+          td Departamento:
+          form(action= '/departamento')
+            td
+              button#empleados.btn.btn-success(name='agregar', data-toggle="modal" data-target="#addDep")
+                i.icon-plus.icon-large
+            td
+              button#areas.btn.btn-primary(type = 'submit', name='eliminar',  onclick= "/departamento")
+                i.icon-edit.icon-large
+        tr
+          td Horario:
+          form(action= '/horarioN')    
+            td
+              button#empleados.btn.btn-success(name='agregar', data-toggle="modal" data-target="#addHorario")
+                i.icon-plus.icon-large       
+            td
+              button#areas.btn.btn-primary(type = 'submit', name='eliminar',  onclick= "/horarioN")
+                i.icon-edit.icon-large
+        tr
+          td Empleado:
+          form(action= '/empleado')     
+            td
+              button#empleados.btn.btn-success(name='agregar', data-toggle="modal" data-target="#addEmpl") 
+                i.icon-plus.icon-large
+            td
+              button#areas.btn.btn-primary(type = 'submit', name='eliminar',  onclick= "/empleado")
+                i.icon-edit.icon-large
+        tr
+          td Asignar horario:  
+            td
+              button#horarioEmpleado.btn.btn-success(data-toggle="modal" data-target="#asignarHorario")
+                i.icon-plus.icon-large
+ 
+.col-xs-2  
+  #asignarHorario.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+    .modal-dialog
+        .modal-content
+          .modal-header
+            button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+            h4#myModalLabel.modal-title Asignar horario a empleado
+          .modal-body
+            form#asignar-horario-form.well.span4
+              .form-group
+                h4 Empleado
+                select.form-control#selectFiltro.selectpicker(data-style="btn-success", data-width="auto", type="text", name="usuario") 
+                  each user in usuarios
+                    option(value= user._id) #{user.apellido1} #{user.apellido2}, #{user.nombre} 
+              .form-group
+                h4 Información de jornada
+                - var dias = ["lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo"];
+                each dia in dias    
+                  - var strEntrada =  dia+"HoraEntrada";
+                  - var strSalida =  dia+"HoraSalida";
+                  - var strDia =  dia.charAt(0).toUpperCase() + dia.slice(1);
+                  label #{strDia}:
+                  br
+                  label(for = strEntrada) Hora de Inicio:
+                    div#timepicker.input-group
+                      input.input-small.form-control(type="text", name= strEntrada, id=strEntrada)
+                      span.input-group-addon
+                        i.icon-time
+                  label(for = strSalida) Hora de salida:
+                    div#timepicker1.input-group
+                      input.input-small.form-control(type="text", name= strSalida, id=strSalida)
+                      span.input-group-addon
+                        i.icon-time
+                label(for = "tiempoAlmuerzo") Tiempo de almuerzo:
+                  div#timepicker3.input-group
+                    input.input-small.form-control(type="text", name= "tiempoAlmuerzo", id= "tiempoAlmuerzo")
+                    span.input-group-addon
+                      i.icon-time
+                label(for = "tiempoReceso") Tiempo de receso:
+                  div#timepicker5.input-group
+                    input.input-small.form-control(type="text", name= "tiempoReceso", id= "tiempoReceso")
+                    span.input-group-addon
+                      i.icon-time
+                 
+              button.btn.btn-success(type='submit') Asignar
+              button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
+    
+
+  //agregar departamento            
+  #addDep.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+    .modal-dialog
+        .modal-content
+          .modal-header
+            button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+            h4#myModalLabel.modal-title Añadir nuevo departamento
+          .modal-body
+            form(role='form', method="POST", action="/departamento")#login-form.well.span4
+              .form-group
+                  label(for='nombre') Nombre:
+                    input#group.form-control( type="text", placeholder='Nombre del area', name= "nombre")
+              button.btn.btn-success(type='submit') Ingresar
+              button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar                
+
+
+  //agregar empleados
+  #addEmpl.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+    .modal-dialog
+      .modal-content
+        .modal-body
+          button.close(type='button', data-dismiss='modal', aria-hidden='true') × 
+          h3#myModalLabel.modal-title Añadir nuevo Empleado
+          form(role='form', method="POST", action="/empleado")#login-form.well.span4
+              .form-group
+                h3 Información Básica
+                label(for='nombre') Nombre:
+                  input#group.form-control(type= 'text', placeholder='Carlos', name= 'nombre')
+                label(for='cedula') Cédula:
+                 input#cedula.form-control(type= 'text', placeholder='110459625', name='cedula') 
+              .form-group
+                label(for='apellido1') Primer Apellido:
+                  input#apellido1.form-control(type= 'text', placeholder='Corella', name= 'apellido1')
+                label(for='apellido2') Segundo Apellido:
+                 input#apellido2.form-control(type= 'text', placeholder='Sandi', name='apellido2')   
+                label(for='email') Correo Eléctronico:
+                  input#email.form-control(type= 'email', placeholder='alguien@ejemplo.com', name='email')
+                 
+
+              .form-group 
+                h3 Información Laboral
+                label(for='codTarjeta') Código de Empleado:
+                  input#codTarjeta.form-control(type= 'text', placeholder='Código de Empleado', name='codTarjeta')
+                label(for="usernameInput")
+                  |Usuario:
+                  input.form-control#textInput(type="text", name="username", placeholder="Usuario")
+                label(for="tipoInput") Tipo de Usuario:
+                  br
+                  select.form-control#selectTipo.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="tipo") 
+                    option Empleado
+                    option Supervisor
+                    option Administrador
+
+                label(for='horario') Horario:
+                  br
+                  select.form-control#textInput.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="idHorario") 
+                    each horario, i in horarios
+                        option(value= horario.id) #{horario.nombre} 
+
+                label(for='departamento') Departamento:
+                  br
+                  select.form-control#selectDepartamentos.selectpicker(data-style="btn-success", data-width="200px", data-selected-text-format="count>2", type="text", name="idDepartamento", multiple="multiple") 
+                    each departamento, i in departamentos
+                        option(value= departamento.id) #{departamento.nombre} 
+
+              .form-group
+                label(for="passwordInput")
+                  |Contraseña:
+                  input.form-control#passInput(type='text', size='18', name="password", placeholder="Contraseña")
+                  button.btn.btn-default(type='button', onclick='generatepass(8)') Generar Contraseña
+                              
+              button.btn.btn-success(type='submit') Ingresar
+              button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
+
+  #addHorario.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+    .modal-dialog
+        .modal-content
+          .modal-header
+            button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+            h4#myModalLabel.modal-title Añadir nuevo horario
+          .modal-body
+            form(action='/horarioN', method='post')#login-form.well.span4
+              .form-group
+                h4 Información Básica
+                label(for='nombre' style="float:left") Nombre del Horario:
+                  input.form-control#textInput( type="text", name="nombre", placeholder='Nombre del horario')
+                label(for='tipo') Tipo jornada  
+                  .checkboxAwesome.checkbox-success          
+                    input(type='checkbox', name= "tipo", id="tipoJornada")
+                    label(for='tipoJornada', id="tipoJornadaLabel") Libre         
+              .form-group
+                h4 Información de jornada
+                label(for='horaEntrada') Hora de Inicio:
+                  div#timepicker.input-group
+                    input.input-small.form-control(type="text", name= 'horaEntrada')
+                    span.input-group-addon
+                      i.icon-time
+                label(for='horaSalida') Hora de salida:
+                  div#timepicker1.input-group
+                    input.input-small.form-control(type="text", name= 'horaSalida')
+                    span.input-group-addon
+                      i.icon-time
+                label(for='rangoJornada') Rango de horas:
+                  label.form-control#rangoJornada()
+                  div#timepicker4.input-group
+                    input.form-control#inputRango(type="text", name="rangoJornada")
+                    span.input-group-addon
+                      i.icon-time  
+              .form-group
+                h4 Información de descansos
+                label(for='tiempoReceso') Rango de receso:
+                  div#timepicker2.input-group
+                    input.input-small.form-control(type="text", name= 'tiempoReceso')
+                    span.input-group-addon
+                      i.icon-time  
+                label(for='tiempoAlmuerzo') Rango de almuerzo:
+                  div#timepicker3.input-group
+                    input.input-small.form-control(type="text", name= 'tiempoAlmuerzo')
+                    span.input-group-addon
+                      i.icon-time
+                 
+              button.btn.btn-success(type='submit') Ingresar
+              button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar

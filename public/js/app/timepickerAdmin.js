@@ -1,15 +1,16 @@
 
-    $('#timepicker input').timepicker('setTime', '8:00');
-    $('#timepicker1 input').timepicker('setTime', '17:00');
+    $('#timepicker input').timepicker('setTime', '0:00');
+    $('#timepicker1 input').timepicker('setTime', '0:00');
     $('#timepicker2 input').timepicker('setTime', '0:45');
     $('#timepicker3 input').timepicker('setTime', '1:00');
-    $('#timepicker4 input').timepicker('setTime', '9:00');
+    $('#timepicker4 input').timepicker('setTime', '0:15');
+    $('#timepicker5 input').timepicker('setTime', '0:15');
 
     $('#timepicker span').timepicker('setTime', '8:00');
     $('#timepicker1 span').timepicker('setTime', '17:00');
     $('#timepicker2 span').timepicker('setTime', '0:45');
     $('#timepicker3 span').timepicker('setTime', '1:00');
-    $('#timepicker4 span').timepicker('setTime', '9:00');
+    $('#timepicker4 span').timepicker('setTime', '0:15');
     $('#rangoJornada').text("9:00");
     
     $('#tipoJornada').val('Fijo');
@@ -56,7 +57,7 @@
             $('#timepicker input').removeAttr('disabled');
             $('#timepicker1 input').removeAttr('disabled');
             $('#rangoJornada').show();
-            $('#timepicker4').hide();
+            $('#timepicker4').show();
             $('#tipoJornada').val('Fijo');
         }
     });

@@ -1,31 +1,27 @@
 var mongoose = require('mongoose'),
 Schema = mongoose.Schema;
+var numberType = {
+    type: Number,
+    default: 0
+};
+var tiempo = {
+    hora: numberType,
+    minutos: numberType
+};
 var horarioDia = {
-    entrada: {
-        type: String,
-        default: '0:00'
-    },
-    salida: {
-        type: String,
-        default: '0:00'
-    }
+    entrada: tiempo,
+    salida: tiempo
 };
 var SchemaHorario = new Schema({
     lunes: horarioDia,
     martes: horarioDia,
     miercoles: horarioDia,
-    viernes: horarioDia,
     jueves: horarioDia,
+    viernes: horarioDia,
     sabado: horarioDia,
     domingo: horarioDia,
-    tiempoReceso: {
-        type: String,
-        default: '0:45'
-    },
-    tiempoAlmuerzo: {
-        type: String,
-        default: '1:00'
-    }
+    tiempoReceso: tiempo,
+    tiempoAlmuerzo: tiempo
 },
 { collection:"horariosEmpleado"}
 );

@@ -40,7 +40,7 @@ module.exports = {
 									var horasSemanales;
 									(epochGte.day() === 1) ? horasSemanales = 0 : (cierres.length == 0) ? horasSemanales = '' : horasSemanales = cierres[0].horasSemanales;
 
-                					var arrayJust = util.unixTimeToRegularDate(justificaciones);
+									var arrayJust = util.unixTimeToRegularDate(justificaciones);
 									if (error) return res.json(error);
 									return res.render('escritorio', {
 										title: 'Escritorio Supervisor | SIGUCA',
@@ -86,17 +86,17 @@ module.exports = {
 	        		Justificaciones.find(
 	        			{usuario: req.user.id, estado:'Incompleto'}
 	        			).exec(function(err, justificaciones) {
-	        			if (err) return res.json(err);
-                		var supervisor = {departamentos: [1]};
-                		var arrayMarcas = util.eventosAjuste(marcas, supervisor, "escritorioEmpl");
-                		var arrayJust = util.unixTimeToRegularDate(justificaciones);
-                		return res.render('escritorio', {
-                			title: 'Escritorio Empleado | SIGUCA',
-                			usuario: req.user, 
-                			marcas: arrayMarcas,
-                			justificaciones : arrayJust
-                		});
-                	});
+	        				if (err) return res.json(err);
+	        				var supervisor = {departamentos: [1]};
+	        				var arrayMarcas = util.eventosAjuste(marcas, supervisor, "escritorioEmpl");
+	        				var arrayJust = util.unixTimeToRegularDate(justificaciones);
+	        				return res.render('escritorio', {
+	        					title: 'Escritorio Empleado | SIGUCA',
+	        					usuario: req.user, 
+	        					marcas: arrayMarcas,
+	        					justificaciones : arrayJust
+	        				});
+	        			});
 	        		//
 	        	});
 	    	//Buscar las justificaciones que se llamen "Pendiente "
@@ -107,14 +107,17 @@ module.exports = {
 	},
 	escritorioAdmin : function (req, res) {
 		if (req.session.name ==="Administrador") {
-			Horario.find().exec(function(error, horarios) {
-				Departamento.find().exec(function(error, departamentos) {
-					if (error) return res.json(error);
-					return res.render('escritorio', {
-						title: 'Escritorio Administrador | SIGUCA',
-						usuario: req.user,
-						horarios: horarios,
-						departamentos: departamentos
+			Usuario.find().exec(function(error, usuarios) {
+				Horario.find().exec(function(error, horarios) {
+					Departamento.find().exec(function(error, departamentos) {
+						if (error) return res.json(error);
+						return res.render('escritorio', {
+							title: 'Escritorio Administrador | SIGUCA',
+							usuario: req.user,
+							horarios: horarios,
+							departamentos: departamentos,
+							usuarios: usuarios,
+						});
 					});
 				});
 			});

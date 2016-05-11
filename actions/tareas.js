@@ -11,7 +11,7 @@ var CierrePersonal = require('../models/CierrePersonal');
 var util = require('../util/util');
 var CronJob = require('cron').CronJob;
 var crud = require('../routes/crud');
-
+ 
 
 module.exports = {
     jobCierreAutomatico : new CronJob({

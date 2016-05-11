@@ -16,8 +16,11 @@
  var tareas_actions = require('../actions/tareas');
  var escritorio_actions = require('../actions/escritorio');
  var justificacion_actions = require('../actions/justificacion');
+ var horario_actions = require('../actions/horario');
  //**********************************************
-
+ var crudUsuario = require('./crudUsuario');
+ var crudHorario = require('./crudHorario');
+ var crudMarca = require('./crudMarca');
  var crud = require('./crud');
  var util = require('../util/util');
  var ObjectId = mongoose.Types.ObjectId;
@@ -30,24 +33,8 @@ var Departamento = require('../models/Departamento');
 var Justificaciones = require('../models/Justificaciones');
 var Solicitudes = require('../models/Solicitudes');
 var Cierre = require('../models/Cierre');
-/*var Temporal = require('../models/Temporal');
-var Auxiliar = require('../models/Auxiliar');*/
-
 var emailSIGUCA = 'siguca@greencore.co.cr';
-/*
-Marca.find().populate('usuario').exec(
-    function(error, just) {
-        for(j in just){
-            if(!just[j].usuario){
-                console.log(just[j].usuario);
-                console.log(just[j]._id);
-                crud.deleteMarca(just[j]._id, function(err, msg){
-                    console.log(msg);
-                });
-            }
-        }
-});
-*/
+
 module.exports = function(app, io) {
     /*
     *   Redirecciona a la página principal (index.html)
@@ -90,6 +77,21 @@ module.exports = function(app, io) {
     */
     app.get('/escritorioAdmin', autentificado, escritorio_actions.escritorioAdmin);
 
+
+    //******************************************************************************
+    /*
+    *  Crea un nuevo horario
+    */
+    app.post('/asignarHorario', autentificado, horario_actions.create);
+
+    app.post('/horario/get', autentificado, function (req, res) {
+        crudHorario.getByUser(req.body.usuario, function (err, horario) {
+            if (err) return res.json({error:err});
+            res.json(horario);
+        });
+    });
+
+    app.post('/horario/actualizar/:userId', autentificado, horario_actions.updateByUser);
 
     //******************************************************************************
     /*
@@ -349,7 +351,7 @@ module.exports = function(app, io) {
     *  Crea una nueva marca vía página web
     */
     app.post('/marca', autentificado, function (req, res) {
-        crud.addMarca(
+        crudMarca.addMarca(
             {tipoMarca: req.body.marca, usuario: req.user.id}, function(msj){
                 //console.log(msj);
                 if(req.session.name == "Empleado"){
@@ -365,7 +367,7 @@ module.exports = function(app, io) {
     *  Elimina una marca en específico si fue creada hace menos de 10 minutos
     */
     app.get('/marca/delete/:id', autentificado, function (req, res) {
-        crud.deleteMarca(req.params.id, function (msj) {
+        crudMarca.deleteMarca(req.params.id, function (msj) {
             res.send(msj);
         });
     });
@@ -376,7 +378,7 @@ module.exports = function(app, io) {
     */
     app.post('/empleado', autentificado, function (req, res) {
         if (req.session.name == "Administrador") {
-            crud.addUsuario(req.body, function() {
+            crudUsuario.addUsuario(req.body, function() {
                 if (req.session.name == "Administrador"){
                  res.redirect('/escritorioAdmin'); 
              }
@@ -391,7 +393,7 @@ module.exports = function(app, io) {
     *  Lista todos los usuarios creados
     */
     app.get('/empleado', autentificado, function (req, res) {
-        crud.listUsuarios(function (err, listaUsuarios){
+        crudUsuario.listUsuarios(function (err, listaUsuarios){
             if (err) return res.json(err);
             listaUsuarios.usuario = req.user;
             return res.render('empleado', listaUsuarios);
@@ -416,7 +418,7 @@ module.exports = function(app, io) {
             id: req.params.id,
             empleado: req.body
         };
-        crud.updateUsuario(data, function() { 
+        crudUsuario.updateUsuario(data, function() { 
             res.redirect('/empleado');
         });
     });
@@ -425,7 +427,7 @@ module.exports = function(app, io) {
     *  Modifica el estado de Activo a Inactivo de un usuario en específico
     */
     app.get('/empleado/delete/:id', autentificado, function (req, res) {
-        crud.deleteUsuario(req.params.id, function (err, msj) { 
+        crudUsuario.deleteUsuario(req.params.id, function (err, msj) { 
             if (err) res.json(err);
             res.send(msj);
         });
@@ -538,7 +540,6 @@ module.exports = function(app, io) {
             res.redirect('/configuracion');
         });
     });
-
 
 
     //******************************************************************************

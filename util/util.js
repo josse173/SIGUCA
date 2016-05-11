@@ -43,10 +43,14 @@ module.exports = {
             //
             f.str = f.diaNum+" de "+f.mes+" del "+f.año;
             if (detail){
-                f.str = f.hora+":"+f.minutos+", "+f.str;
+                f.str = f.str+", "+this.ajustarCero(f.hora)+":"+this.ajustarCero(f.minutos);
             }
         }}
         return list;
+    },
+    ajustarCero: function (num){
+        if(num<10) return 0+""+num;
+        return num;
     },
     getDia: function(d){
         var dias = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];

@@ -3,13 +3,14 @@
     $('#timepicker2 input').timepicker();
     $('#timepicker3 input').timepicker();
     $('#timepicker4 input').timepicker();
+    $('#timepicker5 input').timepicker();
 
     if($('#tipoJornada').val() === 'Fijo'){
         $('#rangoJornada').show();
         $('#timepicker4').hide();
     } else {
         $('#timepicker4').show();
-        $('#rangoJornada').hide();
+        $('#rangoJornada').show();
         $('#timepicker input').attr('disabled','disabled');
         $('#timepicker1 input').attr('disabled','disabled');
     }
