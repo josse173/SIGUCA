@@ -146,7 +146,7 @@ exports.deleteMarca = function(id, cb){
 		else if(marca && epoch - marca.epoch <= 600){
 			Marca.findByIdAndRemove(id, function (err, marca) {
 				if (err) cb(err);
-				return cb(err, 'Se elimino');
+				return cb('Se eliminó correctamente.');
 			});
 		} else {
 			return cb('No se eliminó la marca <strong>' + marca.tipoMarca + '</strong>');

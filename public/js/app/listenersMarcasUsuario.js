@@ -17,25 +17,41 @@ $.each(["#btnEntrada","#btnSalida",
                     var cerrado = false;
                     $("#closeMensajeMarca").click(function(){
                         cerrado = true;
+                        $("#addMarca").modal("show");
                         $("#addMarca").fadeIn(1000);
                     });
                     $("#addMarca").fadeOut(500);
-                    var time = 10000;
-                    if(data.result=="Marca registrada correctamente.")
-                        time = 2000;
                     setTimeout(function() {
-                        $("#mensajeMarca").fadeOut(1000);
-                        //$("#mensajeMarca").modal("hide");
-                        setTimeout(function() {
-                            if(data.result=="Marca registrada correctamente.")
-                                window.location.replace(window.location.href);
-                            else $("#addMarca").fadeIn(500);
-                        }, 1000);
+                        $("#addMarca").modal("hide");
+                    }, 500);
+                    var time = 8000;
+                    if(data.result=="Marca registrada correctamente."){
+                        time = 4000;
+                        $("#lblMensajeMarca").text(data.result+
+                            "\n Cuenta con 5 minutos para eliminar la marca, en caso de ser errónea.");
+                    }
+                    setTimeout(function() {
+                        if($("#mensajeMarca").is(":visible")){
+                            $("#addMarca").modal("show");
+                            $("#mensajeMarca").fadeOut(1000);
+                            //$("#mensajeMarca").modal("hide");
+                            setTimeout(function() {
+                                if(data.result=="Marca registrada correctamente.")
+                                    window.location.replace(window.location.href);
+                                else $("#addMarca").fadeIn(500);
+                            }, 1000);
+                        }
                     }, time);
                 },
                 error: function(){
+                    $("#closeMensajeMarca").click(function(){
+                        cerrado = true;
+                        $("#addMarca").fadeIn(1000);
+                    });
+                    $("#addMarca").fadeOut(500);
                     $("#lblMensajeMarca").text("No se pudo contactar con el sistema.\n"+
-                        "El error ocurrió al realizar marca y esta no se registró.");
+                        "El error ocurrió al realizar marca y esta no se registró.\n"+
+                        "Puede intentar refrescando la página.");
                     $("#mensajeMarca").modal("show");
                 }
             });
