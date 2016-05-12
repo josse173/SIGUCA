@@ -173,6 +173,17 @@
       a(data-toggle="modal" data-target="#addJustificacion")
         | Justificaciones
 
+#mensajeMarca.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+    .modal-dialog
+        .modal-content
+          .modal-header
+            button.close#closeMensajeMarca(type='button', data-dismiss='modal', aria-hidden='true') ×
+            h3#myModalLabel.modal-title Mensaje de marca
+          .modal-body
+            #bodyMensaje.well.span4
+              label#lblMensajeMarca
+              
+
 #addMarca.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
     .modal-dialog
         .modal-content

@@ -3,10 +3,10 @@ module.exports = {
     unixTimeToRegularDate: function(list, detail){
         for(x in list){
             if("fechaCreada" in list[x]){
-             var epochTime = list[x].fechaCreada;
-             var fecha = new Date(0);
-             fecha.setUTCSeconds(epochTime); 
-             var f = list[x].fecha = {
+               var epochTime = list[x].fechaCreada;
+               var fecha = new Date(0);
+               fecha.setUTCSeconds(epochTime); 
+               var f = list[x].fecha = {
                 dia:this.getDia(fecha.getDay()),
                 diaNum:fecha.getDate(),
                 mes:this.getMes(fecha.getMonth()),
@@ -153,18 +153,25 @@ module.exports = {
             console.log(this.contarHoras(
                 marcas.recesos[receso].recesoOut, 
                 marcas.recesos[receso].recesoIn)
-);*/
-tiempo = this.ajustarHoras(
-    tiempo, 
-    this.contarHoras(
-        marcas.recesos[receso].recesoOut, 
-        marcas.recesos[receso].recesoIn)
-    );
+//          );*/
+        //
+        tiempo = this.ajustarHoras(
+            tiempo, 
+            this.contarHoras(
+                marcas.recesos[receso].recesoOut, 
+                marcas.recesos[receso].recesoIn)
+            );
             /*console.log("**TOTAL - RECESO**");
             console.log(tiempo);
             console.log("****");*/
         }
         return tiempo;
+    },
+    getIdsList : function(list){
+        return [[]].concat(list).reduce(
+            function(result, item){
+                return result.concat(item._id);
+        });
     },
 	/*
 	*  Resultados de configuracion y reportes se filtran por supervisor, finalmente se direcciona a la página 
@@ -264,8 +271,8 @@ tiempo = this.ajustarHoras(
                                 array.push(evento[x]);
                             }
                             else*/ if(JSON.stringify(evento[x].departamentos[0].departamento) === JSON.stringify(supervisor.departamentos[y].departamento) 
-                             && notFound){
-                             array.push(evento[x]);
+                               && notFound){
+                               array.push(evento[x]);
 			            		//
 			            		notFound = false;
 			            	} 
@@ -280,8 +287,8 @@ tiempo = this.ajustarHoras(
                                 array.push(evento[x]);
                             }
                             else */if(JSON.stringify(evento[x].departamentos[0].departamento) === JSON.stringify(supervisor.departamentos[y].departamento) 
-                             && JSON.stringify(evento[x]._id) != JSON.stringify(supervisor._id) && notFound){
-                             array.push(evento[x]);
+                               && JSON.stringify(evento[x]._id) != JSON.stringify(supervisor._id) && notFound){
+                               array.push(evento[x]);
 			            		//
 			            		notFound = false;
 			            	} 

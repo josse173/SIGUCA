@@ -47,3 +47,11 @@ input:not([type=submit]) {
 		width: 90%
 	}
 }
+
+#addMarca {
+	z-index: 1000 !important;
+}
+
+#mensajeMarca {
+	z-index: 1001 !important;
+}

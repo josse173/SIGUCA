@@ -51,8 +51,9 @@ module.exports = {
       crudUsuario.getById(usuarioId, function (err, usuario){
         crudUsuario.getEmpleadoPorSupervisor(req.user.id, usuarioQuery, 
           function(error, usuarios, departamentos){
-            if(usuarioId && usuarioId != 'todos'){
-              cierresQuery.usuario = justQuery.usuario = extraQuery.usuario = permisosQuery.usuario = marcaQuery.usuario = usuarioId;
+            if(!usuarioId || usuarioId == 'todos'){
+              var queryUsers = {"$in":util.getIdsList(usuarios)};
+              cierresQuery.usuario = justQuery.usuario = extraQuery.usuario = permisosQuery.usuario = marcaQuery.usuario = queryUsers;
             }
             getInformacionRender(req, res, titulo, usuarios, departamentos, marcaQuery, 
               justQuery, extraQuery, permisosQuery, cierreQuery, populateQuery, 
