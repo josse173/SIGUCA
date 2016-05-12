@@ -323,7 +323,7 @@ module.exports = function(app, io) {
             if (err) return res.json(err);
             else res.json(horario);
         });
-    });
+    }); 
 
     /*
     *  Actualiza los datos de un horario en específico

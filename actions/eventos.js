@@ -47,14 +47,13 @@ module.exports = {
         cierresQuery.usuario = justQuery.usuario = extraQuery.usuario = permisosQuery.usuario = marcaQuery.usuario = usuarioId;
       }
       justQuery.estado = extraQuery.estado = permisosQuery.estado = getEstado(titulo);
+
       crudUsuario.getById(usuarioId, function (err, usuario){
-        /*var nombre;
-        if(!err && usuario){
-          console.log(usuario.apellido1+" "+usuario.apellido2+", "+usuario.nombre);
-          nombre = usuario.apellido1+" "+usuario.apellido2+", "+usuario.nombre;
-        }*/
         crudUsuario.getEmpleadoPorSupervisor(req.user.id, usuarioQuery, 
-          function(error, usuarios,departamentos){
+          function(error, usuarios, departamentos){
+            if(usuarioId && usuarioId != 'todos'){
+              cierresQuery.usuario = justQuery.usuario = extraQuery.usuario = permisosQuery.usuario = marcaQuery.usuario = usuarioId;
+            }
             getInformacionRender(req, res, titulo, usuarios, departamentos, marcaQuery, 
               justQuery, extraQuery, permisosQuery, cierreQuery, populateQuery, 
               ((!err && usuario) ? (usuario.apellido1+" "+usuario.apellido2+", "+usuario.nombre) : null));
