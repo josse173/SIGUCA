@@ -178,31 +178,27 @@
         .modal-content
           .modal-header
             button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-            h3#myModalLabel.modal-title Marcar Mediante Sistema
+            h3#myModalLabel.modal-title Marcas de asistencia
           .modal-body
-            form(role='form', method="POST", action="/marca")#login-form.well.span4
+            #login-form.well.span4
               table.table
+                tr   
+                  label-info( name= codTarjeta) #{usuario.tipo} #{usuario.nombre} #{usuario.apellido1}
                 tr
-                  modal.group     
-                     label-info( name= codTarjeta) #{usuario.tipo} #{usuario.nombre} #{usuario.apellido1}
+                  td
+                    button#btnEntrada.btn.btn-success.btn-(style="width: 150px;", value = 'Entrada') Entrada
+                  td
+                    button#btnSalida.btn.btn-success.btn-(style="width: 150px;", value = 'Salida') Salida
                 tr
-                  modal.group 
-                    td
-                      button.btn.btn-success.btn-(style="width: 150px;" type='submit', value = 'Entrada', name = 'marca') Entrada
-                    td
-                      button.btn.btn-success.btn-(style="width: 150px;" type='submit', value = 'Salida', name = 'marca') Salida
+                  td
+                    button#btnSalidaReceso.btn.btn-warning.btn-(style="width: 150px;", value = 'Salida a Receso') Salida a Receso 
+                  td
+                    button#btnEntradaReceso.btn.btn-warning.btn-(style="width: 150px;", value = 'Entrada de Receso') Entrada de Receso
                 tr
-                  modal.group 
-                    td
-                      button.btn.btn-warning.btn-(style="width: 150px;" type='submit', value = 'Salida a Receso', name = 'marca') Salida a Receso 
-                    td
-                      button.btn.btn-warning.btn-(style="width: 150px;" type='submit', value = 'Entrada de Receso', name = 'marca') Entrada de Receso
-                tr
-                  modal.group 
-                    td
-                      button.btn.btn-primary.btn-(style="width: 150px;" type='submit', value = 'Salida al Almuerzo', name = 'marca') Salida al Almuerzo
-                    td
-                      button.btn.btn-primary.btn-(style="width: 150px;" type='submit', value = 'Entrada de Almuerzo', name = 'marca') Entrada del Almuerzo
+                  td
+                    button#btnSalidaAlmuerzo.btn.btn-primary.btn-(style="width: 150px;", value = 'Salida al Almuerzo') Salida al Almuerzo
+                  td
+                    button#btnEntradaAlmuerzo.btn.btn-primary.btn-(style="width: 150px;", value = 'Entrada de Almuerzo') Entrada del Almuerzo
               .form-group
                 label()
                   button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar

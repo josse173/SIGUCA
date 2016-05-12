@@ -24,6 +24,7 @@
     "cron": "latest",
     "bcrypt-nodejs" : "latest",
     "nodemailer": "*",
-    "moment": "*"
+    "moment": "*",
+    "async": "*"
   }
 }

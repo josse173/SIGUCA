@@ -354,11 +354,12 @@ module.exports = function(app, io) {
         crudMarca.addMarca(
             {tipoMarca: req.body.marca, usuario: req.user.id}, function(msj){
                 //console.log(msj);
-                if(req.session.name == "Empleado"){
+                res.json({result:msj});
+                /*if(req.session.name == "Empleado"){
                     res.redirect('/escritorioEmpl');
                 } else {
                     res.redirect('/escritorio')
-                }
+                }*/
             });
     });
 
