@@ -140,7 +140,10 @@ function marca (marca, cb) {
 exports.deleteMarca = function(id, cb){
 	Marca.findById(id, function (err, marca) {
 		var epoch = moment().unix();
-		if(marca && epoch - marca.epoch <= 600){
+		if(!marca){
+			return cb('La marca había sido eliminada anteriormente');
+		} 
+		else if(marca && epoch - marca.epoch <= 600){
 			Marca.findByIdAndRemove(id, function (err, marca) {
 				if (err) cb(err);
 				return cb(err, 'Se elimino');
