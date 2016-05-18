@@ -109,13 +109,15 @@
         table#tablaJust.footable
           thead
             tr
-              th(data-sort-ignore="true") Motivo
               th(data-sort-ignore="true" data-type="numeric" ) Fecha
+              th(data-sort-ignore="true") Motivo
+              th(data-sort-ignore="true" data-type="numeric" ) Información
           tbody.justDetalle
             each just, i in justificaciones
               tr(data-toggle="modal" data-target="#updateJustificacion" data-value=just._id)
-                td #{just.motivo}
                 td() #{just.fecha.dia}, #{just.fecha.diaNum} de #{just.fecha.mes} #{just.fecha.año} 
+                td #{just.motivo}.
+                td #{just.informacion}.
 .col-xs-4
   .marca
     h3  Marca Mediante el Sistema
@@ -148,7 +150,6 @@
                     option(value= "Empleado,justificaciones," + usuario.id) Justificaciones
                     option(value= "Empleado,solicitudes," + usuario.id) Solicitudes
                     option(value= "Empleado,marcas," + usuario.id) Tardías o Ausencias
-
   if(usuario.tipo == 'Supervisor')
     h3 Pendientes de revisar 
     ul.list-group
@@ -361,8 +362,11 @@
           .form-group
             label(for='motivoOtroJust') Motivo:
               label#motivoOtroJust.form-control(style='float:left')
+            br
+            label Información:
+              label#infoJust.form-control(style='float:left')
           .form-group
-              label(for='detalles') Detalles:
+              label(for='detalles') Detalle:
               textarea#detalles.form-control(rows="4" cols="50" required)
                  
           button#btn-just.btn.btn-success(type='submit') Enviar

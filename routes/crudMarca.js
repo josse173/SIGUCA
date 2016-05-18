@@ -60,7 +60,7 @@ function marca (marca, cb) {
 					return saveMarca(newMarca,cb);
 				}
 				else cb("La marca de salida no fue registrada, ya que fue registrada anteriormente,"+
-					"no se encuentra en almuerzo o en receso.");
+					"se encuentra en almuerzo o en receso.");
 			}
 			//
 			else if(newMarca.tipoMarca=="Salida a Receso"){

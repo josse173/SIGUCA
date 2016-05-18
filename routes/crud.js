@@ -22,6 +22,7 @@ exports.addJust = function(justificacion, cb){
 		usuario: justificacion.id,
 		fechaCreada: epochTime,
 		detalle: justificacion.detalle,
+		informacion: justificacion.informacion,
 		comentarioSupervisor: ""
 	});
 

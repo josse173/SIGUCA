@@ -29,9 +29,9 @@ module.exports = {
       var justQuery = {};
       var extraQuery = {tipoSolicitudes:'Extras'};
       var permisosQuery = {tipoSolicitudes:'Permisos'};
-      var cierresQuery = {};
+      //var cierresQuery = {};
       var marcaQuery = {};
-      var cierreQuery = {"tiempo.horas":{"$gte":0}};
+      var cierreQuery = {};//{"usuarios.tiempo.horas":{"$gte":0}};
       var usuarioQuery = {tipo:{'$nin': ['Administrador', 'Supervisor']}};
       var populateQuery = {
         path: 'usuario'
@@ -41,10 +41,12 @@ module.exports = {
         populateQuery.match = {departamentos:{$elemMatch:{departamento:req.body.filtro_departamento}}};
       }
       if(JSON.stringify(queryEpoch) !== JSON.stringify({})){
-        cierresQuery.epoch = marcaQuery.epoch = justQuery.fechaCreada = extraQuery.fechaCreada = permisosQuery.fechaCreada =  queryEpoch;  
+        cierreQuery.epoch = marcaQuery.epoch = justQuery.fechaCreada = extraQuery.fechaCreada = permisosQuery.fechaCreada =  queryEpoch;  
       }
       if(usuarioId && usuarioId != 'todos'){
-        cierresQuery.usuario = justQuery.usuario = extraQuery.usuario = permisosQuery.usuario = marcaQuery.usuario = usuarioId;
+        justQuery.usuario = extraQuery.usuario = permisosQuery.usuario = marcaQuery.usuario = usuarioId;
+        cierreQuery.usuarios = {};
+        cierreQuery.usuarios.usuario = usuarioId;
       }
       justQuery.estado = extraQuery.estado = permisosQuery.estado = getEstado(titulo);
 
@@ -53,7 +55,9 @@ module.exports = {
           function(error, usuarios, departamentos){
             if(!usuarioId || usuarioId == 'todos'){
               var queryUsers = {"$in":util.getIdsList(usuarios)};
-              cierresQuery.usuario = justQuery.usuario = extraQuery.usuario = permisosQuery.usuario = marcaQuery.usuario = queryUsers;
+              justQuery.usuario = extraQuery.usuario = permisosQuery.usuario = marcaQuery.usuario = queryUsers;
+              /*cierreQuery.usuarios = {};
+              cierreQuery.usuarios.usuario = queryUsers;*/
             }
             getInformacionRender(req, res, titulo, usuarios, departamentos, marcaQuery, 
               justQuery, extraQuery, permisosQuery, cierreQuery, populateQuery, 
@@ -179,9 +183,11 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos,
               justificaciones, extras, permisos, nombreUsuario);
           }
           else {
-            CierrePersonal.find(cierreQuery).populate(populateQuery).exec(function(error, cierres) {
+            //console.log(cierreQuery);
+            CierrePersonal.find(cierreQuery).populate("usuarios.usuario").exec(function(error, cierres) {
+              //console.log(cierres);
               return renderFiltro(res, titulo, req.user, departamentos, usuarios, marcas, 
-                justificaciones, extras, permisos, cierres, nombreUsuario);
+                justificaciones, extras, permisos, cierres[0], nombreUsuario);
             });
           }
         });//Solicitudes permisos
@@ -192,13 +198,23 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos,
 
 
 function renderFiltro(res, titulo, usuario, departamentos, 
-  usuarios, marcas, justificaciones, extras, permisos, cierres, nombreUsuario){
+  usuarios, marcas, justificaciones, extras, permisos, cierre, nombreUsuario){
   var resumen = [];
-  if(cierres){
-    cierres = util.unixTimeToRegularDate(cierres.filter(function(m){
-      return m.usuario;
-    }));
+  /*if(cierre){
+    cierreUsuarios = util.unixTimeToRegularDate(cierre.usuarios);
+  }*/
+  var cierreUsuarios;
+  var cierreEpoch;
+  if(cierre){
+    cierreUsuarios = cierre.usuarios;
+    var cierreEpochAux = {};
+    util.epochToStr(cierreEpochAux, cierre.epoch, true);
+    if(JSON.stringify(cierreEpochAux)!=JSON.stringify({}))
+      cierreEpoch = cierreEpochAux;
   }
+  //console.log(cierreUsuarios);
+  /*console.log(cierreEpoch);
+  console.log(cierreEpoch);*/
   var filtro = {
     title: titulo,
     usuario: usuario,
@@ -214,7 +230,8 @@ function renderFiltro(res, titulo, usuario, departamentos,
     permisos: util.unixTimeToRegularDate(permisos.filter(function(m){
       return m.usuario;
     }), true),
-    cierres: cierres,
+    cierreUsuarios: cierreUsuarios,
+    cierreEpoch: cierreEpoch,
     usuarios: usuarios,
     departamentos: departamentos,
     nombreUsuario: nombreUsuario

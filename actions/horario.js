@@ -35,7 +35,7 @@ module.exports = {
                     return res.json({error:err});
                 crudHorario.updateByUser(req.body.usuario,
                     nuevoHorario, function(error, horario){
-                        console.log(horario);
+                        //console.log(horario);
                         if (error)
                             return res.json({error:error});
                         return res.json(horario);

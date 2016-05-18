@@ -25,6 +25,10 @@ var SchemaJustificacion = new Schema({
         type: String,
         default: ''
     },
+    informacion: {
+        type: String,
+        default: ''
+    },
     estado: {
         type: String,
         default: 'Pendiente'

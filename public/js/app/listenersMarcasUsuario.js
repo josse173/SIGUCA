@@ -31,16 +31,7 @@ $.each(["#btnEntrada","#btnSalida",
                             "\n Cuenta con 5 minutos para eliminar la marca, en caso de ser errónea.");
                     }
                     setTimeout(function() {
-                        if($("#mensajeMarca").is(":visible")){
-                            $("#addMarca").modal("show");
-                            $("#mensajeMarca").fadeOut(1000);
-                            //$("#mensajeMarca").modal("hide");
-                            setTimeout(function() {
-                                if(data.result=="Marca registrada correctamente.")
-                                    window.location.replace(window.location.href);
-                                else $("#addMarca").fadeIn(500);
-                            }, 1000);
-                        }
+                        window.location.replace(window.location.href);
                     }, time);
                 },
                 error: function(){

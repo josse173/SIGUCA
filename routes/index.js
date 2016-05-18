@@ -722,17 +722,4 @@ module.exports = function(app, io) {
 };//modules
 
 
-//tareas_actions.cronJob.start();
-//tareas_actions.jobCierreAutomatico.start();
-
-/*
-var fecha = new moment();
-console.log(fecha.unix());
-fecha.utc().year(2016);
-fecha.utc().date(4);
-fecha.utc().month(4);
-fecha.utc().hours(8);
-fecha.utc().minutes(47);
-fecha.utc().seconds(17);
-console.log(fecha.unix());
-console.log(fecha.utc().unix());*/
+tareas_actions.cierreAutomatico.start();

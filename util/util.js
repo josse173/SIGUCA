@@ -3,10 +3,10 @@ module.exports = {
     unixTimeToRegularDate: function(list, detail){
         for(x in list){
             if("fechaCreada" in list[x]){
-               var epochTime = list[x].fechaCreada;
-               var fecha = new Date(0);
-               fecha.setUTCSeconds(epochTime); 
-               var f = list[x].fecha = {
+             var epochTime = list[x].fechaCreada;
+             var fecha = new Date(0);
+             fecha.setUTCSeconds(epochTime); 
+             var f = list[x].fecha = {
                 dia:this.getDia(fecha.getDay()),
                 diaNum:fecha.getDate(),
                 mes:this.getMes(fecha.getMonth()),
@@ -29,8 +29,13 @@ module.exports = {
         } 
         if("epoch" in list[x]){
             var epochTime = list[x].epoch;
-            var fecha = new moment.unix(epochTime);
-            var f = list[x].fecha = {
+            this.epochToStr(list[x], epochTime, detail);
+        }}
+        return list;
+    },
+    epochToStr : function(obj, epochTime, detail){
+        var fecha = new moment.unix(epochTime);
+        var f = obj.fecha = {
                     //
                     dia:this.getDia(fecha.day()),
                     diaNum:fecha.date(),
@@ -40,13 +45,12 @@ module.exports = {
                     minutos: fecha.minutes(),
 
                 };
-            //
-            f.str = f.diaNum+" de "+f.mes+" del "+f.año;
-            if (detail){
-                f.str = f.str+", "+this.ajustarCero(f.hora)+":"+this.ajustarCero(f.minutos);
-            }
-        }}
-        return list;
+        //
+        f.str = f.diaNum+" de "+f.mes+" del "+f.año;
+        if (detail){
+            f.str = f.str+", "+this.ajustarCero(f.hora)+":"+this.ajustarCero(f.minutos);
+        }
+        return f;
     },
     ajustarCero: function (num){
         if(num<10) return 0+""+num;
@@ -171,7 +175,7 @@ module.exports = {
         return [[]].concat(list).reduce(
             function(result, item){
                 return result.concat(item._id);
-        });
+            });
     },
 	/*
 	*  Resultados de configuracion y reportes se filtran por supervisor, finalmente se direcciona a la página 
@@ -271,8 +275,8 @@ module.exports = {
                                 array.push(evento[x]);
                             }
                             else*/ if(JSON.stringify(evento[x].departamentos[0].departamento) === JSON.stringify(supervisor.departamentos[y].departamento) 
-                               && notFound){
-                               array.push(evento[x]);
+                             && notFound){
+                             array.push(evento[x]);
 			            		//
 			            		notFound = false;
 			            	} 
@@ -287,8 +291,8 @@ module.exports = {
                                 array.push(evento[x]);
                             }
                             else */if(JSON.stringify(evento[x].departamentos[0].departamento) === JSON.stringify(supervisor.departamentos[y].departamento) 
-                               && JSON.stringify(evento[x]._id) != JSON.stringify(supervisor._id) && notFound){
-                               array.push(evento[x]);
+                             && JSON.stringify(evento[x]._id) != JSON.stringify(supervisor._id) && notFound){
+                             array.push(evento[x]);
 			            		//
 			            		notFound = false;
 			            	} 

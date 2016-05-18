@@ -224,25 +224,31 @@ block content
           else
             p No se han enviado permisos hasta el momento.
 
-          if(cierres)
+          if(cierreUsuarios && cierreEpoch)
             br
             h3 Horas Semanales 
-            - var x = JSON.stringify(cierres);
+            - //var x = JSON.stringify(cierreUsuarios);
             - //#{x}
             table.tableCierres.footable(data-page-navigation=".pagination" data-page-size="11")
                 thead
                   tr
                     th(data-type="numeric" data-sort-initial="descending") Fecha
                     th Usuario
-                    th(data-sort-ignore="true") Horas
-                    th(data-sort-ignore="true") Minutos
+                    th(data-sort-ignore="true") Tiempo trabajado
                 tbody
-                  each cierre, i in cierres
+                  each cierre, i in cierreUsuarios
+                    - var x = JSON.stringify(cierre);
+                    - var tiempo ="";
+                    - var h =""+cierre.tiempo.horas;
+                    - var m =""+cierre.tiempo.minutos;
+                    - if(cierre.tiempo.horas<10) h = "0"+h;
+                    - if(cierre.tiempo.minutos<10) m = "0"+m;
+                    - tiempo = h+":"+m;
                     tr
-                      td(data-value=cierre.epoch) #{cierre.fecha.str} 
+                      td(data-value=cierre.epoch) #{cierreEpoch.fecha.str} 
                       td #{cierre.usuario.nombre} #{cierre.usuario.apellido1} 
-                      td #{cierre.tiempo.horas}
-                      td #{cierre.tiempo.minutos}
+                      td #{tiempo}
+                      
                 tfoot
                   tr
                     td(colspan='10')

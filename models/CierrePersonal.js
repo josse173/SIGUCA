@@ -21,12 +21,7 @@ var SchemaCierrePersonal = new Schema({
                 type: Number,
                 default: 0
             }
-        },
-        solicitudes: [
-        {
-            
         }
-        ]
     }
     ]
 },

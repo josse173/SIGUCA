@@ -94,7 +94,8 @@
         var id = $(this).data('value').replace(/\"/g, "");
         $.get('/justificacion/edit/'+id, function( data ) {
             $("#updateJustificacion #motivoOtroJust").prop("readonly", true);
-            $("#updateJustificacion #motivoOtroJust").text(data.motivo);
+            $("#updateJustificacion #motivoOtroJust").text(data.motivo+". ");
+            $("#updateJustificacion #infoJust").text(data.informacion+".");
             //$("#updateJustificacion #idJust").text(id);
             $("#updateJustificacion #btn-just" ).click( function() {
                 var updJust = {

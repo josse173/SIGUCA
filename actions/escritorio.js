@@ -7,6 +7,7 @@ var Departamento = require('../models/Departamento');
 var Justificaciones = require('../models/Justificaciones');
 var Solicitudes = require('../models/Solicitudes');
 var Cierre = require('../models/Cierre');
+var CierrePersonal = require('../models/CierrePersonal');
 var util = require('../util/util');
 var crud = require('../routes/crud');
 
@@ -21,38 +22,42 @@ module.exports = {
 				//console.log({usuario: req.user.id, estado:'Incompleto'});
 				Justificaciones.find({usuario: req.user.id, estado:'Incompleto'}).populate('usuario').exec(function(error, justificaciones) {
 					Solicitudes.find({estado:'Pendiente'}).populate('usuario').exec(function(error, solicitudes) {                        
-						Usuario.find({_id:req.user.id},{_id:0,departamentos: 1}).populate('departamentos.departamento').exec(function(error, result){
-							Cierre.find({usuario: req.user.id, epoch:{"$gte": epochYesterday.unix() }},{_id:0,horasSemanales:1}).exec(function(err, cierres) {
+						Usuario.find({_id:req.user.id},{_id:0,departamentos: 1}).populate('departamentos.departamento').exec(function(error, supervisor){
+							CierrePersonal.find({epoch:{"$gte": epochYesterday.unix()}}).exec(function(err, cierres) {
+								var cierreUsuarios = [];
+								if(cierres && cierres.length>0)
+									cierreUsuarios = cierres[0];
+							//result.forEach(function(supervisor){
+								var sup = {departamentos: [1]};
 
-								result.forEach(function(supervisor){
-									var sup = {departamentos: [1]};
+								var arrayMarcas = util.eventosAjuste(marcas, sup, "escritorioEmpl");
 
-									var arrayMarcas = util.eventosAjuste(marcas, sup, "escritorioEmpl");
+								var array = [];
+								for(var y = 0; y < req.user.departamentos.length; y++){
+									array.push(req.user.departamentos[y].departamento);
+								}
 
-									var array = [];
-									for(var y = 0; y < req.user.departamentos.length; y++){
-										array.push(req.user.departamentos[y].departamento);
-									}
+								just = util.eventosAjuste(justificaciones, req.user, "count");
+								soli = util.eventosAjuste(solicitudes, req.user, "count");
 
-									just = util.eventosAjuste(justificaciones, req.user, "count");
-									soli = util.eventosAjuste(solicitudes, req.user, "count");
-
-									var horasSemanales;
-									(epochGte.day() === 1) ? horasSemanales = 0 : (cierres.length == 0) ? horasSemanales = '' : horasSemanales = cierres[0].horasSemanales;
-
-									var arrayJust = util.unixTimeToRegularDate(justificaciones);
-									if (error) return res.json(error);
-									return res.render('escritorio', {
-										title: 'Escritorio Supervisor | SIGUCA',
-										departamentos: supervisor.departamentos, 
-										justificaciones: arrayJust, 
-										solicitudes: soli,
-										todos: array,
-										usuario: req.user,
-										marcas: marcas,
-										horasSemanales: horasSemanales
-									});
-                                });//Supervisor
+								/*var horasSemanales;
+								(epochGte.day() === 1) ? horasSemanales = 0 : (cierres.length == 0) ? horasSemanales = '' : horasSemanales = cierres[0].horasSemanales;
+								*/
+								var arrayJust = util.unixTimeToRegularDate(justificaciones);
+								if (error) return res.json(error);
+								//console.log(cierreUsuarios);
+								return res.render('escritorio', {
+									title: 'Escritorio Supervisor | SIGUCA',
+									departamentos: supervisor[0].departamentos, 
+									justificaciones: arrayJust, 
+									solicitudes: soli,
+									todos: array,
+									usuario: req.user,
+									marcas: marcas,
+									cierreUsuarios: cierreUsuarios,
+									//horasSemanales: horasSemanales
+								});
+                               // });//Supervisor
                             });//Horas Semanales
                         });//Departamentos    
                     });//solicitudes
