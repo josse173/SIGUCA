@@ -2,16 +2,13 @@
 var moment = require('moment');
 var Marca = require('../models/Marca');
 var Usuario = require('../models/Usuario');
-var Horario = require('../models/Horario');
-var Departamento = require('../models/Departamento');
-var Justificaciones = require('../models/Justificaciones');
-var Solicitudes = require('../models/Solicitudes');
-var Cierre = require('../models/Cierre');
 var CierrePersonal = require('../models/CierrePersonal');
 var util = require('../util/util');
 var CronJob = require('cron').CronJob;
 var crud = require('../routes/crud');
 var crudHorario = require('../routes/crudHorario');
+var crudSolicitud = require('../routes/crudSolicitud');
+var crudJustificaciones = require('../routes/crudJustificaciones');
 
 
 module.exports = {
@@ -22,8 +19,8 @@ module.exports = {
         onTick: function() {
             //if(!once){
                 crearCierre(moment().unix(), ejecutarCierre);
-            /*}
-            once = true;*/
+            //}
+            //once = true;
         },
         start: false,
         timeZone: "America/Costa_Rica"
@@ -94,7 +91,6 @@ function buscarHorario(_idCierre, _idUser, epochMin, epochMax, horarioEmpleado){
 
 
 function buscarInformacionUsuarioCierre(_idCierre, _idUser, epochMin, epochMax, horario){
-    //console.log(horario);
     Marca.find(
     {
         usuario: _idUser,
@@ -105,16 +101,16 @@ function buscarInformacionUsuarioCierre(_idCierre, _idUser, epochMin, epochMax, 
     },
     {_id:0,tipoMarca:1,epoch:1}
     ).exec(function(error, marcasDelDia) {
+        console.log(marcasDelDia);
         if (!error && marcasDelDia){
             var today = moment();
             var dia = ["domingo", "lunes", "martes", "miercoles", 
             "jueves", "viernes", "sabado"][today.day()];
             var marcas = util.clasificarMarcas(marcasDelDia);
             var tiempoDia = horario[dia];
-            var comparaH = 0;
             //Si entra a las 00:00 no contará ese día, en caso de ser así
             //el horario debería entrar como mínimo a las 00:01
-            if(tiempoDia.entrada.hora>=0 && tiempoDia.entrada.minutos>0
+            if((tiempoDia.entrada.hora!=0 || tiempoDia.entrada.minutos!=0)
                 && (
                     tiempoDia.salida.hora>tiempoDia.entrada.hora ||
                     (tiempoDia.salida.hora==tiempoDia.entrada.hora
@@ -122,91 +118,92 @@ function buscarInformacionUsuarioCierre(_idCierre, _idUser, epochMin, epochMax, 
                     )
                 ){
                     //
-
-                if(marcas.entrada){
-                    var mIn = moment.unix(marcas.entrada.epoch);
-                    var mReal = tiempoDia.entrada;
-                    if(compararHoras(mIn.hour(), mIn.minutes(),mReal.hora,mReal.minutos)==1){
-                        //console.log("Entrada tardía");
-                        addJustIncompleta(_idUser, "Entrada tardía", 
-                            "Hora de entrada: "+horaStr(mReal.hora, mReal.minutos)+
-                            " - Hora de marca: "+horaStr(mIn.hour(), mIn.minutes()));
-                    }
-                } 
                 if(marcas.salida){
-                    //Si hubiera que reponer horas, contarlas aquí para que no 
-                    //genere una justificación si se sabe que debe trabajar más ese día
-                    var mOut= moment.unix(marcas.salida.epoch);
-                    var mReal = tiempoDia.salida;
-                    if(compararHoras(mOut.hour(), mOut.minutes(),mReal.hora,mReal.minutos)==-1){
-                        //console.log("Salida antes de hora establecida");
-                        addJustIncompleta(_idUser, "Salida antes de hora establecida", 
-                            "Hora de salida: "+horaStr(mReal.hora, mReal.minutos)+
-                            " - Hora de marca: "+horaStr(mOut.hour(), mOut.minutes()));
-                    }
-                    comparaH = calculoHoras(_idCierre, _idUser, marcas, tiempoDia);
-                } 
-                if(!marcas.entrada){
+                    registroHorasRegulares(_idCierre, _idUser, marcas, tiempoDia);
+                }
+                else if(!marcas.entrada){
                     //console.log("Omisión de marca de entrada");
                     addJustIncompleta(_idUser, "Omisión de marca de entrada", "");
                     agregarUsuarioACierre(_idCierre, _idUser, {h:-1,m:-1});
                 } 
                 //Solo se genera una notificación de omisión de marca de salida si
                 //el usuario incumplió las horas de trabajo
-                if(!marcas.salida && comparaH==-1){
+                else if(!marcas.salida){
                     //console.log("Omisión de marca de salida");
                     addJustIncompleta(_idUser, "Omisión de marca de salida", "");
                     agregarUsuarioACierre(_idCierre, _idUser, {h:-1,m:-1});
-                } 
+                }
+                //registroHorasExtras(_idUser, marcas, epochMin, epochMax);
             }
         }
     });
 }
-function horaStr(hora, minutos){
-    var h = hora;
-    var m = minutos;
-    if(h<10) h = "0"+h;
-    if(m<10) m = "0"+m;
-    return h+":"+m;
-}
 
-function compararHoras(hIn, mIn, hOut, mOut){
-    if(hIn==hOut && mIn==mOut) return 0;
-    if(hIn==hOut && mIn>mOut) return 1;
-    if(hIn==hOut && mIn<mOut) return -1;
-    if(hIn<hOut) return -1;
-    if(hIn>hOut) return 1;
-} 
-function diferenciaHoras(hIn, mIn, hOut, mOut){
-    if(hIn==hOut && mIn==mOut) return {h:0,m:0};
-    if(mIn>mOut) return {h:(hIn-hOut), m:(mIn-mOut)};
-    if(mIn<mOut) return {h:(hIn-hOut)-1, m:60-(mOut-mIn)};
-}  
 
-function calculoHoras(_idCierre, _idUser, marcas, tiempoDia){
+function registroHorasRegulares(_idCierre, _idUser, marcas, tiempoDia){
     var tiempo = util.tiempoTotal(marcas);
     var hIn = tiempoDia.entrada;
     var hOut = tiempoDia.salida;
     var totalJornada = diferenciaHoras(hOut.hora, hOut.minutos, hIn.hora, hIn.minutos);
-    var comparaH = compararHoras(tiempo.h, tiempo.m, totalJornada.h, totalJornada.m);
+    var comparaH = util.compararHoras(tiempo.h, tiempo.m, totalJornada.h, totalJornada.m);
     agregarUsuarioACierre(_idCierre, _idUser, {h:tiempo.h,m:tiempo.m});
     if(comparaH==-1){
         addJustIncompleta(_idUser, "Jornada laborada menor que la establecida", 
-            "Horas trabajadas: "+ horaStr(tiempo.h, tiempo.m)+
-             " - Horas establecidas: "+ horaStr(totalJornada.h, totalJornada.m));
+            "Horas trabajadas: "+ util.horaStr(tiempo.h, tiempo.m)+
+            " - Horas establecidas: "+ util.horaStr(totalJornada.h, totalJornada.m));
         //console.log("Jornada laborada menor que la establecida");
     }
     if(comparaH==1){
         addJustIncompleta(_idUser, "Jornada laborada mayor que la establecida",
-            "Horas trabajadas: "+ horaStr(tiempo.h, tiempo.m)+
-             " - Horas establecidas: "+ horaStr(totalJornada.h, totalJornada.m));
+            "Horas trabajadas: "+ util.horaStr(tiempo.h, tiempo.m)+
+            " - Horas establecidas: "+ util.horaStr(totalJornada.h, totalJornada.m));
         //console.log("Jornada laborada mayor que la establecida");
     }
     return comparaH;
 }
 
+function registroHorasExtras(_idUser, marcas, epochMin, epochMax){
+    //Si las horas extras es durante el periodo normal habría un mal cálculo,
+    //ya que se sumarían las horas regulares y las extras. En este caso,
+    //por ahora se harían cargo el departamento de recursos humanos.
 
-
+    //Buscar epochInicio entre el intervalo de epochMin y epochMax
+    /*var tiempo = util.tiempoTotal(marcas);
+    var hIn = tiempoDia.entrada;
+    var hOut = tiempoDia.salida;
+    var totalJornada = diferenciaHoras(hOut.hora, hOut.minutos, hIn.hora, hIn.minutos);
+    var comparaH = util.compararHoras(tiempo.h, tiempo.m, totalJornada.h, totalJornada.m);*/
+    var queryEpoch = {
+        "$gte":epochMin.unix(),
+        "$lte":epochMax.unix()
+    };
+    var query = {
+        "$or":[
+            {usuario:_idUser, tipoSolicitudes:"Extras", epochInicio:queryEpoch},
+            {usuario:_idUser, tipoSolicitudes:"Extras", epochTermino:queryEpoch}
+        ]
+    };
+    crudSolicitud.get(query,
+        function(err, extras){
+            if(!err){
+                for(e in extras){
+                    var inicio = moment.unix(extras[e].epochInicio);
+                    var fin = moment.unix(extras[e].epochTermino);
+                    var tiempo = util.ajustarHoras(
+                    {
+                        h:fin.hour(),
+                        m:fin.minutes()
+                    },
+                    {
+                        h: inicio.hour(),
+                        m:inicio.minutes()
+                    }
+                    );
+                    console.log(tiempo);
+                }
+            }
+        });
+}
 
 function agregarUsuarioACierre(_idCierre, _idUser, tiempo){
     var hoy = new Date();
@@ -221,9 +218,6 @@ function agregarUsuarioACierre(_idCierre, _idUser, tiempo){
             }
         }
     };
-    /*console.log(_idCierre);
-    console.log(_idUser);
-    console.log(tiempo);*/
     CierrePersonal.findByIdAndUpdate(_idCierre, query, function (err, cierreActualizado) {
         if(err) 
             console.log("Error al actualizar cierre en la fecha '"+hoy+"' => Mensaje: "+error);
@@ -231,10 +225,8 @@ function agregarUsuarioACierre(_idCierre, _idUser, tiempo){
     });
 }
 
-
-
 function addJustIncompleta(_idUser, motivo, informacion){
-    crud.addJust(
+    crudJustificaciones.addJust(
         {id:_idUser, detalle:"", informacion: informacion,
         estado:"Incompleto", motivoJust:"otro",
         motivoOtroJust:motivo},
@@ -242,19 +234,7 @@ function addJustIncompleta(_idUser, motivo, informacion){
         ); 
 }
 
-/*
-    var horas = horario.rangoJornada.split(":")[0];
-    var margenMin = 15;
-
-    agregarUsuarioACierre(_idCierre, _idUser, tiempo);
-    //Si trabaja más de las horas estipuladas se notifica
-    if( (tiempo.h-horas > 0) || 
-        (tiempo.h-horas == 0 && tiempo.m > margenMin)
-        )
-        {addJustIncompleta(_idUser, "Cantidad de horas trabajadas mayor a la jornada asignada");} 
-    //Si trabaja menos de las horas estipuladas se notifica
-    else if( (horas-tiempo.h > 1) || 
-        (horas-tiempo.h == 1 && 60-tiempo.m > margenMin)
-        )
-{addJustIncompleta(_idUser, "Cantidad de horas trabajadas menor a la jornada asignada");}
-*/
+function diferenciaHoras(hIn, mIn, hOut, mOut){
+    if(mIn>=mOut) return {h:(hIn-hOut), m:(mIn-mOut)};
+    if(mIn<mOut) return {h:(hIn-hOut)-1, m:60-(mOut-mIn)};
+}  

@@ -16,11 +16,14 @@
  var tareas_actions = require('../actions/tareas');
  var escritorio_actions = require('../actions/escritorio');
  var justificacion_actions = require('../actions/justificacion');
+ var solicitud_actions = require('../actions/solicitud');
  var horario_actions = require('../actions/horario');
  //**********************************************
  var crudUsuario = require('./crudUsuario');
+ var crudSolicitud = require('./crudSolicitud');
  var crudHorario = require('./crudHorario');
  var crudMarca = require('./crudMarca');
+ var crudDepartamento = require('./crudDepartamento');
  var crud = require('./crud');
  var util = require('../util/util');
  var ObjectId = mongoose.Types.ObjectId;
@@ -150,6 +153,93 @@ module.exports = function(app, io) {
 
 
     //******************************************************************************
+    /*
+    *  Crea una solicitud tipo hora extra
+    */
+    app.post('/solicitud_extra', autentificado, solicitud_actions.nuevoExtra);
+
+    /*
+    *  Carga la información de una solicitud tipo hora extra
+    */
+    app.get('/solicitud/edit/:id', autentificado, solicitud_actions.editar);
+
+    /*
+    *  Actualiza una solicitud tipo hora extra
+    */
+    app.post('/extra/:id', autentificado, solicitud_actions.getExtra);
+
+    /*
+    *  Crea una solicitud tipo permiso anticipado
+    */
+    app.post('/solicitud_permisos', autentificado, solicitud_actions.crearPermiso);
+
+
+    /*
+    *  Actualiza una solicitud tipo permiso anticipado
+    */
+    app.post('/permiso/:id', autentificado, solicitud_actions.editarPermiso);
+
+    /*
+    *  El supervisor elimina una solicitud y se le envia un correo al dueño de la solicitud
+    */
+    app.get('/solicitud/delete/:id', autentificado, solicitud_actions.borrarSolicitud);
+
+    //******************************************************************************
+    /*
+    *  Actualiza el estado y el comentario del supervisor a una solicitud en específico
+    */
+    app.post('/getionarSolicitudAjax/:id', autentificado, function (req, res) {
+        var solicitud = req.body;
+        solicitud.id = req.params.id;
+        if(solicitud.estado != 'Pendiente') {
+            crudSolicitud.gestionarSoli(solicitud, function (err, msj) { 
+                if (err) res.json(err);
+                else res.send(msj);
+            });
+        } else {
+            res.send('');
+        }
+    });
+
+    /*
+    *  Actualiza el estado y el comentario del supervisor a una justificacion en específico
+    */
+    app.post('/getionarJustificacionAjax/:id', autentificado, function (req, res) {
+        var justificacion = req.body;
+        justificacion.id = req.params.id;
+        if(justificacion.estado != 'Pendiente') {
+            crudSolicitud.gestionarJust(justificacion, function (err, msj) { 
+                if (err) res.json(err);
+                else res.send(msj);
+            });
+        } else {
+            res.send('');
+        }
+    });
+
+    //******************************************************************************
+    /*
+    *  Crea una nueva marca vía página web
+    */
+    app.post('/marca', autentificado, function (req, res) {
+        crudMarca.addMarca(
+            {tipoMarca: req.body.marca, usuario: req.user.id}, 
+            function(msj){
+                res.json({result:msj});
+            });
+    });
+
+
+    /*
+    *  Elimina una marca en específico si fue creada hace menos de 10 minutos
+    */
+    app.get('/marca/delete/:id', autentificado, function (req, res) {
+        crudMarca.deleteMarca(req.params.id, function (msj) {
+            res.send(msj);
+        });
+    });
+
+    //******************************************************************************
     /* 
     *  Redirecciona a la configuración de empleado
     */
@@ -184,109 +274,6 @@ module.exports = function(app, io) {
             title: 'Ayuda | SIGUCA',
             usuario: req.user
         });
-    });
-
-
-    //******************************************************************************
-    /*
-    *  Crea una solicitud tipo hora extra
-    */
-    app.post('/solicitud_extra', autentificado, function (req, res) {
-        var extra = req.body; 
-        extra.id = req.user.id;
-        crud.addExtra(extra, function(){
-            if (req.session.name == "Empleado") {
-                res.redirect('/escritorioEmpl');
-            } else res.redirect('/escritorio');
-        });
-    });
-
-    /*
-    *  Carga la información de una solicitud tipo hora extra
-    */
-    app.get('/solicitud/edit/:id', autentificado, function (req, res) {
-        crud.loadSoli(req.params.id, function(soli) { 
-            res.json(soli);
-        }); 
-    });
-
-    /*
-    *  Actualiza una solicitud tipo hora extra
-    */
-    app.post('/extra/:id', autentificado, function (req, res) {
-        var extra = req.body;
-        extra.id = req.params.id;
-        crud.updateExtra(extra, function (err) { 
-            res.redirect('/eventos');
-        });
-    });
-
-    /*
-    *  Crea una solicitud tipo permiso anticipado
-    */
-    app.post('/solicitud_permisos', autentificado, function (req, res) {
-        var permiso = req.body; 
-        permiso.usuario = req.user;
-        crud.addPermiso(permiso, function (){
-            if (req.session.name == "Empleado") {
-                res.redirect('/escritorioEmpl');
-            } else res.redirect('/escritorio');  
-        });
-    });
-
-
-    /*
-    *  Actualiza una solicitud tipo permiso anticipado
-    */
-    app.post('/permiso/:id', autentificado, function (req, res) {
-        var permiso = req.body;
-        permiso.id = req.params.id;
-        crud.updatePermiso(permiso, function (err) { 
-            res.redirect('/eventos');
-        });
-    });
-
-    /*
-    *  El supervisor elimina una solicitud y se le envia un correo al dueño de la solicitud
-    */
-    app.get('/solicitud/delete/:id', autentificado, function (req, res) {
-        crud.deleteSoli(req.params.id, function (err, msj) { 
-            if (err) res.json(err);
-            else res.send(msj);
-        });
-    });
-
-    //******************************************************************************
-    /*
-    *  Actualiza el estado y el comentario del supervisor a una solicitud en específico
-    */
-    app.post('/getionarSolicitudAjax/:id', autentificado, function (req, res) {
-        var solicitud = req.body;
-        solicitud.id = req.params.id;
-        if(solicitud.estado != 'Pendiente') {
-            crud.gestionarSoli(solicitud, function (err, msj) { 
-                if (err) res.json(err);
-                else res.send(msj);
-            });
-        } else {
-            res.send('');
-        }
-    });
-
-    /*
-    *  Actualiza el estado y el comentario del supervisor a una justificacion en específico
-    */
-    app.post('/getionarJustificacionAjax/:id', autentificado, function (req, res) {
-        var justificacion = req.body;
-        justificacion.id = req.params.id;
-        if(justificacion.estado != 'Pendiente') {
-            crud.gestionarJust(justificacion, function (err, msj) { 
-                if (err) res.json(err);
-                else res.send(msj);
-            });
-        } else {
-            res.send('');
-        }
     });
 
     //******************************************************************************
@@ -343,28 +330,6 @@ module.exports = function(app, io) {
         crud.deleteHorario(req.params.id, function (err, msj) {
             if (err) return res.json(err);
             else res.send(msj);
-        });
-    });
-
-    //******************************************************************************
-    /*
-    *  Crea una nueva marca vía página web
-    */
-    app.post('/marca', autentificado, function (req, res) {
-        crudMarca.addMarca(
-            {tipoMarca: req.body.marca, usuario: req.user.id}, 
-            function(msj){
-                res.json({result:msj});
-            });
-    });
-
-
-    /*
-    *  Elimina una marca en específico si fue creada hace menos de 10 minutos
-    */
-    app.get('/marca/delete/:id', autentificado, function (req, res) {
-        crudMarca.deleteMarca(req.params.id, function (msj) {
-            res.send(msj);
         });
     });
 
@@ -434,7 +399,7 @@ module.exports = function(app, io) {
     *  Crea un nuevo departamento
     */
     app.post('/departamento',autentificado, function (req, res) {
-        crud.addDepa(req.body, function() {
+        crudDepartamento.addDepa(req.body, function() {
             if (req.session.name == "Administrador") {
                 res.redirect('/escritorioAdmin');
             }
@@ -445,7 +410,7 @@ module.exports = function(app, io) {
     *  Lista todos los departamentos creados
     */
     app.get('/departamento', autentificado, function (req, res) {
-        crud.listDepa(function (err, departamentos) {
+        crudDepartamento.listDepa(function (err, departamentos) {
             if (err) return res.json(err);
             return res.render('departamento', {
                 title: 'Nuevo Departamento | SIGUCA',
@@ -459,7 +424,7 @@ module.exports = function(app, io) {
     *  Carga los datos de un departamento en específico
     */
     app.get('/departamento/editDepartamento/:id', autentificado, function (req, res) {
-        crud.loadDepa(req.params.id, function (departamento) {
+        crudDepartamento.loadDepa(req.params.id, function (departamento) {
             res.json(departamento);
         });
     });
@@ -472,7 +437,7 @@ module.exports = function(app, io) {
             departamento: req.body,
             id: req.params.id
         };
-        crud.updateDepa(data, function() {
+        crudDepartamento.updateDepa(data, function() {
             res.redirect('/departamento');
         });
     });
@@ -481,7 +446,7 @@ module.exports = function(app, io) {
     *  Elimina un departamento en específico
     */
     app.get('/departamento/delete/:id', autentificado, function (req, res) {
-        crud.deleteDepa(req.params.id, function (msj) {
+        crudDepartamento.deleteDepa(req.params.id, function (msj) {
             res.send(msj);
         });
     });

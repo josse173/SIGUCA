@@ -9,7 +9,6 @@ var Solicitudes = require('../models/Solicitudes');
 var Cierre = require('../models/Cierre');
 var util = require('../util/util');
 var CierrePersonal = require('../models/CierrePersonal');
-var crud = require('../routes/crud');
 var crudUsuario = require('../routes/crudUsuario');
 
 module.exports = {

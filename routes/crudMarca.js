@@ -1,9 +1,12 @@
 var mongoose 		= require('mongoose'),
-nodemailer 		= require('nodemailer'),
-moment 			= require('moment'),
-Usuario 		= require('../models/Usuario'),
-Marca 			= require('../models/Marca'),
-util 			= require('../util/util');
+nodemailer 			= require('nodemailer'),
+moment 				= require('moment'),
+Usuario 			= require('../models/Usuario'),
+Marca 				= require('../models/Marca'),
+util 				= require('../util/util'),
+crudHorario 		= require('./crudHorario'),
+crud 				= require('./crud'),
+crudJustificaciones = require('../routes/crudJustificaciones');
 
 
 //--------------------------------------------------------------------
@@ -42,6 +45,7 @@ function marca (marca, cb) {
 					&& !marcas.almuerzoIn && !marcas.almuerzoOut
 					&& marcas.recesos.length==0){
 						//
+					revisarMarca(newMarca.usuario, newMarca);
 					return saveMarca(newMarca,cb);
 				}
 				else cb("La marca de entrada fue registrada anteriormente.");
@@ -57,6 +61,7 @@ function marca (marca, cb) {
 						marcas.recesos[marcas.recesos.length-1].recesoIn
 						)){
 						//
+					revisarMarca(newMarca.usuario, newMarca);
 					return saveMarca(newMarca,cb);
 				}
 				else cb("La marca de salida no fue registrada, ya que fue registrada anteriormente,"+
@@ -131,8 +136,35 @@ function marca (marca, cb) {
 					"ya que no ha marcado entrada, ya marcó la salida, "+
 					"se encuentra en receso o no ha marcado para salir a almuerzo.");
 			}
-		else return cb('fail');
-	});
+			//
+			else if(newMarca.tipoMarca=="Entrada a extras"){
+				if(
+					(marcas.entrada && marcas.salida) ||
+					(!marcas.entrada && !marcas.salida) 
+					){
+						//
+					return saveMarca(newMarca,cb);
+				}
+				else cb("La marca de entrada a horas extras no fue registrada, "+
+					"ya que no ha salido de la jornada regular.");
+			}
+			//
+			else if(newMarca.tipoMarca=="Salida de extras"){
+				if(
+					(marcas.entrada && marcas.salida) ||
+					(!marcas.entrada && !marcas.salida) 
+					){
+						//Falta validar que se haya entrado a las horas extras primero
+						//
+						return saveMarca(newMarca,cb);
+					}
+					else cb("La marca de salida de horas extras no fue registrada, "+
+						"ya que no ha salido de la jornada regular o no ha marcado"+
+						" entrada a las horas extras.");
+				}
+			else return cb("Surgió un error no contemplado con la marca,"+
+				"vuelva a intentarlo o contacto con el administrador");
+		});
 		//
 	}
 }
@@ -177,6 +209,68 @@ exports.rfidReader = function(codTarjeta, tipoMarca, cb) {
 	});
 }
 
-function marcasCerradas(marcas){
+function revisarMarca(_idUser, marca){
+	var epochMin = moment();
+	epochMin.hours(0);
+	epochMin.minutes(0);
+	epochMin.seconds(0);
 
+	var epochMax = moment();
+	epochMax.hours(23);
+	epochMax.minutes(59);
+	epochMax.seconds(59);
+	Usuario.findById(_idUser,{_id:1, nombre:1, horarioEmpleado:1}).exec(
+		function(err, usuario){
+			if(!err && usuario.horarioEmpleado && usuario.horarioEmpleado!=""){
+				crudHorario.getById(usuario.horarioEmpleado, 
+					function(error, horario){
+						if(!error && horario){
+							var today = moment();
+							var dia = ["domingo", "lunes", "martes", "miercoles", 
+							"jueves", "viernes", "sabado"][today.day()];
+							var tiempoDia = horario[dia];
+							//console.log(tiempoDia);
+							if((tiempoDia.entrada.hora!=0 || tiempoDia.entrada.minutos!=0)
+								&& (
+									tiempoDia.salida.hora>tiempoDia.entrada.hora ||
+									(tiempoDia.salida.hora==tiempoDia.entrada.hora
+										&& tiempoDia.salida.minutos>tiempoDia.entrada.minutos)
+									)
+								)
+							{
+								//console.log(marca);
+								if(marca.tipoMarca=="Entrada"){
+									var mIn = moment.unix(marca.epoch);
+									var mReal = tiempoDia.entrada;
+									if(util.compararHoras(mIn.hour(), mIn.minutes(),mReal.hora,mReal.minutos)==1){
+										addJustIncompleta(_idUser, "Entrada tardía", 
+											"Hora de entrada: "+ util.horaStr(mReal.hora, mReal.minutos)+
+											" - Hora de marca: "+ util.horaStr(mIn.hour(), mIn.minutes()));
+									}
+								} else if(marca.tipoMarca=="Salida"){
+				                    var mOut= moment.unix(marca.epoch);
+				                    var mReal = tiempoDia.salida;
+				                    if(util.compararHoras(mOut.hour(), mOut.minutes(), mReal.hora, mReal.minutos)==-1){
+                        				addJustIncompleta(_idUser, "Salida antes de hora establecida", 
+                        					"Hora de salida: "+ util.horaStr(mReal.hora, mReal.minutos)+
+                        					" - Hora de marca: "+ util.horaStr(mOut.hour(), mOut.minutes()));
+                        			}
+                        		} 
+                        		//Evaluar si se pasó el tiempo de receso o almuerzo
+                        	}
+                        }
+                    });
+				//
+			}
+		});
+	//
+}
+
+function addJustIncompleta(_idUser, motivo, informacion){
+	crudJustificaciones.addJust(
+		{id:_idUser, detalle:"", informacion: informacion,
+		estado:"Incompleto", motivoJust:"otro",
+		motivoOtroJust:motivo},
+		function(){}
+		); 
 }

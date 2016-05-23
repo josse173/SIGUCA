@@ -2,7 +2,8 @@ var urlHorario = 'asignarHorario';
 
 $.each(["#btnEntrada","#btnSalida",
     "#btnSalidaAlmuerzo","#btnEntradaAlmuerzo",
-    "#btnSalidaReceso","#btnEntradaReceso"],
+    "#btnSalidaReceso","#btnEntradaReceso",
+    "#btnSalidaExtra","#btnEntradaExtra"],
     function(i, id){
         $(id).click(function() { 
             $.ajax({
@@ -16,9 +17,14 @@ $.each(["#btnEntrada","#btnSalida",
                     $("#mensajeMarca").fadeIn(1);
                     var cerrado = false;
                     $("#closeMensajeMarca").click(function(){
-                        cerrado = true;
-                        $("#addMarca").modal("show");
-                        $("#addMarca").fadeIn(1000);
+                        cerrado = true; 
+                        if(data.result!="Marca registrada correctamente."){
+                            $("#addMarca").modal("show");
+                            $("#addMarca").fadeIn(1000);
+                        } 
+                        else {
+                            window.location.replace(window.location.href);
+                        }
                     });
                     $("#addMarca").fadeOut(500);
                     setTimeout(function() {

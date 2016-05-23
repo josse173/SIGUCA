@@ -73,7 +73,8 @@ module.exports = {
         var marcas = {
             entrada:null,salida:null,
             almuerzoIn:null, almuerzoOut:null,
-            recesos : []
+            recesos : [],
+            extras : []
         };
         for(marca in arrayMarcas){
             if(arrayMarcas[marca].tipoMarca=="Entrada"){
@@ -95,6 +96,14 @@ module.exports = {
             }
             else if(arrayMarcas[i].tipoMarca=="Entrada de Receso"){
                 marcas.recesos[marcas.recesos.length-1].recesoIn = arrayMarcas[i];
+            }
+        }
+        for(var i=0; i<arrayMarcas.length; i++){
+            if(arrayMarcas[i].tipoMarca=="Entrada a extras"){
+                marcas.extras.push({extraIn:arrayMarcas[i], extraOut:null});
+            }
+            else if(arrayMarcas[i].tipoMarca=="Salida de extras"){
+                marcas.extras[marcas.extras.length-1].extraOut = arrayMarcas[i];
             }
         }
         return marcas;
@@ -142,34 +151,45 @@ module.exports = {
         }
         return total;
     },
-    tiempoTotal : function(marcas){
+    sumaHoras: function (hBase, mBase, hSuma, mSuma){
+        var h = hBase;
+        var m = mBase;
+        if(mSuma+mBase>60){
+            h = h+1;
+            m = mSuma+mBase-60;
+        }else{
+            m=mSuma+mBase;
+        }
+        h = h + hSuma;
+        return {h:h, m:m};
+    },
+    tiempoTotal : function(marcas, horasExtra){
         var tiempo = this.contarHoras(marcas.entrada, marcas.salida);
-        /*console.log("**TOTAL**");
-        console.log(tiempo);**/
         var tiempoAlmuerzo = this.contarHoras(marcas.almuerzoOut, marcas.almuerzoIn);
-        /*console.log("**ALMUERZO**");
-        console.log(tiempoAlmuerzo);*/
         tiempo = this.ajustarHoras(tiempo, tiempoAlmuerzo);
-        /*console.log("**TOTAL - ALMUERZO**");
-        console.log(tiempo);*/
         for(receso in marcas.recesos){
-            /*console.log("**RECESO**");
-            console.log(this.contarHoras(
-                marcas.recesos[receso].recesoOut, 
-                marcas.recesos[receso].recesoIn)
-//          );*/
-        //
-        tiempo = this.ajustarHoras(
-            tiempo, 
-            this.contarHoras(
-                marcas.recesos[receso].recesoOut, 
-                marcas.recesos[receso].recesoIn)
-            );
-            /*console.log("**TOTAL - RECESO**");
-            console.log(tiempo);
-            console.log("****");*/
+            tiempo = this.ajustarHoras(
+                tiempo, 
+                this.contarHoras(
+                    marcas.recesos[receso].recesoOut, 
+                    marcas.recesos[receso].recesoIn)
+                );
         }
         return tiempo;
+    },
+    compararHoras : function (hIn, mIn, hOut, mOut){
+        if(hIn==hOut && mIn==mOut) return 0;
+        if(hIn==hOut && mIn>mOut) return 1;
+        if(hIn==hOut && mIn<mOut) return -1;
+        if(hIn<hOut) return -1;
+        if(hIn>hOut) return 1;
+    },
+    horaStr: function (hora, minutos){
+        var h = hora;
+        var m = minutos;
+        if(h<10) h = "0"+h;
+        if(m<10) m = "0"+m;
+        return h+":"+m;
     },
     getIdsList : function(list){
         return [[]].concat(list).reduce(
@@ -177,6 +197,11 @@ module.exports = {
                 return result.concat(item._id);
             });
     },
+
+
+    
+    //************************************************************************************************************
+    //************************************************************************************************************
 	/*
 	*  Resultados de configuracion y reportes se filtran por supervisor, finalmente se direcciona a la página 
 	*  correspondiente, donde se gestionaran cada uno de los resultados. 

@@ -1,13 +1,6 @@
 var moment = require('moment');
 var Marca = require('../models/Marca');
-var Usuario = require('../models/Usuario');
-var Horario = require('../models/Horario');
-var Departamento = require('../models/Departamento');
-var Justificaciones = require('../models/Justificaciones');
-var Solicitudes = require('../models/Solicitudes');
-var Cierre = require('../models/Cierre');
 var util = require('../util/util');
-var crud = require('../routes/crud');
 
 module.exports = {
     horasTrabajadas: function (req, res) { 

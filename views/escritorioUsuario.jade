@@ -74,32 +74,9 @@
               th(data-sort-ignore="true") Hora
           tbody.marcasDetalle
             each marca, i in marcas
-              case marca.tipoMarca
-                when "Entrada"
-                  tr
-                    td Entrada
-                    td #{marca.fecha}
-                when "Salida a Receso"
-                  tr
-                    td Salida a Receso
-                    td #{marca.fecha}
-                when "Entrada de Receso"
-                  tr
-                    td Entrada de Receso
-                    td #{marca.fecha}
-                when "Salida al Almuerzo"
-                  tr
-                    td Salida al Almuerzo
-                    td #{marca.fecha}
-                when "Entrada de Almuerzo"
-                  tr
-                    td Entrada del Almuerzo
-                    td #{marca.fecha}
-                when "Salida"
-                  tr
-                    td Salida
-                    td #{marca.fecha}
-
+              tr
+                td #{marca.tipoMarca}
+                td #{marca.fecha}
   br
   .col-xs-4
     div.justTable
@@ -211,6 +188,11 @@
                     button#btnSalidaAlmuerzo.btn.btn-primary.btn-(style="width: 150px;", value = 'Salida al Almuerzo') Salida al Almuerzo
                   td
                     button#btnEntradaAlmuerzo.btn.btn-primary.btn-(style="width: 150px;", value = 'Entrada de Almuerzo') Entrada del Almuerzo
+                tr
+                  td
+                    button#btnEntradaExtra.btn.btn-info.btn-(style="width: 150px;", value = 'Entrada a extras') Entrada a extras
+                  td
+                    button#btnSalidaExtra.btn.btn-info.btn-(style="width: 150px;", value = 'Salida de extras') Salida de extras
               .form-group
                 label()
                   button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
@@ -247,7 +229,6 @@
                   modal.group 
                     td
                       button.btn.btn-primary.btn-(style="width: 100%" type='submit', value = 'Entrada de Almuerzo', name = 'marca') Entrada del Almuerzo
-
                 tr
                   modal.group 
                     td
