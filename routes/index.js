@@ -21,6 +21,7 @@
  //**********************************************
  var crudUsuario = require('./crudUsuario');
  var crudSolicitud = require('./crudSolicitud');
+ var crudJustificaciones = require('./crudJustificaciones');
  var crudHorario = require('./crudHorario');
  var crudMarca = require('./crudMarca');
  var crudDepartamento = require('./crudDepartamento');
@@ -195,7 +196,7 @@ module.exports = function(app, io) {
             crudSolicitud.gestionarSoli(solicitud, function (err, msj) { 
                 if (err) res.json(err);
                 else res.send(msj);
-            });
+            },req.user.id);
         } else {
             res.send('');
         }
@@ -208,10 +209,10 @@ module.exports = function(app, io) {
         var justificacion = req.body;
         justificacion.id = req.params.id;
         if(justificacion.estado != 'Pendiente') {
-            crudSolicitud.gestionarJust(justificacion, function (err, msj) { 
+            crudJustificaciones.gestionarJust(justificacion, function (err, msj) { 
                 if (err) res.json(err);
                 else res.send(msj);
-            });
+            }, req.user.id);
         } else {
             res.send('');
         }

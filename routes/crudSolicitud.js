@@ -45,7 +45,7 @@ exports.addExtra = function(extra, cb){
 		});//verificar
 }
 
-exports.updateExtra = function(extra, cb){
+exports.updateExtra = function(extra, cb, idUser){
 	var epochTime = moment().unix(),
 	epochInicio = moment(extra.epochInicio,"DD/MM/YYYY HH:mm").unix(),
 	epochTermino = moment(extra.epochTermino,"DD/MM/YYYY HH:mm").unix(),
@@ -61,7 +61,6 @@ exports.updateExtra = function(extra, cb){
 		cliente: extra.cliente,
 		motivo: extra.motivo
 	};
-
 	Solicitudes.findById(extra.id).exec(function (err, soli) { 
 		Solicitudes.findByIdAndUpdate(extra.id, solicitudActualizada).populate('usuario').exec(function (err, solicitud) { 
 			if (!err) {
@@ -87,18 +86,23 @@ exports.updateExtra = function(extra, cb){
 							+ "\r\n Motivo: " + solicitudActualizada.motivo
 							+ "\r\n Detalle: " + solicitudActualizada.detalle
 						});
+						//
 					}
 				});
-}
-return cb(err);
-});
-});
+				//
+			}
+			return cb(err);
+		});
+		//
+	});
+	//
+	//}
 }
 
 //--------------------------------------------------------------------
 //Métodos Solicitudes de Permisos   
 //---------------------------------------------------------------------
-exports.addPermiso = function(permiso, cb){
+exports.addPermiso = function(permiso, cb, idUser){
 	var epochTime = moment().unix(); 
 
 	var newSolicitud = Solicitudes({
@@ -142,7 +146,7 @@ exports.addPermiso = function(permiso, cb){
 		});//verificar
 }
 
-exports.updatePermiso = function(permiso, cb){
+exports.updatePermiso = function(permiso, cb, idUser){
 	var epochTime = moment().unix();
 
 	var solicitudActualizada = {
@@ -160,29 +164,30 @@ exports.updatePermiso = function(permiso, cb){
 	Solicitudes.findById(permiso.id).exec(function (err, soli) { 
 		Solicitudes.findByIdAndUpdate(permiso.id, solicitudActualizada).populate('usuario').exec(function (err, solicitud) { 
 			if(!err) {
-				Usuario.find({'tipo' : 'Supervisor', 'departamentos.departamento' : solicitud.usuario.departamentos[0].departamento}, {'email' : 1}).exec(function (err, supervisor) { 
-					if (!err) {
-						var transporter = nodemailer.createTransport();
-						for (var i = 0; i < supervisor.length; i++) {
-							transporter.sendMail({
-								from: emailSIGUCA,
-								to: supervisor[i].email,
-								subject: 'Modificación de una solicitud de permiso anticipado en SIGUCA',
-								text: " El usuario " + solicitud.usuario.nombre + " " + solicitud.usuario.apellido1 + " " + solicitud.usuario.apellido2 
-								+ " ha modificado el siguiente permiso anticipado: " 
-								+ "\r\n Día de Inicio: " + soli.diaInicio 
-								+ "\r\n Día de termino: " + soli.diaFinal 
-								+ "\r\n Motivo: " + soli.motivo
-								+ "\r\n Detalle: " + soli.detalle
-								+ "\r\n\r\n A continuación se muestra el permiso anticipado modificado " 
-								+ "\r\n Día de Inicio: " + solicitudActualizada.diaInicio 
-								+ "\r\n Día de termino: " + solicitudActualizada.diaFinal 
-								+ "\r\n Motivo: " + solicitudActualizada.motivo
-								+ "\r\n Detalle: " + solicitudActualizada.detalle
-							});
+				Usuario.find({'tipo' : 'Supervisor', 'departamentos.departamento' : solicitud.usuario.departamentos[0].departamento}, {'email' : 1}
+					).exec(function (err, supervisor) { 
+						if (!err) {
+							var transporter = nodemailer.createTransport();
+							for (var i = 0; i < supervisor.length; i++) {
+								transporter.sendMail({
+									from: emailSIGUCA,
+									to: supervisor[i].email,
+									subject: 'Modificación de una solicitud de permiso anticipado en SIGUCA',
+									text: " El usuario " + solicitud.usuario.nombre + " " + solicitud.usuario.apellido1 + " " + solicitud.usuario.apellido2 
+									+ " ha modificado el siguiente permiso anticipado: " 
+									+ "\r\n Día de Inicio: " + soli.diaInicio 
+									+ "\r\n Día de termino: " + soli.diaFinal 
+									+ "\r\n Motivo: " + soli.motivo
+									+ "\r\n Detalle: " + soli.detalle
+									+ "\r\n\r\n A continuación se muestra el permiso anticipado modificado " 
+									+ "\r\n Día de Inicio: " + solicitudActualizada.diaInicio 
+									+ "\r\n Día de termino: " + solicitudActualizada.diaFinal 
+									+ "\r\n Motivo: " + solicitudActualizada.motivo
+									+ "\r\n Detalle: " + solicitudActualizada.detalle
+								});
+							}
 						}
-					}
-				});
+					});
 }
 return cb();
 });
@@ -203,7 +208,7 @@ exports.loadSoli = function(id, cb){
 	}); 
 }
 
-exports.deleteSoli = function(id, cb){
+exports.deleteSoli = function(id, cb, idUser){
 	Solicitudes.findByIdAndRemove(id).populate('usuario').exec(function (err, soli) { 
 		if (err) return cb(err,'');
 		var fecha = "";
@@ -253,33 +258,48 @@ exports.deleteSoli = function(id, cb){
 //--------------------------------------------------------------------
 //Gestionar Eventos
 //---------------------------------------------------------------------*/
-exports.gestionarSoli = function(solicitud, cb){
-	Solicitudes.findByIdAndUpdate(solicitud.id, 
-		{estado: solicitud.estado, comentarioSupervisor: 
-			solicitud.comentarioSupervisor}).populate('usuario').exec(function (err, soli) { 
-				if (err) return cb(err, '');
-				var transporter = nodemailer.createTransport();
-				//console.log(soli);
-				var a = new Date(soli.fechaCreada * 1000);
-				var date = ""+a.getDate()+"/"+a.getMonth()+"/"+a.getFullYear();
-				var solitext = "\r\n\r\nFecha de creación:"+date+"\n"
-				+ "Motivo:"+soli.motivo+"\n"
-				+ "Detalle:"+soli.detalle+"\r\n\r\n";
-				transporter.sendMail({
-					from: emailSIGUCA,
-					to: soli.usuario.email,
-					subject: 'Respuesta a solicitud en SIGUCA',
-					text: " Estimado(a) " + soli.usuario.nombre 
-					+ ",\r\n\r\nPor este medio se le notifica que "
-					+"la siguiente solicitud ha sido respondida:"
-					+ solitext
-					+ "Le informamos que la justificación fue " + solicitud.estado 
-					+ " por el supervisor "
-					+ ", con el siguiente comentario"
-					+ "\r\n\r\n " + solicitud.comentarioSupervisor
-					+ "\r\n\r\n Saludos cordiales."
-				});
-				return cb(err, 'Se elimino');
+exports.gestionarSoli = function(solicitud, cb, idUser){
+	Usuario.findById(idUser, function (errUser, supervisor) { 
+		Solicitudes.findByIdAndUpdate(solicitud.id, 
+		{
+			estado: solicitud.estado, 
+			comentarioSupervisor:solicitud.comentarioSupervisor
+		}).populate('usuario').exec(function (err, soli) { 
 
+			if (err) return cb(err, '');
+			var transporter = nodemailer.createTransport();
+			var a = new Date(soli.fechaCreada * 1000);
+			var date = ""+a.getDate()+"/"+a.getMonth()+"/"+a.getFullYear();
+			var solitext = "\r\n\r\nFecha de creación:"+date+"\n"
+			+ "Motivo:"+soli.motivo+"\n"
+			+ "Detalle:"+soli.detalle+"\r\n\r\n";
+			var superV = "";
+			if(!errUser && supervisor) {
+				superV += supervisor.nombre;
+				superV += " " + supervisor.apellido1;
+				superV += " " + supervisor.apellido2;
+			}
+			transporter.sendMail({
+				from: emailSIGUCA,
+				to: soli.usuario.email,
+				subject: 'Respuesta a solicitud en SIGUCA',
+				text: " Estimado(a) " + soli.usuario.nombre 
+				+ ",\r\n\r\nPor este medio se le notifica que "
+				+"la siguiente solicitud ha sido respondida:"
+				+ solitext
+				+ "Le informamos que la justificación fue " + solicitud.estado 
+				+ " por el supervisor " + superV
+				+ ", con el siguiente comentario"
+				+ "\r\n\r\n " + solicitud.comentarioSupervisor
+				+ "\r\n\r\n Saludos cordiales."
+			}, function(error, info){
+				if(error){
+					return console.log('Error al enviar el correo de la gestión de una solicitud: '+soli.usuario.nombre + " Error: "+error);
+				}
+				//return console.log('Respuesta de envío de email: ' + JSON.stringify(info));
 			});
-		}
+			return cb(err, 'Se elimino');
+
+		});
+});
+}

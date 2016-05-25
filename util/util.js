@@ -3,10 +3,10 @@ module.exports = {
     unixTimeToRegularDate: function(list, detail){
         for(x in list){
             if("fechaCreada" in list[x]){
-             var epochTime = list[x].fechaCreada;
-             var fecha = new Date(0);
-             fecha.setUTCSeconds(epochTime); 
-             var f = list[x].fecha = {
+               var epochTime = list[x].fechaCreada;
+               var fecha = new Date(0);
+               fecha.setUTCSeconds(epochTime); 
+               var f = list[x].fecha = {
                 dia:this.getDia(fecha.getDay()),
                 diaNum:fecha.getDate(),
                 mes:this.getMes(fecha.getMonth()),
@@ -109,34 +109,19 @@ module.exports = {
         return marcas;
     },
     contarHoras: function (inicio, fin){
-        function execConteo(hInicio, hFin){
-            var conteo = {h:0, m:0};
-            var difHoras = hFin.hours()-hInicio.hours();
-            if(difHoras==0 && hFin.minutes()>=hInicio.minutes()){
-                conteo.m = hFin.minutes()-hInicio.minutes();
-            }
-            else if(difHoras==0 && hFin.minutes()<hInicio.minutes()){
-                conteo.m = hInicio.minutes()-hFin.minutes();
-            }
-            else if(hInicio.minutes() > hFin.minutes()){
-                conteo.h = difHoras - 1;
-                conteo.m = 60 - hInicio.minutes() +hFin.minutes();
-            }
-            else {
-                conteo.h = difHoras;
-                conteo.m = hFin.minutes()-hInicio.minutes();
-            }
-            return conteo;
-        }
-
         if(inicio && fin){
             var hInicio = moment.unix(inicio.epoch);
             var hFin = moment.unix(fin.epoch);
-            return execConteo(hInicio,hFin);
+            return this.ajustarHoras(
+                {h:hFin.hours(),m:hFin.minutes()},
+                {h:hInicio.hours(),m:hInicio.minutes()}
+                );
         }else if(inicio){
             var hInicio = moment.unix(inicio.epoch);
             var hFin = moment();
-            return execConteo(hInicio, hFin);
+            return this.ajustarHoras(
+                {h:hFin.hours(),m:hFin.minutes()},
+                {h:hInicio.hours(),m:hInicio.minutes()});
         }
         return {h:0, m:0};
     },
@@ -163,19 +148,19 @@ module.exports = {
         h = h + hSuma;
         return {h:h, m:m};
     },
-    tiempoTotal : function(marcas, horasExtra){
-        var tiempo = this.contarHoras(marcas.entrada, marcas.salida);
+    tiempoTotal : function(marcas){
+        var tiempoT = this.contarHoras(marcas.entrada, marcas.salida);
         var tiempoAlmuerzo = this.contarHoras(marcas.almuerzoOut, marcas.almuerzoIn);
-        tiempo = this.ajustarHoras(tiempo, tiempoAlmuerzo);
+        tiempoT = this.ajustarHoras(tiempoT, tiempoAlmuerzo);
         for(receso in marcas.recesos){
-            tiempo = this.ajustarHoras(
-                tiempo, 
+            tiempoT = this.ajustarHoras(
+                tiempoT, 
                 this.contarHoras(
                     marcas.recesos[receso].recesoOut, 
                     marcas.recesos[receso].recesoIn)
                 );
         }
-        return tiempo;
+        return tiempoT;
     },
     compararHoras : function (hIn, mIn, hOut, mOut){
         if(hIn==hOut && mIn==mOut) return 0;
@@ -300,8 +285,8 @@ module.exports = {
                                 array.push(evento[x]);
                             }
                             else*/ if(JSON.stringify(evento[x].departamentos[0].departamento) === JSON.stringify(supervisor.departamentos[y].departamento) 
-                             && notFound){
-                             array.push(evento[x]);
+                               && notFound){
+                               array.push(evento[x]);
 			            		//
 			            		notFound = false;
 			            	} 
@@ -316,8 +301,8 @@ module.exports = {
                                 array.push(evento[x]);
                             }
                             else */if(JSON.stringify(evento[x].departamentos[0].departamento) === JSON.stringify(supervisor.departamentos[y].departamento) 
-                             && JSON.stringify(evento[x]._id) != JSON.stringify(supervisor._id) && notFound){
-                             array.push(evento[x]);
+                               && JSON.stringify(evento[x]._id) != JSON.stringify(supervisor._id) && notFound){
+                               array.push(evento[x]);
 			            		//
 			            		notFound = false;
 			            	} 

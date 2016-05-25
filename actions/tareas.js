@@ -68,6 +68,7 @@ function ejecutarCierre(_idCierre){
             if(!err){
                 for(usuario in usuarios){
                     //console.log(usuarios[usuario]);
+                    //Solo se hacen los cierres para quien tenga el horario personalizado hecho
                     if(usuarios[usuario].horarioEmpleado && usuarios[usuario].horarioEmpleado!=""){
                         //console.log(usuarios[usuario].horarioEmpleado);
                         buscarHorario(_idCierre, usuarios[usuario]._id, 
@@ -101,7 +102,6 @@ function buscarInformacionUsuarioCierre(_idCierre, _idUser, epochMin, epochMax, 
     },
     {_id:0,tipoMarca:1,epoch:1}
     ).exec(function(error, marcasDelDia) {
-        console.log(marcasDelDia);
         if (!error && marcasDelDia){
             var today = moment();
             var dia = ["domingo", "lunes", "martes", "miercoles", 
@@ -119,7 +119,7 @@ function buscarInformacionUsuarioCierre(_idCierre, _idUser, epochMin, epochMax, 
                 ){
                     //
                 if(marcas.salida){
-                    registroHorasRegulares(_idCierre, _idUser, marcas, tiempoDia);
+                    registroHorasRegulares(_idCierre, _idUser, marcas, tiempoDia, horario);
                 }
                 else if(!marcas.entrada){
                     //console.log("Omisión de marca de entrada");
@@ -139,57 +139,69 @@ function buscarInformacionUsuarioCierre(_idCierre, _idUser, epochMin, epochMax, 
     });
 }
 
-
-function registroHorasRegulares(_idCierre, _idUser, marcas, tiempoDia){
+function registroHorasRegulares(_idCierre, _idUser, marcas, tiempoDia, horario){
     var tiempo = util.tiempoTotal(marcas);
-    var hIn = tiempoDia.entrada;
-    var hOut = tiempoDia.salida;
-    var totalJornada = diferenciaHoras(hOut.hora, hOut.minutos, hIn.hora, hIn.minutos);
+    var hIn = {
+        h:tiempoDia.entrada.hora,
+        m:tiempoDia.entrada.minutos,
+    };
+    var hOut = {
+        h:tiempoDia.salida.hora,
+        m:tiempoDia.salida.minutos,
+    };
+    var almuerzoT = {
+        h:horario.tiempoAlmuerzo.hora,
+        m:horario.tiempoAlmuerzo.minutos,
+    };
+    var recesoT = {
+        h:horario.tiempoReceso.hora,
+        m:horario.tiempoReceso.minutos,
+    };
+    var totalJornada = util.ajustarHoras(hOut, hIn);
+    totalJornada = util.ajustarHoras(totalJornada, almuerzoT);
+    totalJornada = util.ajustarHoras(totalJornada, recesoT);
     var comparaH = util.compararHoras(tiempo.h, tiempo.m, totalJornada.h, totalJornada.m);
     agregarUsuarioACierre(_idCierre, _idUser, {h:tiempo.h,m:tiempo.m});
+    //No importa la hora que salió, lo importante es que cumpla la jornada
     if(comparaH==-1){
         addJustIncompleta(_idUser, "Jornada laborada menor que la establecida", 
             "Horas trabajadas: "+ util.horaStr(tiempo.h, tiempo.m)+
             " - Horas establecidas: "+ util.horaStr(totalJornada.h, totalJornada.m));
-        //console.log("Jornada laborada menor que la establecida");
     }
-    if(comparaH==1){
+    /*else if(comparaH==1){
         addJustIncompleta(_idUser, "Jornada laborada mayor que la establecida",
             "Horas trabajadas: "+ util.horaStr(tiempo.h, tiempo.m)+
             " - Horas establecidas: "+ util.horaStr(totalJornada.h, totalJornada.m));
-        //console.log("Jornada laborada mayor que la establecida");
-    }
-    return comparaH;
+}*/
 }
 
 function registroHorasExtras(_idUser, marcas, epochMin, epochMax){
-    //Si las horas extras es durante el periodo normal habría un mal cálculo,
-    //ya que se sumarían las horas regulares y las extras. En este caso,
-    //por ahora se harían cargo el departamento de recursos humanos.
+    //Las horas extras, por como está pensado solo pueden ser para un día,
+    //en el sentido de que si las horas se traslapan entre dos días
+    //no se validarán.
 
-    //Buscar epochInicio entre el intervalo de epochMin y epochMax
-    /*var tiempo = util.tiempoTotal(marcas);
-    var hIn = tiempoDia.entrada;
-    var hOut = tiempoDia.salida;
-    var totalJornada = diferenciaHoras(hOut.hora, hOut.minutos, hIn.hora, hIn.minutos);
-    var comparaH = util.compararHoras(tiempo.h, tiempo.m, totalJornada.h, totalJornada.m);*/
     var queryEpoch = {
         "$gte":epochMin.unix(),
         "$lte":epochMax.unix()
     };
+
     var query = {
-        "$or":[
-            {usuario:_idUser, tipoSolicitudes:"Extras", epochInicio:queryEpoch},
-            {usuario:_idUser, tipoSolicitudes:"Extras", epochTermino:queryEpoch}
-        ]
+        usuario:_idUser, tipoSolicitudes:"Extras", 
+        epochInicio:queryEpoch,
+        epochTermino:queryEpoch
     };
+
     crudSolicitud.get(query,
         function(err, extras){
             if(!err){
                 for(e in extras){
+                    console.log(extras[e]);
                     var inicio = moment.unix(extras[e].epochInicio);
                     var fin = moment.unix(extras[e].epochTermino);
-                    var tiempo = util.ajustarHoras(
+                    for(m in marcas){
+
+                    }
+                    var tiempoT = util.ajustarHoras(
                     {
                         h:fin.hour(),
                         m:fin.minutes()
@@ -199,7 +211,9 @@ function registroHorasExtras(_idUser, marcas, epochMin, epochMax){
                         m:inicio.minutes()
                     }
                     );
-                    console.log(tiempo);
+                    /*var comparaH = util.compararHoras(tiempo.h, tiempo.m, 
+                        totalJornada.h, totalJornada.m);*/
+                    console.log(tiempoT);
                 }
             }
         });
@@ -221,7 +235,6 @@ function agregarUsuarioACierre(_idCierre, _idUser, tiempo){
     CierrePersonal.findByIdAndUpdate(_idCierre, query, function (err, cierreActualizado) {
         if(err) 
             console.log("Error al actualizar cierre en la fecha '"+hoy+"' => Mensaje: "+error);
-        //console.log(cierreActualizado);
     });
 }
 
@@ -233,8 +246,3 @@ function addJustIncompleta(_idUser, motivo, informacion){
         function(){}
         ); 
 }
-
-function diferenciaHoras(hIn, mIn, hOut, mOut){
-    if(mIn>=mOut) return {h:(hIn-hOut), m:(mIn-mOut)};
-    if(mIn<mOut) return {h:(hIn-hOut)-1, m:60-(mOut-mIn)};
-}  
