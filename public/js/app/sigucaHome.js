@@ -1,6 +1,6 @@
     //Declaramos el objeto socket que se conectará en este caso a localhost
-//var socket = io.connect('http://siguca.greencore.int');
-var socket = io.connect('http://10.42.30.19:3000');
+var socket = io.connect('http://siguca.greencore.int');
+//var socket = io.connect('http://10.42.30.19:3000');
 //REVISAR IP
 socket.emit('connected');
 
@@ -63,36 +63,6 @@ $('#selectFiltro').change(function(){
     $('#cal').empty();
     selectValue();
 });
-
-
-//Se recibe result de la consulta
-socket.on('listaCierre', function(cierre){
-    var stats = {};
-    for (var d in cierre)
-        stats[cierre[d].epoch] = cierre[d].estado;
-    calendario(stats, [2, 5, 10, 15, 20]);
-});
-
-socket.on('listaCierreEmpleado', function(result){
-    var stats = {};
-    if(result.tipo == "general")
-        for (var d in result.cierre)
-            stats[result.cierre[d].epoch] = result.cierre[d].estado;
-        else{
-            if(result.tipo == "justificaciones")
-                for (var d in result.cierre)
-                    stats[result.cierre[d].epoch] = result.cierre[d].justificaciones;
-                else{
-                    if(result.tipo == "solicitudes")
-                        for (var d in result.cierre)
-                            stats[result.cierre[d].epoch] = result.cierre[d].solicitudes;
-                        else
-                            for (var d in result.cierre)
-                                stats[result.cierre[d].epoch] = result.cierre[d].marcas;
-                        }
-                    }
-                    calendario(stats, [2, 5, 10]);
-                });
 
 $('#selectMotivo').change(function (){
     if($('#selectMotivo').val() == 'otro') $("#motivoOtro").removeAttr('disabled');

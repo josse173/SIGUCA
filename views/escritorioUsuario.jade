@@ -92,9 +92,9 @@
           tbody.justDetalle
             each just, i in justificaciones
               tr(data-toggle="modal" data-target="#updateJustificacion" data-value=just._id)
-                td() #{just.fecha.dia}, #{just.fecha.diaNum} de #{just.fecha.mes} #{just.fecha.año} 
-                td #{just.motivo}.
-                td #{just.informacion}.
+                td #{just.fecha.dia}, #{just.fecha.diaNum} de #{just.fecha.mes} #{just.fecha.año} 
+                td #{just.motivo}
+                td #{just.informacion}
 .col-xs-4
   .marca
     h3  Marca Mediante el Sistema
@@ -346,6 +346,9 @@
             br
             label Información:
               label#infoJust.form-control(style='float:left')
+            br
+            label Comentario del supervisor:
+              label#comentSupervisor.form-control(style='float:left')
           .form-group
               label(for='detalles') Detalle:
               textarea#detalles.form-control(rows="4" cols="50" required)

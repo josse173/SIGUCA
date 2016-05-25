@@ -10,7 +10,7 @@ var path = require('path'),
 	express = require('express'),
 	http = require('http'),
 	mongoose = require('mongoose'),
-	passport = require('passport');
+	passport = require('passport'); 
 
 /*
 	Leer la configuración de ./config/config

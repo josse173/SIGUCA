@@ -9,7 +9,6 @@
  var passport = require('passport');
 
  //**********************************************
- var actions = require('../actions/reportes');
  var admin_actions = require('../actions/admin');
  var event_actions = require('../actions/eventos');
  var horas_actions = require('../actions/horas');
@@ -18,6 +17,7 @@
  var justificacion_actions = require('../actions/justificacion');
  var solicitud_actions = require('../actions/solicitud');
  var horario_actions = require('../actions/horario');
+
  //**********************************************
  var crudUsuario = require('./crudUsuario');
  var crudSolicitud = require('./crudSolicitud');
@@ -29,6 +29,7 @@
  var util = require('../util/util');
  var ObjectId = mongoose.Types.ObjectId;
 
+//**********************************************
 //Modelos para el manejo de objetos de la base de datos
 var Marca = require('../models/Marca');
 var Usuario = require('../models/Usuario');
@@ -242,6 +243,13 @@ module.exports = function(app, io) {
 
     //******************************************************************************
     /* 
+    *  Cálculo de las horas trabajadas en un día
+    */
+    app.get('/horas/actualizar', autentificado, horas_actions.horasTrabajadas);
+
+
+    //******************************************************************************
+    /* 
     *  Redirecciona a la configuración de empleado
     */
     app.get('/configuracion', autentificado, function (req, res) {
@@ -277,62 +285,6 @@ module.exports = function(app, io) {
         });
     });
 
-    //******************************************************************************
-    /*
-    *  Crea un nuevo horario
-    */
-    app.post('/horarioN', autentificado, function (req, res) {
-        crud.addHorario(req.body, function() {
-            if (req.session.name == "Administrador") {
-                res.redirect('/escritorioAdmin');
-            } 
-        });
-    });
-
-    /*
-    *  Lista todos los horarios creados
-    */
-    app.get('/horarioN', autentificado, function (req, res) {
-        crud.listHorario(function (err, horarios) {
-            if (err) return res.json(err);
-            return res.render('horarioN', {
-                title: 'Nuevo Horario | SIGUCA',
-                horarios: horarios,
-                usuario: req.user
-            });
-        });
-    });
-
-    /*
-    *  Carga los datos de un horario en específico
-    */
-    app.get('/horarioN/editHorario/:id', autentificado, function (req, res) { 
-        crud.loadHorario(req.params.id, function (err, horario) {
-            if (err) return res.json(err);
-            else res.json(horario);
-        });
-    }); 
-
-    /*
-    *  Actualiza los datos de un horario en específico
-    */
-    app.post('/horarioN/:id',autentificado, function (req, res) { 
-        var data = { horario: req.body, id: req.params.id };
-        crud.updateHorario(data, function (err, horarios) {
-            if (err) return res.json(err);
-            res.redirect('/horarioN');
-        });
-    });
-
-    /*
-    *  Elimina un horario en específico
-    */
-    app.get('/horarioN/delete/:id', autentificado, function (req, res) { 
-        crud.deleteHorario(req.params.id, function (err, msj) {
-            if (err) return res.json(err);
-            else res.send(msj);
-        });
-    });
 
     //******************************************************************************
     /*
@@ -342,8 +294,8 @@ module.exports = function(app, io) {
         if (req.session.name == "Administrador") {
             crudUsuario.addUsuario(req.body, function() {
                 if (req.session.name == "Administrador"){
-                 res.redirect('/escritorioAdmin'); 
-             }
+                   res.redirect('/escritorioAdmin'); 
+               }
             });//Busca Usuario
         } else {
             req.logout();
@@ -596,96 +548,66 @@ module.exports = function(app, io) {
         });
     });
 
-    app.get('/horas/actualizar', autentificado, horas_actions.horasTrabajadas);
 
+//******************************************************************************
+//Este tipo de horario está obsoleto, pero se mantiene para dar soporte a los
+//empleado a los que no se les ha asignado un horario personalizado.
+    /*
+    *  Crea un nuevo horario
+    */
+    app.post('/horarioN', autentificado, function (req, res) {
+        crud.addHorario(req.body, function() {
+            if (req.session.name == "Administrador") {
+                res.redirect('/escritorioAdmin');
+            } 
+        });
+    });
 
     /*
-    *   Envia los resultados de los cierres a la función calendario.
-    *   Se inicia la conexión.
+    *  Lista todos los horarios creados
     */
-    io.sockets.on('connection', function(socket){
-        /*
-        *   Emitimos nuestro evento connected
-        */
-        socket.on('connected', function (){
-            var date = new Date();
-            var epoch = (date.getTime() - date.getMilliseconds())/1000;
-            socket.emit('connected', epoch);
-        });
-
-        /*
-        *   Recibe la orden de lista y filtra cierres por tipo de usuario
-        */
-        socket.on('listar', function (departamentoId){
-            var option = departamentoId.split(',');
-            if(option[0] == "Supervisor")
-                listarSupervisor(departamentoId);
-            else
-                listarEmpleado(departamentoId);
-        });
-
-        /*
-        *   Filtra cierres por departamento
-        */
-        function listarSupervisor(departamentoId){
-            var option = departamentoId.split(',');
-            if(option[1] == "todos"){
-                var or = [];
-                for (var i = 2; i < option.length; i++) {
-                    or.push({departamento:option[i]});
-                };
-                var queryOr = {
-                    "tipo": "General",
-                    "$or": or
-                }
-                Cierre.find(queryOr).exec(function(err, cierre) {
-                    if (err) console.log('error al cargar los cierres: ' + err);
-                    else {
-                        socket.emit('listaCierre', cierre);
-                    }
-                });
-            } else {
-                Cierre.find({tipo: "General", departamento: option[1]}).exec(function(err, cierre) {
-                    if (err) console.log('error al cargar los cierres: ' + err);
-                    else {
-                        socket.emit('listaCierre', cierre);
-                    }
-                });
-            }
-        }
-
-        /*
-        *   Filtra cierres por evento (justificaciones, solicitudes y marcas)
-        */
-        function listarEmpleado(departamentoId){
-            var option = departamentoId.split(',');
-            Cierre.find({usuario: option[2]}).exec(function(err, cierre) {
-                if (err) console.log('error al cargar los cierres: ' + err);
-                else {
-                    //console.log('consulta sin errores');
-                    var result = {
-                        cierre: cierre
-                    }
-                    if(option[1] == "todos"){
-                        result.tipo = "general";
-                    } else {
-                        if(option[1] == "justificaciones")
-                            result.tipo = "justificaciones";
-                        else {
-                            if(option[1] == "solicitudes")
-                                result.tipo = "solicitudes";
-                            else
-                                result.tipo = "marcas";
-                        }
-                    }
-                    socket.emit('listaCierreEmpleado', result);  
-                }
+    app.get('/horarioN', autentificado, function (req, res) {
+        crud.listHorario(function (err, horarios) {
+            if (err) return res.json(err);
+            return res.render('horarioN', {
+                title: 'Nuevo Horario | SIGUCA',
+                horarios: horarios,
+                usuario: req.user
             });
-        }
+        });
+    });
 
-    });//io.sockets
+    /*
+    *  Carga los datos de un horario en específico
+    */
+    app.get('/horarioN/editHorario/:id', autentificado, function (req, res) { 
+        crud.loadHorario(req.params.id, function (err, horario) {
+            if (err) return res.json(err);
+            else res.json(horario);
+        });
+    }); 
 
-};//modules
+    /*
+    *  Actualiza los datos de un horario en específico
+    */
+    app.post('/horarioN/:id',autentificado, function (req, res) { 
+        var data = { horario: req.body, id: req.params.id };
+        crud.updateHorario(data, function (err, horarios) {
+            if (err) return res.json(err);
+            res.redirect('/horarioN');
+        });
+    });
 
+    /*
+    *  Elimina un horario en específico
+    */
+    app.get('/horarioN/delete/:id', autentificado, function (req, res) { 
+        crud.deleteHorario(req.params.id, function (err, msj) {
+            if (err) return res.json(err);
+            else res.send(msj);
+        });
+    });
 
-tareas_actions.cierreAutomatico.start();
+};
+
+    tareas_actions.cierreAutomatico.start();

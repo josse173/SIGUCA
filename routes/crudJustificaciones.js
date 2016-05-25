@@ -141,6 +141,7 @@ exports.gestionarJust = function(justificacion, cb, idUser){
 				comentarioSupervisor: justificacion.comentarioSupervisor
 			}
 			).populate('usuario').exec(function (err, just) { 
+				console.log(just);
 				if (err) return cb(err, '');
 				var transporter = nodemailer.createTransport();
 				var a = new Date(just.fechaCreada * 1000);

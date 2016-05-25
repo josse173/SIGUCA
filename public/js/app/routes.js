@@ -94,8 +94,11 @@
         var id = $(this).data('value').replace(/\"/g, "");
         $.get('/justificacion/edit/'+id, function( data ) {
             $("#updateJustificacion #motivoOtroJust").prop("readonly", true);
-            $("#updateJustificacion #motivoOtroJust").text(data.motivo+". ");
-            $("#updateJustificacion #infoJust").text(data.informacion+".");
+            $("#updateJustificacion #motivoOtroJust").text(data.motivo);
+            $("#updateJustificacion #infoJust").text(data.informacion);
+            $("#updateJustificacion #detalles").text(data.detalle);
+            $("#updateJustificacion #comentSupervisor").prop("readonly", true);
+            $("#updateJustificacion #comentSupervisor").text(data.comentarioSupervisor);
             //$("#updateJustificacion #idJust").text(id);
             $("#updateJustificacion #btn-just" ).click( function() {
                 var updJust = {
