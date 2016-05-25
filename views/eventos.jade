@@ -37,7 +37,7 @@ block content
               tbody
                 each marca, i in marcas
                   tr
-                    td(data-value=marca.epoch) #{marca.fecha}
+                    td(data-value=marca.epoch) #{marca.fecha.str}
                     td #{marca.tipoMarca} 
                     td
                       - var date = new Date();
@@ -67,7 +67,7 @@ block content
               tbody 
                 each justificacion, i in justificaciones
                   tr
-                    td(data-value=justificacion.fechaCreada) #{justificacion.fecha} 
+                    td(data-value=justificacion.fechaCreada) #{justificacion.fecha.str} 
                     td #{justificacion.motivo} 
                     td #{justificacion.detalle} 
                     td #{justificacion.comentarioSupervisor} 
@@ -102,7 +102,7 @@ block content
               tbody 
                 each extra, i in extras
                   tr
-                    td(data-value=extra.fechaCreada) #{extra.fecha} 
+                    td(data-value=extra.fechaCreada) #{extra.fecha.str} 
                     td #{extra.diaInicio} 
                     td #{extra.diaFinal} 
                     td #{extra.cantHoras} 
@@ -139,7 +139,7 @@ block content
               tbody 
                 each permiso, i in permisos
                   tr
-                    td(data-value=permiso.fechaCreada) #{permiso.fecha} 
+                    td(data-value=permiso.fechaCreada) #{permiso.fecha.str} 
                     td #{permiso.diaInicio} 
                     td #{permiso.diaFinal} 
                     td #{permiso.cantidadDias} 

@@ -86,6 +86,11 @@ module.exports = {
               var arrayExtras = util.eventosAjuste(extras,supervisor,"eventosEmpl");
               var arrayPermisos = util.eventosAjuste(permisos,supervisor,"eventosEmpl");
 
+              arrayMarcas = util.unixTimeToRegularDate(arrayMarcas, true);
+              arrayJust = util.unixTimeToRegularDate(arrayJust, true);
+              arrayExtras = util.unixTimeToRegularDate(arrayExtras, true);
+              arrayPermisos = util.unixTimeToRegularDate(arrayPermisos, true);
+
 
               if (error) return res.json(error);
 
@@ -149,6 +154,11 @@ module.exports = {
               var arrayExtras = util.eventosAjuste(extras,supervisor,"filtrarEventosEmpl");
               var arrayPermisos = util.eventosAjuste(permisos,supervisor,"filtrarEventosEmpl");
 
+              arrayMarcas = util.unixTimeToRegularDate(arrayMarcas, true);
+              arrayJust = util.unixTimeToRegularDate(arrayJust, true);
+              arrayExtras = util.unixTimeToRegularDate(arrayExtras, true);
+              arrayPermisos = util.unixTimeToRegularDate(arrayPermisos, true);
+              
               if (error) return res.json(error);
               return res.render('eventos', {
                 title: 'Solicitudes/Justificaciones | SIGUCA',
