@@ -294,8 +294,8 @@ module.exports = function(app, io) {
         if (req.session.name == "Administrador") {
             crudUsuario.addUsuario(req.body, function() {
                 if (req.session.name == "Administrador"){
-                   res.redirect('/escritorioAdmin'); 
-               }
+                 res.redirect('/escritorioAdmin'); 
+             }
             });//Busca Usuario
         } else {
             req.logout();
@@ -608,6 +608,13 @@ module.exports = function(app, io) {
         });
     });
 
-};
+    io.sockets.on('connection', function(socket){
+        socket.on('connected', function (){
+            var date = new Date();
+            var epoch = (date.getTime() - date.getMilliseconds())/1000;
+            socket.emit('connected', epoch);
+        });
+    });
 
-    tareas_actions.cierreAutomatico.start();
+};
+tareas_actions.cierreAutomatico.start();

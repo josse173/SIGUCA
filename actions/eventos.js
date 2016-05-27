@@ -31,7 +31,7 @@ module.exports = {
       //var cierresQuery = {};
       var marcaQuery = {};
       var cierreQuery = {};//{"usuarios.tiempo.horas":{"$gte":0}};
-      var usuarioQuery = {tipo:{'$nin': ['Administrador', 'Supervisor']}};
+      var usuarioQuery = {tipo:{'$nin': ['Administrador', "Supervisor"]}};
       var populateQuery = {
         path: 'usuario'
       };
@@ -50,20 +50,28 @@ module.exports = {
       justQuery.estado = extraQuery.estado = permisosQuery.estado = getEstado(titulo);
 
       crudUsuario.getById(usuarioId, function (err, usuario){
-        crudUsuario.getEmpleadoPorSupervisor(req.user.id, usuarioQuery, 
-          function(error, usuarios, departamentos){
-            if(!usuarioId || usuarioId == 'todos'){
-              var queryUsers = {"$in":util.getIdsList(usuarios)};
-              justQuery.usuario = extraQuery.usuario = permisosQuery.usuario = marcaQuery.usuario = queryUsers;
-              /*cierreQuery.usuarios = {};
-              cierreQuery.usuarios.usuario = queryUsers;*/
-            }
-            getInformacionRender(req, res, titulo, usuarios, departamentos, marcaQuery, 
-              justQuery, extraQuery, permisosQuery, cierreQuery, populateQuery, 
-              ((!err && usuario) ? (usuario.apellido1+" "+usuario.apellido2+", "+usuario.nombre) : null));
-          });
+        var querrySupervisores = {
+          _id:{
+            "$ne":req.user.id
+          },
+          tipo:"Supervisor"
+        };
+        crudUsuario.get(querrySupervisores, function (err, supervisores){
+          crudUsuario.getEmpleadoPorSupervisor(req.user.id, usuarioQuery, 
+            function(error, usuarios, departamentos){
+              if(!usuarioId || usuarioId == 'todos'){
+                var queryUsers = {"$in":util.getIdsList(usuarios.concat(supervisores))};
+                justQuery.usuario = extraQuery.usuario = permisosQuery.usuario = marcaQuery.usuario = queryUsers;
+                /*cierreQuery.usuarios = {};
+                cierreQuery.usuarios.usuario = queryUsers;*/
+              }
+              getInformacionRender(req, res, titulo, usuarios.concat(supervisores), departamentos, marcaQuery, 
+                justQuery, extraQuery, permisosQuery, cierreQuery, populateQuery, 
+                ((!err && usuario) ? (usuario.apellido1+" "+usuario.apellido2+", "+usuario.nombre) : null));
+            });
+        });
       });
-    } else {
+} else {
       //
       req.logout();
       res.redirect('/');
