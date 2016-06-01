@@ -12,6 +12,7 @@ emailSIGUCA 	= 'siguca@greencore.co.cr';
 //	---------------------------------------------------------------------*/
 exports.addJust = function(justificacion, cb){
 	var epochTime = moment().unix();
+
 	var newjustificacion = Justificaciones({
 		usuario: justificacion.id,
 		fechaCreada: epochTime,
@@ -19,7 +20,7 @@ exports.addJust = function(justificacion, cb){
 		informacion: justificacion.informacion,
 		comentarioSupervisor: ""
 	});
-
+	
 	if(justificacion.motivoJust == 'otro')
 		newjustificacion.motivo = justificacion.motivoOtroJust;
 	else
@@ -69,42 +70,45 @@ exports.updateJust = function(justificacion, cb){
 	} 
 
 	var justificacionActualizada = {
-		fechaCreada: epochTime,
 		motivo: motivo,
 		detalle: justificacion.detalle,
 		estado: "Pendiente"
 	};
 
-	Justificaciones.findById(justificacion.id).populate('usuario').exec(function (err, just) { 
-		console.log(just);
-		Justificaciones.findByIdAndUpdate(justificacion.id, justificacionActualizada, function (err, justActualizada) { 
-			if (!err && just.estado!="Incompleto") {
-				Usuario.find({'tipo' : 'Supervisor', 'departamentos.departamento' : just.usuario.departamentos[0].departamento}, {'email' : 1}).exec(function (err, supervisor) { 
-					if (err) return cb(err);
-
-					var transporter = nodemailer.createTransport();
-
-					for (var i = 0; i < supervisor.length; i++) {
-						transporter.sendMail({
-							from: emailSIGUCA,
-							to: supervisor[i].email,
-							subject: 'Modificación de una justificación en SIGUCA',
-							text: " El usuario " + just.usuario.nombre + " " + just.usuario.apellido1 + " " + just.usuario.apellido2
-							+ " ha modificado la siguiente justificación: "
-							+ " \r\n Motivo: " + just.motivo
-							+ " \r\n Detalle: " + just.detalle
-							+ "\r\n\r\n A continuación se muestra la justificación modificada" 
-							+ " \r\n Motivo: " + justActualizada.motivo
-							+ " \r\n Detalle: " + justActualizada.detalle
-						});
-					}
-				});
+	Usuario.findById(justificacion.usuario, function(err, user){
+		Justificaciones.findById(justificacion.id).populate('usuario').exec(function (err, just) { 
+			if(JSON.stringify(user._id)===JSON.stringify(just.usuario._id)){
+				justificacionActualizada.fechaJustificada = epochTime;
 			}
-			return cb(err);
+			Justificaciones.findByIdAndUpdate(justificacion.id, justificacionActualizada, function (err, justActualizada) {
+				if (!err && just.estado!="Incompleto") {
+					Usuario.find({'tipo' : 'Supervisor', 'departamentos.departamento' : just.usuario.departamentos[0].departamento}, {'email' : 1}).exec(function (err, supervisor) { 
+						if (err) return cb(err);
+
+						var transporter = nodemailer.createTransport();
+
+						for (var i = 0; i < supervisor.length; i++) {
+							transporter.sendMail({
+								from: emailSIGUCA,
+								to: supervisor[i].email,
+								subject: 'Modificación de una justificación en SIGUCA',
+								text: " El usuario " + just.usuario.nombre + " " + just.usuario.apellido1 + " " + just.usuario.apellido2
+								+ " ha modificado la siguiente justificación: "
+								+ " \r\n Motivo: " + just.motivo
+								+ " \r\n Detalle: " + just.detalle
+								+ "\r\n\r\n A continuación se muestra la justificación modificada" 
+								+ " \r\n Motivo: " + justActualizada.motivo
+								+ " \r\n Detalle: " + justActualizada.detalle
+							});
+						}
+					});
+				}
+				return cb(err);
+			});
+			//
 		});
-
-});
-
+		//
+	});
 }
 
 exports.deleteJust = function(id, cb){
@@ -141,7 +145,6 @@ exports.gestionarJust = function(justificacion, cb, idUser){
 				comentarioSupervisor: justificacion.comentarioSupervisor
 			}
 			).populate('usuario').exec(function (err, just) { 
-				console.log(just);
 				if (err) return cb(err, '');
 				var transporter = nodemailer.createTransport();
 				var a = new Date(just.fechaCreada * 1000);

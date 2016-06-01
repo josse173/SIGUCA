@@ -86,13 +86,15 @@
         table#tablaJust.footable
           thead
             tr
-              th(data-sort-ignore="true" data-type="numeric" ) Fecha
+              th(data-sort-ignore="true" data-type="numeric" ) Fecha creada
+              th(data-sort-ignore="true" data-type="numeric" ) Fecha justificada
               th(data-sort-ignore="true") Motivo
               th(data-sort-ignore="true" data-type="numeric" ) Información
           tbody.justDetalle
             each just, i in justificaciones
               tr(data-toggle="modal" data-target="#updateJustificacion" data-value=just._id)
-                td #{just.fecha.dia}, #{just.fecha.diaNum} de #{just.fecha.mes} #{just.fecha.año} 
+                td #{just.fecha.str} 
+                td #{just.fechaJust.str}
                 td #{just.motivo}
                 td #{just.informacion}
 .col-xs-4
@@ -127,6 +129,7 @@
                     option(value= "Empleado,justificaciones," + usuario.id) Justificaciones
                     option(value= "Empleado,solicitudes," + usuario.id) Solicitudes
                     option(value= "Empleado,marcas," + usuario.id) Tardías o Ausencias
+
   if(usuario.tipo == 'Supervisor')
     h3 Pendientes de revisar 
     ul.list-group
@@ -172,7 +175,7 @@
             #login-form.well.span4
               table.table
                 tr   
-                  label-info( name= codTarjeta) #{usuario.tipo} #{usuario.nombre} #{usuario.apellido1}
+                  label-info(name= codTarjeta) #{usuario.tipo} #{usuario.nombre} #{usuario.apellido1}
                 tr
                   td
                     button#btnEntrada.btn.btn-success.btn-(style="width: 150px;", value = 'Entrada') Entrada
@@ -188,11 +191,6 @@
                     button#btnSalidaAlmuerzo.btn.btn-primary.btn-(style="width: 150px;", value = 'Salida al Almuerzo') Salida al Almuerzo
                   td
                     button#btnEntradaAlmuerzo.btn.btn-primary.btn-(style="width: 150px;", value = 'Entrada de Almuerzo') Entrada del Almuerzo
-                tr
-                  td
-                    button#btnEntradaExtra.btn.btn-info.btn-(style="width: 150px;", value = 'Entrada a extras') Entrada a extras
-                  td
-                    button#btnSalidaExtra.btn.btn-info.btn-(style="width: 150px;", value = 'Salida de extras') Salida de extras
               .form-group
                 label()
                   button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
@@ -244,7 +242,7 @@
             button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
             h4#myModalLabel.modal-title Solicitar hora extraordinaria
           .modal-body
-            form(role='form', method="POST", action="/solicitud_extra")#login-form.well.span4
+            form#solicitud-extra-form(role='form', method="POST", action="/solicitud_extra").well.span4
               .form-group
                 label(for='fecha') Inicio:
                   div.input-group

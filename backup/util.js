@@ -12,9 +12,10 @@ module.exports = {
                     list[x].cantHoras = h + ":0" + m;
                 else
                     list[x].cantHoras = h + ":" + m;
+
             } 
             if("fechaCreada" in list[x]){
-                var epochTime = list[x].fechaCreada;
+                var epochTime = list[x].epoch;
                 this.epochToStr(list[x], epochTime, detail);
             }
             if("epoch" in list[x]){

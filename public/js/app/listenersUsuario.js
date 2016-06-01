@@ -5,6 +5,7 @@ $.each(["#btnEntrada","#btnSalida",
     "#btnSalidaReceso","#btnEntradaReceso",
     "#btnSalidaExtra","#btnEntradaExtra"],
     function(i, id){
+        var cerrado = false;
         $(id).click(function() { 
             $.ajax({
                 url: "marca",
@@ -15,7 +16,6 @@ $.each(["#btnEntrada","#btnSalida",
                     $("#lblMensajeMarca").text(data.result);
                     $("#mensajeMarca").modal("show");
                     $("#mensajeMarca").fadeIn(1);
-                    var cerrado = false;
                     $("#closeMensajeMarca").click(function(){
                         cerrado = true; 
                         if(data.result!="Marca registrada correctamente."){
@@ -54,4 +54,48 @@ $.each(["#btnEntrada","#btnSalida",
             });
             //
         });
+});
+
+$("#solicitud-extra-form").submit(function(e) {
+    e.preventDefault();  
+    $.ajax({
+        url: 'solicitud_extra',
+        type: 'POST',
+        dataType : "json",
+        data: $('#solicitud-extra-form').serialize(),
+        success: function(data) {
+            $("#lblMensajeMarca").text(data.result);
+            $("#mensajeMarca").modal("show");
+            $("#mensajeMarca").fadeIn(1);
+            var cerrado = false;
+            $("#closeMensajeMarca").click(function(){
+                cerrado = true; 
+                if(data.result!="Guardado correctamente."){
+                    $("#horaExtra").modal("show");
+                    $("#horaExtra").fadeIn(1000);
+                } 
+                else {
+                    window.location.replace(window.location.href);
+                }
+            });
+            $("#horaExtra").fadeOut(500);
+            setTimeout(function() {
+                $("#horaExtra").modal("hide");
+            }, 500);
+            if(data.result=="Guardado correctamente."){
+                $("#lblMensajeMarca").text("Solicitud realizada correctamente.");
+            }
+        },
+        error: function(err){
+            $("#closeMensajeMarca").click(function(){
+                cerrado = true;
+                $("#horaExtra").fadeIn(1000);
+            });
+            $("#horaExtra").fadeOut(500);
+            $("#lblMensajeMarca").text("No se pudo contactar con el sistema.\n"+
+                "El error ocurrió al realizar la solicitud y esta no se registró.\n"+
+                "Puede intentar refrescando la página.");
+            $("#mensajeMarca").modal("show");
+        }
+    });
 });

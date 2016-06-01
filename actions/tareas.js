@@ -133,7 +133,6 @@ function buscarInformacionUsuarioCierre(_idCierre, _idUser, epochMin, epochMax, 
                     addJustIncompleta(_idUser, "Omisión de marca de salida", "");
                     agregarUsuarioACierre(_idCierre, _idUser, {h:-1,m:-1});
                 }
-                //registroHorasExtras(_idUser, marcas, epochMin, epochMax);
             }
         }
     });
@@ -158,12 +157,18 @@ function registroHorasRegulares(_idCierre, _idUser, marcas, tiempoDia, horario){
         m:horario.tiempoReceso.minutos,
     };
     var totalJornada = util.ajustarHoras(hOut, hIn);
+    console.log("Calculando jornada de: "+_idUser);
+    console.log(totalJornada);
     totalJornada = util.ajustarHoras(totalJornada, almuerzoT);
+    console.log(totalJornada);
     totalJornada = util.ajustarHoras(totalJornada, recesoT);
+    console.log(totalJornada);
+    console.log(tiempo);
     var comparaH = util.compararHoras(tiempo.h, tiempo.m, totalJornada.h, totalJornada.m);
     agregarUsuarioACierre(_idCierre, _idUser, {h:tiempo.h,m:tiempo.m});
     //No importa la hora que salió, lo importante es que cumpla la jornada
     if(comparaH==-1){
+        console.log("Jornada laborada menor que la establecida");
         addJustIncompleta(_idUser, "Jornada laborada menor que la establecida", 
             "Horas trabajadas: "+ util.horaStr(tiempo.h, tiempo.m)+
             " - Horas establecidas: "+ util.horaStr(totalJornada.h, totalJornada.m));
@@ -173,50 +178,6 @@ function registroHorasRegulares(_idCierre, _idUser, marcas, tiempoDia, horario){
             "Horas trabajadas: "+ util.horaStr(tiempo.h, tiempo.m)+
             " - Horas establecidas: "+ util.horaStr(totalJornada.h, totalJornada.m));
 }*/
-}
-
-function registroHorasExtras(_idUser, marcas, epochMin, epochMax){
-    //Las horas extras, por como está pensado solo pueden ser para un día,
-    //en el sentido de que si las horas se traslapan entre dos días
-    //no se validarán.
-
-    var queryEpoch = {
-        "$gte":epochMin.unix(),
-        "$lte":epochMax.unix()
-    };
-
-    var query = {
-        usuario:_idUser, tipoSolicitudes:"Extras", 
-        epochInicio:queryEpoch,
-        epochTermino:queryEpoch
-    };
-
-    crudSolicitud.get(query,
-        function(err, extras){
-            if(!err){
-                for(e in extras){
-                    console.log(extras[e]);
-                    var inicio = moment.unix(extras[e].epochInicio);
-                    var fin = moment.unix(extras[e].epochTermino);
-                    for(m in marcas){
-
-                    }
-                    var tiempoT = util.ajustarHoras(
-                    {
-                        h:fin.hour(),
-                        m:fin.minutes()
-                    },
-                    {
-                        h: inicio.hour(),
-                        m:inicio.minutes()
-                    }
-                    );
-                    /*var comparaH = util.compararHoras(tiempo.h, tiempo.m, 
-                        totalJornada.h, totalJornada.m);*/
-                    console.log(tiempoT);
-                }
-            }
-        });
 }
 
 function agregarUsuarioACierre(_idCierre, _idUser, tiempo){

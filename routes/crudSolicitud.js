@@ -19,8 +19,9 @@ exports.addExtra = function(extra, cb){
 	var epochTime = moment().unix(),
 	epochInicio = moment(extra.epochInicio,"DD/MM/YYYY HH:mm").unix(),
 	epochTermino = moment(extra.epochTermino,"DD/MM/YYYY HH:mm").unix(),
-	cantHoras = epochTermino - epochInicio;
-
+	cantHoras = (epochTermino - epochInicio);
+	if(cantHoras/3600>24 || cantHoras/3600<0)
+		return cb("Cantidad de horas inválidas");
 	var newSolicitud = Solicitudes({
 		fechaCreada: epochTime,
 		tipoSolicitudes: "Extras",
@@ -39,7 +40,7 @@ exports.addExtra = function(extra, cb){
 		if(soli.length == 0){
 			newSolicitud.save(function (err, user) {
 				if (err) console.log(err);
-				else return cb();
+				else return cb("Guardado correctamente.");
 				});//save
 		}
 		});//verificar

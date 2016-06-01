@@ -94,7 +94,7 @@ module.exports = {
 	        				if (err) return res.json(err);
 	        				var supervisor = {departamentos: [1]};
 	        				var arrayMarcas = util.eventosAjuste(marcas, supervisor, "escritorioEmpl");
-	        				var arrayJust = util.unixTimeToRegularDate(justificaciones);
+	        				var arrayJust = util.unixTimeToRegularDate(justificaciones, true);
 	        				return res.render('escritorio', {
 	        					title: 'Escritorio Empleado | SIGUCA',
 	        					usuario: req.user, 

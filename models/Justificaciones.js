@@ -17,6 +17,10 @@ var SchemaJustificacion = new Schema({
         type: Number,
         default: 0
     },
+    fechaJustificada: { // epoch
+        type: Number,
+        default: 0
+    },
     motivo: {
         type: String,
         default: '' //Tardia - Omision de marca

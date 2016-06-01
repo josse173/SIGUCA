@@ -5,10 +5,8 @@ module.exports = {
 	nuevoExtra : function(req, res){
 		var extra = req.body; 
 		extra.id = req.user.id;
-		crudSolicitud.addExtra(extra, function(){
-			if (req.session.name == "Empleado") {
-				res.redirect('/escritorioEmpl');
-			} else res.redirect('/escritorio');
+		crudSolicitud.addExtra(extra, function(msj){
+			res.json({result:msj});
 		});
 	},
 	editar : function (req, res) {
@@ -40,9 +38,9 @@ module.exports = {
 		});
 	},
 	borrarSolicitud:function (req, res) {
-        crudSolicitud.deleteSoli(req.params.id, function (err, msj) { 
-            if (err) res.json(err);
-            else res.send(msj);
-        });
-    }
+		crudSolicitud.deleteSoli(req.params.id, function (err, msj) { 
+			if (err) res.json(err);
+			else res.send(msj);
+		});
+	}
 }

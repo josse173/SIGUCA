@@ -104,10 +104,14 @@ exports.updateUsuario = function(data, cb){
 }
 
 exports.deleteUsuario = function(id, cb){
-	Usuario.findByIdAndUpdate(id, {estado:'Inactivo'}, function (err, empleados) { 
+	Usuario.remove({_id:id}, function (err, empleados) { 
 		if (err) return cb(err, '');
 		return cb(err, 'Se elimino');
 	});
+	/*Usuario.findByIdAndUpdate(id, {estado:'Inactivo'}, function (err, empleados) { 
+		if (err) return cb(err, '');
+		return cb(err, 'Se elimino');
+	});*/
 }
 
 exports.changeUsername = function(user, cb){

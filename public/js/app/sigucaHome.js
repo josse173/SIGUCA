@@ -1,6 +1,5 @@
-    //Declaramos el objeto socket que se conectará en este caso a localhost
-var socket = io.connect('http://siguca.greencore.int');
-//var socket = io.connect('http://10.42.30.19:3000');
+//var socket = io.connect('http://siguca.greencore.int');
+var socket = io.connect('http://10.42.30.19:3000');
 //REVISAR IP
 socket.emit('connected');
 
@@ -49,6 +48,7 @@ function clock(epoch){
         epoch++;
     }, 1000 );
 }
+
 function updateHorasTrabajadas(){
     $.get("horas/actualizar", function( data ) {
         var currentHours = data.h;
@@ -59,6 +59,7 @@ function updateHorasTrabajadas(){
             ""+currentHours+ "h y "+currentMinutes+"m");
     });
 }
+
 $('#selectFiltro').change(function(){
     $('#cal').empty();
     selectValue();
@@ -77,7 +78,7 @@ $('#selectMotivoJust').change(function (){
 
 //Si nos desconectamos, muestra el log y cambia el mensaje.
 socket.on('disconnect', function () {
-    console.log('Desconectado!');
+    //console.log('Desconectado!');
 });
 
 

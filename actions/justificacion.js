@@ -20,6 +20,7 @@ module.exports = {
 	actualiza: function (req, res) {
 		var just = req.body; 
 		just.id = req.params.id;
+		just.usuario = req.user.id;
 		crudJustificaciones.updateJust(just, function (err){
 			res.redirect('/eventos');
 		});
