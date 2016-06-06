@@ -13,13 +13,13 @@ var crudJustificaciones = require('../routes/crudJustificaciones');
 
 module.exports = {
     cierreAutomatico : new CronJob({
-        cronTime: '* * * * * *',
-        //cronTime: '00 50 23 * * 0-7',
+        //cronTime: '* * * * * *',
+        cronTime: '00 50 23 * * 0-7',
         onTick: function() {
-            if(!once){
+            //if(!once){
                 ejecutarCierre();
-            }
-            once = true;
+            //}
+            //once = true;
         },
         start: false,
         timeZone: "America/Costa_Rica"
