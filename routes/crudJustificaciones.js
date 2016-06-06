@@ -37,7 +37,7 @@ exports.addJust = function(justificacion, cb){
 		if(just.length == 0){
 			newjustificacion.save(function (err, user) {
 				if (err) console.log(err);
-				return cb();
+				return cb(err, just);	
 			});//save
 		}
 	});//verificar

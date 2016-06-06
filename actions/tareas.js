@@ -159,19 +159,21 @@ function registroHorasRegulares(_idCierre, _idUser, marcas, tiempoDia, horario){
     var totalJornada = util.ajustarHoras(hOut, hIn);
     console.log("Calculando jornada de: "+_idUser);
     console.log(totalJornada);
+    console.log(almuerzoT);
     totalJornada = util.ajustarHoras(totalJornada, almuerzoT);
     console.log(totalJornada);
+    console.log(almuerzoT);
     totalJornada = util.ajustarHoras(totalJornada, recesoT);
     console.log(totalJornada);
     console.log(tiempo);
     var comparaH = util.compararHoras(tiempo.h, tiempo.m, totalJornada.h, totalJornada.m);
-    agregarUsuarioACierre(_idCierre, _idUser, {h:tiempo.h,m:tiempo.m});
+    //agregarUsuarioACierre(_idCierre, _idUser, {h:tiempo.h,m:tiempo.m});
     //No importa la hora que salió, lo importante es que cumpla la jornada
     if(comparaH==-1){
         console.log("Jornada laborada menor que la establecida");
-        addJustIncompleta(_idUser, "Jornada laborada menor que la establecida", 
+        /*addJustIncompleta(_idUser, "Jornada laborada menor que la establecida", 
             "Horas trabajadas: "+ util.horaStr(tiempo.h, tiempo.m)+
-            " - Horas establecidas: "+ util.horaStr(totalJornada.h, totalJornada.m));
+            " - Horas establecidas: "+ util.horaStr(totalJornada.h, totalJornada.m));*/
     }
     /*else if(comparaH==1){
         addJustIncompleta(_idUser, "Jornada laborada mayor que la establecida",

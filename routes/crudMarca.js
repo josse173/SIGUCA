@@ -16,13 +16,14 @@ exports.addMarca = function(m, cb){
 	marca(m, cb);
 }
 
-function saveMarca(m, cb){
+function saveMarca(m, cb, msg){
 	m.save(function (err, marca) {
 		var msjOk = "Marca registrada correctamente.";
 		var msjError = "No se pudo contactar con el sistema. \n"+
 		"El error ocurrió al realizar marca y esta no se registró.";
 		//
-		err ? cb(msjError) : cb(msjOk);
+		console.log("***"+msg);
+		err ? cb(msjError, msg) : cb(msjOk, msg);
 	});
 }
 
@@ -45,8 +46,11 @@ function marca (marca, cb) {
 					&& !marcas.almuerzoIn && !marcas.almuerzoOut
 					&& marcas.recesos.length==0){
 						//
-					revisarMarca(newMarca.usuario, newMarca);
-					return saveMarca(newMarca,cb);
+					return revisarMarca(newMarca.usuario, newMarca,
+						function(msg){
+							console.log("*"+msg);
+							saveMarca(newMarca,cb,msg);
+						});
 				}
 				else cb("La marca de entrada fue registrada anteriormente.");
 			}
@@ -61,8 +65,11 @@ function marca (marca, cb) {
 						marcas.recesos[marcas.recesos.length-1].recesoIn
 						)){
 						//
-					revisarMarca(newMarca.usuario, newMarca);
-					return saveMarca(newMarca,cb);
+					return revisarMarca(newMarca.usuario, newMarca,
+						function(msg){
+							console.log("**"+msg);
+							saveMarca(newMarca,cb,msg);
+						});
 				}
 				else cb("La marca de salida no fue registrada, ya que fue registrada anteriormente,"+
 					"se encuentra en almuerzo o en receso.");
@@ -202,14 +209,14 @@ exports.rfidReader = function(codTarjeta, tipoMarca, cb) {
 		} else if(tipoMarca == 6){
 			tipo = 'Salida';
 		} else tipo = 'error';
-		marca({usuario: usuario, tipoMarca: tipo}, function(msj){
-					//	console.log(msj);
-					return cb(msj);
-				});
+		marca({usuario: usuario, tipoMarca: tipo}, 
+			function(msj){					
+				return cb(msj);
+			});
 	});
 }
 
-function revisarMarca(_idUser, marca){
+function revisarMarca(_idUser, marca, cb){
 	var epochMin = moment();
 	epochMin.hours(0);
 	epochMin.minutes(0);
@@ -245,32 +252,42 @@ function revisarMarca(_idUser, marca){
 									if(util.compararHoras(mIn.hour(), mIn.minutes(),mReal.hora,mReal.minutos)==1){
 										addJustIncompleta(_idUser, "Entrada tardía", 
 											"Hora de entrada: "+ util.horaStr(mReal.hora, mReal.minutos)+
-											" - Hora de marca: "+ util.horaStr(mIn.hour(), mIn.minutes()));
+											" - Hora de marca: "+ util.horaStr(mIn.hour(), mIn.minutes()),cb);
 									}
+									else cb("");
 								} else if(marca.tipoMarca=="Salida"){
-				                    var mOut= moment.unix(marca.epoch);
-				                    var mReal = tiempoDia.salida;
-				                    if(util.compararHoras(mOut.hour(), mOut.minutes(), mReal.hora, mReal.minutos)==-1){
-                        				addJustIncompleta(_idUser, "Salida antes de hora establecida", 
-                        					"Hora de salida: "+ util.horaStr(mReal.hora, mReal.minutos)+
-                        					" - Hora de marca: "+ util.horaStr(mOut.hour(), mOut.minutes()));
-                        			}
-                        		} 
+									var mOut= moment.unix(marca.epoch);
+									var mReal = tiempoDia.salida;
+									if(util.compararHoras(mOut.hour(), mOut.minutes(), mReal.hora, mReal.minutos)==-1){
+										addJustIncompleta(_idUser, "Salida antes de hora establecida", 
+											"Hora de salida: "+ util.horaStr(mReal.hora, mReal.minutos)+
+											" - Hora de marca: "+ util.horaStr(mOut.hour(), mOut.minutes()), cb);
+									}
+									else cb("");
+								} 
+								else cb("");
                         		//Evaluar si se pasó el tiempo de receso o almuerzo
                         	}
+                        	else cb("");
                         }
+                        else cb("");
                     });
 				//
 			}
+			else cb("");
 		});
 	//
 }
 
-function addJustIncompleta(_idUser, motivo, informacion){
+function addJustIncompleta(_idUser, motivo, informacion, cb){
 	crudJustificaciones.addJust(
 		{id:_idUser, detalle:"", informacion: informacion,
 		estado:"Incompleto", motivoJust:"otro",
 		motivoOtroJust:motivo},
-		function(){}
+		function(err, just){
+			console.log("****"+motivo);
+			if(!err) cb(motivo);
+			else cb("");
+		}
 		); 
 }

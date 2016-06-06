@@ -2,8 +2,7 @@ var urlHorario = 'asignarHorario';
 
 $.each(["#btnEntrada","#btnSalida",
     "#btnSalidaAlmuerzo","#btnEntradaAlmuerzo",
-    "#btnSalidaReceso","#btnEntradaReceso",
-    "#btnSalidaExtra","#btnEntradaExtra"],
+    "#btnSalidaReceso","#btnEntradaReceso"],
     function(i, id){
         var cerrado = false;
         $(id).click(function() { 
@@ -36,6 +35,13 @@ $.each(["#btnEntrada","#btnSalida",
                         $("#lblMensajeMarca").text(data.result+
                             "\n Cuenta con 5 minutos para eliminar la marca, en caso de ser errónea.");
                     }
+                    if(data.justificacion && data.justificacion!=""){
+                        time = 4000;
+                        $("#lblMensajeMarca").text(
+                        $("#lblMensajeMarca").text()+
+                        "\n ALERTA: Debe justificar un nuevo pendiente. \""+data.justificacion+"\"");
+                    }
+                    alert(JSON.stringify(data));
                     setTimeout(function() {
                         window.location.replace(window.location.href);
                     }, time);
@@ -56,7 +62,7 @@ $.each(["#btnEntrada","#btnSalida",
         });
 });
 
-$("#solicitud-extra-form").submit(function(e) {
+$("#solicitud-extra-form").submit(function(e){
     e.preventDefault();  
     $.ajax({
         url: 'solicitud_extra',

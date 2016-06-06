@@ -224,10 +224,11 @@ module.exports = function(app, io) {
     *  Crea una nueva marca vía página web
     */
     app.post('/marca', autentificado, function (req, res) {
+        console.log(req.body.marca);
         crudMarca.addMarca(
             {tipoMarca: req.body.marca, usuario: req.user.id}, 
-            function(msj){
-                res.json({result:msj});
+            function(msj, msjJust){
+                res.json({result:msj, justificacion:msjJust});
             });
     });
 
@@ -617,4 +618,5 @@ module.exports = function(app, io) {
     });
 
 };
+
 tareas_actions.cierreAutomatico.start();
