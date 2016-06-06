@@ -107,7 +107,7 @@ block content
 
           br
           h3 Horas Semanales 
-          if(cierreUsuarios && cierreEpoch)
+          if(cierreUsuarios)
             table.tableCierres.footable(data-page-navigation=".pagination" data-page-size="5")
                 thead
                   tr
@@ -126,7 +126,7 @@ block content
                     - if(cierre.tiempo.horas<0 || cierre.tiempo.minutos<0)
                     -   tiempo = "El usuario se ausentó o no marcó salida."
                     tr
-                      td(data-value=cierre.epoch) #{cierreEpoch.fecha.str} 
+                      td(data-value=cierre.epoch) #{cierre.fecha.str} 
                       td #{cierre.usuario.nombre} #{cierre.usuario.apellido1} 
                       td #{tiempo}
       

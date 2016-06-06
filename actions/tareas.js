@@ -13,13 +13,13 @@ var crudJustificaciones = require('../routes/crudJustificaciones');
 
 module.exports = {
     cierreAutomatico : new CronJob({
-        //cronTime: '* * * * * *',
-        cronTime: '00 50 23 * * 0-7',
+        cronTime: '* * * * * *',
+        //cronTime: '00 50 23 * * 0-7',
         onTick: function() {
-            //if(!once){
-                crearCierre(moment().unix(), ejecutarCierre);
-            //}
-            //once = true;
+            if(!once){
+                ejecutarCierre();
+            }
+            once = true;
         },
         start: false,
         timeZone: "America/Costa_Rica"
@@ -30,23 +30,15 @@ var once = false;
 function crearCierre(epoch, ejecutar){
     var hoy = new Date();
     var queryCierre = {epoch:epoch};
-    CierrePersonal.find(queryCierre).exec(function(error, cierres) {
-        if(error) 
+    var nuevoCierre = new CierrePersonal(queryCierre);
+    nuevoCierre.save(function (err, cierre) {
+        if (err) 
             console.log("Error al crear cierre en la fecha '"+hoy+"' Mensaje: "+error);
-        if(!cierres || cierres.length==0){
-            var nuevoCierre = new CierrePersonal(queryCierre);
-            nuevoCierre.save(function (err, cierre) {
-                if (err) 
-                    console.log("Error al crear cierre en la fecha '"+hoy+"' Mensaje: "+error);
-                ejecutar(cierre._id);
-            });
-        } else{
-            ejecutar(cierres[0]._id);
-        }
+        ejecutar(cierre._id);
     });
 }
 
-function ejecutarCierre(_idCierre){
+function ejecutarCierre(){
     var hoy = new Date();
     console.log("Realizando cierre en la fecha '"+hoy+"' y notificando a usuarios");
 
@@ -70,7 +62,7 @@ function ejecutarCierre(_idCierre){
                     //Solo se hacen los cierres para quien tenga el horario personalizado hecho
                     if(usuarios[usuario].horarioEmpleado && usuarios[usuario].horarioEmpleado!=""){
                         //console.log(usuarios[usuario].horarioEmpleado);
-                        buscarHorario(_idCierre, usuarios[usuario]._id, 
+                        buscarHorario(usuarios[usuario]._id, 
                             epochMin, epochMax, usuarios[usuario].horarioEmpleado); 
                     }
                 }
@@ -78,19 +70,19 @@ function ejecutarCierre(_idCierre){
         });
 }
 
-function buscarHorario(_idCierre, _idUser, epochMin, epochMax, horarioEmpleado){
+function buscarHorario(_idUser, epochMin, epochMax, horarioEmpleado){
     crudHorario.getById(horarioEmpleado, 
         function(error, horario){
             if(!error && horario){
                 buscarInformacionUsuarioCierre(
-                    _idCierre, _idUser,epochMin, epochMax, horario);
+                 _idUser,epochMin, epochMax, horario);
             }
         });
 }
 
 
 
-function buscarInformacionUsuarioCierre(_idCierre, _idUser, epochMin, epochMax, horario){
+function buscarInformacionUsuarioCierre( _idUser, epochMin, epochMax, horario){
     Marca.find(
     {
         usuario: _idUser,
@@ -117,26 +109,26 @@ function buscarInformacionUsuarioCierre(_idCierre, _idUser, epochMin, epochMax, 
                     )
                 ){
                     //
-                registroHorasRegulares(_idCierre, _idUser, marcas, tiempoDia, horario);
+                registroHorasRegulares(_idUser, marcas, tiempoDia, horario);
                 
                 if(!marcas.entrada){
                     //console.log("Omisión de marca de entrada");
                     addJustIncompleta(_idUser, "Omisión de marca de entrada", "");
-                    agregarUsuarioACierre(_idCierre, _idUser, {h:-1,m:-1});
+                    agregarUsuarioACierre(_idUser, {h:-1,m:-1});
                 } 
                 //Solo se genera una notificación de omisión de marca de salida si
                 //el usuario incumplió las horas de trabajo
                 else if(!marcas.salida){
                     //console.log("Omisión de marca de salida");
                     addJustIncompleta(_idUser, "Omisión de marca de salida", "");
-                    agregarUsuarioACierre(_idCierre, _idUser, {h:-1,m:-1});
+                    agregarUsuarioACierre(_idUser, {h:-1,m:-1});
                 }
             }
         }
     });
 }
 
-function registroHorasRegulares(_idCierre, _idUser, marcas, tiempoDia, horario){
+function registroHorasRegulares(_idUser, marcas, tiempoDia, horario){
     var tiempo = util.tiempoTotal(marcas);
     var hIn = {
         h:tiempoDia.entrada.hora,
@@ -165,7 +157,7 @@ function registroHorasRegulares(_idCierre, _idUser, marcas, tiempoDia, horario){
     console.log(totalJornada);
     console.log(tiempo);
     var comparaH = util.compararHoras(totalJornada.h, totalJornada.m, tiempo.h, tiempo.m);
-    agregarUsuarioACierre(_idCierre, _idUser, {h:tiempo.h,m:tiempo.m});
+    agregarUsuarioACierre(_idUser, {h:tiempo.h,m:tiempo.m});
     //No importa la hora que salió, lo importante es que cumpla la jornada
     if(comparaH==1){
         console.log("Jornada laborada menor que la establecida");
@@ -175,8 +167,21 @@ function registroHorasRegulares(_idCierre, _idUser, marcas, tiempoDia, horario){
     }
 }
 
-function agregarUsuarioACierre(_idCierre, _idUser, tiempo){
-    var hoy = new Date();
+function agregarUsuarioACierre(_idUser, tiempo){
+    var obj = {
+        usuario: _idUser,
+        tiempo: {
+            horas:tiempo.h,
+            minutos:tiempo.m
+        },
+        epoch: moment().unix()
+    };
+    var cierre = CierrePersonal(obj);
+    cierre.save(function (err, cierreActualizado) {
+        if(err) 
+            console.log("Error al crear cierre en la fecha '"+hoy+"' => Mensaje: "+error);
+    });
+    /*var hoy = new Date();
     var query = {
         "$push":{
             "usuarios":{
@@ -191,7 +196,7 @@ function agregarUsuarioACierre(_idCierre, _idUser, tiempo){
     CierrePersonal.findByIdAndUpdate(_idCierre, query, function (err, cierreActualizado) {
         if(err) 
             console.log("Error al actualizar cierre en la fecha '"+hoy+"' => Mensaje: "+error);
-    });
+    });*/
 }
 
 function addJustIncompleta(_idUser, motivo, informacion){

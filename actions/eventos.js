@@ -44,8 +44,7 @@ module.exports = {
       }
       if(usuarioId && usuarioId != 'todos'){
         justQuery.usuario = extraQuery.usuario = permisosQuery.usuario = marcaQuery.usuario = usuarioId;
-        cierreQuery.usuarios = {};
-        cierreQuery.usuarios.usuario = usuarioId;
+        cierreQuery.usuario = usuarioId;
       }
       justQuery.estado = extraQuery.estado = permisosQuery.estado = getEstado(titulo);
 
@@ -91,7 +90,7 @@ module.exports = {
           Solicitudes.find({usuario: req.user.id, tipoSolicitudes:'Extras'}).exec(function(error, extras) {
             Solicitudes.find({usuario: req.user.id, tipoSolicitudes:'Permisos'}).exec(function(error, permisos) {
               var query = [
-              {"$unwind":"$usuarios"}
+              //{"$unwind":"$usuarios"}
               ];
               //{"$match":{"usuarios.usuario":req.user.id}},
               CierrePersonal.aggregate(query, function (err, listaCierre) {
@@ -175,7 +174,7 @@ module.exports = {
           Solicitudes.find(extraQuery).exec(function(error, extras) {
             Solicitudes.find(permisosQuery).exec(function(error, permisos) {
               var query = [
-              {"$unwind":"$usuarios"},
+              //{"$unwind":"$usuarios"},
               //{"$match":{"usuarios.usuario":req.user.id}},
               ];
               CierrePersonal.aggregate(query, function (err, listaCierre) {
@@ -233,10 +232,10 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos,
               justificaciones, extras, permisos, nombreUsuario);
           }
           else {
-            CierrePersonal.find(cierreQuery).populate("usuarios.usuario").exec(function(error, cierres) {
+            CierrePersonal.find(cierreQuery).populate("usuario").exec(function(error, cierres) {
               //console.log(cierres);
               return renderFiltro(res, titulo, req.user, departamentos, usuarios, marcas, 
-                justificaciones, extras, permisos, cierres[0], nombreUsuario);
+                justificaciones, extras, permisos, cierres, nombreUsuario);
             });
           }
         });//Solicitudes permisos
@@ -249,21 +248,6 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos,
 function renderFiltro(res, titulo, usuario, departamentos, 
   usuarios, marcas, justificaciones, extras, permisos, cierre, nombreUsuario){
   var resumen = [];
-  /*if(cierre){
-    cierreUsuarios = util.unixTimeToRegularDate(cierre.usuarios);
-  }*/
-  var cierreUsuarios;
-  var cierreEpoch;
-  if(cierre){
-    cierreUsuarios = cierre.usuarios;
-    var cierreEpochAux = {};
-    util.epochToStr(cierreEpochAux, cierre.epoch, true);
-    if(JSON.stringify(cierreEpochAux)!=JSON.stringify({}))
-      cierreEpoch = cierreEpochAux;
-  }
-  //console.log(cierreUsuarios);
-  /*console.log(cierreEpoch);
-  console.log(cierreEpoch);*/
   var filtro = {
     title: titulo,
     usuario: usuario,
@@ -279,8 +263,9 @@ function renderFiltro(res, titulo, usuario, departamentos,
     permisos: util.unixTimeToRegularDate(permisos.filter(function(m){
       return m.usuario;
     }), true),
-    cierreUsuarios: cierreUsuarios,
-    cierreEpoch: cierreEpoch,
+    cierreUsuarios: util.unixTimeToRegularDate(cierre.filter(function(m){
+      return m.usuario;
+    }), true),
     usuarios: usuarios,
     departamentos: departamentos,
     nombreUsuario: nombreUsuario
