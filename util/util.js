@@ -174,9 +174,9 @@ module.exports = {
     compararHoras : function (hIn, mIn, hOut, mOut){
         if(hIn==hOut && mIn==mOut) return 0;
         if(hIn==hOut && mIn>mOut) return 1;
+        if(hIn>hOut) return 1;
         if(hIn==hOut && mIn<mOut) return -1;
         if(hIn<hOut) return -1;
-        if(hIn>hOut) return 1;
     },
     horaStr: function (hora, minutos){
         var h = hora;
@@ -289,7 +289,7 @@ module.exports = {
 			            *   - Se utiliza en los reportes.
 			            */
                         //console.log(evento[x]);
-                        if("reportes" == query){
+                        if("reportes" == query && evento[x].departamentos){
                             /*if(!evento[x].departamentos){
                                 array.push(evento[x]);
                             }
@@ -305,7 +305,7 @@ module.exports = {
 			            		//
 			            		notFound = false;
 			            	}
-			            } else {
+			            } else if (evento[x].departamentos) {
                             /*if(!evento[x].departamentos){
                                 array.push(evento[x]);
                             }

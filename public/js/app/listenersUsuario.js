@@ -1,8 +1,8 @@
 var urlHorario = 'asignarHorario';
 
-$.each(["#btnEntrada","#btnSalida",
-    "#btnSalidaAlmuerzo","#btnEntradaAlmuerzo",
-    "#btnSalidaReceso","#btnEntradaReceso"],
+$.each([".btnEntrada",".btnSalida",
+    ".btnSalidaAlmuerzo",".btnEntradaAlmuerzo",
+    ".btnSalidaReceso",".btnEntradaReceso"],
     function(i, id){
         var cerrado = false;
         $(id).click(function() { 
@@ -18,16 +18,24 @@ $.each(["#btnEntrada","#btnSalida",
                     $("#closeMensajeMarca").click(function(){
                         cerrado = true; 
                         if(data.result!="Marca registrada correctamente."){
-                            $("#addMarca").modal("show");
-                            $("#addMarca").fadeIn(1000);
+                            if($(".marcaResponsive").is(":visible")){
+                                $("#addMarcaResponsive").modal("show");
+                                $("#addMarcaResponsive").fadeIn(1000);
+                            }else{
+                                $("#addMarca").modal("show");
+                                $("#addMarca").fadeIn(1000);
+                            }
+
                         } 
                         else {
                             window.location.replace(window.location.href);
                         }
                     });
                     $("#addMarca").fadeOut(500);
+                    $("#addMarcaResponsive").fadeOut(500);
                     setTimeout(function() {
                         $("#addMarca").modal("hide");
+                        $("#addMarcaResponsive").modal("hide");
                     }, 500);
                     var time = 8000;
                     if(data.result=="Marca registrada correctamente."){
@@ -38,10 +46,9 @@ $.each(["#btnEntrada","#btnSalida",
                     if(data.justificacion && data.justificacion!=""){
                         time = 4000;
                         $("#lblMensajeMarca").text(
-                        $("#lblMensajeMarca").text()+
-                        "\n ALERTA: Debe justificar un nuevo pendiente. \""+data.justificacion+"\"");
+                            $("#lblMensajeMarca").text()+
+                            "\n ALERTA: Debe justificar un nuevo pendiente. \""+data.justificacion+"\"");
                     }
-                    alert(JSON.stringify(data));
                     setTimeout(function() {
                         window.location.replace(window.location.href);
                     }, time);
@@ -50,8 +57,10 @@ $.each(["#btnEntrada","#btnSalida",
                     $("#closeMensajeMarca").click(function(){
                         cerrado = true;
                         $("#addMarca").fadeIn(1000);
+                        $("#addMarcaResponsive").fadeIn(1000);
                     });
                     $("#addMarca").fadeOut(500);
+                    $("#addMarcaResponsive").fadeIn(500);
                     $("#lblMensajeMarca").text("No se pudo contactar con el sistema.\n"+
                         "El error ocurrió al realizar marca y esta no se registró.\n"+
                         "Puede intentar refrescando la página.");

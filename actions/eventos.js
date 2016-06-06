@@ -80,36 +80,56 @@ module.exports = {
 
   //*************************************************************************************************************
   eventos : function (req, res) {
-    var inicioMes = moment().date(1);
+    //var inicioMes = moment().date(1);
+    var epochMin = moment();
+    epochMin.hours(0);
+    epochMin.minutes(0);
+    epochMin.seconds(0);
     if (req.session.name != "Administrador") {
-      Marca.find({usuario: req.user.id, epoch: {'$gte' : inicioMes.unix()}}).exec(function(error, marcas) {
+      Marca.find({usuario: req.user.id, epoch: {'$gte' : epochMin.unix()}}).exec(function(error, marcas) {
         Justificaciones.find({usuario: req.user.id}).exec(function(error, justificaciones) {
           Solicitudes.find({usuario: req.user.id, tipoSolicitudes:'Extras'}).exec(function(error, extras) {
             Solicitudes.find({usuario: req.user.id, tipoSolicitudes:'Permisos'}).exec(function(error, permisos) {
+              var query = [
+              {"$unwind":"$usuarios"}
+              ];
+              //{"$match":{"usuarios.usuario":req.user.id}},
+              CierrePersonal.aggregate(query, function (err, listaCierre) {
+                var l = [];
+                for(c in listaCierre){
+                  if(JSON.stringify(listaCierre[c].usuarios.usuario)===JSON.stringify(req.user.id)
+                    && listaCierre[c].epoch>=epochMin){
+                    l.push(listaCierre[c]);
+                  }
+                }
 
-              var supervisor = {departamentos: [1]};
 
-              var arrayMarcas = util.eventosAjuste(marcas,supervisor,"eventosEmpl");
-              var arrayJust = util.eventosAjuste(justificaciones,supervisor,"eventosEmpl");
-              var arrayExtras = util.eventosAjuste(extras,supervisor,"eventosEmpl");
-              var arrayPermisos = util.eventosAjuste(permisos,supervisor,"eventosEmpl");
+                var supervisor = {departamentos: [1]};
 
-              arrayMarcas = util.unixTimeToRegularDate(arrayMarcas, true);
-              arrayJust = util.unixTimeToRegularDate(arrayJust, true);
-              arrayExtras = util.unixTimeToRegularDate(arrayExtras, true);
-              arrayPermisos = util.unixTimeToRegularDate(arrayPermisos, true);
+                var arrayMarcas = util.eventosAjuste(marcas,supervisor,"eventosEmpl");
+                var arrayJust = util.eventosAjuste(justificaciones,supervisor,"eventosEmpl");
+                var arrayExtras = util.eventosAjuste(extras,supervisor,"eventosEmpl");
+                var arrayPermisos = util.eventosAjuste(permisos,supervisor,"eventosEmpl");
+
+                arrayMarcas = util.unixTimeToRegularDate(arrayMarcas, true);
+                arrayJust = util.unixTimeToRegularDate(arrayJust, true);
+                arrayExtras = util.unixTimeToRegularDate(arrayExtras, true);
+                arrayPermisos = util.unixTimeToRegularDate(arrayPermisos, true);
 
 
-              if (error) return res.json(error);
+                if (error) return res.json(error);
 
-              return res.render('eventos', {
-                title: 'Solicitudes/Justificaciones | SIGUCA',
-                usuario: req.user,
-                justificaciones: arrayJust,
-                extras: arrayExtras,
-                permisos: arrayPermisos,
-                marcas: marcas
+                return res.render('eventos', {
+                  title: 'Solicitudes/Justificaciones | SIGUCA',
+                  usuario: req.user,
+                  justificaciones: arrayJust,
+                  extras: arrayExtras,
+                  permisos: arrayPermisos,
+                  horas: l,
+                  marcas: marcas
+                });
               });
+              //
             });
             //
           });
@@ -154,28 +174,41 @@ module.exports = {
         Justificaciones.find(justQuery).exec(function(error, justificaciones) {
           Solicitudes.find(extraQuery).exec(function(error, extras) {
             Solicitudes.find(permisosQuery).exec(function(error, permisos) {
+              var query = [
+              {"$unwind":"$usuarios"},
+              //{"$match":{"usuarios.usuario":req.user.id}},
+              ];
+              CierrePersonal.aggregate(query, function (err, listaCierre) {
+                var l = [];
+                for(c in listaCierre){
+                  if(JSON.stringify(listaCierre[c].usuarios.usuario)===JSON.stringify(req.user.id)){
+                    l.push(listaCierre[c]);
+                  }
+                }
 
-              var supervisor = {departamentos: [1]};
+                var supervisor = {departamentos: [1]};
 
-              var arrayMarcas = util.eventosAjuste(marcas,supervisor,"eventosEmpl");
-              var arrayJust = util.eventosAjuste(justificaciones,supervisor,"filtrarEventosEmpl");
-              var arrayExtras = util.eventosAjuste(extras,supervisor,"filtrarEventosEmpl");
-              var arrayPermisos = util.eventosAjuste(permisos,supervisor,"filtrarEventosEmpl");
+                var arrayMarcas = util.eventosAjuste(marcas,supervisor,"eventosEmpl");
+                var arrayJust = util.eventosAjuste(justificaciones,supervisor,"filtrarEventosEmpl");
+                var arrayExtras = util.eventosAjuste(extras,supervisor,"filtrarEventosEmpl");
+                var arrayPermisos = util.eventosAjuste(permisos,supervisor,"filtrarEventosEmpl");
 
-              arrayMarcas = util.unixTimeToRegularDate(arrayMarcas, true);
-              arrayJust = util.unixTimeToRegularDate(arrayJust, true);
-              arrayExtras = util.unixTimeToRegularDate(arrayExtras, true);
-              arrayPermisos = util.unixTimeToRegularDate(arrayPermisos, true);
-              
-              if (error) return res.json(error);
-              return res.render('eventos', {
-                title: 'Solicitudes/Justificaciones | SIGUCA',
-                usuario: req.user,
-                justificaciones: arrayJust,
-                extras: arrayExtras,
-                permisos: arrayPermisos,
-                marcas: marcas
-              });//render
+                arrayMarcas = util.unixTimeToRegularDate(arrayMarcas, true);
+                arrayJust = util.unixTimeToRegularDate(arrayJust, true);
+                arrayExtras = util.unixTimeToRegularDate(arrayExtras, true);
+                arrayPermisos = util.unixTimeToRegularDate(arrayPermisos, true);
+
+                if (error) return res.json(error);
+                return res.render('eventos', {
+                  title: 'Solicitudes/Justificaciones | SIGUCA',
+                  usuario: req.user,
+                  justificaciones: arrayJust,
+                  extras: arrayExtras,
+                  permisos: arrayPermisos,
+                  horas: l,
+                  marcas: marcas
+                });//render
+              });//CierrePersonal
             });//Permisos
           });//Extras
         });//Justificaciones
@@ -200,7 +233,6 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos,
               justificaciones, extras, permisos, nombreUsuario);
           }
           else {
-            //console.log(cierreQuery);
             CierrePersonal.find(cierreQuery).populate("usuarios.usuario").exec(function(error, cierres) {
               //console.log(cierres);
               return renderFiltro(res, titulo, req.user, departamentos, usuarios, marcas, 

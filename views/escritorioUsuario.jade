@@ -104,42 +104,16 @@
       div           
        button#btn-marca.btn.btn-success(name='marcar', onclick= "changeElemt('marca')", data-toggle="modal" data-target="#addMarca" value=usuario._id) Realizar Marca
 
-  h3 Filtros   
-  div.filter
-       div.filter
-            if(usuario.tipo == 'Supervisor')
-              label#departamento(for='departamento') 
-              .btn-group
-                 .btn-group
-                select.form-control#selectFiltro.selectpicker(data-style="btn-success", type="text", name="idSupervisor") 
-                    optgroup(label="Departamentos")
-                      option(value= "Supervisor,todos," + todos) Todos los departamentos
-                      each item, i in departamentos
-                        option(value= "Supervisor," + item.departamento.id) #{item.departamento.nombre}
-                    optgroup(label="Personales")
-                      option#supervisor(value= "Empleado,todos," + usuario.id) Mi gráfico
-                      option(value= "Empleado,justificaciones," + usuario.id) Justificaciones
-                      option(value= "Empleado,solicitudes," + usuario.id) Solicitudes
-                      option(value= "Empleado,marcas," + usuario.id) Tardías o Ausencias
-            else
-              .btn-group
-                 .btn-group
-                select.form-control#selectFiltro.selectpicker(data-style="btn-success",type="text", name="idSupervisor") 
-                    option(value= "Empleado,todos," + usuario.id) Mi gráfico
-                    option(value= "Empleado,justificaciones," + usuario.id) Justificaciones
-                    option(value= "Empleado,solicitudes," + usuario.id) Solicitudes
-                    option(value= "Empleado,marcas," + usuario.id) Tardías o Ausencias
-
   if(usuario.tipo == 'Supervisor')
     h3 Pendientes de revisar 
     ul.list-group
       li.list-group-item
         a(href='/gestionarEventos')
-          span.badge #{solicitudes}
+          span.badge #{soliCount}
           |   Solicitudes
       li.list-group-item
         a(href='/gestionarEventos')
-          span.badge #{justificaciones} 
+          span.badge #{justCount} 
           |   Justificaciones
 
   h3 Acciones 
@@ -172,25 +146,25 @@
             button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
             h3#myModalLabel.modal-title Marcas de asistencia
           .modal-body
-            #login-form.well.span4
+            .well.span4
               table.table
                 tr   
                   label-info(name= codTarjeta) #{usuario.tipo} #{usuario.nombre} #{usuario.apellido1}
                 tr
                   td
-                    button#btnEntrada.btn.btn-success.btn-(style="width: 150px;", value = 'Entrada') Entrada
+                    button.btnEntrada.btn.btn-success.btn-(style="width: 150px;", value = 'Entrada') Entrada
                   td
-                    button#btnSalida.btn.btn-success.btn-(style="width: 150px;", value = 'Salida') Salida
+                    button.btnSalida.btn.btn-success.btn-(style="width: 150px;", value = 'Salida') Salida
                 tr
                   td
-                    button#btnSalidaReceso.btn.btn-warning.btn-(style="width: 150px;", value = 'Salida a Receso') Salida a Receso 
+                    button.btnSalidaReceso.btn.btn-warning.btn-(style="width: 150px;", value = 'Salida a Receso') Salida a Receso 
                   td
-                    button#btnEntradaReceso.btn.btn-warning.btn-(style="width: 150px;", value = 'Entrada de Receso') Entrada de Receso
+                    button.btnEntradaReceso.btn.btn-warning.btn-(style="width: 150px;", value = 'Entrada de Receso') Entrada de Receso
                 tr
                   td
-                    button#btnSalidaAlmuerzo.btn.btn-primary.btn-(style="width: 150px;", value = 'Salida al Almuerzo') Salida al Almuerzo
+                    button.btnSalidaAlmuerzo.btn.btn-primary.btn-(style="width: 150px;", value = 'Salida al Almuerzo') Salida al Almuerzo
                   td
-                    button#btnEntradaAlmuerzo.btn.btn-primary.btn-(style="width: 150px;", value = 'Entrada de Almuerzo') Entrada del Almuerzo
+                    button.btnEntradaAlmuerzo.btn.btn-primary.btn-(style="width: 150px;", value = 'Entrada de Almuerzo') Entrada del Almuerzo
               .form-group
                 label()
                   button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
@@ -200,37 +174,30 @@
         .modal-content
           .modal-header
             button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-            h3#myModalLabel.modal-title Marcar Mediante Sistema
+            h3#myModalLabel.modal-title Marcas de asistencia
           .modal-body
-            form(role='form', method="POST", action="/marca")#login-form.well.span4
+            .well.span4
               table.table
+                tr   
+                  label-info(name= codTarjeta) #{usuario.tipo} #{usuario.nombre} #{usuario.apellido1}
                 tr
-                  modal.group     
-                     label-info( name= codTarjeta) #{usuario.tipo} #{usuario.nombre} #{usuario.apellido1}
+                  td
+                    button.btnEntrada.btn.btn-success.btn-(style="width: 100%;", value = 'Entrada') Entrada
                 tr
-                  modal.group 
-                    td
-                      button.btn.btn-success.btn-(style="width: 100%" type='submit', value = 'Entrada', name = 'marca') Entrada
+                  td
+                    button.btnSalida.btn.btn-success.btn-(style="width: 100%;", value = 'Salida') Salida
                 tr
-                  modal.group 
-                    td
-                      button.btn.btn-warning.btn-(style="width: 100%" type='submit', value = 'Salida a Receso', name = 'marca') Salida a Receso 
+                  td
+                    button.btnSalidaReceso.btn.btn-warning.btn-(style="width: 100%;", value = 'Salida a Receso') Salida a Receso 
                 tr
-                  modal.group 
-                    td
-                      button.btn.btn-warning.btn-(style="width: 100%" type='submit', value = 'Entrada de Receso', name = 'marca') Entrada de Receso
+                  td
+                    button.btnEntradaReceso.btn.btn-warning.btn-(style="width: 100%;", value = 'Entrada de Receso') Entrada de Receso
                 tr
-                  modal.group 
-                    td
-                      button.btn.btn-primary.btn-(style="width: 100%" type='submit', value = 'Salida al Almuerzo', name = 'marca') Salida al Almuerzo
+                  td
+                    button.btnSalidaAlmuerzo.btn.btn-primary.btn-(style="width: 100%;", value = 'Salida al Almuerzo') Salida al Almuerzo
                 tr
-                  modal.group 
-                    td
-                      button.btn.btn-primary.btn-(style="width: 100%" type='submit', value = 'Entrada de Almuerzo', name = 'marca') Entrada del Almuerzo
-                tr
-                  modal.group 
-                    td
-                      button.btn.btn-success.btn-(style="width: 100%" type='submit', value = 'Salida', name = 'marca') Salida
+                  td
+                    button.btnEntradaAlmuerzo.btn.btn-primary.btn-(style="width: 100%;", value = 'Entrada de Almuerzo') Entrada del Almuerzo
               .form-group
                 label()
                   button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar

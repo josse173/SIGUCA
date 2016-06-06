@@ -22,7 +22,6 @@ function saveMarca(m, cb, msg){
 		var msjError = "No se pudo contactar con el sistema. \n"+
 		"El error ocurrió al realizar marca y esta no se registró.";
 		//
-		console.log("***"+msg);
 		err ? cb(msjError, msg) : cb(msjOk, msg);
 	});
 }
@@ -48,7 +47,6 @@ function marca (marca, cb) {
 						//
 					return revisarMarca(newMarca.usuario, newMarca,
 						function(msg){
-							console.log("*"+msg);
 							saveMarca(newMarca,cb,msg);
 						});
 				}
@@ -67,7 +65,6 @@ function marca (marca, cb) {
 						//
 					return revisarMarca(newMarca.usuario, newMarca,
 						function(msg){
-							console.log("**"+msg);
 							saveMarca(newMarca,cb,msg);
 						});
 				}
@@ -285,7 +282,6 @@ function addJustIncompleta(_idUser, motivo, informacion, cb){
 		estado:"Incompleto", motivoJust:"otro",
 		motivoOtroJust:motivo},
 		function(err, just){
-			console.log("****"+motivo);
 			if(!err) cb(motivo);
 			else cb("");
 		}

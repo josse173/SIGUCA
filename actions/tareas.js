@@ -13,14 +13,13 @@ var crudJustificaciones = require('../routes/crudJustificaciones');
 
 module.exports = {
     cierreAutomatico : new CronJob({
-        //cronTime: '59 59 * * * 1-5', Lunes a Viernes a las 4:25:59
-        cronTime: '* * * * * *',
-        //cronTime: '00 50 23 * * 0-7',
+        //cronTime: '* * * * * *',
+        cronTime: '00 50 23 * * 0-7',
         onTick: function() {
-            if(!once){
+            //if(!once){
                 crearCierre(moment().unix(), ejecutarCierre);
-            }
-            once = true;
+            //}
+            //once = true;
         },
         start: false,
         timeZone: "America/Costa_Rica"
@@ -118,10 +117,9 @@ function buscarInformacionUsuarioCierre(_idCierre, _idUser, epochMin, epochMax, 
                     )
                 ){
                     //
-                if(marcas.salida){
-                    registroHorasRegulares(_idCierre, _idUser, marcas, tiempoDia, horario);
-                }
-                else if(!marcas.entrada){
+                registroHorasRegulares(_idCierre, _idUser, marcas, tiempoDia, horario);
+                
+                if(!marcas.entrada){
                     //console.log("Omisión de marca de entrada");
                     addJustIncompleta(_idUser, "Omisión de marca de entrada", "");
                     agregarUsuarioACierre(_idCierre, _idUser, {h:-1,m:-1});
@@ -162,24 +160,19 @@ function registroHorasRegulares(_idCierre, _idUser, marcas, tiempoDia, horario){
     console.log(almuerzoT);
     totalJornada = util.ajustarHoras(totalJornada, almuerzoT);
     console.log(totalJornada);
-    console.log(almuerzoT);
+    console.log(recesoT);
     totalJornada = util.ajustarHoras(totalJornada, recesoT);
     console.log(totalJornada);
     console.log(tiempo);
-    var comparaH = util.compararHoras(tiempo.h, tiempo.m, totalJornada.h, totalJornada.m);
-    //agregarUsuarioACierre(_idCierre, _idUser, {h:tiempo.h,m:tiempo.m});
+    var comparaH = util.compararHoras(totalJornada.h, totalJornada.m, tiempo.h, tiempo.m);
+    agregarUsuarioACierre(_idCierre, _idUser, {h:tiempo.h,m:tiempo.m});
     //No importa la hora que salió, lo importante es que cumpla la jornada
-    if(comparaH==-1){
+    if(comparaH==1){
         console.log("Jornada laborada menor que la establecida");
-        /*addJustIncompleta(_idUser, "Jornada laborada menor que la establecida", 
-            "Horas trabajadas: "+ util.horaStr(tiempo.h, tiempo.m)+
-            " - Horas establecidas: "+ util.horaStr(totalJornada.h, totalJornada.m));*/
-    }
-    /*else if(comparaH==1){
-        addJustIncompleta(_idUser, "Jornada laborada mayor que la establecida",
+        addJustIncompleta(_idUser, "Jornada laborada menor que la establecida", 
             "Horas trabajadas: "+ util.horaStr(tiempo.h, tiempo.m)+
             " - Horas establecidas: "+ util.horaStr(totalJornada.h, totalJornada.m));
-}*/
+    }
 }
 
 function agregarUsuarioACierre(_idCierre, _idUser, tiempo){
