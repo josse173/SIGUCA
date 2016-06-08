@@ -9,7 +9,6 @@ module.exports = {
                 if (err)
                     return res.json({error:err});
                 crudHorario.create(nuevoHorario, function(error, horario){
-                    console.log(horario);
                     if (error)
                         return res.json({error:error});
                     crudUsuario.updateUsuario(

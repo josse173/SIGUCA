@@ -181,22 +181,6 @@ function agregarUsuarioACierre(_idUser, tiempo){
         if(err) 
             console.log("Error al crear cierre en la fecha '"+hoy+"' => Mensaje: "+error);
     });
-    /*var hoy = new Date();
-    var query = {
-        "$push":{
-            "usuarios":{
-                usuario: _idUser,
-                tiempo: {
-                    horas:tiempo.h,
-                    minutos:tiempo.m
-                }
-            }
-        }
-    };
-    CierrePersonal.findByIdAndUpdate(_idCierre, query, function (err, cierreActualizado) {
-        if(err) 
-            console.log("Error al actualizar cierre en la fecha '"+hoy+"' => Mensaje: "+error);
-    });*/
 }
 
 function addJustIncompleta(_idUser, motivo, informacion){
