@@ -134,7 +134,7 @@ module.exports = {
       var marcaQuery = {usuario: req.user.id};
       var justQuery = {usuario: req.user.id};
       var cierreQuery = {usuario: req.user.id};
-      var extraQuery = {usuario: req.user.id, tipoSolicitudes:'Extras'};
+      var extraQuery = {usuario: req.user.id, tipoSolicitudes:'Extras', };
       var permisosQuery = {usuario: req.user.id, tipoSolicitudes:'Permisos'};
 
       if(req.body.fechaDesde != '' && req.body.fechaHasta != ''){

@@ -17,6 +17,8 @@ module.exports = {
         cronTime: '00 50 23 * * 0-7',
         onTick: function() {
             //if(!once){
+                var hoy = new Date();
+                console.log("Realizando cierre en la fecha '"+hoy+"' y notificando a usuarios");
                 ejecutarCierre();
             //}
             //once = true;
@@ -40,7 +42,6 @@ function crearCierre(epoch, ejecutar){
 
 function ejecutarCierre(){
     var hoy = new Date();
-    console.log("Realizando cierre en la fecha '"+hoy+"' y notificando a usuarios");
 
     //Fechas para encontrar información del día
     var epochMin = moment();
