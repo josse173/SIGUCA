@@ -24,7 +24,32 @@ block content
                   i.icon-calendar
           td
             button.form-control.btn.btn-success(type='submit', name='filtrar') Filtrar
-
+      br
+      if(cierreUsuarios && cierreUsuarios.length>0)
+        h3 Horas Semanales 
+        table.tableCierres.footable(data-page-navigation=".pagination" data-page-size="5")
+            thead
+              tr
+                th(data-type="numeric" data-sort-initial="descending") Fecha
+                th(data-sort-ignore="true") Tiempo trabajado
+            tbody
+              each cierre, i in cierreUsuarios
+                - var x = JSON.stringify(cierre);
+                - var tiempo ="";
+                - var h =""+cierre.tiempo.horas;
+                - var m =""+cierre.tiempo.minutos;
+                - if(cierre.tiempo.horas<10) h = "0"+h;
+                - if(cierre.tiempo.minutos<10) m = "0"+m;
+                - tiempo = h+":"+m;
+                - if(cierre.tiempo.horas<0 || cierre.tiempo.minutos<0)
+                -   tiempo = "El usuario se ausentó o no marcó salida."
+                tr
+                  td(data-value=cierre.epoch) #{cierre.fecha.str} 
+                  td #{tiempo}
+            tfoot
+              tr
+                td(colspan='10')
+                  .pagination.pagination-centered.hide-if-no-paging
       .col-xs-12
         h3 Marcas
         if(marcas.length != 0)

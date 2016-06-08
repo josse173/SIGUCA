@@ -89,20 +89,7 @@ module.exports = {
         Justificaciones.find({usuario: req.user.id}).exec(function(error, justificaciones) {
           Solicitudes.find({usuario: req.user.id, tipoSolicitudes:'Extras'}).exec(function(error, extras) {
             Solicitudes.find({usuario: req.user.id, tipoSolicitudes:'Permisos'}).exec(function(error, permisos) {
-              var query = [
-              //{"$unwind":"$usuarios"}
-              ];
-              //{"$match":{"usuarios.usuario":req.user.id}},
-              CierrePersonal.aggregate(query, function (err, listaCierre) {
-                var l = [];
-                for(c in listaCierre){
-                  if(JSON.stringify(listaCierre[c].usuarios.usuario)===JSON.stringify(req.user.id)
-                    && listaCierre[c].epoch>=epochMin){
-                    l.push(listaCierre[c]);
-                  }
-                }
-
-
+              CierrePersonal.find({usuario:req.user.id, epoch: {'$gte' : epochMin.unix()}}, function (err, listaCierre) {
                 var supervisor = {departamentos: [1]};
 
                 var arrayMarcas = util.eventosAjuste(marcas,supervisor,"eventosEmpl");
@@ -114,17 +101,16 @@ module.exports = {
                 arrayJust = util.unixTimeToRegularDate(arrayJust, true);
                 arrayExtras = util.unixTimeToRegularDate(arrayExtras, true);
                 arrayPermisos = util.unixTimeToRegularDate(arrayPermisos, true);
-
+                listaCierre = util.unixTimeToRegularDate(listaCierre, true);
 
                 if (error) return res.json(error);
-
                 return res.render('eventos', {
                   title: 'Solicitudes/Justificaciones | SIGUCA',
                   usuario: req.user,
                   justificaciones: arrayJust,
                   extras: arrayExtras,
                   permisos: arrayPermisos,
-                  horas: l,
+                  cierreUsuarios: listaCierre,
                   marcas: marcas
                 });
               });
@@ -147,6 +133,7 @@ module.exports = {
 
       var marcaQuery = {usuario: req.user.id};
       var justQuery = {usuario: req.user.id};
+      var cierreQuery = {usuario: req.user.id};
       var extraQuery = {usuario: req.user.id, tipoSolicitudes:'Extras'};
       var permisosQuery = {usuario: req.user.id, tipoSolicitudes:'Permisos'};
 
@@ -164,27 +151,17 @@ module.exports = {
           "$lt": epochHasta
         }
 
-        marcaQuery.epoch = {"$gte": epochDesde, "$lt": epochHasta};
+        marcaQuery.epoch = fechaCreada;
         justQuery.fechaCreada = fechaCreada;
         extraQuery.fechaCreada = fechaCreada;
-        permisosQuery.fechaCreada = fechaCreada;  
+        permisosQuery.fechaCreada = fechaCreada;
+        cierreQuery.epoch = fechaCreada;
       } 
       Marca.find(marcaQuery).exec(function(error, marcas) {
         Justificaciones.find(justQuery).exec(function(error, justificaciones) {
           Solicitudes.find(extraQuery).exec(function(error, extras) {
             Solicitudes.find(permisosQuery).exec(function(error, permisos) {
-              var query = [
-              //{"$unwind":"$usuarios"},
-              //{"$match":{"usuarios.usuario":req.user.id}},
-              ];
-              CierrePersonal.aggregate(query, function (err, listaCierre) {
-                var l = [];
-                for(c in listaCierre){
-                  if(JSON.stringify(listaCierre[c].usuarios.usuario)===JSON.stringify(req.user.id)){
-                    l.push(listaCierre[c]);
-                  }
-                }
-
+              CierrePersonal.find(cierreQuery, function (err, listaCierre) {
                 var supervisor = {departamentos: [1]};
 
                 var arrayMarcas = util.eventosAjuste(marcas,supervisor,"eventosEmpl");
@@ -196,7 +173,7 @@ module.exports = {
                 arrayJust = util.unixTimeToRegularDate(arrayJust, true);
                 arrayExtras = util.unixTimeToRegularDate(arrayExtras, true);
                 arrayPermisos = util.unixTimeToRegularDate(arrayPermisos, true);
-
+                listaCierre = util.unixTimeToRegularDate(listaCierre, true);
                 if (error) return res.json(error);
                 return res.render('eventos', {
                   title: 'Solicitudes/Justificaciones | SIGUCA',
@@ -204,7 +181,7 @@ module.exports = {
                   justificaciones: arrayJust,
                   extras: arrayExtras,
                   permisos: arrayPermisos,
-                  horas: l,
+                  cierreUsuarios: listaCierre,
                   marcas: marcas
                 });//render
               });//CierrePersonal
@@ -229,7 +206,7 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos,
         Solicitudes.find(permisosQuery).populate(populateQuery).exec(function(error, permisos) {
           if(req.route.path!=='/reportes'){
             return renderFiltro(res, titulo, req.user, departamentos, usuarios, marcas, 
-              justificaciones, extras, permisos, nombreUsuario);
+              justificaciones, extras, permisos, null, nombreUsuario);
           }
           else {
             CierrePersonal.find(cierreQuery).populate("usuario").exec(function(error, cierres) {
@@ -247,7 +224,13 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos,
 
 function renderFiltro(res, titulo, usuario, departamentos, 
   usuarios, marcas, justificaciones, extras, permisos, cierre, nombreUsuario){
-  var resumen = [];
+  var cList = [];
+  if(cierre){
+    cList = util.unixTimeToRegularDate(cierre.filter(
+      function(m){
+        return m.usuario;
+      }), true);
+  }
   var filtro = {
     title: titulo,
     usuario: usuario,
@@ -263,9 +246,7 @@ function renderFiltro(res, titulo, usuario, departamentos,
     permisos: util.unixTimeToRegularDate(permisos.filter(function(m){
       return m.usuario;
     }), true),
-    cierreUsuarios: util.unixTimeToRegularDate(cierre.filter(function(m){
-      return m.usuario;
-    }), true),
+    cierreUsuarios: cList,
     usuarios: usuarios,
     departamentos: departamentos,
     nombreUsuario: nombreUsuario
