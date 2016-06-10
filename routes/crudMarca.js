@@ -189,7 +189,11 @@ exports.deleteMarca = function(id, cb){
 		}
 	});
 }
-
+exports.find = function(query, cb){
+	Marca.find(query, function (err, marcas) {
+		cb(err, marcas);
+	});
+}
 exports.rfidReader = function(codTarjeta, tipoMarca, cb) {
 	Usuario.findOne({codTarjeta: codTarjeta}, function (err, usuario) {
 		var tipo;

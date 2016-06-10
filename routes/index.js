@@ -231,6 +231,40 @@ module.exports = function(app, io) {
             });
     });
 
+    /*
+    *  Traer marcas
+    */
+    app.post('/marca/get', autentificado, function (req, res) {
+        if(req.body.date && req.body.date.split("/").length == 3){
+            var date = req.body.date.split("/");
+            var epochGte = moment();
+            epochGte.year(date[2]).month(date[1]-1).date(date[0]);
+            epochGte.hour(0).minutes(0).seconds(0);
+            var epochLte = moment();
+            epochLte.year(date[2]).month(date[1]-1).date(date[0]);
+            epochLte.hour(23).minutes(59).seconds(59);
+            crudMarca.find({
+                usuario:req.user.id,
+                epoch:{
+                "$gte":epochGte.unix(),
+                "$lte":epochLte.unix()
+            }},function(msj, marcas){
+                var m ="ok";
+                if(msj) m = msj;
+                var mcs = [];
+                var ml = util.unixTimeToRegularDate(marcas);
+                for(x in ml){
+                    var obj = {};
+                    obj.fecha = ml[x].fecha;
+                    obj.tipoMarca = ml[x].tipoMarca;
+                    mcs.push(obj);
+                }
+                res.json({result:m, marcas:mcs});
+            });
+        }
+        else res.json({result:"error", marcas:[]});
+    });
+
 
     /*
     *  Elimina una marca en específico si fue creada hace menos de 10 minutos
@@ -609,11 +643,79 @@ module.exports = function(app, io) {
     });
 
     io.sockets.on('connection', function(socket){
+
         socket.on('connected', function (){
             var date = new Date();
             var epoch = (date.getTime() - date.getMilliseconds())/1000;
             socket.emit('connected', epoch);
         });
+
+        /* Recibe la orden de lista y filtra cierres por tipo de usuario
+        socket.on('listar', function (departamentoId){
+            var option = departamentoId.split(',');
+            if(option[0] == "Supervisor")
+                listarSupervisor(departamentoId);
+            else
+                listarEmpleado(departamentoId);
+        });
+
+
+         //Filtra cierres por departamento
+        function listarSupervisor(departamentoId){
+            var option = departamentoId.split(',');
+            if(option[1] == "todos"){
+                var or = [];
+                for (var i = 2; i < option.length; i++) {
+                    or.push({departamento:option[i]});
+                };
+                var queryOr = {
+                    "tipo": "General",
+                    "$or": or
+                }
+                Cierre.find(queryOr).exec(function(err, cierre) {
+                    if (err) console.log('error al cargar los cierres: ' + err);
+                    else {
+                        socket.emit('listaCierre', cierre);
+                    }
+                });
+            } else {
+                Cierre.find({tipo: "General", departamento: option[1]}).exec(function(){
+                    if (err) console.log('error al cargar los cierres: ' + err);
+                    else {
+                        socket.emit('listaCierre', cierre);
+                    }
+                });
+            }
+        }
+        //Filtra cierres por evento (justificaciones, solicitudes y marcas)
+        function listarEmpleado(departamentoId){
+            var option = departamentoId.split(',');
+            Cierre.find({usuario: option[2]}).exec(function(err, cierre) {
+                if (err) console.log('error al cargar los cierres: ' + err);
+                else {
+                    //console.log('consulta sin errores');
+                    var result = {
+                        cierre: cierre
+                    }
+                    if(option[1] == "todos"){
+                        result.tipo = "general";
+                    } else {
+                        if(option[1] == "justificaciones")
+                            result.tipo = "justificaciones";
+                        else {
+                            if(option[1] == "solicitudes")
+                                result.tipo = "solicitudes";
+                            else
+                                result.tipo = "marcas";
+                        }
+                    }
+                    socket.emit('listaCierreEmpleado', result);  
+                }
+            });
+        }
+        */
+
+
     });
 
 };

@@ -11,7 +11,9 @@
     // });
 
     // $('#timepicker input').timepicker();
-
+    jQuery('#date_range_marca').datetimepicker({
+        format: 'd/m/Y'
+    });
     jQuery('#date_timepicker_start').datetimepicker({
         format: 'd/m/Y H:i'
     });

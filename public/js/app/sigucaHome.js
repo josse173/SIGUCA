@@ -10,13 +10,36 @@ socket.on('connected', function (epoch) {
     updateHorasTrabajadas();
 });
 
+$('#btnIr').click(function(){
+    $.ajax({
+        url: "/marca/get",
+        type: 'POST',
+        dataType : "json",
+        data: {"date":$('#date_range_marca').val()},
+        success: function(data) {
+            $("#marcasBody").html("");
+            if(data.result!="error"){
+                for(m in data.marcas){
+                   $("#marcasBody").append($("<tr></tr>")
+                    .append(
+                        $("<td></td>").text(data.marcas[m].tipoMarca))
+                    .append(
+                        $("<td></td>").text(data.marcas[m].fecha.hora)));
+                }
+            }
+        },
+        error: function(){
+            alert("Error.");
+        }
+    });
+});
+//
 
 function selectValue(){
     var value = $('#selectFiltro').val();
-    // alert(value);
     socket.emit('listar', value);
 }
-        
+
 function clock(epoch){
     setInterval(function(){
         var currentTime = new Date(0);

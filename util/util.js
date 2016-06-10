@@ -20,6 +20,7 @@ module.exports = {
             if("epoch" in list[x]){
                 var epochTime = list[x].epoch;
                 this.epochToStr(list[x], epochTime, detail);
+                //console.log(list[x].fecha);
             }
             if("fechaJustificada" in list[x]){
                 var epochTime = list[x].fechaJustificada;
@@ -57,6 +58,7 @@ module.exports = {
             if (detail){
                 f.str = f.str+", "+this.ajustarCero(f.hora)+":"+this.ajustarCero(f.minutos);
             }
+            f.hora = ""+this.ajustarCero(f.hora)+":"+this.ajustarCero(f.minutos);
             return f;
         }
 

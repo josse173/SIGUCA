@@ -51,11 +51,8 @@
                     td(data-value=marca.epoch) #{marca.fecha}
                       
   div#calSupervisor
-    button#previous.btn.btn-default
-      i.icon.icon-chevron-left
-    button#next.btn.btn-default 
-      i.icon.icon-chevron-right
-    div#cal
+    input#date_range_marca.form-control(type='text')
+    button#btnIr Ir
 
   .marca
     div.marcasTable
@@ -72,7 +69,7 @@
             tr
               th(data-sort-ignore="true") Tipo
               th(data-sort-ignore="true") Hora
-          tbody.marcasDetalle
+          tbody.marcasDetalle#marcasBody
             each marca, i in marcas
               tr
                 td #{marca.tipoMarca}

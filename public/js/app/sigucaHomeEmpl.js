@@ -3,13 +3,6 @@ var socket = io.connect('http://siguca.greencore.int');
 //REVISAR IP
 socket.emit('connected');
 
-//Si estamos conectados, muestra el log y cambia el mensaje
-socket.on('connected', function (epoch) {
-    selectValue();
-    clock(epoch);
-    updateHorasTrabajadas();
-});
-
 
 function selectValue(){
     var value = $('#selectFiltro').val();
@@ -61,6 +54,33 @@ function updateHorasTrabajadas(){
     });
 }
 
+
+
+$('#btnIr').click(function(){
+    $.ajax({
+        url: "/marca/get",
+        type: 'POST',
+        dataType : "json",
+        data: {"date":$('#date_range_marca').val()},
+        success: function(data) {
+            $("#marcasBody").html("");
+            if(data.result!="error"){
+                for(m in data.marcas){
+                   $("#marcasBody").append($("<tr></tr>")
+                    .append(
+                        $("<td></td>").text(data.marcas[m].tipoMarca))
+                    .append(
+                        $("<td></td>").text(data.marcas[m].fecha.hora)));
+                }
+            }
+        },
+        error: function(){
+            alert("Error.");
+        }
+    });
+});
+//
+
 $('#selectFiltro').change(function(){
     $('#cal').empty();
     selectValue();
@@ -76,10 +96,50 @@ $('#selectMotivoJust').change(function (){
     else $("#motivoOtroJust").attr('disabled','disabled');
 });
 
+//Si estamos conectados, muestra el log y cambia el mensaje
+socket.on('connected', function (epoch) {
+    selectValue();
+    clock(epoch);
+    updateHorasTrabajadas();
+});
+
 //Si nos desconectamos, muestra el log y cambia el mensaje.
 socket.on('disconnect', function () {
     console.log('Desconectado!');
 });
+
+
+/*//Se recibe result de la consulta
+
+socket.on('listaCierre', function(cierre){
+    alert(cierre);
+    var stats = {};
+    for (var d in cierre)
+        stats[cierre[d].epoch] = cierre[d].estado;
+    calendario(stats, [2, 5, 10, 15, 20]);
+});
+socket.on('listaCierreEmpleado', function(result){
+    var stats = {};
+    if(result.tipo == "general")
+        for (var d in result.cierre)
+            stats[result.cierre[d].epoch] = result.cierre[d].estado;
+        else{
+            if(result.tipo == "justificaciones")
+                for (var d in result.cierre)
+                    stats[result.cierre[d].epoch] = result.cierre[d].justificaci
+                else{
+                    if(result.tipo == "solicitudes")
+                        for (var d in result.cierre)
+                            stats[result.cierre[d].epoch] = result.cierre[d].sol
+                        else
+                            for (var d in result.cierre)
+                                stats[result.cierre[d].epoch] = result.cierre[d]
+                        }
+                    }
+        $(".clock").text(currentTimeString);
+    }, 1000 );
+}
+*/
 
 
 function calendario(stats, array){
