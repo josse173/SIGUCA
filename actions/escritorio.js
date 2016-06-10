@@ -10,6 +10,7 @@ var Cierre = require('../models/Cierre');
 var CierrePersonal = require('../models/CierrePersonal');
 var util = require('../util/util');
 var crud = require('../routes/crud');
+var crudUsuario = require('../routes/crudUsuario');
 
 module.exports = {
 	escritorio : function (req, res) {
@@ -20,72 +21,78 @@ module.exports = {
 
 			/*
 			*/
-			var queryInUsers = {
-				usuario:{
+			var querrySupervisores = {
+				_id:{
 					"$ne":req.user.id
 				},
-				estado:'Pendiente'
-			}; 
+				tipo:"Supervisor"
+			};
+			var usuarioQuery = {tipo:{'$nin': ['Administrador', "Supervisor"]}};
+			crudUsuario.get(querrySupervisores, function (err, supervisores){
+				crudUsuario.getEmpleadoPorSupervisor(req.user.id, usuarioQuery, 
+					function(error, usuarios, departamentos){
+						var queryInUsers = {
+							usuario:{"$in":util.getIdsList(usuarios.concat(supervisores))},
+							estado:'Pendiente'
+						}; 
+						Justificaciones.find(queryInUsers).populate('usuario').exec(function(error, justCount) {
+							Solicitudes.find(queryInUsers).populate('usuario').exec(function(error, soliCount) {
+								Marca.find({usuario: req.user.id, epoch:{"$gte": epochGte.unix()}},{_id:0,tipoMarca:1,epoch:1}).exec(function(error, marcas){
+									Justificaciones.find({usuario: req.user.id, estado:'Incompleto'}).populate('usuario').exec(function(error, justificaciones) {
+										Solicitudes.find({estado:'Pendiente'}).populate('usuario').exec(function(error, solicitudes) { 
+											Usuario.find({_id:req.user.id},{_id:0,departamentos: 1}).populate('departamentos.departamento').exec(function(error, supervisor){
+												CierrePersonal.find({epoch:{"$gte": epochYesterday.unix()}}).exec(function(err, cierres) {
+													var cierreUsuarios = [];
+													if(cierres && cierres.length>0)
+														cierreUsuarios = cierres[0];
+												//result.forEach(function(supervisor){
+													var sup = {departamentos: [1]};
+													var arrayMarcas = util.eventosAjuste(marcas, sup, "escritorioEmpl");
 
-			Justificaciones.find(queryInUsers).populate('usuario').exec(function(error, justCount) {
-				console.log(justCount);
-				Solicitudes.find(queryInUsers).populate('usuario').exec(function(error, soliCount) {  
-					console.log("*****************************");
-					console.log(soliCount);   
-					Marca.find({usuario: req.user.id, epoch:{"$gte": epochGte.unix()}},{_id:0,tipoMarca:1,epoch:1}).exec(function(error, marcas){
-						Justificaciones.find({usuario: req.user.id, estado:'Incompleto'}).populate('usuario').exec(function(error, justificaciones) {
-							Solicitudes.find({estado:'Pendiente'}).populate('usuario').exec(function(error, solicitudes) { 
-								Usuario.find({_id:req.user.id},{_id:0,departamentos: 1}).populate('departamentos.departamento').exec(function(error, supervisor){
-									CierrePersonal.find({epoch:{"$gte": epochYesterday.unix()}}).exec(function(err, cierres) {
-										var cierreUsuarios = [];
-										if(cierres && cierres.length>0)
-											cierreUsuarios = cierres[0];
-									//result.forEach(function(supervisor){
-										var sup = {departamentos: [1]};
-										var arrayMarcas = util.eventosAjuste(marcas, sup, "escritorioEmpl");
+													var array = [];
+													for(var y = 0; y < req.user.departamentos.length; y++){
+														array.push(req.user.departamentos[y].departamento);
+													}
+													just = util.eventosAjuste(justificaciones, req.user, "count");
+													soli = util.eventosAjuste(solicitudes, req.user, "count");
 
-										var array = [];
-										for(var y = 0; y < req.user.departamentos.length; y++){
-											array.push(req.user.departamentos[y].departamento);
-										}
-										just = util.eventosAjuste(justificaciones, req.user, "count");
-										soli = util.eventosAjuste(solicitudes, req.user, "count");
-
-										/*var horasSemanales;
-										(epochGte.day() === 1) ? horasSemanales = 0 : (cierres.length == 0) ? horasSemanales = '' : horasSemanales = cierres[0].horasSemanales;
-										*/
-										var arrayJust = util.unixTimeToRegularDate(justificaciones);
-										if (error) return res.json(error);
-										//console.log(cierreUsuarios);
-										return res.render('escritorio', {
-											title: 'Escritorio Supervisor | SIGUCA',
-											departamentos: supervisor[0].departamentos, 
-											justificaciones: arrayJust, 
-											solicitudes: soli,
-											justCount: justCount.length, 
-											soliCount: soliCount.length,
-											todos: array,
-											usuario: req.user,
-											marcas: marcas,
-											cierreUsuarios: cierreUsuarios,
-											//horasSemanales: horasSemanales
-										});
-		                               // });//Supervisor
-		                            });//Horas Semanales
-		                        });//Departamentos    
-		                    });//solicitudes
-		                });//Justificaciones
-		            });//Marcas
-                });//solicitudes
-            });//Justificaciones
-			//
-		} else {
-			req.logout();
-			res.redirect('/');
-		}
-	},
-	escritorioEmpl : function (req, res) {
-		if (req.session.name == "Empleado") {
+													/*var horasSemanales;
+													(epochGte.day() === 1) ? horasSemanales = 0 : (cierres.length == 0) ? horasSemanales = '' : horasSemanales = cierres[0].horasSemanales;
+													*/
+													var arrayJust = util.unixTimeToRegularDate(justificaciones);
+													if (error) return res.json(error);
+													//console.log(cierreUsuarios);
+													return res.render('escritorio', {
+														title: 'Escritorio Supervisor | SIGUCA',
+														departamentos: supervisor[0].departamentos, 
+														justificaciones: arrayJust, 
+														solicitudes: soli,
+														justCount: justCount.length, 
+														soliCount: soliCount.length,
+														todos: array,
+														usuario: req.user,
+														marcas: marcas,
+														cierreUsuarios: cierreUsuarios,
+														//horasSemanales: horasSemanales
+													});
+					                               // });//Supervisor
+					                            });//Horas Semanales
+					                        });//Departamentos    
+					                    });//solicitudes
+					                });//Justificaciones
+					            });//Marcas
+			                });//solicitudes
+			            });//Justificaciones
+			        });//Justificaciones
+			    });//Justificaciones
+				//
+			} else {
+				req.logout();
+				res.redirect('/');
+			}
+		},
+		escritorioEmpl : function (req, res) {
+			if (req.session.name == "Empleado") {
         	//Se toma la hora actual
         	var epochGte = moment();
         	epochGte.hours(0);
