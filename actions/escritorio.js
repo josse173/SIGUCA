@@ -27,8 +27,11 @@ module.exports = {
 				estado:'Pendiente'
 			}; 
 
-			Justificaciones.count(queryInUsers).exec(function(error, justCount) {
-				Solicitudes.count(queryInUsers).exec(function(error, soliCount) {     
+			Justificaciones.find(queryInUsers).exec(function(error, justCount) {
+				console.log(justCount);
+				Solicitudes.find(queryInUsers).exec(function(error, soliCount) {  
+					console.log("*****************************");
+					console.log(soliCount);   
 					Marca.find({usuario: req.user.id, epoch:{"$gte": epochGte.unix()}},{_id:0,tipoMarca:1,epoch:1}).exec(function(error, marcas){
 						Justificaciones.find({usuario: req.user.id, estado:'Incompleto'}).populate('usuario').exec(function(error, justificaciones) {
 							Solicitudes.find({estado:'Pendiente'}).populate('usuario').exec(function(error, solicitudes) { 
@@ -59,8 +62,8 @@ module.exports = {
 											departamentos: supervisor[0].departamentos, 
 											justificaciones: arrayJust, 
 											solicitudes: soli,
-											justCount: justCount, 
-											soliCount: soliCount,
+											justCount: justCount.length, 
+											soliCount: soliCount.length,
 											todos: array,
 											usuario: req.user,
 											marcas: marcas,
