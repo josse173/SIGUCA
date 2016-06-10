@@ -27,9 +27,9 @@ module.exports = {
 				estado:'Pendiente'
 			}; 
 
-			Justificaciones.find(queryInUsers).exec(function(error, justCount) {
+			Justificaciones.find(queryInUsers).populate('usuario').exec(function(error, justCount) {
 				console.log(justCount);
-				Solicitudes.find(queryInUsers).exec(function(error, soliCount) {  
+				Solicitudes.find(queryInUsers).populate('usuario').exec(function(error, soliCount) {  
 					console.log("*****************************");
 					console.log(soliCount);   
 					Marca.find({usuario: req.user.id, epoch:{"$gte": epochGte.unix()}},{_id:0,tipoMarca:1,epoch:1}).exec(function(error, marcas){
