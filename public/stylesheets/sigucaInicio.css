@@ -46,6 +46,7 @@ input:not([type=submit]) {
 	background:rgb(77, 178, 77);
 	color:#fff;
 	font-weight: bold;	
+	font-family: 'Ubuntu', sans-serif;
 }
 .headerFont{		
         font-family: 'Ubuntu', sans-serif;
