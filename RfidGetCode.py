@@ -1,5 +1,14 @@
-# coding=utf-8
+#coding=utf-8
 #GreenCore Solutions
+#AGPL V.3
+#This script is a prototype to catch the ID through a RFID module connected  to a Raspberry Pi 2 B v1
+#Currently it works through a serial connection with a Raspberry ,using a extra module RMD 6300,allowing to catch id from 
+#rfid-cards, going deeper on code , it parse the id received by the signal,discarding the first 
+#four numbers of the rfid  and the  2 at the final of the line to get exactly the number to apply the conversion to Decimal 
+#and get the coincidence with the code in the card , that will be used to link the attribute of id of the employees with code 
+#the idea is   send the code catched  to the node js application through a child process or sockets(still on process, not exist a link yet between node and the script) and make a
+# search on the database ,seeking for any coincidence with the code ,to allow make automatic login with the code of the employee.More 
+#More  Details about, below on code.  
 
 import time 
 import os, sys
@@ -45,7 +54,7 @@ def mainMethod():
 			splitID = list(id)
 			ParseId = [splitID[4],splitID[5],splitID[6],splitID[7],splitID[8],splitID[9]]
 			result = ''.join(ParseId) 
-			#uncomment this line below , if u want to know the hex num generated.(not neccesary for funcionality)
+			#uncomment this line below , if you want to know the hex num generated.(not neccesary for funcionality)
 			#print "The Hexadecimal parsed code is:"+result
 			
 			#dec  has the funtion for convert hex to dec
