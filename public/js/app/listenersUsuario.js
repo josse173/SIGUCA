@@ -71,6 +71,9 @@ $.each([".btnEntrada",".btnSalida",
         });
 });
 
+
+
+
 $("#solicitud-extra-form").submit(function(e){
     e.preventDefault();  
     $.ajax({

@@ -1,5 +1,4 @@
 
-
 input:not([type=submit]) {
 	border: 1px solid white; 
 	-webkit-box-shadow: 
@@ -46,62 +45,10 @@ input:not([type=submit]) {
 	background:rgb(77, 178, 77);
 	color:#fff;
 	font-weight: bold;	
-	font-family: 'Ubuntu', sans-serif;
 }
 .headerFont{		
         font-family: 'Ubuntu', sans-serif;
 	font-weight: bold;	
-}
-
-/**Extendido para las columnas xs-offset de bootstrap**/
-.col-xs-offset-12 {
-    margin-left: 100%;
-}
-.col-xs-offset-11 {
-    margin-left: 91.66666666666666%;
-}
-.col-xs-offset-10 {
-    margin-left: 83.33333333333334%;
-}
-.col-xs-offset-9 {
-    margin-left: 75%;
-}
-.col-xs-offset-8 {
-    margin-left: 66.66666666666666%;
-}
-.col-xs-offset-7 {
-    margin-left: 58.333333333333336%;
-}
-.col-xs-offset-6 {
-    margin-left: 50%;
-}
-.col-xs-offset-5 {
-    margin-left: 41.66666666666667%;
-}
-.col-xs-offset-4 {
-    margin-left: 28%;
-    margin-right: 28%;  
-}
-.col-xs-offset-3 {
-    margin-left: 25%;
-}
-.col-xs-offset-2 {
-    margin-left: 16.666666666666664%;
-}
-.col-xs-offset-1 {
-    margin-left: 8.333333333333332%;
-}
-.col-xs-offset-0 {
-    margin-left: 0;
-}
-
-/* Ensure that all of the zero offsets are available - recent SASS version did not include .col-sm-offset-0 */
-@media (min-width: 768px) {
-    .col-sm-offset-0,
-    .col-md-offset-0,
-    .col-lg-offset-0 {
-        margin-left: 0;
-    }
 }
 
 
@@ -119,3 +66,4 @@ input:not([type=submit]) {
 #mensajeMarca {
 	z-index: 1001 !important;
 }
+

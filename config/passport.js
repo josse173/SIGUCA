@@ -5,6 +5,7 @@
 var mongoose = require('mongoose'),
     LocalStrategy = require('passport-local').Strategy,
     Usuario = require('../models/Usuario');
+var flash = require('connect-flash');
 
 module.exports = function (passport, config) {
 
@@ -23,17 +24,19 @@ module.exports = function (passport, config) {
   passport.use('login', new LocalStrategy({
         usernameField : 'username',
         passwordField : 'password',
-        passReqToCallback : true
+        passReqToCallback : true,
+        failureFlash : 'Invalid user or password'
     },
     function(req, username, password, done) {
 	//Valida el usuario y la contraseña de logueo
       Usuario.findOne({ 'username': username }, function (err, user) {
         if (err) { return done(err) }
         if (!user) {
-          return done(null, false, { message: 'Usuario desconocido.' })
+          return done(null, false, { messages: 'Usuario desconocido.' }) 
+          console.log("Usuario desconocido");
         }
         if (!user.validPassword(password)) {
-          return done(null, false, { message: 'Contraseña inválida.' })
+          return done(null, false, { messages: 'Contraseña inválida.' })
         }
         return done(null, user)
       });

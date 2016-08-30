@@ -1,20 +1,20 @@
 .col-xs-8
-  h3 #{usuario.nombre} #{usuario.apellido1}
+  h4.text-center.wellW.well.headerFont.colorBorder #{usuario.nombre} #{usuario.apellido1}
   br
   div.marcaResponsive
-    .col-xs-4
-      h3  Marca Mediante el Sistema
+    .col-xs-6
+      h4.headerFont  Marca Mediante el Sistema
       div#contBotones
         div          
          button.marcaResponsive.btn.btn-success(name='marcar', onclick= "changeElemt('marca')", data-toggle="modal" data-target="#addMarcaResponsive" value=usuario._id) Realizar Marca
-    div.marcasTable
-      div
-      h3 Registro de Marcas
-      div
-        label Hora oficial 
-          span.clock
-        label Tiempo trabajado 
-          span.clockHorasTrab
+    div.col-md-offset-8.marcasTable.wellW.well
+      div.marcasTable
+        h4.headerFont Registro de Marcas
+          label Hora oficial 
+            span.clock
+          label Tiempo trabajado 
+            span.clockHorasTrab
+
       br
       div
         table#tablaMarcas.footable
@@ -49,21 +49,18 @@
                   tr
                     td Salida
                     td(data-value=marca.epoch) #{marca.fecha}
-                      
-  div#calSupervisor
-    input#date_range_marca.form-control(type='text')
-    button#btnIr Ir
-
-  .marca
-    div.marcasTable
-      h3 Registro de Marcas
+  br 
+  br
+  .marca.text-center.col-md-offset-2.col-lg-offset-4.col-xs-4x
+    div.marcasTable.wellW.col-md-offset-1
+      h4.headerFont Registro de Marcas
       div
         label Hora oficial 
           span.clock
         label Tiempo trabajado 
           span.clockHorasTrab
       br
-      div
+      div.col-md-offset-1
         table#tablaMarcas.footable
           thead
             tr
@@ -74,13 +71,59 @@
               tr
                 td #{marca.tipoMarca}
                 td #{marca.fecha}
+  div.clearfix
+  br
+  div.container-fluid.col-xs-4.hideDisplay
+    div.container-fluid.label.headerFont.panel.panel-success.col-md-offset-3
+       .panel-heading
+        .panel-title Cantidad Trabajada en fecha consultada:
+       .panel-body
+        button.close#cerrarPanel(type='button') ×
+        .text-center.bigFont.span.qwer   
+  div#calSupervisor.wellW.well.container-fluid
+    div.marcasTable
+    label.text-center
+      |Calendario para consulta de horas trabajadas en Fechas específicas
+    input#date_range_marca.form-control(type='text')
+    button#btnIr.btn-primary    Ir      
+
+ .col-xs-4
+  .marca
+    h4.headerFont  Marca Mediante el Sistema
+    div#contBotones
+      div           
+       button#btn-marca.btn.btn-success(name='marcar', onclick= "changeElemt('marca')", data-toggle="modal" data-target="#addMarca" value=usuario._id) Realizar Marca
+
+  if(usuario.tipo == 'Supervisor')
+    h4.headerFont Pendientes de revisar 
+    ul.list-group
+      li.list-group-item
+        a(href='/gestionarEventos')
+          span.badge #{soliCount}
+          |   Solicitudes
+      li.list-group-item
+        a(href='/gestionarEventos')
+          span.badge #{justCount} 
+          |   Justificaciones
+
+  h4.headerFont Acciones 
+  ul.list-group
+    li.list-group-item
+      a(data-toggle="modal" data-target="#horaExtra")
+        | Solicitud de hora extraordinaria
+    li.list-group-item
+      a(data-toggle="modal" data-target="#permiso")
+        | Solicitud de permiso anticipado
+    li.list-group-item
+      a(data-toggle="modal" data-target="#addJustificacion")
+        | Justificaciones
   br
   .col-xs-4
-    div.justTable
+    div.justTable.table-responsive
       div
-      h3 Justificaciones pendientes de detalle
+      h4.headerFont Justificaciones pendientes de detalle
       div
-        table#tablaJust.footable
+        table#tablaJust.footable(data-page-navigation=".pagination" data-page-size="4" )
           thead
             tr
               th(data-sort-ignore="true" data-type="numeric" ) Fecha creada
@@ -94,38 +137,11 @@
                 td #{just.fechaJust.str}
                 td #{just.motivo}
                 td #{just.informacion}
-.col-xs-4
-  .marca
-    h3  Marca Mediante el Sistema
-    div#contBotones
-      div           
-       button#btn-marca.btn.btn-success(name='marcar', onclick= "changeElemt('marca')", data-toggle="modal" data-target="#addMarca" value=usuario._id) Realizar Marca
-
-  if(usuario.tipo == 'Supervisor')
-    h3 Pendientes de revisar 
-    ul.list-group
-      li.list-group-item
-        a(href='/gestionarEventos')
-          span.badge #{soliCount}
-          |   Solicitudes
-      li.list-group-item
-        a(href='/gestionarEventos')
-          span.badge #{justCount} 
-          |   Justificaciones
-
-  h3 Acciones 
-  ul.list-group
-    li.list-group-item
-      a(data-toggle="modal" data-target="#horaExtra")
-        | Solicitud de hora extraordinaria
-    li.list-group-item
-      a(data-toggle="modal" data-target="#permiso")
-        | Solicitud de permiso anticipado
-    li.list-group-item
-      a(data-toggle="modal" data-target="#addJustificacion")
-        | Justificaciones
-
-#mensajeMarca.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+          tfoot
+            tr
+              td(colspan='8')
+                .pagination.pagination-centered.hide-if-no-paging 
+#mensajeMarca.modal.fade
     .modal-dialog
         .modal-content
           .modal-header
@@ -317,3 +333,5 @@
                  
           button#btn-just.btn.btn-success(type='submit') Enviar
           button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
+
+  

@@ -1,0 +1,100 @@
+.subwell{
+        background:rgb(77, 178, 77);
+        color:#fff;
+        font-weight: bold;
+      
+        
+}
+.wellW{
+        background:rgb(255,255,255);
+        color:black;
+        font-weight: bold;
+        border-radius: 20px;
+
+}
+
+.headerFont{            
+        font-family: 'Ubuntu', sans-serif;
+        font-weight: bold;      
+}
+.font{
+        font-family: 'Ubuntu', sans-serif;
+
+}
+
+.mainWell{
+	border: 6px solid black;	
+	border-radius: 5px;
+}
+
+.colorBorder{
+        border-color:rgb(37,244,61);
+        border-radius: 10%;
+        border: 5px ;
+
+}
+.bigFont{
+        color: black;
+        font-size: 200%;
+}
+
+
+.hideDisplay{
+        display: none;        
+}
+
+.footerEnd{
+    position: fixed;
+    text-align: center ;
+    font-size: 16px ;
+    font-family: verdana ;
+    width: 600px ;
+    height: 50px ;
+    background-color: #f6f6f6 ;
+        }
+
+  .square { 
+    border: 5px solid red;
+    position: relative;
+    text-align: center;
+    width: 50%;
+  }
+
+  .square:after {
+    content: "";
+    display: block;
+    padding-bottom: 100%;
+  }
+
+  .contentx {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    
+    font-size: 2em;
+    padding-top: 20%;
+  }
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+body {
+    margin: 0 0 100px; /* bottom = footer height */
+}
+footer {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 100px;
+    width: 100%;
+}
+
+.footerStyle{
+    background-color:rgba(255,255,255,0.3);
+    color: rgb(0,0,0);
+    margin-bottom: 20px;
+    margin-top: 20px;
+    font-family: 'Ubuntu', sans-serif;
+
+}

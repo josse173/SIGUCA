@@ -19,8 +19,7 @@ html
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
 
     //Style sheets used
-    
-    <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet"> 
     link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
     link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
     link(rel='stylesheet', href='/stylesheets/bootstrap-theme.min.css')
@@ -32,8 +31,10 @@ html
     link(rel='stylesheet', href='/stylesheets/bootstrap-select.min.css')
     link(rel='stylesheet', href='/stylesheets/jquery.datetimepicker.css')
     //
-      link(rel='stylesheet', href='/stylesheets/bootstrap-datepicker.min.css')
+    link(rel='stylesheet', href='/stylesheets/bootstrap-datepicker.min.css')
     link(rel='stylesheet', href='/stylesheets/bootstrap-timepicker.min.css')
+    link(rel='stylesheet', href='/stylesheets/sigucaFont.css')
+ 
  
     title SIGUCA
 
@@ -56,8 +57,7 @@ html
               span.icon-bar
               span.icon-bar
           span#barLogo
-            img(src='/images/logo-siguca.png',  href="/Ayuda")#sigucaLogo
-            img(src='/images/logo-greencore.png',  href="/Ayuda")#sigucaLogo
+            img(src='/images/GreenCore.png' height="50" width="200",  href="/Ayuda")#sigucaLogo
       .collapse.navbar-collapse.navbar-ex1-collapse
           ul.nav.navbar-nav
           ul.nav.navbar-nav.navbar-right
@@ -102,14 +102,20 @@ html
                   li
                     a(href='/logout')
                       i.icon-off.icon-large     
-                      |&nbsp;Cerrar Sessión  
+                      |&nbsp;Cerrar Sessión 
+                      
+    footer
+      div.footerStyle
+        p.text-center GreenCore Solutions SRL, San José, Costa Rica.          
+          img(src='/images/logo-greencore.png',  href="/Ayuda")#sigucaLogo
+          img(src='/images/logo-siguca.png',  href="/Ayuda")#sigucaLogo
     block content
 
     script(src="/js/components/jquery-2.0.3.min.js")
     script(src="/js/components/bootstrap.min.js")
     script(src='/js/components/respond-min.js')  
     //
-      script(src="/js/components/bootstrap-datepicker.min.js")
+    script(src="/js/components/bootstrap-datepicker.min.js")
     script(src="/js/components/bootstrap-timepicker.min.js")
     script(src="/js/components/bootstrap-select.min.js")
     script(src="/js/components/footable.js")

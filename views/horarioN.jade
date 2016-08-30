@@ -34,6 +34,7 @@ block content
               td
                 button.btn.btn-default(data-toggle="modal" data-target="#editHorario" value=horario.id)
                   i.icon-pencil.icon-large.i-success
+
               td
                 button.horarioDelete.btn.btn-default(value=horario.nombre+','+horario.id)
                   i.icon-trash.icon-large.i-danger
@@ -88,6 +89,7 @@ block content
                         i.icon-time
                    
                 button.btn.btn-success(type='submit') Actualizar
+                alertify.myAlert("Browser dialogs made easy!")
                 button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
 
 block sigucaJS

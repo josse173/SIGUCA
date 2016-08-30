@@ -8,7 +8,26 @@ socket.on('connected', function (epoch) {
     selectValue();
     clock(epoch);
     updateHorasTrabajadas();
+    
 });
+
+
+/*
+ $("#btnIr").click(function(){
+    $.ajax({
+        url: "/marca/get",
+        type: 'POST',
+        dataType : "json",
+        data: {"date":$('#date_range_marca').val()},
+        success: function(data) {
+            
+        }//fin
+        error: function(){
+            alert("Error.");
+        }    
+});
+    */
+
 
 $('#btnIr').click(function(){
     $.ajax({
@@ -25,15 +44,99 @@ $('#btnIr').click(function(){
                         $("<td></td>").text(data.marcas[m].tipoMarca))
                     .append(
                         $("<td></td>").text(data.marcas[m].fecha.hora)));
-                }
+               }               
+            }
+            $(".hideDisplay").css("display","inline-flex");
+            $(".qwer").html("");
+            if(data.result!="error"){
+                for(m in data.marcas){
+                    if(data.marcas[m].tipoMarca=='Entrada'){
+                        var tiempoEntrada = data.marcas[m].fecha.hora
+                    }
+                    if(data.marcas[m].tipoMarca=='Salida'){
+                        var tiempoSalida = data.marcas[m].fecha.hora
+                    }
+                    if(data.marcas[m].tipoMarca=='Salida a Receso'){
+                        var tiempoSalidaReceso = data.marcas[m].fecha.hora
+                    }
+                    if(data.marcas[m].tipoMarca=='Entrada de Receso'){
+                        var tiempoEntradaReceso = data.marcas[m].fecha.hora
+                    }
+                    if(data.marcas[m].tipoMarca=='Salida al Almuerzo'){
+                        var tiempoSalidaAlmuerzo = data.marcas[m].fecha.hora
+                    }
+                    if(data.marcas[m].tipoMarca=='Entrada de Almuerzo'){
+                        var tiempoEntradaAlmuerzo = data.marcas[m].fecha.hora
+                    }
+                    }
+
+                    inicioMinutos = parseInt(tiempoEntrada.substr(3,2));
+                    inicioHoras = parseInt(tiempoEntrada.substr(0,2));
+                    finMinutos = parseInt(tiempoSalida.substr(3,2));
+                    finHoras = parseInt(tiempoSalida.substr(0,2));
+                    transcurridoMinutos = finMinutos - inicioMinutos;
+                    transcurridoHoras = finHoras - inicioHoras;  //bloque de salida y entrada
+
+                    if(tiempoSalidaReceso!=null){
+                    var inicioRecesoMinutos = parseInt(tiempoSalidaReceso.substr(3,2));
+                    var inicioRecesoHoras = parseInt(tiempoSalidaReceso.substr(0,2));
+                    var finRecesoMinutos = parseInt(tiempoEntradaReceso.substr(3,2));
+                    var finRecesoHoras = parseInt(tiempoEntradaReceso.substr(0,2));
+                    var transcurridoRecesoMinutos = finRecesoMinutos - inicioRecesoMinutos;
+                    var transcurridoRecesoHoras = finRecesoHoras - inicioRecesoHoras;//bloque para recesos 
+                    }else{
+                        transcurridoRecesoHoras = 0;
+                        transcurridoRecesoMinutos = 0;
+                    }
+                    if(tiempoSalidaAlmuerzo!=null){
+                    var inicioAlmuerzoMinutos = parseInt(tiempoSalidaAlmuerzo.substr(3,2));
+                    var inicioAlmuerzoHoras = parseInt(tiempoSalidaAlmuerzo.substr(0,2));
+                    var finAlmuerzoMinutos = parseInt(tiempoEntradaAlmuerzo.substr(3,2));
+                    var finAlmuerzoHoras = parseInt(tiempoEntradaAlmuerzo.substr(0,2));
+                    var transcurridoAlmuerzoMinutos = finAlmuerzoMinutos - inicioAlmuerzoMinutos;
+                    var transcurridoAlmuerzoHoras = finAlmuerzoHoras - inicioAlmuerzoHoras;//bloque para almuerzos
+                    }else{
+                        transcurridoAlmuerzoMinutos = 0;
+                        transcurridoAlmuerzoHoras = 0;
+                    }
+
+                    var transcurridoHorasTotal = transcurridoHoras - transcurridoRecesoHoras - transcurridoAlmuerzoHoras;
+                    var transcurridoMinutosTotal = transcurridoMinutos - transcurridoRecesoMinutos - transcurridoAlmuerzoMinutos;
+                  
+
+                    if (transcurridoMinutosTotal < 0) {
+                       transcurridoHorasTotal--;
+                       transcurridoMinutosTotal = 60 + transcurridoMinutosTotal;
+                    }
+                  
+                    horas = transcurridoHorasTotal.toString();
+                    minutos = transcurridoMinutosTotal.toString();
+                  
+                    if (horas.length < 2) {
+                        horas = "0"+horas;
+                    }
+                  
+                    if (minutos.length < 2) {
+                        minutos = "0"+minutos;
+                    }
+                    var cantidadFinal= horas+":"+minutos;
+                    $(".qwer").text(cantidadFinal);
             }
         },
         error: function(){
             alert("Error.");
         }
-    });
+
+    });  
 });
 //
+
+
+$('#cerrarPanel').click(function(){
+ $(".hideDisplay").css("display","none");
+});
+
+
 
 function selectValue(){
     var value = $('#selectFiltro').val();

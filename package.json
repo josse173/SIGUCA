@@ -25,6 +25,7 @@
     "bcrypt-nodejs" : "latest",
     "nodemailer": "*",
     "moment": "*",
-    "async": "*"
+    "async": "*", 
+    "connect-flash": "^0.1.1"
   }
 }
