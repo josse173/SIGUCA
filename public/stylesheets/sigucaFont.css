@@ -5,6 +5,10 @@
       
         
 }
+.smallFont{
+        font-size: 12%;
+}
+
 .wellW{
         background:rgb(255,255,255);
         color:black;
@@ -13,6 +17,10 @@
 
 }
 
+.marginCalendar{
+        margin-left: 24%;
+
+}
 .headerFont{            
         font-family: 'Ubuntu', sans-serif;
         font-weight: bold;      
@@ -66,6 +74,11 @@
     padding-bottom: 100%;
   }
 
+  #minimizeTime{
+
+        font-size: 11px;
+
+  }
   .contentx {
     position: absolute;
     width: 100%;

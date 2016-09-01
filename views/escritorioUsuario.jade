@@ -1,18 +1,20 @@
 .col-xs-8
   h4.text-center.wellW.well.headerFont.colorBorder #{usuario.nombre} #{usuario.apellido1}
   br
-  div.marcaResponsive
+  br
+  br
+  div.marcaResponsive.col-lg-offset-4
     .col-xs-6
       h4.headerFont  Marca Mediante el Sistema
       div#contBotones
         div          
          button.marcaResponsive.btn.btn-success(name='marcar', onclick= "changeElemt('marca')", data-toggle="modal" data-target="#addMarcaResponsive" value=usuario._id) Realizar Marca
-    div.col-md-offset-8.marcasTable.wellW.well
+    div.col-md-offset-8.col-lg-offset-4.marcasTable.wellW.well
       div.marcasTable
-        h4.headerFont Registro de Marcas
-          label Hora oficial 
+        h4 Registro de Marcas
+          label#minimizeTime Hora oficial 
             span.clock
-          label Tiempo trabajado 
+          label#minimizeTime Tiempo trabajado 
             span.clockHorasTrab
 
       br
@@ -73,19 +75,21 @@
                 td #{marca.fecha}
   div.clearfix
   br
-  div.container-fluid.col-xs-4.hideDisplay
-    div.container-fluid.label.headerFont.panel.panel-success.col-md-offset-3
-       .panel-heading
-        .panel-title Cantidad Trabajada en fecha consultada:
-       .panel-body
-        button.close#cerrarPanel(type='button') ×
-        .text-center.bigFont.span.qwer   
-  div#calSupervisor.wellW.well.container-fluid
-    div.marcasTable
-    label.text-center
-      |Calendario para consulta de horas trabajadas en Fechas específicas
-    input#date_range_marca.form-control(type='text')
-    button#btnIr.btn-primary    Ir      
+  .col-lg-offset-msj.col-md-offset-1
+    div.container-fluid.col-xs-4.hideDisplay
+      div.container-fluid.label.headerFont.panel.panel-success.col-md-offset-3
+         .panel-heading
+          .panel-title Tiempo Total Laborado:
+         .panel-body
+          button.close#cerrarPanel(type='button') ×
+          .text-center.bigFont.span.qwer   
+  .col-lg-offset-msj2
+    div#calSupervisor.wellW.well.container-fluid
+      div.marcasTable
+      label.text-center
+        |Calendario para consulta de horas trabajadas en Fechas específicas
+      input#date_range_marca.form-control(type='text')
+      button#btnIr.btn-primary    Ir      
 
  .col-xs-4
   .marca
