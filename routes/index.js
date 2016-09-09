@@ -472,7 +472,7 @@ module.exports = function(app, io) {
                 id: req.params.id,
                 username: req.body.username
             };
-            crud.changeUsername(user, function() { 
+            crudUsuario.changeUsername(user, function() { 
                 res.redirect('/configuracion');
             });
         }
@@ -484,7 +484,7 @@ module.exports = function(app, io) {
     app.post('/cambioPassword/:id', autentificado, function (req, res) {
         var user = req.body;
         user.id = req.params.id;
-        crud.changePassword(user, function () {
+        crudUsuario.changePassword(user, function () {
             res.redirect('/configuracion');
         });
     });
