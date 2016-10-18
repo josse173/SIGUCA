@@ -30,7 +30,8 @@ html
     link(rel='stylesheet', href='/stylesheets/alertify/themes/bootstrap.css')
     link(rel='stylesheet', href='/stylesheets/bootstrap-select.min.css')
     link(rel='stylesheet', href='/stylesheets/jquery.datetimepicker.css')
-    //
+    link(rel='stylesheet', href= '/stylesheets/css_DataTables/jquery.dataTables.min.css')
+    link(rel='stylesheet', href= '/stylesheets/css_DataTables/buttons.dataTables.min.css')
     link(rel='stylesheet', href='/stylesheets/bootstrap-datepicker.min.css')
     link(rel='stylesheet', href='/stylesheets/bootstrap-timepicker.min.css')
     link(rel='stylesheet', href='/stylesheets/sigucaFont.css')
@@ -111,10 +112,10 @@ html
           img(src='/images/logo-siguca.png',  href="/Ayuda")#sigucaLogo
     block content
 
+    script(src="https://code.jquery.com/jquery-1.12.3.js")
     script(src="/js/components/jquery-2.0.3.min.js")
     script(src="/js/components/bootstrap.min.js")
     script(src='/js/components/respond-min.js')  
-    //
     script(src="/js/components/bootstrap-datepicker.min.js")
     script(src="/js/components/bootstrap-timepicker.min.js")
     script(src="/js/components/bootstrap-select.min.js")
@@ -126,4 +127,12 @@ html
     script(src="/js/components/jquery.datetimepicker.js")
     script(src="/js/components/moment.min.js")
     script(src="/js/app/routes.js")
+    script(src="/js/app/reportes.js")
+    script(src='/js/JS_Datatables/jquery.dataTables.min.js')
+    script(src='/js/JS_Datatables/dataTables.buttons.min.js')
+    script(src='/js/JS_Datatables/pdfmake.min.js')
+    script(src='/js/JS_Datatables/vfs_fonts.js')
+    script(src='/js/JS_Datatables/buttons.html5.min.js')
+    script(src='/js/JS_Datatables/buttons.print.min.js')
+    script(src='/js/JS_Datatables/jszip.min.js')
     block sigucaJS

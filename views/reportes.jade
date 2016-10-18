@@ -3,8 +3,10 @@ extends layout
 block sigucaCSS
   link(rel='stylesheet', href='/stylesheets/cal-heatmap.css')
 
+
 block content
     div.container
+      
       .info
        h3 Reportes de eventos 
        h4 #{empleado}   
@@ -69,7 +71,7 @@ block content
                   else
                     td 0
                 tr
-                  td Solicitudes de horas extradordinarias
+                  td Solicitudes de horas extraordinarias
                   if(extras && extras.length != 0)
                     td #{extras.length}
                   else
@@ -99,168 +101,171 @@ block content
 
           br
           h3 Horas Semanales 
-          if(cierreUsuarios)
-            table.tableCierres.footable(data-page-navigation=".pagination" data-page-size="5")
-                thead
-                  tr
-                    th(data-type="numeric" data-sort-initial="descending") Fecha
-                    th Usuario
-                    th(data-sort-ignore="true") Tiempo trabajado
-                tbody
-                  each cierre, i in cierreUsuarios
-                    - var x = JSON.stringify(cierre);
-                    - var tiempo ="";
-                    - var h =""+cierre.tiempo.horas;
-                    - var m =""+cierre.tiempo.minutos;
-                    - if(cierre.tiempo.horas<10) h = "0"+h;
-                    - if(cierre.tiempo.minutos<10) m = "0"+m;
-                    - tiempo = h+":"+m;
-                    - if(cierre.tiempo.horas<=0 && cierre.tiempo.minutos<=0) tiempo = "El usuario se ausentó o no marcó salida."
+          if(cierreUsuarios && cierreUsuarios.length != 0)
+            .tableCierres.footable
+              table#horaTablaPDF
+                  thead
                     tr
-                      td(data-value=cierre.epoch) #{cierre.fecha.str} 
-                      td #{cierre.usuario.nombre} #{cierre.usuario.apellido1} 
-                      td #{tiempo}
-                tfoot
-                  tr
-                    td(colspan='10')
-                      .pagination.pagination-centered.hide-if-no-paging
-          h3.h3Marcas Marcas
-          if(marcas && marcas.length != 0)
-            table.footable(data-page-navigation=".pagination" data-page-size="5")
-                thead
-                  tr
-                    th(data-type="numeric" data-sort-initial="descending") Fecha
-                    th Usuario
-                    th Tipo
-                tbody
-                  each marca, i in marcas
-                    tr
-                      td(data-value=marca.epoch) #{marca.fecha.str} 
-                      td #{marca.usuario.nombre} #{marca.usuario.apellido1}
-                      td #{marca.tipoMarca} 
-                tfoot
-                  tr
-                    td(colspan='3')
-                      .pagination.pagination-centered.hide-if-no-paging
+                      th Fecha
+                      th Usuario
+                      th Tiempo trabajado
+                          
+                  tbody
+                    each cierre, i in cierreUsuarios
+                      - var x = JSON.stringify(cierre);
+                      - var tiempo ="";
+                      - var h =""+cierre.tiempo.horas;
+                      - var m =""+cierre.tiempo.minutos;
+                      - if(cierre.tiempo.horas<10) h = "0"+h;
+                      - if(cierre.tiempo.minutos<10) m = "0"+m;
+                      - tiempo = h+":"+m;
+                      - if(cierre.tiempo.horas<=0 && cierre.tiempo.minutos<=0) tiempo = "El usuario se ausentó o no marcó salida."
+                      tr
+                        td(data-value=cierre.epoch) #{cierre.fecha.str} 
+                        td #{cierre.usuario.nombre} #{cierre.usuario.apellido1} 
+                        td #{tiempo}
           else
             p No se han realizado marcas hasta el momento.
+                 
+                  
+          h3 Marcas
+          if(marcas && marcas.length != 0)
+            .footable
+              table#marcasPDF
+                  thead
+                    tr
+                      th(data-type="numeric" data-sort-initial="descending") Fecha
+                      th Usuario
+                      th Tipo
+                  tbody
+                    each marca, i in marcas
+                      tr
+                        td(data-value=marca.epoch) #{marca.fecha.str} 
+                        td #{marca.usuario.nombre} #{marca.usuario.apellido1}
+                        td #{marca.tipoMarca} 
+             
+                       
+          else
+              p No se han realizado marcas hasta el momento.
                 
           br
           h3 Justificaciones
           if(justificaciones && justificaciones.length != 0)
-            table.tableJustificaciones.footable(data-page-navigation=".pagination" data-page-size="5")
-                thead
-                  tr
-                    th(data-type="numeric" data-sort-initial="descending") Fecha
-                    th Usuario
-                    th(data-hide="phone,small") Motivo
-                    th(data-hide="phone,small" data-sort-ignore="true") Detalle
-                    th(data-hide="phone,small" data-sort-ignore="true") Comentario
-                    th Estado
-                    th(data-hide="phone,small" data-sort-ignore="true") Eliminar
-                tbody
-                  each justificacion, i in justificaciones
+            .tableJustificaciones  
+              table#justificacionesPDF
+                  thead
                     tr
-                      td(data-value=justificacion.fechaCreada) #{justificacion.fecha.str} 
-                      if(justificacion.usuario)
-                        td #{justificacion.usuario.nombre} #{justificacion.usuario.apellido1}
-                      td #{justificacion.motivo} 
-                      td #{justificacion.detalle} 
-                      td #{justificacion.comentarioSupervisor} 
-                      td #{justificacion.estado}  
-                      td
+                      th(data-type="numeric" data-sort-initial="descending") Fecha
+                      th Usuario
+                      th(data-hide="phone,small") Motivo
+                      th(data-hide="phone,small" data-sort-ignore="true") Detalle
+                      th(data-hide="phone,small" data-sort-ignore="true") Comentario
+                      th Estado
+                      th(data-hide="phone,small" data-sort-ignore="true") Eliminar
+                  tbody
+                    each justificacion, i in justificaciones
+                      tr
+                        td(data-value=justificacion.fechaCreada) #{justificacion.fecha.str} 
                         if(justificacion.usuario)
-                          button.btn.btn-default.justificacionDelete(value=justificacion.usuario.nombre+' '+justificacion.usuario.apellido1+' '+justificacion.usuario.apellido2+','+justificacion.id+','+justificacion.fecha, name='eliminar') 
-                          i.icon-trash.icon-large.i-danger 
-                tfoot
-                  tr
-                    td(colspan='7')
-                      .pagination.pagination-centered.hide-if-no-paging
+                          td #{justificacion.usuario.nombre} #{justificacion.usuario.apellido1}
+                        td #{justificacion.motivo} 
+                        td #{justificacion.detalle} 
+                        td #{justificacion.comentarioSupervisor} 
+                        td #{justificacion.estado}  
+                        td
+                          if(justificacion.usuario)
+                            button.btn.btn-default.justificacionDelete(value=justificacion.usuario.nombre+' '+justificacion.usuario.apellido1+' '+justificacion.usuario.apellido2+','+justificacion.id+','+justificacion.fecha, name='eliminar') 
+                            i.icon-trash.icon-large.i-danger 
+               
+                       
           else
             p No se han enviado justificaciones hasta el momento.
 
           br
           h3 Solicitudes Horas Extraordinarias
           if(extras && extras.length != 0)
-            table.tableSolicitudes.footable(data-page-navigation=".pagination" data-page-size="5")
-                thead
-                  tr
-                    th(data-type="numeric" data-sort-initial="descending") Fecha
-                    th Usuario
-                    th(data-hide="phone,small" data-sort-ignore="true") Día de Inicio 
-                    th(data-hide="phone,small" data-sort-ignore="true") Día de Termino
-                    th(data-hide="phone,small,medium" data-sort-ignore="true") Cantidad de Horas
-                    th(data-hide="phone,small,medium") Cliente
-                    th(data-hide="phone,small,medium" data-sort-ignore="true") Motivo
-                    th(data-hide="phone,small,medium" data-sort-ignore="true") Comentario
-                    th(data-hide="phone,small") Estado
-                    th(data-hide="phone,small,medium" data-sort-ignore="true") Eliminar
-                tbody
-                  each extra, i in extras
+            .tableSolicitudes.footable
+              table#extraPDF
+                  thead
                     tr
-                      td(data-value=extra.fechaCreada) #{extra.fecha.str} 
-                      if(extra.usuario)
-                        td #{extra.usuario.nombre} #{extra.usuario.apellido1} 
-                      td #{extra.diaInicio} 
-                      td #{extra.diaFinal} 
-                      td #{extra.cantHoras} 
-                      td #{extra.cliente} 
-                      td #{extra.motivo} 
-                      td #{extra.comentarioSupervisor} 
-                      td #{extra.estado} 
-                      td
+                      th(data-type="numeric" data-sort-initial="descending") Fecha
+                      th Usuario
+                      th(data-hide="phone,small" data-sort-ignore="true") Día de Inicio 
+                      th(data-hide="phone,small" data-sort-ignore="true") Día de Termino
+                      th(data-hide="phone,small,medium" data-sort-ignore="true") Cantidad de Horas
+                      th(data-hide="phone,small,medium") Cliente
+                      th(data-hide="phone,small,medium" data-sort-ignore="true") Motivo
+                      th(data-hide="phone,small,medium" data-sort-ignore="true") Comentario
+                      th(data-hide="phone,small") Estado
+                      th(data-hide="phone,small,medium" data-sort-ignore="true") Eliminar
+                  tbody
+                    each extra, i in extras
+                      tr
+                        td(data-value=extra.fechaCreada) #{extra.fecha.str} 
                         if(extra.usuario)
-                          button.btn.btn-default.solicitudDelete(value=extra.usuario.nombre+' '+extra.usuario.apellido1+' '+extra.usuario.apellido2+','+extra.id+','+extra.fecha, name='eliminar') 
-                          i.icon-trash.icon-large.i-danger 
-                tfoot
-                  tr
-                    td(colspan='10')
-                      .pagination.pagination-centered.hide-if-no-paging
+                        td #{extra.usuario.nombre} #{extra.usuario.apellido1} 
+                        td #{extra.diaInicio} 
+                        td #{extra.diaFinal} 
+                        td #{extra.cantdadHoras} 
+                        td #{extra.cliente} 
+                        td #{extra.motivo} 
+                        td #{extra.comentarioSupervisor} 
+                        td #{extra.estado} 
+                        td
+                          if(extra.usuario)
+                            button.btn.btn-default.solicitudDelete(value=extra.usuario.nombre+' '+extra.usuario.apellido1+' '+extra.usuario.apellido2+','+extra.id+','+extra.fecha, name='eliminar') 
+                            i.icon-trash.icon-large.i-danger 
+             
+                       
           else
             p No se han enviado extras hasta el momento.
-
+    
           br
           h3 Solicitudes Permisos
           if(permisos && permisos.length != 0)
-            table.tableSolicitudes.footable(data-page-navigation=".pagination" data-page-size="5")
-                thead
-                  tr
-                    th(data-type="numeric" data-sort-initial="descending") Fecha
-                    th Usuario
-                    th(data-hide="phone,small") Día Inicial
-                    th(data-hide="phone,small") Día Final 
-                    th(data-hide="phone,small") Cantidad Días
-                    th(data-hide="phone,small,medium") Motivo
-                    th(data-hide="phone,small,medium" data-sort-ignore="true") Detalle
-                    th(data-hide="phone,small,medium" data-sort-ignore="true") Comentario
-                    th Estado
-                    th(data-hide="phone,small,medium" data-sort-ignore="true") Eliminar
-                tbody
-                  each permiso, i in permisos
+            .tableSolicitudes.footable
+              table#permisoPDF
+                  thead
                     tr
-                      td(data-value=permiso.fechaCreada) #{permiso.fecha.str} 
-                      if(permiso.usuario)
-                        td #{permiso.usuario.nombre} #{permiso.usuario.apellido1} 
-                      td #{permiso.diaInicio} 
-                      td #{permiso.diaFinal} 
-                      td #{permiso.cantidadDias} 
-                      td #{permiso.motivo} 
-                      td #{permiso.detalle} 
-                      td #{permiso.comentarioSupervisor} 
-                      td #{permiso.estado} 
-                      td
+                      th(data-type="numeric" data-sort-initial="descending") Fecha
+                      th Usuario
+                      th(data-hide="phone,small") Día Inicial
+                      th(data-hide="phone,small") Día Final 
+                      th(data-hide="phone,small") Cantidad Días
+                      th(data-hide="phone,small,medium") Motivo
+                      th(data-hide="phone,small,medium" data-sort-ignore="true") Detalle
+                      th(data-hide="phone,small,medium" data-sort-ignore="true") Comentario
+                      th Estado
+                      th(data-hide="phone,small,medium" data-sort-ignore="true") Eliminar
+                  tbody
+                    each permiso, i in permisos
+                      tr
+                        td(data-value=permiso.fechaCreada) #{permiso.fecha.str} 
                         if(permiso.usuario)
-                          button.btn.btn-default.solicitudDelete(value=permiso.usuario.nombre+' '+permiso.usuario.apellido1+' '+permiso.usuario.apellido2+','+permiso.id+','+permiso.fecha.str, name='eliminar') 
-                          i.icon-trash.icon-large.i-danger 
-                tfoot
-                  tr
-                    td(colspan='10')
-                      .pagination.pagination-centered.hide-if-no-paging
+                          td #{permiso.usuario.nombre} #{permiso.usuario.apellido1} 
+                        td #{permiso.diaInicio} 
+                        td #{permiso.diaFinal} 
+                        td #{permiso.cantidadDias} 
+                        td #{permiso.motivo} 
+                        td #{permiso.detalle} 
+                        td #{permiso.comentarioSupervisor} 
+                        td #{permiso.estado} 
+                        td
+                          if(permiso.usuario)
+                            button.btn.btn-default.solicitudDelete(value=permiso.usuario.nombre+' '+permiso.usuario.apellido1+' '+permiso.usuario.apellido2+','+permiso.id+','+permiso.fecha.str, name='eliminar') 
+                            i.icon-trash.icon-large.i-danger 
+          
+                        
           else
             p No se han enviado permisos hasta el momento.
 
 
-block sigucaJS     
+
+
+
+
+block sigucaJS  
+  script(src="/js/app/reportes.js")
   script(src="/socket.io/socket.io.js")
   script(src="/js/components/d3.min.js")
   script(src="/js/components/cal-heatmap.js")
