@@ -6,7 +6,7 @@ var imagenGreenCore = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAA
        dom:"Bfrtip",
             buttons: [
       {extend:'print',text:"Imprimir"},
-      {extend:'excel',text:"Exportar como .ods"},
+      {extend:'excel',text:"Hoja de cálculo"},
       {
        extend:"pdfHtml5",
        text: 'Exportar a PDF',
@@ -36,7 +36,7 @@ var imagenGreenCore = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAA
            dom:"Bfrtip",
             buttons: [
     {extend:'print',text:"Imprimir"},
-    {extend:'excel',text:"Exportar como .ods"},
+    {extend:'excel',text:"Hoja de cálculo"},
     {
        extend:"pdfHtml5",
        text: 'Exportar a PDF',
@@ -67,7 +67,7 @@ var imagenGreenCore = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAA
            dom:"Bfrtip",
             buttons: [
     {extend:'print',text:"Imprimir"},
-    {extend:'excel',text:"Exportar como .ods"},
+    {extend:'excel',text:"Hoja de cálculo"},
     {
        extend:"pdfHtml5",
        text: 'Exportar a PDF',
@@ -99,7 +99,7 @@ var imagenGreenCore = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAA
           dom:"Bfrtip",
             buttons: [
        {extend:'print',text:"Imprimir"},
-       {extend:'excel',text:"Exportar como .ods"},
+       {extend:'excel',text:"Hoja de cálculo"},
        {
        extend:"pdfHtml5",
        text: 'Exportar a PDF',
@@ -130,7 +130,7 @@ var imagenGreenCore = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAA
             dom:"Bfrtip",
             buttons: [
       {extend:'print',text:"Imprimir"},
-      {extend:'excel',text:"Exportar como .xlsx"},
+      {extend:'excel',text:"Hoja de cálculo"},
       {
        extend:"pdfHtml5",
        text: 'Exportar a PDF',
