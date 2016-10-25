@@ -8,6 +8,8 @@
  var moment = require('moment');
  var passport = require('passport');
 
+
+
  //**********************************************
  var admin_actions = require('../actions/admin');
  var event_actions = require('../actions/eventos');
@@ -40,15 +42,44 @@ var Solicitudes = require('../models/Solicitudes');
 var Cierre = require('../models/Cierre');
 var emailSIGUCA = 'siguca@greencore.co.cr';
 
+//***************************************
+//var multer=require('multer');
+//var upload = multer({ dest: '' });
+
+
+var multer  =  require('multer');
+ var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+    cb(null,'pru/');
+    },
+    filename: function (req, file, cb) {
+    cb(null, file.fieldname + '-' + Date.now());
+     }
+    });
+var upload = multer({storage: storage });
+
+
+
+
+//************************************
 module.exports = function(app, io) {
     /*
     *   Redirecciona a la página principal (index.html)
     */
+    
     app.get('/', function (req, res) {
         res.render('index', {
             usuario: req.user
         });
     });
+   
+    var upload2 = multer({storage: 'pru/'});
+    app.post('/imagen',upload2.single('myimage'),function(req,res,next){
+        console.log('test :'+ JSON.stringify(req.files));
+        res.end('Imagen Cargada en el servidor');
+    });
+  
+  
 
     //******************************************************************************
     /*
@@ -298,15 +329,16 @@ module.exports = function(app, io) {
     */
     app.get('/rfidReader', function (req, res) {
             //pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta=123&tipoMarca=6
-            var pwd1 = req.param('pwd1');
-            var pwd2 = req.param('pwd2');
+            //var pwd1 = req.param('pwd1');
+            //var pwd2 = req.param('pwd2');
             var codTarjeta = req.param('codTarjeta');
             var tipoMarca = req.param('tipoMarca');
-            if(pwd1 == 'ooKa6ieC' && pwd2 == 'of2Oobai' ) {
-                crud.rfidReader(codTarjeta, tipoMarca, function (msj) {
-                    res.send(msj);
+            //if(pwd1 == 'ooKa6ieC' && pwd2 == 'of2Oobai' ) {
+            
+            crudMarca.rfidReader(codTarjeta, tipoMarca, function (msj) {
+            res.send(msj);
                 });
-            }
+            //}
         });
 
     /*
@@ -641,6 +673,8 @@ module.exports = function(app, io) {
             else res.send(msj);
         });
     });
+    
+    
 
     io.sockets.on('connection', function(socket){
 
@@ -649,6 +683,8 @@ module.exports = function(app, io) {
             var epoch = (date.getTime() - date.getMilliseconds())/1000;
             socket.emit('connected', epoch);
         });
+
+    
 
         /* Recibe la orden de lista y filtra cierres por tipo de usuario
         socket.on('listar', function (departamentoId){

@@ -34,3 +34,10 @@ block content
             .controls
              button#ingreso.btn.btn-success Ingresar
              button#cancelar.btn.btn-danger Cancelar
+    .col-xs-12
+      .col-xs-6.well.span4
+          label.text-center
+            | Imagen de usuario 
+          form(method="post",action="/imagen" enctype="multipart/form-data")      
+            input(type="file", name="myimage")
+            input(type="submit", name="submit" ,value="Cargar Imagen ")
