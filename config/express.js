@@ -3,7 +3,7 @@
 */
 
 var express = require('express');
-
+var rutaDeCarga = "/mnt/siguca-imagenes/"
 module.exports = function (app, config, passport) {
 
   app.set('showStackError', true);
@@ -28,7 +28,7 @@ module.exports = function (app, config, passport) {
     app.set('port', process.env.PORT || 3000);
     //multipart not needed, so instead of body parser, we use json() and urlencoded() only for better security
     app.use(express.json());
-    app.use(express.bodyParser());
+    app.use(express.bodyParser({uploadDir:rutaDeCarga}));
     //app.use(express.urlencoded());
     app.use(express.cookieParser('your secret here'));
     app.use(express.methodOverride());

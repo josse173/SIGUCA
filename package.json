@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "async": "*",
+    "body-parser": "^1.15.2",
     "bcrypt-nodejs": "latest",
     "chai": "~1.8.1",
     "connect-flash": "^0.1.1",

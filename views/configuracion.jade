@@ -38,6 +38,10 @@ block content
       .col-xs-6.well.span4
           label.text-center
             | Imagen de usuario 
-          form(method="post",action="/imagen" enctype="multipart/form-data")      
-            input(type="file", name="myimage")
-            input(type="submit", name="submit" ,value="Cargar Imagen ")
+          form(role='form',method="post",enctype="multipart/form-data",action="/IMAGEN/"+usuario._id)
+           
+            p
+              input(type="hidden",name="codigo",value="#{usuario.codTarjeta}")
+              input(type="file",name="upl")
+            p
+              input(type="submit")

@@ -1,14 +1,12 @@
 /*
  * GET home page.
  * Rutas
- */
-
+ */                 
+ var fs = require('fs');
  var mongoose = require('mongoose');
  var nodemailer = require('nodemailer');
  var moment = require('moment');
  var passport = require('passport');
-
-
 
  //**********************************************
  var admin_actions = require('../actions/admin');
@@ -46,38 +44,29 @@ var emailSIGUCA = 'siguca@greencore.co.cr';
 //var multer=require('multer');
 //var upload = multer({ dest: '' });
 
-
-var multer  =  require('multer');
- var storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-    cb(null,'pru/');
-    },
-    filename: function (req, file, cb) {
-    cb(null, file.fieldname + '-' + Date.now());
-     }
-    });
-var upload = multer({storage: storage });
-
-
-
+var multer  =  require('multer');  
 
 //************************************
 module.exports = function(app, io) {
     /*
     *   Redirecciona a la página principal (index.html)
     */
+  
     
     app.get('/', function (req, res) {
         res.render('index', {
             usuario: req.user
         });
     });
+
+ 
    
-    var upload2 = multer({storage: 'pru/'});
-    app.post('/imagen',upload2.single('myimage'),function(req,res,next){
-        console.log('test :'+ JSON.stringify(req.files));
-        res.end('Imagen Cargada en el servidor');
-    });
+    //var upload = multer({storage: 'pru/'});
+   // app.post('/imagen',upload.single('myimage'),function(req,res,next){
+    //    console.log('test :'+ JSON.stringify(req.file));
+    //    console.log('test :'+ JSON.stringify(req.files));
+    //    res.end('Imagen Cargada en el servidor');
+    //});
   
   
 
@@ -510,6 +499,49 @@ module.exports = function(app, io) {
         }
     });
 
+
+ //  var storage = multer.diskStorage({
+   //     destination: function(req, file, cb) {
+    //        cb(null, './uploads/');
+    //    },
+    //    filename: function(req, file, cb) {
+    //        var ext = file.originalname.split('.').pop();
+    //        cb(null, file.fieldname + '-' + Date.now() + '.' + ext);
+    //    }
+   // });
+
+   // upload = multer({ storage: storage });
+   // app.post('/IMAGENXD/:id', autentificado,upload.single('upl'), function (req, res,next) {
+   //    //console.log('body', req.body);
+        //console.log('file', req.file);
+    //    console.log('file', req.files);
+    //    res.redirect('/configuracion');
+    //});
+
+
+// we need the fs module for moving the uploaded files
+    app.post('/IMAGEN/:id', autentificado, function(req, res) {
+        // get the temporary location of the file
+
+        console.log(req.files);
+        console.log(req.body.codigo);
+        var tmp_path = String(req.files.upl.path);
+        console.log('Este es el path-->'+tmp_path);
+        // set where the file should actually exists - in this case it is in the "images" directory
+        var target_path = '/mnt/siguca-imagenes/'+req.body.codigo;
+        // move the file from the temporary location to the intended location
+        fs.rename(tmp_path, target_path, function(err) {
+            if (err) throw err;
+            // delete the temporary file, so that the explicitly set temporary upload dir does not get filled with unwanted files
+            fs.unlink(tmp_path, function() {
+                if (err) throw err;
+            });
+        });
+        res.redirect('/configuracion');
+    });
+
+
+
     /*
     *   Cambia la contraseña de los usuarios
     */
@@ -520,6 +552,8 @@ module.exports = function(app, io) {
             res.redirect('/configuracion');
         });
     });
+
+
 
 
     //******************************************************************************
