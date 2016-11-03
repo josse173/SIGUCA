@@ -11,7 +11,7 @@ var path = require('path'),
 	http = require('http'),
 	mongoose = require('mongoose'),
 	passport = require('passport'); 
-
+	bodyParser = require('body-parser');
 /*
 	Leer la configuración de ./config/config
 */

@@ -519,25 +519,28 @@ module.exports = function(app, io) {
     //});
 
 
-// we need the fs module for moving the uploaded files
+// Funcionalidad para cargar la imagen en el servidor, con la validacionde  png , la ruta donde  se  guarda
+// se define en /config/express.js 
     app.post('/IMAGEN/:id', autentificado, function(req, res) {
-        // get the temporary location of the file
+    
 
-        console.log(req.files);
-        console.log(req.body.codigo);
+        var extension=String(req.files.upl.type);
+        var extension = extension.substring(6); 
+        console.log(extension);
+        if(extension!=="png"){
+            res.send("Solo se aceptan .png");
+        }
+        else{
         var tmp_path = String(req.files.upl.path);
-        console.log('Este es el path-->'+tmp_path);
-        // set where the file should actually exists - in this case it is in the "images" directory
-        var target_path = '/mnt/siguca-imagenes/'+req.body.codigo;
-        // move the file from the temporary location to the intended location
+        var target_path = '/mnt/siguca-imagenes/'+req.body.codigo+'.'+extension;
         fs.rename(tmp_path, target_path, function(err) {
             if (err) throw err;
-            // delete the temporary file, so that the explicitly set temporary upload dir does not get filled with unwanted files
             fs.unlink(tmp_path, function() {
                 if (err) throw err;
             });
         });
         res.redirect('/configuracion');
+    }
     });
 
 

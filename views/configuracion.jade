@@ -38,7 +38,7 @@ block content
       .col-xs-6.well.span4
           label.text-center
             | Imagen de usuario 
-          form(role='form',method="post",enctype="multipart/form-data",action="/IMAGEN/"+usuario._id)
+          form(role='form',method="post",enctype="multipart/form-data",action="/IMAGEN/"+usuario._id,accept='image/png')
            
             p
               input(type="hidden",name="codigo",value="#{usuario.codTarjeta}")

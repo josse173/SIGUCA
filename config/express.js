@@ -3,6 +3,8 @@
 */
 
 var express = require('express');
+//Aqui se define la ruta de carga de las imagenes  de la sección de configuración refierase a /routes/index.js  Línea 524 
+
 var rutaDeCarga = "/mnt/siguca-imagenes/"
 module.exports = function (app, config, passport) {
 
@@ -26,10 +28,8 @@ module.exports = function (app, config, passport) {
 
   app.configure(function () {
     app.set('port', process.env.PORT || 3000);
-    //multipart not needed, so instead of body parser, we use json() and urlencoded() only for better security
     app.use(express.json());
-    app.use(express.bodyParser({uploadDir:rutaDeCarga}));
-    //app.use(express.urlencoded());
+    app.use(express.bodyParser({uploadDir:rutaDeCarga}));//Aqui se  llama l path definido al principio de este archivo
     app.use(express.cookieParser('your secret here'));
     app.use(express.methodOverride());
     app.use(express.session());
