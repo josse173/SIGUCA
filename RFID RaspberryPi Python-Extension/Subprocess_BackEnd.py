@@ -37,8 +37,13 @@ port='SET THE  DATABASE PORT HERE'
 app_Port='SET THE SIGUCA PORT HERE'
 #WE NEED TO SET A BROWSER TO SEND  POST ACTION TO THE NODE SERVER , SET IT UP HERE AS UNIX COMMAND
 browserSelection='epiphany-browser'
+#ROUTE ON RASPBERRY PI WHERE IMAGE'S PATH  OF THE SERVER WAS MOUNTED, THROUGHT  NFS.
+#Ruta en la RaspberryPI donde esta montado el path de imagenes  del servidor a través de nfs.
+rutaImagenesPi= "SET PATH HERE"
 #----------------------------------------------------------------------------------------------------------------------------------
 connection = MongoClient('mongodb://'+server_IP+':'+port)
+
+#DATABASE CONNECTIONS.
 db = connection.sigucadb
 collection = db.usuarios
 
@@ -78,93 +83,80 @@ def Salida(dec):
     browser.terminate()
     root.destroy()
 
-#main process to rfid   
+
+
+
+ #Método principal de lectura para rfid.   
 def read_rfid():
+    #Excepcion para que no deje de escuchar si no encuentra  lectura .
     try:
+        #Se inicializan las variables sin ningún contenido
+       
+        print "Escuchando entradas..."
         data = None
         ser = None   
-#Serial instance defines where its going constantly listen , you must set the baudrate in accordance to your own module to process the entry. 9600 to rdm 6300, also set the dev path. These ones are defaults:
-    
+        
+        #Serial instance defines where its going constantly listen , you must set the baudrate in accordance to your own module to process the entry. 9600 to rdm 6300, also set the dev path. These ones are defaults:
+
         ser = serial.Serial(
         port="/dev/ttyAMA0",\
-        baudrate=9600,\
-        parity=serial.PARITY_NONE,\
-        stopbits=serial.STOPBITS_ONE,\
-        bytesize=serial.EIGHTBITS,\
-        timeout=60)
-         
+        baudrate=9600)
+        #ser =  sersial.Serial("/dev/ttyAMA0",timeout=60)
+        #ser.baudrate= 9600
+       
   #Lo que realiza este while es hacer que la instancia se ejecute siempre , entonces cada vez que 
   #se ejecuta un método de los implementados al principio de este script , luego de cerrar el navegador y la instancia de la aplicación gráfica de python 
   # volvería de nuevo a ejecutarse desde aquí permitiendo que se realize una y otra vez la verificacion de marcas RFID.     
         while 1:   
                 #Cada vez que se hace la lectura se realiza un flush para evitar que el buffer almacene algún dato erroneo 
-                ser.flushInput()
-                data= None
+                
                 #almacenamos en la variable data la lectura realizada de RFID
-                data=ser.readline(15).strip()
-                ser.close() 
+                data=ser.read(15)
+                #print "Leyendo código :) , mantenga el identificador cerca del receptor"
+                #print "Espere..."
+                #flush a ser para no contener basura dentro de la variable 
+                #ser.flush()
+                #se cierra la conexión para dejar de escuchar
+
+                #se quitan los datos  basura que se captan  dentro del string de caracteres del RFID
                 data=data.replace("\x02","")
                 data=data.replace("\x03","")
                 id = data
-                #Se quitan los caracteres innecesarios dentro de la cadena de caracteres, para luego convertirlo a decimal , los cuales serían los primeros 4 números y los últimos dos.
+                #Se quitan los caracteres innecesarios dentro de la cadena de caracteres, para luego convertirrlo a decimal , los cuales serían los primeros 4 números y los últimos dos.
                 splitID = list(id)
-                #aquí básicamente lo que se hace es extraer los datos que realmente necesitamos para convertirlos a decimal
+                #aqúi basicamente lo que se hace es extraer los datos que realmente necesitamos para convertirlos a decimal
                 ParseId = [splitID[4],splitID[5],splitID[6],splitID[7],splitID[8],splitID[9]]
                 #los  unificamos  con el metodo join
                 result = ''.join(ParseId)
                 #lo convertimos a decimal 
                 dec = int(result, 16)
-
-                #Se hace la búsqueda en la base de datos del código rfid , relacionado con el codTarjeta de cada uno
-                #Se podría utilizar findOne() como método de búsqueda también si se desea
-                for post in collection.find({"codTarjeta": dec},{"nombre":1,"apellido1":1,"_id":0}):
-                        #print post  
-                        #Si se quiere imprimirel resultado atraves de la consola de el resultado obtenido de la base de datos 
-                        #descomentar la linea del print arriba de este comentario.
-                        
-                        #almacenamos los campos obtenidos del nombre y apellido para imprimir el mensaje por consola
-                        dat = post['nombre']
-                        dat2 = post['apellido1']  
-                #se muestra a traves de consola el nombre del usuario y apellido 
-                os.system('clear')
-                print "                                                            "
-                print "Bienvenido " +dat+" "+dat2 +", realice su marca por favor :)"
-                print "                                                            "  
-                time.sleep(2)
-                return dec
+                print dec
+                
+                #Se hace la validacion en el vector definido  por  la consulta a la base de datos al inicio de este archivo
+                for post in codigosExistentes:
+                    if dec == post['codTarjeta']:
+                        return dec
+                ser.flushInput()
+                data.flushInput()
     except:
          pass
-
-
-
 
 
 #En esta sección tenemos el orden de como se van a ir ejecutando los métodos dentro del sistema , esto es  lo que se ejecutará cuando se lance el script.
 
 while 1:
     os.system('clear')
-    #Se ejecuta el método de lectura de rfid y se convirte el dato a string 
     dec=read_rfid()
     dec=str(dec)
-       
    #se verifica que la variable no este vacía
-    if dec == "None":
-        dec=None
-        os.system('clear')
-        pass    
-    else:  
-     
+    if dec != "None":
         root1 = Tk()
         root1.attributes('-fullscreen', True)
         frame1 = Frame(root1)
         frame1.pack()
-        root1.config(background="white")
-
-  
-        #a través de la siguiente ruta se buscará la imagen con el código id del usuario correspondiente ,la ruta que está  definida aquí esta compartida a través de nfs , el directorio /home/pi/Desktop/imgs/ tiene montado el  path de donde se guardan las imágenes en el servidor, esto  es MUY importante. Asi que: 
-# 1-Si se desea implementar mas instancias de esta aplicación debe mandatoriamente montar el directorio de las imágenes del servidor nodejs, la referencia se encuentra en /config/express.js en la variable uploaddir del bodyparser, esta dirección del servidor nodeJS debe ser montada  en alguna ruta de la raspberry pi y definirla en la siguiente línea siguiendo el mismo patrón.
+        root1.config(background="black")
         try:
-            logo1 = PhotoImage(file="/home/pi/Desktop/imgs/"+dec+".png")
+            logo1 = PhotoImage(file=rutaImagenesPi+dec+".png")
             w2 = Label(root1, image=logo1).pack(side="top")
         except: 
             pass
@@ -196,11 +188,6 @@ while 1:
         button4.grid(row=4,column=1)
         button5.grid(row=4,column=2)
         root.mainloop()
-  
-
-
-
-
-
-
-
+    else:  
+        os.system('clear')
+        pass 
