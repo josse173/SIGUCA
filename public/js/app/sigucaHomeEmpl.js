@@ -193,7 +193,12 @@ socket.on('disconnect', function () {
     console.log('Desconectado!');
 });
 
+$(document).ready(function()
+{  
+   var codigo = $( "#codigoUsuario").text();
+   $("#imagenPerfil").prop("src","/uploads/"+codigo+".png");
 
+})
 /*//Se recibe result de la consulta
 
 socket.on('listaCierre', function(cierre){

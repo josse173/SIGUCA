@@ -136,6 +136,13 @@ $('#cerrarPanel').click(function(){
  $(".hideDisplay").css("display","none");
 });
 
+$(document).ready(function()
+{  
+   var codigo = $( "#codigoUsuario").text();
+   $("#imagenPerfil").prop("src","/uploads/"+codigo+".png");
+
+})
+
 
 
 function selectValue(){
