@@ -120,7 +120,7 @@
   h4.headerFont Acciones 
   ul.list-group
     li.list-group-item
-      a(data-toggle="modal" data-target="#horaExtra")
+      a(data-toggle="modal" data-target="#horaExtra")#extraLink
         | Solicitud de hora extraordinaria
     li.list-group-item
       a(data-toggle="modal" data-target="#permiso")
@@ -247,13 +247,13 @@
                       i.icon-time
               .form-group
                 label(for='cliente') Cliente:
-                  input.input-small.form-control(type="text", name='cliente' required )
+                  input#clienteSoli.input-small.form-control(type="text", name='cliente' required )
                 label(for='motivo') Motivo:
                   textarea#motivo.form-control(rows="4" cols="50" name='motivo' required )
                 
                                              
-              button.btn.btn-success(type='submit') Enviar
-              button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
+              button.btn.btn-success Enviar
+              button#btn-soli-cancelar.btn.btn-default(type='button', data-dismiss='modal') Cancelar
 
  
 #permiso.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true' )
@@ -293,7 +293,7 @@
                   textarea#detalle.form-control(rows="4" cols="50" name='detalle' required)
                                                                    
               button#btn-permiso.btn.btn-success Enviar
-              button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
+              button#btn-permiso-cancelar.btn.btn-default(type='button', data-dismiss='modal') Cancelar
 
          
 #addJustificacion.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
@@ -319,7 +319,7 @@
               textarea#detalles.form-control(rows="4" cols="50" name='detalle' required)
                  
           button#btn-just.btn.btn-success(type='submit') Enviar
-          button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
+          button#btn-just-cancelar.btn.btn-default(type='button', data-dismiss='modal') Cancelar
 
 #updateJustificacion.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
   .modal-dialog

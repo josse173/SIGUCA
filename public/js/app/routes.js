@@ -245,6 +245,19 @@
     $('#detallePermiso').val(""); 
 });
 
+$("#btn-soli-cancelar").click(function(){
+  $('#motivo').val("");
+  $('#date_timepicker_start').val("");
+  $('#date_timepicker_end').val("");
+  $('#clienteSoli').val("");
+});
+$("#extraLink").click(function(){
+  $('#motivo').val("");
+  $('#date_timepicker_start').val("");
+  $('#date_timepicker_end').val("");
+  $('#clienteSoli').val("");
+});
+
  $("#btn-permiso").click(function(){
     var val = $('#selectMotivo').val();
     if(val == 'seleccionar') {
@@ -256,6 +269,15 @@
     }
 });
 
+ $("#btn-permiso-cancelar").click(function(){
+       $("#diaInicio").val("");
+       $("#diaFinal ").val("");
+       $("#selectMotivo").val("seleccionar")
+       $("#cantidadDias").val("");  
+       $("#motivoOtro ").val("");
+       $("#detalle").val("");
+ });
+
  $("#btn-just").click(function(){
     var val = $('#selectMotivoJust').val();
     if(val == 'seleccionar') {
@@ -266,6 +288,19 @@
         $("#btn-just").submit();
     }
 });
+
+ $("#btn-just-cancelar").click(function(){
+        $("#selectMotivoJust").val("seleccionar")
+        $("#motivoOtroJust").val("")
+        $("#detalles").val("")
+    
+ });
+
+
+
+
+
+
 
  $("#btn-editPermiso").click(function(){
     var id = $("button[data-target=#editPermiso]").val();
@@ -279,6 +314,9 @@
     }
 });
 
+
+
+
  $("#btn-editJust").click(function(){
     var id = $("button[data-target=#editJust]").val();
     var val = $('#selectMotivoJust').val();
@@ -290,6 +328,9 @@
         $("#btn-editJust").submit();
     }
 });
+
+
+
 
 /*--------------------------------------------------------------------
     Notificaciones y gestión de eventos
