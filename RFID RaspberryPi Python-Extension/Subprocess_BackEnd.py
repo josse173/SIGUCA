@@ -46,7 +46,7 @@ connection = MongoClient('mongodb://'+server_IP+':'+port)
 #DATABASE CONNECTIONS.
 db = connection.sigucadb
 collection = db.usuarios
-
+codigosExistentes=list(collection.find({},{"codTarjeta": 1,"_id":0}))
 #Methods to define the timestamps thought the web browser
 def Entrada(dec):
     #These methods request a subprocess to execute a query to the ip and also the kind of timestamp
@@ -150,6 +150,7 @@ while 1:
     dec=str(dec)
    #se verifica que la variable no este vacía
     if dec != "None":
+        
         root1 = Tk()
         root1.attributes('-fullscreen', True)
         frame1 = Frame(root1)
