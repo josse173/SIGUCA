@@ -1,3 +1,4 @@
+#coding=utf-8
 #/**
  #  GreenCore Solutions
  #* Python-Extension to SIGUCA application
@@ -22,7 +23,6 @@
  #* 
  #*/
 
-#coding=utf-8
 import time 
 import os, sys
 import serial 
@@ -32,14 +32,17 @@ from Tkinter import *
 from pymongo import MongoClient
 
 #SETTINGS AND CONFIGURATIONS
-server_IP='SET.HERE.YOUR.IP'
-port='SET THE  DATABASE PORT HERE'
-app_Port='SET THE SIGUCA PORT HERE'
+#IP OF NODE JS SERVER WHERE SIGUCA IS RUNNING
+server_IP='10.42.30.13'
+#PORT OF THE MONGODB 
+port='27017'
+#PORT OF OF SIGUCA NODE JS PORT 
+app_Port='3000'
 #WE NEED TO SET A BROWSER TO SEND  POST ACTION TO THE NODE SERVER , SET IT UP HERE AS UNIX COMMAND
-browserSelection='epiphany-browser'
+browserSelection='curl'
 #ROUTE ON RASPBERRY PI WHERE IMAGE'S PATH  OF THE SERVER WAS MOUNTED, THROUGHT  NFS.
 #Ruta en la RaspberryPI donde esta montado el path de imagenes  del servidor a través de nfs.
-rutaImagenesPi= "SET PATH HERE"
+rutaImagenesPi= "/home/pi/Desktop/imgs/"
 #----------------------------------------------------------------------------------------------------------------------------------
 connection = MongoClient('mongodb://'+server_IP+':'+port)
 
@@ -52,34 +55,34 @@ def Entrada(dec):
     #These methods request a subprocess to execute a query to the ip and also the kind of timestamp
     browser = subprocess.Popen([browserSelection, 'http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=1'])
     #These sleeps are important and necessary to call the browser and execute the post.
-    time.sleep(5)
+    time.sleep(1)
     #The the browser quits by itself and kill the frame. 
     browser.terminate() 
     root.destroy()
 def SalidaReceso(dec):
     browser = subprocess.Popen([browserSelection, 'http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=2'])
-    time.sleep(5)
+    time.sleep(1)
     browser.terminate()
     root.destroy()
 
 def EntradaReceso(dec):
     browser = subprocess.Popen([browserSelection, 'http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=3'])
-    time.sleep(5)
+    time.sleep(1)
     browser.terminate()
     root.destroy()
 def SalidaAlmuerzo(dec):
     browser = subprocess.Popen([browserSelection, 'http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=4'])
-    time.sleep(5)
+    time.sleep(1)
     browser.terminate()
     root.destroy()
 def EntradaAlmuerzo(dec):
     browser = subprocess.Popen([browserSelection, 'http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=5'])
-    time.sleep(5)
+    time.sleep(1)
     browser.terminate()
     root.destroy()
 def Salida(dec):
     browser = subprocess.Popen([browserSelection, 'http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=6'])
-    time.sleep(5)
+    time.sleep(1)
     browser.terminate()
     root.destroy()
 
@@ -150,7 +153,6 @@ while 1:
     dec=str(dec)
    #se verifica que la variable no este vacía
     if dec != "None":
-        
         root1 = Tk()
         root1.attributes('-fullscreen', True)
         frame1 = Frame(root1)
@@ -181,14 +183,15 @@ while 1:
         button3 = Button(frame,text="   Entrada de Receso  ", command =lambda: EntradaReceso(dec),fg="white",bg="green",width=30,height=2,bd=10,font="Helvetica 15 bold")
         button4 = Button(frame,text="  Salida de Almuerzo  ", command =lambda: SalidaAlmuerzo(dec),fg="white",bg="green",width=30,height=2,bd=10,font="Helvetica 15 bold")
         button5 = Button(frame,text="  Entrada de Almuerzo ", command =lambda: EntradaAlmuerzo(dec),fg="white",bg="green",width=30,height=2,bd=10,font="Helvetica 15 bold")
-
-        button.grid(row=2,column=1)
+	button6 = Button(frame,text="Cancelar",command=lambda: root.destroy(),fg="white",bg="red",width=65,height=1,bd=10,font="Helvetica 15 bold")
+	button.grid(row=2,column=1)
         button1.grid(row=2,column=2)
         button2.grid(row=3,column=1)
         button3.grid(row=3,column=2)
         button4.grid(row=4,column=1)
         button5.grid(row=4,column=2)
-        root.mainloop()
+	button6.grid(row=5,columnspan=4)
+	root.mainloop()
     else:  
         os.system('clear')
         pass 
