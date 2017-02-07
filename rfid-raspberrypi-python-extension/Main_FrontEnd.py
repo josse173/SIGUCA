@@ -32,7 +32,7 @@ import RPi.GPIO as GPIO
 from Tkinter import *
 #Here you have to set the path of the BackEnd FIle
 #rutaImagenesPi= "/home/pi/Desktop/imgs/"
-path='/home/pi/Desktop/SIGUCA-PYTHON-PRODUCCION/Subprocess_BackEnd.py'
+path='/usr/local/bin/scripts-python-siguca/Subprocess_BackEnd.py'
 subprocess.Popen(['python', path])
 root2 = Tk()
 frame2 = Frame(root2)
@@ -48,6 +48,6 @@ root2.config(background="black",cursor="none")
 #            w2 = Label(root1, image=logo1).pack(side="top")
 
 
-logo = PhotoImage(file="/home/pi/Desktop/imgs/siguca.jpg")
-w1 = Label(root2, image=logo).pack()
+logo = PhotoImage(file="/mnt/imgs/siguca.jpg")
+w1 = Label(root2,image=logo).pack()
 root2.mainloop()
