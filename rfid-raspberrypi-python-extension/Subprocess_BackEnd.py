@@ -23,6 +23,7 @@
  #* 
  #*/
 
+
 import time 
 import os, sys
 import serial 
@@ -43,7 +44,7 @@ app_Port='3000'
 browserSelection='curl'
 #ROUTE ON RASPBERRY PI WHERE IMAGE'S PATH  OF THE SERVER WAS MOUNTED, THROUGHT  NFS.
 #Ruta en la RaspberryPI donde esta montado el path de imagenes  del servidor a través de nfs.
-rutaImagenesPi= "/home/pi/Desktop/imgs/"
+rutaImagenesPi= "/mnt/imgs/"
 #----------------------------------------------------------------------------------------------------------------------------------
 connection = MongoClient('mongodb://'+server_IP+':'+port)
 
@@ -161,20 +162,16 @@ while True:
         frame1 = Frame(root1)
         frame1.pack()
         root1.config(background="black",cursor="none")
-        #try:
-          
-	      #try:
-        #    logo1 = PhotoImage(file=rutaImagenesPi+dec+".png")
-        #    w2 = Label(root, image=logo1)
-        #    w2.place(anchor="nw")
-        #except: ç
-      
-	logo1 = PhotoImage(file=rutaImagenesPi+dec+".png")
-        w2 = Label(root1, image=logo1).pack(side="top")
-       # except: 
-           # pass
-        root1.after(1000, lambda: root1.destroy())
+       
+        try:      
+		logo1 = PhotoImage(file=rutaImagenesPi+dec+".png")
+        	w2 = Label(root1, image=logo1).pack(side="top")
+        except: 
+            pass
+
+        root1.after(2000, lambda: root1.destroy())
         root1.mainloop()
+
         #Se crea el entorno gráfico  para realizar las marcas
         root = Tk()
         root.attributes('-fullscreen', True)
@@ -193,10 +190,10 @@ while True:
 
         button = Button(frame,text="       Entrada        ", command = lambda: Entrada(dec),fg="white",activeforeground="white",activebackground="green",bg="green",width=22,height=3,bd=9,font="Helveltica 17 bold")
         button1 = Button(frame,text="        Salida        ", command =lambda: Salida(dec),fg="white",activeforeground="white",activebackground="green",bg="green",width=22,height=3,bd=9,font="Helveltica 17 bold")
-        button2 = Button(frame,text="   Salida de Receso   ", command =lambda: SalidaReceso(dec),fg="white",activeforeground="white",activebackground="green",bg="green",width=22,height=3,bd=9,font="Helveltica 17 bold")
-        button3 = Button(frame,text="   Entrada de Receso  ", command =lambda: EntradaReceso(dec),fg="white",activeforeground="white",activebackground="green",bg="green",width=22,height=3,bd=9,font="Helveltica 17 bold")
-        button4 = Button(frame,text="  Salida de Almuerzo  ", command =lambda: SalidaAlmuerzo(dec),fg="white",activeforeground="white",activebackground="green",bg="green",width=22,height=3,bd=9,font="Helveltica 17 bold")
-        button5 = Button(frame,text="  Entrada de Almuerzo ", command =lambda: EntradaAlmuerzo(dec),fg="white",activeforeground="white",activebackground="green",bg="green",width=22,height=3,bd=9,font="Helveltica 17 bold")
+        button2 = Button(frame,text="   Salida de Receso   ", command =lambda: SalidaReceso(dec),fg="white",activeforeground="white",activebackground="orange",bg="orange",width=22,height=3,bd=9,font="Helveltica 17 bold")
+        button3 = Button(frame,text="   Entrada de Receso  ", command =lambda: EntradaReceso(dec),fg="white",activeforeground="white",activebackground="orange",bg="orange",width=22,height=3,bd=9,font="Helveltica 17 bold")
+        button4 = Button(frame,text="  Salida de Almuerzo  ", command =lambda: SalidaAlmuerzo(dec),fg="white",activeforeground="white",activebackground="blue",bg="blue",width=22,height=3,bd=9,font="Helveltica 17 bold")
+        button5 = Button(frame,text="  Entrada de Almuerzo ", command =lambda: EntradaAlmuerzo(dec),fg="white",activeforeground="white",activebackground="blue",bg="blue",width=22,height=3,bd=9,font="Helveltica 17 bold")
 	button6 = Button(frame,text="Cancelar",command=lambda: root.destroy(),fg="white",activeforeground="white",activebackground="red",bg="red",width=47,height=3,bd=9,font="Helveltica 17 bold")
 	button.grid(row=1,column=1)
         button1.grid(row=1,column=2)
@@ -205,7 +202,7 @@ while True:
         button4.grid(row=3,column=1)
         button5.grid(row=3,column=2)
 	button6.grid(row=4,column=1, columnspan=15)
-	root.after(5000, lambda: root.destroy())
+	root.after(4000, lambda: root.destroy())
 	root.mainloop()
     else:  
         os.system('clear')
