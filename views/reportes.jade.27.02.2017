@@ -174,8 +174,8 @@ block content
                         td #{justificacion.estado}  
                         td
                           if(justificacion.usuario)
-                            button.btn.btn-default.justificacionDelete(value=justificacion.usuario.nombre+' '+justificacion.usuario.apellido1+' '+justificacion.usuario.apellido2+','+justificacion.id+','+justificacion.fecha.str, name='eliminar') 
-                             i.icon-trash.icon-large.i-danger 
+                            button.btn.btn-default.justificacionDelete(value=justificacion.usuario.nombre+' '+justificacion.usuario.apellido1+' '+justificacion.usuario.apellido2+','+justificacion.id+','+justificacion.fecha, name='eliminar') 
+                            i.icon-trash.icon-large.i-danger 
                
                        
           else
@@ -213,8 +213,8 @@ block content
                         td #{extra.estado} 
                         td
                           if(extra.usuario)
-                            button.btn.btn-default.solicitudDelete(value=extra.usuario.nombre+' '+extra.usuario.apellido1+' '+extra.usuario.apellido2+','+extra.id+','+extra.fecha.str, name='eliminar') 
-                             i.icon-trash.icon-large.i-danger 
+                            button.btn.btn-default.solicitudDelete(value=extra.usuario.nombre+' '+extra.usuario.apellido1+' '+extra.usuario.apellido2+','+extra.id+','+extra.fecha, name='eliminar') 
+                            i.icon-trash.icon-large.i-danger 
              
                        
           else
@@ -253,7 +253,7 @@ block content
                         td
                           if(permiso.usuario)
                             button.btn.btn-default.solicitudDelete(value=permiso.usuario.nombre+' '+permiso.usuario.apellido1+' '+permiso.usuario.apellido2+','+permiso.id+','+permiso.fecha.str, name='eliminar') 
-                             i.icon-trash.icon-large.i-danger 
+                            i.icon-trash.icon-large.i-danger 
           
                         
           else

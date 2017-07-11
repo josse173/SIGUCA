@@ -5,7 +5,7 @@
 var express = require('express');
 //Aqui se define la ruta de carga de las imagenes  de la sección de configuración refierase a /routes/index.js  Línea 524 
 
-var rutaDeCarga = "/mnt/siguca-imagenes/"
+var rutaDeCarga = "/usr/local/bin/siguca/imagenes/"
 module.exports = function (app, config, passport) {
 
   app.set('showStackError', true);

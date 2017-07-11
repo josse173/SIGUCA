@@ -109,7 +109,7 @@ block content
                       td
                         textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
                       td
-                        select.select_picker(name="estado"+extra.id, id="estado"+extra.id, data-width="auto"  data-style="btn-inverse")
+                        select.select_picker(name="estado" id="estado" data-width="auto"  data-style="btn-inverse")
                           option(value='Pendiente') Pendiente
                           option(value='Aceptada') Aprobar
                           option(value='Rechazada') Rechazar
@@ -157,7 +157,7 @@ block content
                       td
                         textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
                       td
-                        select.select_picker(name='estado'+permiso.id, id="estado"+permiso.id, data-width="auto"  data-style="btn-inverse")
+                        select.select_picker(name='estado' data-width="auto"  data-style="btn-inverse")
                           option(value='Pendiente') Pendiente
                           option(value='Aceptada') Aprobar
                           option(value='Rechazada') Rechazar
