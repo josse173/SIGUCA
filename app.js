@@ -49,3 +49,10 @@ var server = http.createServer(app).listen(app.get('port'), function(){
 var io = require('socket.io').listen(server);
 
 require('./routes/index')(app,io);
+
+
+/**
+ * Configuración inicial de la Base de Datos(Creación de las colecciones
+ * y mantener un administrador por defecto)
+ */
+require('./config/initData');
