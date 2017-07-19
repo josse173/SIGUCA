@@ -145,7 +145,8 @@
           tbody.justDetalle
             each just, i in justificaciones
               tr(data-toggle="modal" data-target="#updateJustificacion" data-value=just._id)
-                td #{just.fecha.str} 
+                //.miClase fue crerada para contar la cantidad de justificaciones creadas
+                td.miClase #{just.fecha.str} 
                 td #{just.fechaJust.str}
                 td #{just.motivo}
                 td #{just.informacion}
@@ -153,6 +154,7 @@
             tr
               td(colspan='8')
                 .pagination.pagination-centered.hide-if-no-paging 
+
 #mensajeMarca.modal.fade
     .modal-dialog
         .modal-content
@@ -346,4 +348,44 @@
           button#btn-just.btn.btn-success(type='submit') Enviar
           button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
 
+
+
+
+
+//Ventana modal que se abre al inicio dee la pagina escritoroUsuario.jade en caso de que hayan justificaciones pendientes
+
+#mostrarSolicitudes.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+  .modal-dialog
+    .modal-content
+      .modal-header
+        button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+        h4#myModalLabel.modal-title Justificaciones pendientes
+        h5 A continuación se muestran las justificaciones pendientes a la fecha, debe responderlas para que desaparezca esta notificación.
+      .modal-body
+        form.formJust#login-form.well.span4
+          .form-group
+              .col-xs-4
+              div.justTable.table-responsive
+                div
+                  table#tablaJust.footable(data-page-navigation=".pagination" data-page-size="4" )
+                    thead
+                      tr
+                        th(data-sort-ignore="true" data-type="numeric" ) Fecha creada
+                        th(data-sort-ignore="true" data-type="numeric" ) Fecha justificada
+                        th(data-sort-ignore="true") Motivo
+                        th(data-sort-ignore="true" data-type="numeric" ) Información
+                    tbody.justDetalle
+                      each just, i in justificaciones
+                        tr(data-toggle="modal" data-target="#updateJustificacion" data-value=just._id)
+                          td #{just.fecha.str} 
+                          td #{just.fechaJust.str}
+                          td #{just.motivo}
+                          td #{just.informacion}
+                    tfoot
+                      tr
+                        td(colspan='8')
+                          .pagination.pagination-centered.hide-if-no-paging 
+
+                 
+  
   
