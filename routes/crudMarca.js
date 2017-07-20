@@ -6,7 +6,8 @@ Marca 				= require('../models/Marca'),
 util 				= require('../util/util'),
 crudHorario 		= require('./crudHorario'),
 crud 				= require('./crud'),
-crudJustificaciones = require('../routes/crudJustificaciones');
+crudJustificaciones = require('../routes/crudJustificaciones'),
+config 				= require('../config.json');
 
 
 //--------------------------------------------------------------------
@@ -237,6 +238,29 @@ function revisarMarca(_idUser, marca, cb){
 							var dia = ["domingo", "lunes", "martes", "miercoles", 
 							"jueves", "viernes", "sabado"][today.day()];
 							var tiempoDia = horario[dia];
+
+							/**
+							 * Se agrega el tiempo de grancia para la marca de entrada y de salida
+							 */
+							//Rango entrada
+							if(tiempoDia.entrada.minutos + config.rangoMarcaEntrada > 60){
+								tiempoDia.entrada.hora += 1;
+								tiempoDia.entrada.minutos = (tiempoDia.entrada.minutos + config.rangoMarcaEntrada) - 60;
+							}else{
+								tiempoDia.entrada.minutos += config.rangoMarcaEntrada;
+							}
+
+							//Rango salida
+							if(tiempoDia.salida.minutos - config.rangoMarcaSalida < 0){
+								tiempoDia.salida.hora -= 1;
+								tiempoDia.salida.minutos = 60 - (config.rangoMarcaSalida - tiempoDia.salida.minutos);
+							}else{
+								tiempoDia.salida.minutos -= config.rangoMarcaSalida;
+							}
+							/**
+							 * FIN agregar rango de tiempo
+							 */
+
 							//console.log(tiempoDia);
 							if((tiempoDia.entrada.hora!=0 || tiempoDia.entrada.minutos!=0)
 								&& (
