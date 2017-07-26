@@ -195,6 +195,8 @@ exports.find = function(query, cb){
 		cb(err, marcas);
 	});
 }
+
+
 exports.rfidReader = function(codTarjeta, tipoMarca, cb) {
 	Usuario.findOne({codTarjeta: codTarjeta}, function (err, usuario) {
 		var tipo;
@@ -219,11 +221,11 @@ exports.rfidReader = function(codTarjeta, tipoMarca, cb) {
 }
 
 function revisarMarca(_idUser, marca, cb){
+	
 	var epochMin = moment();
 	epochMin.hours(0);
 	epochMin.minutes(0);
-	epochMin.seconds(0);
-
+	
 	var epochMax = moment();
 	epochMax.hours(23);
 	epochMax.minutes(59);
@@ -283,12 +285,17 @@ function revisarMarca(_idUser, marca, cb){
 								} else if(marca.tipoMarca=="Salida"){
 									var mOut= moment.unix(marca.epoch);
 									var mReal = tiempoDia.salida;
-									if(util.compararHoras(mOut.hour(), mOut.minutes(), mReal.hora, mReal.minutos)==-1){
+
+									workedHour(_idUser, tiempoDia, mOut, mReal,cb);
+									/*
+									if(util.determinarJustificacion(tiempoDia)==0){
 										addJustIncompleta(_idUser, "Salida antes de hora establecida", 
 											"Hora de salida: "+ util.horaStr(mReal.hora, mReal.minutos)+
 											" - Hora de marca: "+ util.horaStr(mOut.hour(), mOut.minutes()), cb);
 									}
 									else cb("");
+									*/
+									
 								} 
 								else cb("");
                         		//Evaluar si se pasó el tiempo de receso o almuerzo
@@ -302,6 +309,167 @@ function revisarMarca(_idUser, marca, cb){
 			else cb("");
 		});
 	//
+}
+
+
+
+
+
+function workedHour(_idUser,horario, mOut, mReal,cb){
+
+		var prueba="xD";
+		var date =  moment().format('L').split("/");
+		var epochGte = moment();
+		epochGte.year(date[2]).month(date[0]-1).date(date[1]);
+		epochGte.hour(0).minutes(0).seconds(0);
+		var epochLte = moment();
+		epochLte.year(date[2]).month(date[0]-1).date(date[1]);
+		epochLte.hour(23).minutes(59).seconds(59);
+
+
+		Marca.find({
+			usuario:_idUser,
+			epoch:{
+			"$gte":epochGte.unix(),
+			"$lte":epochLte.unix()
+		}}, function (err, marcas) {
+			
+		console.log(prueba);
+		var m2 ="ok";
+		if(err) m2 = err;
+		varepoch: mcs = [];
+		var ml = util.unixTimeToRegularDate(marcas);
+		for(x in ml){
+			var obj = {};
+			obj.fecha = ml[x].fecha;
+			obj.tipoMarca = ml[x].tipoMarca;
+			mcs.push(obj);
+		}
+		
+	
+			for(m in mcs){
+				if(mcs[m].tipoMarca=='Entrada'){
+					var tiempoEntrada = mcs[m].fecha.hora;
+				}
+				if(mcs[m].tipoMarca=='Salida'){
+					var tiempoSalida =mcs[m].fecha.hora;
+				}
+				if(mcs[m].tipoMarca=='Salida a Receso'){
+					var tiempoSalidaReceso = mcs[m].fecha.hora;
+				}
+				if(mcs[m].tipoMarca=='Entrada de Receso'){
+					var tiempoEntradaReceso =mcs[m].fecha.hora;
+				}
+				if(mcs[m].tipoMarca=='Salida al Almuerzo'){
+					var tiempoSalidaAlmuerzo = mcs[m].fecha.hora ;
+				}
+				if(mcs[m].tipoMarca=='Entrada de Almuerzo'){
+					var tiempoEntradaAlmuerzo =mcs[m].fecha.hora ;
+				}
+		}
+					
+				
+
+				finMinutos =moment().format();
+				finMinutos=parseInt(String(finMinutos).substr(14,2));
+			
+				inicioMinutos = parseInt(tiempoEntrada.substr(3,2));
+			
+				inicioHoras = parseInt(String(tiempoEntrada).substr(0,2));
+				
+				finHoras=moment().format();
+				finHoras = parseInt(String(finHoras).substr(11,2));
+
+				
+				var transcurridoMinutos = finMinutos - inicioMinutos;
+				var transcurridoHoras = finHoras - inicioHoras;  //bloque de salida y entrada
+
+				if(tiempoSalidaReceso!=null){
+				var inicioRecesoMinutos = parseInt(String(tiempoSalidaReceso).substr(3,2));
+				var inicioRecesoHoras = parseInt(String(tiempoSalidaReceso).substr(0,2));
+				var finRecesoMinutos = parseInt(String(tiempoEntradaReceso).substr(3,2));
+				var finRecesoHoras = parseInt(String(tiempoEntradaReceso).substr(0,2));
+				var transcurridoRecesoMinutos = finRecesoMinutos - inicioRecesoMinutos;
+				var transcurridoRecesoHoras = finRecesoHoras - inicioRecesoHoras;//bloque para recesos 
+				}else{
+					transcurridoRecesoHoras = 0;
+					transcurridoRecesoMinutos = 0;
+				}
+				if(tiempoSalidaAlmuerzo!=null){
+				var inicioAlmuerzoMinutos = parseInt(String(tiempoSalidaAlmuerzo).substr(3,2));
+				var inicioAlmuerzoHoras = parseInt(String(tiempoSalidaAlmuerzo).substr(0,2));
+				var finAlmuerzoMinutos = parseInt(String(tiempoEntradaAlmuerzo).substr(3,2));
+				var finAlmuerzoHoras = parseInt(String(tiempoEntradaAlmuerzo).substr(0,2));
+				var transcurridoAlmuerzoMinutos = finAlmuerzoMinutos - inicioAlmuerzoMinutos;
+				var transcurridoAlmuerzoHoras = finAlmuerzoHoras - inicioAlmuerzoHoras;//bloque para almuerzos
+				}else{
+					transcurridoAlmuerzoMinutos = 0;
+					transcurridoAlmuerzoHoras = 0;
+				}
+
+				var transcurridoHorasTotal = transcurridoHoras - transcurridoRecesoHoras - transcurridoAlmuerzoHoras;
+				var transcurridoMinutosTotal = transcurridoMinutos - transcurridoRecesoMinutos - transcurridoAlmuerzoMinutos;
+				
+
+				if (transcurridoMinutosTotal < 0) {
+					transcurridoHorasTotal--;
+					transcurridoMinutosTotal = 60 + transcurridoMinutosTotal;
+				}
+				
+
+				var horas = transcurridoHorasTotal;
+				var minutos = transcurridoMinutosTotal;
+				
+				var obj=new Object();
+				obj.horas=horas;
+				obj.minutos=minutos;
+				console.log("horas y minutossss"+obj.horas+":"+obj.minutos);
+
+
+
+				var horaSalida= parseInt(horario.salida.hora-config.periodoLibreTrabajo);
+				var horaEntrada= parseInt(horario.entrada.hora);
+				var minutoSalida=parseInt(horario.salida.minutos);
+				var minutoEntrada=parseInt(horario.entrada.minutos-config.rangoMarcaEntrada);
+
+				
+				temporalMinutoSalida=minutoSalida;
+				temporalHoraSalida=horaSalida;
+
+				horaSalida=horaSalida-horaEntrada;
+				minutoSalida=minutoSalida-minutoEntrada;
+
+				if(horaSalida>0 && minutoSalida<0 ){
+					horaSalida--;
+					minutoSalida=60+minutoSalida;
+				}else if(horaSalida<0 && minutoSalida>0){
+					horaSalida=24-horaEntrada;
+				}else if(horaSalida==0 && minutoSalida<0){
+					horaSalida=0;
+					minutoSalida=minutoEntrada-temporalMinutoSalida;
+				}
+				console.log("Horario"+horaSalida+":"+minutoSalida);
+
+				if(horaSalida>obj.horas){
+					addJustIncompleta(_idUser, "Salida antes de hora establecida", 
+											"Hora de salida: "+ util.horaStr(mReal.hora, mReal.minutos)+
+											" - Hora de marca: "+ util.horaStr(mOut.hour(), mOut.minutes()), cb);
+
+				}else if(obj.horas==horaSalida){
+					if(minutoSalida>obj.minutos){
+						addJustIncompleta(_idUser, "Salida antes de hora establecida", 
+											"Hora de salida: "+ util.horaStr(mReal.hora, mReal.minutos)+
+											" - Hora de marca: "+ util.horaStr(mOut.hour(), mOut.minutes()), cb);
+
+					}
+				}
+				else{
+					cb("");
+				}
+
+		});
+
+
 }
 
 function addJustIncompleta(_idUser, motivo, informacion, cb){

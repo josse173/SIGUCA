@@ -1,3 +1,4 @@
+config = require('../config.json');
 var moment 	= require('moment');
 module.exports = {
     unixTimeToRegularDate: function(list, detail){
@@ -180,6 +181,38 @@ module.exports = {
         if(hIn==hOut && mIn<mOut) return -1;
         if(hIn<hOut) return -1;
     },
+
+    determinarJustificacion : function(horario){
+       
+
+        var horaSalida= parseInt(horario.salida.hora-config.periodoLibreTrabajo);
+        var horaEntrada= parseInt(horario.entrada.hora);
+        var minutoSalida=parseInt(horario.salida.minutos);
+        var minutoEntrada=parseInt(horario.entrada.minutos-config.rangoMarcaEntrada);
+
+        
+        temporalMinutoSalida=minutoSalida;
+        temporalHoraSalida=horaSalida;
+
+        horaSalida=horaSalida-horaEntrada;
+        minutoSalida=minutoSalida-minutoEntrada;
+
+        if(horaSalida>0 && minutoSalida<0 ){
+            horaSalida--;
+            minutoSalida=60+minutoSalida;
+        }else if(horaSalida<0 && minutoSalida>0){
+            horaSalida=24-horaEntrada;
+        }else if(horaSalida==0 && minutoSalida<0){
+            horaSalida=0;
+            minutoSalida=minutoEntrada-temporalMinutoSalida;
+        }
+
+
+        return -1;
+        
+
+    },
+
     horaStr: function (hora, minutos){
         var h = hora;
         var m = minutos;

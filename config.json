@@ -3,5 +3,6 @@
 "emailPass":"VxA0CG8VGIkg05KviRiv3EW1",
 "emailEmail":"correo.greencore.co.cr",
 "rangoMarcaEntrada" : 10,
-"rangoMarcaSalida" : 10
+"rangoMarcaSalida" : 0,
+"periodoLibreTrabajo": 1
 }
