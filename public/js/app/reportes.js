@@ -216,6 +216,7 @@ var imagenGreenCore = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAA
     
     ]
     });
+
     $('#permisoPDF').dataTable({
       "bDestroy": true ,
           dom:"Bfrtip",
@@ -271,6 +272,62 @@ var imagenGreenCore = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAA
               }
             ]
     });
+
+    $('#totalHorasEmpleado').dataTable({
+      "bDestroy": true ,
+            dom:"Bfrtip",
+            "language": {
+    "sProcessing":     "Procesando...",
+    "sLengthMenu":     "Mostrar _MENU_ registros",
+    "sZeroRecords":    "No se encontraron resultados",
+    "sEmptyTable":     "Ningún dato disponible en esta tabla",
+    "sInfo":           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+    "sInfoEmpty":      "Mostrando registros del 0 al 0 de un total de 0 registros",
+    "sInfoFiltered":   "(filtrado de un total de _MAX_ registros)",
+    "sInfoPostFix":    "",
+    "sSearch":         "Buscar:",
+    "sUrl":            "",
+    "sInfoThousands":  ",",
+    "sLoadingRecords": "Cargando...",
+    "oPaginate": {
+        "sFirst":    "Primero",
+        "sLast":     "Último",
+        "sNext":     "Siguiente",
+        "sPrevious": "Anterior"
+    },
+    "oAria": {
+        "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+        "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+    }
+            },
+            buttons: [
+      {extend:'print',text:"Imprimir"},
+      {extend:'excel',text:"Hoja de cálculo"},
+      {
+       extend:"pdfHtml5",
+       text: 'Exportar a PDF',
+       orientation:"landscape",
+       pageSize:"LEGAL",
+
+       customize: function(doc) {
+          doc.content.splice(0, 1, {
+                            text: [
+                                    { text: 'Reporte de Horas Totales Laboradas',bold: 180, fontSize: 17,  color: "#00394D" ,alignment: 'center'}
+                                                                                                     
+                                  ]
+          });
+       doc.defaultStyle = {  fontSize: 10, arial: true, alignment: 'center' },
+        doc.content.splice( 1, 0, {
+                    margin: [ -5, -45, 0, 0],
+                    alignment: 'left',
+                    image:imagenGreenCore 
+                  });//img
+       }
+      } 
+
+    ]
+    });
+    
     $('#horaTablaPDF').dataTable({
       "bDestroy": true ,
             dom:"Bfrtip",

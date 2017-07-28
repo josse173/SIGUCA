@@ -240,6 +240,47 @@ function renderFiltro(res, titulo, usuario, departamentos,
         return m.usuario;
       }), true);
   }
+
+
+  /**
+  * Se hace el calculo de las horas trabajadas
+  */
+  var listaSumada = new Array(),
+  revisado = false;
+
+  cierre.forEach(function(original) {
+  //for(var i = 0; i < cierre.length;i++){
+
+    revisado = false;
+    for(var p = 0; p < listaSumada.length;p++){
+      if(listaSumada[p].usuario.nombre == original.usuario.nombre){//Si existe lo suma
+        //Suma el tiempo trabajado analizando que si esta en el minuto 59 debe sumar la hora
+        
+        listaSumada[p].tiempo.horas += original.tiempo.horas;
+        if(listaSumada[p].tiempo.minutos == 59){
+          listaSumada[p].tiempo.minutos = 0;
+          listaSumada[p].tiempo.horas++;
+        }
+        else{
+          listaSumada[p].tiempo.minutos += original.tiempo.minutos;
+        }
+        revisado = true;
+      }
+    }//Fin de la busqueda del elemento a analizar en la lista de elementos analizados
+
+    //En caso de que no haya sido analizada antes se incerta
+    if(!revisado){
+      var cierreTem = new CierrePersonal();
+      cierreTem.usuario = original.usuario;
+      cierreTem.tiempo = original.tiempo;
+      cierreTem.epoch = original.tiempo;
+
+      listaSumada.push(cierreTem);
+    }
+  });//Se han analizado todos los elementos
+
+
+
   var filtro = {
     title: titulo,
     usuario: usuario,
@@ -258,7 +299,8 @@ function renderFiltro(res, titulo, usuario, departamentos,
     cierreUsuarios: cList,
     usuarios: usuarios,
     departamentos: departamentos,
-    nombreUsuario: nombreUsuario
+    nombreUsuario: nombreUsuario,
+    horasEmpleado: listaSumada
   };
   return (titulo === 'Reportes | SIGUCA') ? res.render('reportes', filtro) : res.render('gestionarEventos', filtro); 
 }

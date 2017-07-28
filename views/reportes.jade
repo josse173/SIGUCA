@@ -99,6 +99,34 @@ block content
           else
             h3 Búsqueda: Todos los usuarios
 
+
+          br
+          h3 Horas laboradas por empleado
+          if(horasEmpleado && horasEmpleado.length != 0)
+            .tableSolicitudes.footable
+              table#totalHorasEmpleado
+                  thead
+                    tr
+                      th Usuario
+                      th Tiempo trabajado
+                          
+                  tbody
+                    each empleado, p in horasEmpleado
+                      - var x = JSON.stringify(empleado);
+                      - var tiempo ="";
+                      - var h =""+empleado.tiempo.horas;
+                      - var m =""+empleado.tiempo.minutos;
+                      - if(empleado.tiempo.horas<10) h = "0"+h;
+                      - if(empleado.tiempo.minutos<10) m = "0"+m;
+                      - tiempo = h+":"+m;
+                      - if(empleado.tiempo.horas<=0 && empleado.tiempo.minutos<=0) tiempo = "El usuario se ausentó o no marcó salida."
+                      tr
+                        td #{empleado.usuario.nombre} #{empleado.usuario.apellido1} 
+                        td #{tiempo}
+          else
+            p No se han realizado marcas hasta el momento.
+
+
           br
           h3 Horas Semanales 
           if(cierreUsuarios && cierreUsuarios.length != 0)
