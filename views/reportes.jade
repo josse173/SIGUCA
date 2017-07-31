@@ -178,6 +178,71 @@ block content
                 
           br
 
+
+
+          -var primeraCorrida=0
+          - var entrando=false
+          -var arregloTardias=new Array()
+          - var temporalUsuario = new Array() 
+          h3 Reporte tardias
+          if(marcas && marcas.length != 0)
+            .footable
+              table#tardiasPDF
+                  thead
+                    tr
+                      th Usuario
+                      th fecha
+                      
+                  tbody
+                    -for (var i = 0; i <marcas.length; i++)
+                      if (primeraCorrida==0)
+                          -var objTardias = new Object();
+                          -objTardias.nombre=marcas[i].usuario.nombre
+                          -objTardias.dia=marcas[i].fecha.dia
+                          -objTardias.mes=marcas[i].fecha.mes
+                          -objTardias.año=marcas[i].fecha.año
+                          -objTardias.apellido1=marcas[i].usuario.apellido1
+                          -temporalUsuario.push(objTardias)
+                          -primeraCorrida++
+
+                      else
+                        -for (var j = 0; j <temporalUsuario.length; j++)
+                          -entrando=false;
+                          if (temporalUsuario[j].nombre==marcas[i].usuario.nombre && temporalUsuario[j].apellido1==marcas[i].usuario.apellido1 && temporalUsuario[j].dia==marcas[i].fecha.dia && temporalUsuario[j].mes==marcas[i].fecha.mes  && temporalUsuario[j].año==marcas[i].fecha.año)
+                            -entrando=true;
+                              
+                        if(entrando==false)
+                          -var objTardias = new Object()
+                          -objTardias.nombre=marcas[i].usuario.nombre
+                          -objTardias.dia=marcas[i].fecha.dia
+                          -objTardias.mes=marcas[i].fecha.mes
+                          -objTardias.año=marcas[i].fecha.año
+                          -objTardias.apellido1=marcas[i].usuario.apellido1
+                          -temporalUsuario.push(objTardias)  
+
+
+                        
+                    
+                    -for(var i = 0; i <temporalUsuario.length; i++)
+                      -for(var j = 0; j <marcas.length; j++) 
+                        if (temporalUsuario[i].nombre==marcas[j].usuario.nombre && temporalUsuario[i].apellido1==marcas[j].usuario.apellido1 && temporalUsuario[i].dia==marcas[j].fecha.dia && temporalUsuario[i].mes==marcas[j].fecha.mes && temporalUsuario[i].año==marcas[j].fecha.año && marcas[j].tipoMarca=="Entrada")
+                          -var horax=parseInt(String(marcas[j].fecha.hora).substr(0,2))
+                          -var minutox=parseInt(String(marcas[j].fecha.hora).substr(3,2))
+                          if (horax >6 && minutox >10) 
+                            tr 
+                              td #{marcas[j].usuario.nombre} #{marcas[j].usuario.apellido1}
+                              td #{marcas[j].fecha.str}
+
+                   
+                       
+                       
+          else
+              p No se han realizado marcas hasta el momento.
+                
+          br
+
+
+
           -var primeraVez=0
           - var entro=false
           -var ordenadas=new Array()
