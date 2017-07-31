@@ -6,15 +6,9 @@ block sigucaCSS
 block content
  
   div.container#login-container
-<<<<<<< HEAD
-    form(action='/login', method='post')#login-form.well.span4
-      h1 SIGUCA
-      p.subheading Sistema de Gestión de Usuarios y Control de Asistencia
-=======
     form(class="col-md-12",action='/login', method='post')#login-form.well.span4
       h1.headerFont(class="text-center") SIGUCA
       p.subheading.subwell.headerFont(class="well text-center") Sistema de Gestión de Usuarios y Control de Asistencia
->>>>>>> desarrollo
       div.form-group
         label(for="usernameInput")
           |Usuario:
@@ -29,11 +23,6 @@ block content
           span.input-group-addon
             i.icon-key
           input.form-control#passInput(type="password", name="password", placeholder="Contraseña")
-<<<<<<< HEAD
-      button(type="submit")#btn-login.btn.btn-primary
-        i.icon-lock.icon-white
-        |  Ingresar
-=======
         button(class="col-xs-offset-4 col-md-offset-4",type="submit",data-target="#mensajeLogin")#btn-login.btn.btn-success
           i.icon-lock.icon-white
           |  Ingresar
@@ -48,5 +37,4 @@ block content
       .modal-body
         .well
           label 
-          |Bienvenido
->>>>>>> desarrollo
+|Bienvenido
