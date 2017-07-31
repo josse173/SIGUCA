@@ -43,6 +43,8 @@ exports.addUsuario = function(us, cb){
 			newUser.save(function (err, user) {
 				if (err) console.log(err);
 				return cb()
+                alert("Se ha creado un Nuevo Usuario Exitosamente");
+				console.log("El usuario se creo ");
             });//Crea Usuario
 		}
     });//Busca Usuario

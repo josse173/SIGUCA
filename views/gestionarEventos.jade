@@ -43,12 +43,12 @@ block content
                 tr
                   th(data-type="numeric" data-sort-initial="descending")  Fecha
                   th Usuario
-                  th(data-hide="phone") Motivo
-                  th(data-hide="phone" data-sort-ignore="true") Detalle
-                  th(data-hide="phone,small,medium" data-sort-ignore="true") Comentario
-                  th(data-hide="phone,small,medium" data-sort-ignore="true") Acción
-                  th(data-hide="phone,small,medium" data-sort-ignore="true") Aceptar
-                  th(data-hide="phone,small,medium" data-sort-ignore="true") Eliminar
+                  th Motivo
+                  th(data-sort-ignore="true") Detalle
+                  th(data-sort-ignore="true") Comentario
+                  th(data-sort-ignore="true") Acción
+                  th(data-sort-ignore="true") Aceptar
+                  th(data-sort-ignore="true") Eliminar
               tbody 
                 each justificacion, i in justificaciones
                   form(role='form', method="POST", action="/getionarJustificacion/"+justificacion.id)
@@ -86,15 +86,15 @@ block content
                 tr
                   th(data-type="numeric" data-sort-initial="descending") Fecha
                   th Usuario
-                  th(data-hide="phone" data-sort-ignore="true") Día de Inicio 
-                  th(data-hide="phone" data-sort-ignore="true") Día de Termino
-                  th(data-hide="phone,small,medium" data-sort-ignore="true") Cantidad de Horas
-                  th(data-hide="phone,small,medium") Cliente
-                  th(data-hide="phone,small,medium" data-sort-ignore="true") Motivo
-                  th(data-hide="phone,small,medium" data-sort-ignore="true") Comentario
-                  th(data-hide="phone,small,medium" data-sort-ignore="true") Acción
-                  th(data-hide="phone,small,medium" data-sort-ignore="true" data-name="Delete") Aceptar
-                  th(data-hide="phone,small,medium" data-sort-ignore="true") Eliminar
+                  th(data-sort-ignore="true") Día de Inicio 
+                  th(data-sort-ignore="true") Día de Termino
+                  th(data-sort-ignore="true") Cantidad de Horas
+                  th Cliente
+                  th(data-sort-ignore="true") Motivo
+                  th(data-sort-ignore="true") Comentario
+                  th(data-sort-ignore="true") Acción
+                  th(data-sort-ignore="true" data-name="Delete") Aceptar
+                  th(data-sort-ignore="true") Eliminar
               tbody 
                 each extra, i in extras
                   form(role='form', method="POST", action="/getionarSolicitud/"+extra.id)
@@ -109,7 +109,7 @@ block content
                       td
                         textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
                       td
-                        select.selectpicker(name='estado' data-width="auto"  data-style="btn-inverse")
+                        select.select_picker(name="estado"+extra.id, id="estado"+extra.id, data-width="auto"  data-style="btn-inverse")
                           option(value='Pendiente') Pendiente
                           option(value='Aceptada') Aprobar
                           option(value='Rechazada') Rechazar
@@ -134,15 +134,15 @@ block content
                 tr
                   th(data-type="numeric" data-sort-initial="descending") Fecha
                   th Usuario
-                  th(data-hide="phone") Día Inicial
-                  th(data-hide="phone") Día Final 
-                  th(data-hide="phone") Cantidad Días
-                  th(data-hide="phone,small,medium") Motivo
-                  th(data-hide="phone,small,medium" data-sort-ignore="true") Detalle
-                  th(data-hide="phone,small,medium" data-sort-ignore="true") Comentario
-                  th(data-hide="phone,small,medium" data-sort-ignore="true") Acción
-                  th(data-hide="phone,small,medium" data-sort-ignore="true") Aceptar
-                  th(data-hide="phone,small,medium" data-sort-ignore="true") Eliminar
+                  th Día Inicial
+                  th Día Final 
+                  th Cantidad Días
+                  th Motivo
+                  th(data-sort-ignore="true") Detalle
+                  th(data-sort-ignore="true") Comentario
+                  th(data-sort-ignore="true") Acción
+                  th(data-sort-ignore="true") Aceptar
+                  th(data-sort-ignore="true") Eliminar
               tbody 
                 each permiso, i in permisos
                   form(role='form', method="POST", action="/getionarSolicitud/"+permiso.id)
@@ -157,7 +157,7 @@ block content
                       td
                         textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
                       td
-                        select.selectpicker(name='estado' data-width="auto"  data-style="btn-inverse")
+                        select.select_picker(name='estado'+permiso.id, id="estado"+permiso.id, data-width="auto"  data-style="btn-inverse")
                           option(value='Pendiente') Pendiente
                           option(value='Aceptada') Aprobar
                           option(value='Rechazada') Rechazar

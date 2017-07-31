@@ -1,0 +1,175 @@
+extends layout
+
+block content
+    div.container
+      .info
+       h3 Gestionar eventos
+       h4 #{empleado}   
+
+      div.filter
+        h3 Filtros   
+        table
+          form(role='form', method="POST", action="/filtrarEventos/")
+            td
+              select.form-control#selectFiltro.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro") 
+                option(value= "todos|gestionarEventos") Todos los usuarios
+                each user in usuarios
+                  option(value= user._id + "|gestionarEventos") #{user.apellido1} #{user.apellido2}, #{user.nombre}
+            td
+              select.form-control#selectFiltro.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro_departamento") 
+                option(value= "todos") Todos los departamentos
+                each dep in departamentos
+                  option(value= dep._id ) #{dep.nombre}
+            td
+              label.labelFiltro.labFilLeft(for='fechaDesde') Desde:
+                div.input-group
+                  input#date_range_start.form-control(type='text', name='fechaDesde')
+                  span.input-group-addon
+                    i.icon-calendar
+            td
+              label.labelFiltro(for='fechaHasta') Hasta:
+                div.input-group
+                  input#date_range_end.form-control(type='text', name='fechaHasta')
+                  span.input-group-addon
+                    i.icon-calendar
+            td
+              button.filtro.form-control.btn.btn-success(type='submit', name='gestionar') Buscar
+       
+      .col-xs-12
+        h3 Justificaciones
+        if(justificaciones!=null && justificaciones.length != 0)
+          table.tableJustificaciones.footable(data-page-navigation=".pagination" data-page-size="5" )
+              thead
+                tr
+                  th(data-type="numeric" data-sort-initial="descending")  Fecha
+                  th Usuario
+                  th Motivo
+                  th(data-sort-ignore="true") Detalle
+                  th(data-sort-ignore="true") Comentario
+                  th(data-sort-ignore="true") Acción
+                  th(data-sort-ignore="true") Aceptar
+                  th(data-sort-ignore="true") Eliminar
+              tbody 
+                each justificacion, i in justificaciones
+                  form(role='form', method="POST", action="/getionarJustificacion/"+justificacion.id)
+                    tr
+                      td(data-value=justificacion.fechaCreada) #{justificacion.fecha.str} 
+                      td #{justificacion.usuario.nombre} #{justificacion.usuario.apellido1}
+                      td #{justificacion.motivo} 
+                      td #{justificacion.detalle} 
+                      td
+                        textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
+                      td
+                        select.select_picker(name='estado' data-width="auto" data-style="btn-inverse")
+                          option(value='Pendiente') Pendiente
+                          option(value='Aceptada') Aprobar
+                          option(value='Rechazada') Rechazar
+                          option(value='Incompleto') Incompleto
+                      td
+                        button.row-delete.btn.btn-default(value=justificacion.id, name='gestionar') 
+                            i.icon-ok.icon-large  
+                      td
+                        button.btn.btn-default.justificacionDelete(value=justificacion.usuario.nombre+' '+justificacion.usuario.apellido1+' '+justificacion.usuario.apellido2+','+justificacion.id+','+justificacion.fecha.str, name='eliminar') 
+                          i.icon-trash.icon-large.i-danger 
+              tfoot
+                tr
+                  td(colspan='8')
+                    .pagination.pagination-centered.hide-if-no-paging 
+        else
+          p No se han enviado justificaciones hasta el momento.               
+
+        br
+        h3 Solicitudes Horas Extraordinarias
+        if(extras && extras.length != 0)
+          table.tableSolicitudes.footable(data-page-navigation=".pagination" data-page-size="5" )
+              thead
+                tr
+                  th(data-type="numeric" data-sort-initial="descending") Fecha
+                  th Usuario
+                  th(data-sort-ignore="true") Día de Inicio 
+                  th(data-sort-ignore="true") Día de Termino
+                  th(data-sort-ignore="true") Cantidad de Horas
+                  th Cliente
+                  th(data-sort-ignore="true") Motivo
+                  th(data-sort-ignore="true") Comentario
+                  th(data-sort-ignore="true") Acción
+                  th(data-sort-ignore="true" data-name="Delete") Aceptar
+                  th(data-sort-ignore="true") Eliminar
+              tbody 
+                each extra, i in extras
+                  form(role='form', method="POST", action="/getionarSolicitud/"+extra.id)
+                    tr
+                      td(data-value=extra.fechaCreada) #{extra.fecha.str}
+                      td #{extra.usuario.nombre} #{extra.usuario.apellido1} 
+                      td #{extra.diaInicio} 
+                      td #{extra.diaFinal} 
+                      td #{extra.cantHoras} 
+                      td #{extra.cliente} 
+                      td #{extra.motivo} 
+                      td
+                        textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
+                      td
+                        select.select_picker(name="estado" id="estado" data-width="auto"  data-style="btn-inverse")
+                          option(value='Pendiente') Pendiente
+                          option(value='Aceptada') Aprobar
+                          option(value='Rechazada') Rechazar
+                      td
+                        button.row-delete.btn.btn-default(value=extra.id, name='gestionar') 
+                          i.icon-ok.icon-large  
+                      td
+                        button.btn.btn-default.solicitudDelete(value=extra.usuario.nombre+' '+extra.usuario.apellido1+' '+extra.usuario.apellido2+','+extra.id+','+extra.fecha, name='eliminar') 
+                          i.icon-trash.icon-large.i-danger 
+              tfoot
+                tr
+                  td(colspan='11')
+                    .pagination.pagination-centered.hide-if-no-paging
+        else
+          p No se han enviado extras hasta el momento. 
+
+        br
+        h3 Solicitudes Permisos
+        if(permisos && permisos.length != 0)
+          table.tableSolicitudes.footable(data-page-navigation=".pagination" data-page-size="5")
+              thead
+                tr
+                  th(data-type="numeric" data-sort-initial="descending") Fecha
+                  th Usuario
+                  th Día Inicial
+                  th Día Final 
+                  th Cantidad Días
+                  th Motivo
+                  th(data-sort-ignore="true") Detalle
+                  th(data-sort-ignore="true") Comentario
+                  th(data-sort-ignore="true") Acción
+                  th(data-sort-ignore="true") Aceptar
+                  th(data-sort-ignore="true") Eliminar
+              tbody 
+                each permiso, i in permisos
+                  form(role='form', method="POST", action="/getionarSolicitud/"+permiso.id)
+                    tr
+                      td(data-value=permiso.fechaCreada) #{permiso.fecha.str} 
+                      td #{permiso.usuario.nombre} #{permiso.usuario.apellido1} 
+                      td #{permiso.diaInicio} 
+                      td #{permiso.diaFinal} 
+                      td #{permiso.cantidadDias} 
+                      td #{permiso.motivo} 
+                      td #{permiso.detalle} 
+                      td
+                        textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
+                      td
+                        select.select_picker(name='estado' data-width="auto"  data-style="btn-inverse")
+                          option(value='Pendiente') Pendiente
+                          option(value='Aceptada') Aprobar
+                          option(value='Rechazada') Rechazar
+                      td
+                        button.row-delete.btn.btn-default(value=permiso.id, name='gestionar') 
+                          i.icon-ok.icon-large  
+                      td
+                        button.btn.btn-default.solicitudDelete(value=permiso.usuario.nombre+' '+permiso.usuario.apellido1+' '+permiso.usuario.apellido2+','+permiso.id+','+permiso.fecha, name='eliminar') 
+                          i.icon-trash.icon-large.i-danger 
+              tfoot
+                tr
+                  td(colspan='11')
+                    .pagination.pagination-centered.hide-if-no-paging
+        else
+          p No se han enviado permisos hasta el momento. 

@@ -5,6 +5,7 @@ moment 			= require('moment'),
 Usuario 		= require('../models/Usuario'),
 Justificaciones = require('../models/Justificaciones'),
 util 			= require('../util/util'),
+config 			= require('../config.json'),
 emailSIGUCA 	= 'siguca@greencore.co.cr';
 
 //--------------------------------------------------------------------
@@ -85,7 +86,7 @@ exports.updateJust = function(justificacion, cb){
 					Usuario.find({'tipo' : 'Supervisor', 'departamentos.departamento' : just.usuario.departamentos[0].departamento}, {'email' : 1}).exec(function (err, supervisor) { 
 						if (err) return cb(err);
 
-						var transporter = nodemailer.createTransport();
+						var transporter = nodemailer.createTransport('smtps://'+config.emailUser+':'+config.emailPass+'@'+config.emailEmail);
 
 						for (var i = 0; i < supervisor.length; i++) {
 							transporter.sendMail({
@@ -118,7 +119,7 @@ exports.deleteJust = function(id, cb){
 		if(just.fechaCreada)
 			fecha = moment(just.fechaCreada);
 
-		var transporter = nodemailer.createTransport();
+		var transporter = nodemailer.createTransport('smtps://'+config.emailUser+':'+config.emailPass+'@'+config.emailEmail);
 
 		transporter.sendMail({
 			from: emailSIGUCA,
@@ -146,9 +147,9 @@ exports.gestionarJust = function(justificacion, cb, idUser){
 			}
 			).populate('usuario').exec(function (err, just) { 
 				if (err) return cb(err, '');
-				var transporter = nodemailer.createTransport();
+				var transporter = nodemailer.createTransport('smtps://'+config.emailUser+':'+config.emailPass+'@'+config.emailEmail);
 				var a = new Date(just.fechaCreada * 1000);
-				var date = ""+a.getDate()+"/"+a.getMonth()+"/"+a.getFullYear();
+				var date = ""+a.getDate()+"/"+util.getMes(a.getMonth())+"/"+a.getFullYear();
 
 				var justtext = "\r\n\r\nFecha de creación:"+date+"\n"
 				+ "Motivo:"+just.motivo+"\n"

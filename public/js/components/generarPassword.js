@@ -19,6 +19,9 @@ $(document).ready(function(){
  });
 
 
+
+
+
 var keylist="abcdefghijklmnopqrstuvwxyz123456789";
 var temp='';
 /*var api_key = 'pubkey-0n7r-abu4ewofp5zxh76nwhr3ch6swj1';
@@ -53,6 +56,8 @@ function generatepass(plength){
 	for (i=0 ; i<plength; i++){
 		temp += keylist.charAt(Math.floor(Math.random()*keylist.length));
 	}
+    $('#passInputText').css("display","inline");
+	$('#passInputText').text(temp);
 	$('#passInput').val(temp);
 	$('#correoMsj').html('<span class="success">La contraseña generada fue: </span>' + temp )
 	
@@ -60,6 +65,12 @@ function generatepass(plength){
 
 	
 }
+
+$('#clearLabel').click(function(){
+ $('#passInputText').css("display","none");
+ $('#passInput').val("");
+});
+
 function sendEmail(sender, recipient,mensaje){
 	sendRaw( sender ,
         [recipient],

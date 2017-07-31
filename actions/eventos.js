@@ -209,11 +209,20 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos,
               justificaciones, extras, permisos, null, nombreUsuario);
           }
           else {
-            CierrePersonal.find(cierreQuery).populate("usuario").exec(function(error, cierres) {
-              //console.log(cierres);
-              return renderFiltro(res, titulo, req.user, departamentos, usuarios, marcas, 
-                justificaciones, extras, permisos, cierres, nombreUsuario);
-            });
+            
+            cierreQuery.usuario = { $in: usuarios };
+
+            Departamento.findOne({_id: req.user.departamentos[0].departamento}).exec(function(error, departamentosList){
+              Usuario.find({'departamentos.departamento' : departamentosList}).exec(function(error, usuarios) {
+                CierrePersonal.find(cierreQuery).populate("usuario").exec(function(error, cierres) {
+                
+                return renderFiltro(res, titulo, req.user, departamentos, usuarios, marcas, 
+                  justificaciones, extras, permisos, cierres, nombreUsuario);
+                });
+              });
+
+            });//Fin Departamento
+            
           }
         });//Solicitudes permisos
       });//Solicitudes horas extra
@@ -231,6 +240,49 @@ function renderFiltro(res, titulo, usuario, departamentos,
         return m.usuario;
       }), true);
   }
+    
+  /*
+  * Se hace el calculo de las horas trabajadas
+  */
+  var listaSumada = null;
+  if(cierre){
+    
+    var listaSumada = new Array(),
+    revisado = false;
+
+    cierre.forEach(function(original) {
+    //for(var i = 0; i < cierre.length;i++){
+
+      revisado = false;
+      for(var p = 0; p < listaSumada.length;p++){
+        if(listaSumada[p].usuario.nombre == original.usuario.nombre){//Si existe lo suma
+          //Suma el tiempo trabajado analizando que si esta en el minuto 59 debe sumar la hora
+          
+          listaSumada[p].tiempo.horas += original.tiempo.horas;
+          if(listaSumada[p].tiempo.minutos == 59){
+            listaSumada[p].tiempo.minutos = 0;
+            listaSumada[p].tiempo.horas++;
+          }
+          else{
+            listaSumada[p].tiempo.minutos += original.tiempo.minutos;
+          }
+          revisado = true;
+        }
+      }//Fin de la busqueda del elemento a analizar en la lista de elementos analizados
+
+      //En caso de que no haya sido analizada antes se incerta
+      if(!revisado){
+        var cierreTem = new CierrePersonal();
+        cierreTem.usuario = original.usuario;
+        cierreTem.tiempo = original.tiempo;
+        cierreTem.epoch = original.tiempo;
+
+        listaSumada.push(cierreTem);
+      }
+    });//Se han analizado todos los elementos
+  }//Se terminan de analizar los cierres
+
+
   var filtro = {
     title: titulo,
     usuario: usuario,
@@ -249,7 +301,8 @@ function renderFiltro(res, titulo, usuario, departamentos,
     cierreUsuarios: cList,
     usuarios: usuarios,
     departamentos: departamentos,
-    nombreUsuario: nombreUsuario
+    nombreUsuario: nombreUsuario,
+    horasEmpleado: listaSumada
   };
   return (titulo === 'Reportes | SIGUCA') ? res.render('reportes', filtro) : res.render('gestionarEventos', filtro); 
 }
@@ -282,7 +335,7 @@ function filtrarPorFecha(req){
   /*var epochDesde = (diaGte.getTime() - diaGte.getMilliseconds())/1000 - 86400*7;
   var epochHasta = (diaLt.getTime() - diaLt.getMilliseconds())/1000;*/
   return {
-    '$gte': diaGte.unix()
+    //'$gte': diaGte.unix() //Se comenta para que traiga todos los elementos cuando no se indica rango de fechas
   }
   //return {};
 }

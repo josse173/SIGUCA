@@ -1,20 +1,30 @@
 .col-xs-8
-  h3 #{usuario.nombre} #{usuario.apellido1}
+  h4.text-center.wellW.well.headerFont.colorBorder #{usuario.nombre} #{usuario.apellido1} 
+  h5.text-center.wellW.well.headerFont.colorBorder 
+   | Código de Colaborador: 
+   label#codigoUsuario #{usuario.codTarjeta}
   br
-  div.marcaResponsive
-    .col-xs-4
-      h3  Marca Mediante el Sistema
+  div.img-circle.col-md-offset-4
+    img(src="" height="300" width="300"  border="5" alt="Asigna una imagen en configuración :)" name=imagenPerfil).wellW.well#imagenPerfil
+  
+  
+  br
+  br
+  br
+  div.marcaResponsive.col-lg-offset-4
+    .col-xs-6
+      h4.headerFont  Marca Mediante el Sistema
       div#contBotones
         div          
          button.marcaResponsive.btn.btn-success(name='marcar', onclick= "changeElemt('marca')", data-toggle="modal" data-target="#addMarcaResponsive" value=usuario._id) Realizar Marca
-    div.marcasTable
-      div
-      h3 Registro de Marcas
-      div
-        label Hora oficial 
-          span.clock
-        label Tiempo trabajado 
-          span.clockHorasTrab
+    div.col-md-offset-8.col-lg-offset-4.marcasTable.wellW.well
+      div.marcasTable
+        h4 Registro de Marcas
+          label#minimizeTime Hora oficial 
+            span.clock
+          label#minimizeTime Tiempo trabajado 
+            span.clockHorasTrab
+
       br
       div
         table#tablaMarcas.footable
@@ -49,21 +59,18 @@
                   tr
                     td Salida
                     td(data-value=marca.epoch) #{marca.fecha}
-                      
-  div#calSupervisor
-    input#date_range_marca.form-control(type='text')
-    button#btnIr Ir
-
-  .marca
-    div.marcasTable
-      h3 Registro de Marcas
+  br 
+  br
+  .marca.text-center.col-md-offset-2.col-lg-offset-4.col-xs-4x
+    div.marcasTable.wellW.col-md-offset-1
+      h4.headerFont Registro de Marcas
       div
         label Hora oficial 
           span.clock
         label Tiempo trabajado 
           span.clockHorasTrab
       br
-      div
+      div.col-md-offset-1
         table#tablaMarcas.footable
           thead
             tr
@@ -74,35 +81,33 @@
               tr
                 td #{marca.tipoMarca}
                 td #{marca.fecha}
+  div.clearfix
   br
-  .col-xs-4
-    div.justTable
-      div
-      h3 Justificaciones pendientes de detalle
-      div
-        table#tablaJust.footable
-          thead
-            tr
-              th(data-sort-ignore="true" data-type="numeric" ) Fecha creada
-              th(data-sort-ignore="true" data-type="numeric" ) Fecha justificada
-              th(data-sort-ignore="true") Motivo
-              th(data-sort-ignore="true" data-type="numeric" ) Información
-          tbody.justDetalle
-            each just, i in justificaciones
-              tr(data-toggle="modal" data-target="#updateJustificacion" data-value=just._id)
-                td #{just.fecha.str} 
-                td #{just.fechaJust.str}
-                td #{just.motivo}
-                td #{just.informacion}
-.col-xs-4
+  .col-lg-offset-msj.col-md-offset-1
+    div.container-fluid.col-xs-4.hideDisplay
+      div.container-fluid.label.headerFont.panel.panel-success.col-md-offset-3
+         .panel-heading
+          .panel-title Tiempo Total Laborado:
+         .panel-body
+          button.close#cerrarPanel(type='button') ×
+          .text-center.bigFont.span.qwer   
+  .col-lg-offset-msj2
+    div#calSupervisor.wellW.well.container-fluid
+      div.marcasTable
+      label.text-center
+        |Calendario para consulta de horas trabajadas en Fechas específicas
+      input#date_range_marca.form-control(type='text')
+      button#btnIr.btn-primary    Ir      
+
+ .col-xs-4
   .marca
-    h3  Marca Mediante el Sistema
+    h4.headerFont  Marca Mediante el Sistema
     div#contBotones
       div           
        button#btn-marca.btn.btn-success(name='marcar', onclick= "changeElemt('marca')", data-toggle="modal" data-target="#addMarca" value=usuario._id) Realizar Marca
 
   if(usuario.tipo == 'Supervisor')
-    h3 Pendientes de revisar 
+    h4.headerFont Pendientes de revisar 
     ul.list-group
       li.list-group-item
         a(href='/gestionarEventos')
@@ -113,10 +118,10 @@
           span.badge #{justCount} 
           |   Justificaciones
 
-  h3 Acciones 
+  h4.headerFont Acciones 
   ul.list-group
     li.list-group-item
-      a(data-toggle="modal" data-target="#horaExtra")
+      a(data-toggle="modal" data-target="#horaExtra")#extraLink
         | Solicitud de hora extraordinaria
     li.list-group-item
       a(data-toggle="modal" data-target="#permiso")
@@ -124,8 +129,33 @@
     li.list-group-item
       a(data-toggle="modal" data-target="#addJustificacion")
         | Justificaciones
+  br
+  .col-xs-4
+    div.justTable.table-responsive
+      div
+      h4.headerFont Justificaciones pendientes de detalle
+      div
+        table#tablaJust.footable(data-page-navigation=".pagination" data-page-size="4" )
+          thead
+            tr
+              th(data-sort-ignore="true" data-type="numeric" ) Fecha creada
+              th(data-sort-ignore="true" data-type="numeric" ) Fecha justificada
+              th(data-sort-ignore="true") Motivo
+              th(data-sort-ignore="true" data-type="numeric" ) Información
+          tbody.justDetalle
+            each just, i in justificaciones
+              tr(data-toggle="modal" data-target="#updateJustificacion" data-value=just._id)
+                //.miClase fue crerada para contar la cantidad de justificaciones creadas
+                td.miClase #{just.fecha.str} 
+                td #{just.fechaJust.str}
+                td #{just.motivo}
+                td #{just.informacion}
+          tfoot
+            tr
+              td(colspan='8')
+                .pagination.pagination-centered.hide-if-no-paging 
 
-#mensajeMarca.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+#mensajeMarca.modal.fade
     .modal-dialog
         .modal-content
           .modal-header
@@ -220,13 +250,13 @@
                       i.icon-time
               .form-group
                 label(for='cliente') Cliente:
-                  input.input-small.form-control(type="text", name='cliente' required )
+                  input#clienteSoli.input-small.form-control(type="text", name='cliente' required )
                 label(for='motivo') Motivo:
                   textarea#motivo.form-control(rows="4" cols="50" name='motivo' required )
                 
                                              
-              button.btn.btn-success(type='submit') Enviar
-              button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
+              button.btn.btn-success Enviar
+              button#btn-soli-cancelar.btn.btn-default(type='button', data-dismiss='modal') Cancelar
 
  
 #permiso.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true' )
@@ -266,7 +296,7 @@
                   textarea#detalle.form-control(rows="4" cols="50" name='detalle' required)
                                                                    
               button#btn-permiso.btn.btn-success Enviar
-              button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
+              button#btn-permiso-cancelar.btn.btn-default(type='button', data-dismiss='modal') Cancelar
 
          
 #addJustificacion.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
@@ -292,7 +322,7 @@
               textarea#detalles.form-control(rows="4" cols="50" name='detalle' required)
                  
           button#btn-just.btn.btn-success(type='submit') Enviar
-          button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
+          button#btn-just-cancelar.btn.btn-default(type='button', data-dismiss='modal') Cancelar
 
 #updateJustificacion.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
   .modal-dialog
@@ -317,3 +347,45 @@
                  
           button#btn-just.btn.btn-success(type='submit') Enviar
           button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
+
+
+
+
+
+//Ventana modal que se abre al inicio dee la pagina escritoroUsuario.jade en caso de que hayan justificaciones pendientes
+
+#mostrarSolicitudes.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+  .modal-dialog
+    .modal-content
+      .modal-header
+        button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+        h4#myModalLabel.modal-title Justificaciones pendientes
+        h5 A continuación se muestran las justificaciones pendientes a la fecha, debe responderlas para que desaparezca esta notificación.
+      .modal-body
+        form.formJust#login-form.well.span4
+          .form-group
+              .col-xs-4
+              div.justTable.table-responsive
+                div
+                  table#tablaJust.footable(data-page-navigation=".pagination" data-page-size="4" )
+                    thead
+                      tr
+                        th(data-sort-ignore="true" data-type="numeric" ) Fecha creada
+                        th(data-sort-ignore="true" data-type="numeric" ) Fecha justificada
+                        th(data-sort-ignore="true") Motivo
+                        th(data-sort-ignore="true" data-type="numeric" ) Información
+                    tbody.justDetalle
+                      each just, i in justificaciones
+                        tr(data-toggle="modal" data-target="#updateJustificacion" data-value=just._id)
+                          td #{just.fecha.str} 
+                          td #{just.fechaJust.str}
+                          td #{just.motivo}
+                          td #{just.informacion}
+                    tfoot
+                      tr
+                        td(colspan='8')
+                          .pagination.pagination-centered.hide-if-no-paging 
+
+                 
+  
+  

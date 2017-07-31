@@ -74,8 +74,8 @@ License
 
 ***AGPL License***
 
-[donwloadNodejs]:http://nodejs.org/download/
-[donwloadMongodb]:http://www.mongodb.org/downloads
+[downloadNodejs]:http://nodejs.org/download/
+[downloadMongodb]:http://www.mongodb.org/downloads
 [nodejs]:http://www.nodejs.org/
 [nodeschool]:http:nodeschool.io/#workshoppers
 [mongodb]:http://www.mongodb.org/

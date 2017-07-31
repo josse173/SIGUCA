@@ -1,5 +1,5 @@
-.col-xs-4(style="margin: 20px;")
-    h3#labelIMEC
+.col-xs-4.col-sm-offset-2.col-md-offset-3.col-lg-offset-4
+    h3#labelIMEC(class="text-center")
       |IMEC:
     table.footable
       thead
@@ -157,11 +157,13 @@
               .form-group
                 label(for="passwordInput")
                   |Contraseña:
-                  input.form-control#passInput(type='text', size='18', name="password", placeholder="Contraseña")
+                  input.form-control#passInput(type='password', size='18', name="password", placeholder="Contraseña")
+                  label#passInputText
+                  br
                   button.btn.btn-default(type='button', onclick='generatepass(8)') Generar Contraseña
-                              
+                       
               button.btn.btn-success(type='submit') Ingresar
-              button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
+              button.btn.btn-danger#clearLabel(type='button', data-dismiss='modal') Cancelar
 
   #addHorario.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
     .modal-dialog
@@ -197,6 +199,9 @@
                     input.form-control#inputRango(type="text", name="rangoJornada")
                     span.input-group-addon
                       i.icon-time  
+                  div#jornadaLibreDiv   
+                    input(type='checkbox', name= "tipo", id="jornadaLibre")
+                    label(for='jornadaLibre', id="tipoJornadaLibre ") Jornada Libre 
               .form-group
                 h4 Información de descansos
                 label(for='tiempoReceso') Rango de receso:

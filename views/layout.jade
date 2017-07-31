@@ -10,8 +10,8 @@
 //-
 //-Use block sigucaJS to add extra javascript from derivated pages
 //-Use block sigucaJS para incluír javascripts extra de páginas derivadas
-doctype 
-html 
+doctype
+html
   head
     meta(charset='utf-8')
     //To ensure proper rendering and touch zooming (boostrap)
@@ -19,6 +19,7 @@ html
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
 
     //Style sheets used
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet"> 
     link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
     link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
     link(rel='stylesheet', href='/stylesheets/bootstrap-theme.min.css')
@@ -29,9 +30,12 @@ html
     link(rel='stylesheet', href='/stylesheets/alertify/themes/bootstrap.css')
     link(rel='stylesheet', href='/stylesheets/bootstrap-select.min.css')
     link(rel='stylesheet', href='/stylesheets/jquery.datetimepicker.css')
-    //
-      link(rel='stylesheet', href='/stylesheets/bootstrap-datepicker.min.css')
+    link(rel='stylesheet', href= '/stylesheets/css_DataTables/jquery.dataTables.min.css')
+    link(rel='stylesheet', href= '/stylesheets/css_DataTables/buttons.dataTables.min.css')
+    link(rel='stylesheet', href='/stylesheets/bootstrap-datepicker.min.css')
     link(rel='stylesheet', href='/stylesheets/bootstrap-timepicker.min.css')
+    link(rel='stylesheet', href='/stylesheets/sigucaFont.css')
+ 
  
     title SIGUCA
 
@@ -54,8 +58,7 @@ html
               span.icon-bar
               span.icon-bar
           span#barLogo
-            img(src='/images/logo-siguca.png',  href="/Ayuda")#sigucaLogo
-            img(src='/images/logo-greencore.png',  href="/Ayuda")#sigucaLogo
+            img(src='/images/GreenCore.png' height="50" width="200",  href="/Ayuda")#sigucaLogo
       .collapse.navbar-collapse.navbar-ex1-collapse
           ul.nav.navbar-nav
           ul.nav.navbar-nav.navbar-right
@@ -100,14 +103,20 @@ html
                   li
                     a(href='/logout')
                       i.icon-off.icon-large     
-                      |&nbsp;Cerrar Sessión  
+                      |&nbsp;Cerrar Sessión 
+                      
+    footer
+      div.footerStyle
+        p.text-center GreenCore Solutions SRL, San José, Costa Rica.          
+          img(src='/images/logo-greencore.png',  href="/Ayuda")#sigucaLogo
+          img(src='/images/logo-siguca.png',  href="/Ayuda")#sigucaLogo
     block content
 
+    script(src="https://code.jquery.com/jquery-1.12.3.js")
     script(src="/js/components/jquery-2.0.3.min.js")
     script(src="/js/components/bootstrap.min.js")
     script(src='/js/components/respond-min.js')  
-    //
-      script(src="/js/components/bootstrap-datepicker.min.js")
+    script(src="/js/components/bootstrap-datepicker.min.js")
     script(src="/js/components/bootstrap-timepicker.min.js")
     script(src="/js/components/bootstrap-select.min.js")
     script(src="/js/components/footable.js")
@@ -118,4 +127,12 @@ html
     script(src="/js/components/jquery.datetimepicker.js")
     script(src="/js/components/moment.min.js")
     script(src="/js/app/routes.js")
+    script(src="/js/app/reportes.js")
+    script(src='/js/JS_Datatables/jquery.dataTables.min.js')
+    script(src='/js/JS_Datatables/dataTables.buttons.min.js')
+    script(src='/js/JS_Datatables/pdfmake.min.js')
+    script(src='/js/JS_Datatables/vfs_fonts.js')
+    script(src='/js/JS_Datatables/buttons.html5.min.js')
+    script(src='/js/JS_Datatables/buttons.print.min.js')
+    script(src='/js/JS_Datatables/jszip.min.js')
     block sigucaJS

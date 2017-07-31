@@ -10,11 +10,12 @@
     $('#timepicker1 span').timepicker('setTime', '17:00');
     $('#timepicker2 span').timepicker('setTime', '0:45');
     $('#timepicker3 span').timepicker('setTime', '1:00');
-    $('#timepicker4 span').timepicker('setTime', '0:15');
+    $('#timepicker4 span').timepicker('setTime', '0:00');
     $('#rangoJornada').text("9:00");
     
     $('#tipoJornada').val('Fijo');
     $('#timepicker4').hide();
+    $('#jornadaLibreDiv').hide(); 
 
     $('#timepicker input').change(function () {
     	rangoJornada();
@@ -52,15 +53,26 @@
             $('#timepicker1 input').attr('disabled','disabled');
             $('#rangoJornada').hide();
             $('#timepicker4').show();
+            $('#jornadaLibreDiv').show(); 
             $('#tipoJornada').val('Libre');
         } else {
             $('#timepicker input').removeAttr('disabled');
             $('#timepicker1 input').removeAttr('disabled');
             $('#rangoJornada').show();
-            $('#timepicker4').show();
+            $('#timepicker4').hide();
+            $('#jornadaLibreDiv').hide(); 
             $('#tipoJornada').val('Fijo');
         }
     });
+      $('#jornadaLibre').change(function () {
+        if($('#jornadaLibre').is(':checked')){
+            $('#timepicker4 input').attr('disabled','disabled');
+        } else {
+            $('#timepicker4 input').removeAttr('disabled');
+           
+        }
+    });
+
 
     // $('#selectTipo').change(function () {
     //     var val = $('#selectTipo').val()

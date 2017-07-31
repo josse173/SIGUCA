@@ -4,6 +4,7 @@ block content
   .container
     
     br
+
     h3 Lista de Empleados
     table.footable.tableEmpleado(data-page-navigation=".pagination" data-page-size="20")
         thead
@@ -42,7 +43,7 @@ block content
                 button.btn.btn-default(data-toggle="modal" data-target="#editEmpl" value=empleado.id)
                   i.icon-pencil.icon-large.i-success
               td
-                button.empleadoDelete.btn.btn-default(value=empleado.nombre+' '+empleado.apellido1+' '+empleado.apellido2+','+empleado.id)
+                button.empleadoDelete.btn.btn-default(value=empleado.nombre+' '+empleado.apellido1+''+empleado.apellido2+','+empleado.id)
                   i.icon-trash.icon-large.i-danger
         tfoot
           tr
@@ -103,9 +104,10 @@ block content
                        |Contraseña:
                        input.form-control#passInput(type='text', size='18', name="password", placeholder="Contraseña")
                        button.btn.btn-default(type='button', onclick='generatepass(8)') Generar Contraseña
-                                
+                      
                   button.btn.btn-success(type='submit') Actualizar
                   button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
+
 block sigucaJS
   script(src="/js/components/mailgun_validator.js")
   script(src="/js/components/generarPassword.js")

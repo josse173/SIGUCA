@@ -5,6 +5,7 @@ moment 			= require('moment'),
 Solicitudes 	= require('../models/Solicitudes'),
 Usuario 		= require('../models/Usuario'),
 util 			= require('../util/util'),
+config          = require('../config.json'),
 emailSIGUCA 	= 'siguca@greencore.co.cr';
 
 exports.get = function(query, cb){
@@ -68,7 +69,7 @@ exports.updateExtra = function(extra, cb, idUser){
 				Usuario.find({'tipo' : 'Supervisor', 'departamentos.departamento' : solicitud.usuario.departamentos[0].departamento}, {'email' : 1}).exec(function (err, supervisor) { 
 					if (err) return cb(err);
 
-					var transporter = nodemailer.createTransport();
+					var transporter = nodemailer.createTransport('smtps://'+config.emailUser+':'+config.emailPass+'@'+config.emailEmail);
 
 					for (var i = 0; i < supervisor.length; i++) {
 						transporter.sendMail({
@@ -126,7 +127,7 @@ exports.addPermiso = function(permiso, cb, idUser){
 				Usuario.find({'tipo' : 'Supervisor', 'departamentos.departamento' : permiso.usuario.departamentos[0].departamento}, {'email' : 1}).exec(function (err, supervisor) { 
 					if (err) console.log(err);
 
-					var transporter = nodemailer.createTransport();
+					var transporter = nodemailer.createTransport('smtps://'+config.emailUser+':'+config.emailPass+'@'+config.emailEmail);
 					for (var i = 0; i < supervisor.length; i++) {
 
 						transporter.sendMail({
@@ -168,7 +169,7 @@ exports.updatePermiso = function(permiso, cb, idUser){
 				Usuario.find({'tipo' : 'Supervisor', 'departamentos.departamento' : solicitud.usuario.departamentos[0].departamento}, {'email' : 1}
 					).exec(function (err, supervisor) { 
 						if (!err) {
-							var transporter = nodemailer.createTransport();
+							var transporter = nodemailer.createTransport('smtps://'+config.emailUser+':'+config.emailPass+'@'+config.emailEmail);
 							for (var i = 0; i < supervisor.length; i++) {
 								transporter.sendMail({
 									from: emailSIGUCA,
@@ -216,7 +217,7 @@ exports.deleteSoli = function(id, cb, idUser){
 		if(soli.fechaCreada)
 			fecha = moment(soli.fechaCreada);
 
-		var transporter = nodemailer.createTransport();
+		var transporter = nodemailer.createTransport('smtps://'+config.emailUser+':'+config.emailPass+'@'+config.emailEmail);
 
 		if(soli.tipoSolicitudes == 'Extras'){
 			transporter.sendMail({
@@ -268,9 +269,9 @@ exports.gestionarSoli = function(solicitud, cb, idUser){
 		}).populate('usuario').exec(function (err, soli) { 
 
 			if (err) return cb(err, '');
-			var transporter = nodemailer.createTransport();
+			var transporter = nodemailer.createTransport('smtps://'+config.emailUser+':'+config.emailPass+'@'+config.emailEmail);
 			var a = new Date(soli.fechaCreada * 1000);
-			var date = ""+a.getDate()+"/"+a.getMonth()+"/"+a.getFullYear();
+			var date = ""+a.getDate()+"/"+util.getMes(a.getMonth())+"/"+a.getFullYear();
 			var solitext = "\r\n\r\nFecha de creación:"+date+"\n"
 			+ "Motivo:"+soli.motivo+"\n"
 			+ "Detalle:"+soli.detalle+"\r\n\r\n";

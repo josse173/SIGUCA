@@ -8,32 +8,43 @@ socket.on('connected', function (epoch) {
     selectValue();
     clock(epoch);
     updateHorasTrabajadas();
+    
+    
 });
 
-$('#btnIr').click(function(){
+
+/*
+ $("#btnIr").click(function(){
     $.ajax({
         url: "/marca/get",
         type: 'POST',
         dataType : "json",
         data: {"date":$('#date_range_marca').val()},
         success: function(data) {
-            $("#marcasBody").html("");
-            if(data.result!="error"){
-                for(m in data.marcas){
-                   $("#marcasBody").append($("<tr></tr>")
-                    .append(
-                        $("<td></td>").text(data.marcas[m].tipoMarca))
-                    .append(
-                        $("<td></td>").text(data.marcas[m].fecha.hora)));
-                }
-            }
-        },
+            
+        }//fin
         error: function(){
             alert("Error.");
-        }
-    });
+        }    
 });
-//
+    */
+
+
+
+
+
+$('#cerrarPanel').click(function(){
+ $(".hideDisplay").css("display","none");
+});
+
+$(document).ready(function()
+{  
+   var codigo = $( "#codigoUsuario").text();
+   $("#imagenPerfil").prop("src","/uploads/"+codigo+".png");
+
+})
+
+
 
 function selectValue(){
     var value = $('#selectFiltro').val();

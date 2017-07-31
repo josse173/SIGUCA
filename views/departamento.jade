@@ -15,7 +15,7 @@ block content
             tr
               td #{departamento.nombre} 
               td
-                button.btn.btn-default(data-toggle="modal" data-target="#editDep" value=departamento._id)
+                button.departamentoUpdate.btn.btn-default(data-toggle="modal" data-target="#editDep" value=departamento._id)
                   i.icon-pencil.icon-large.i-success
               td
                 button.departamentoDelete.btn.btn-default(value=departamento.nombre+','+departamento.id)   
@@ -34,4 +34,5 @@ block content
                     label(for='nombre') Nombre:
                       input#nombreDepa.form-control( type="text", placeholder='Nombre del area', name= "nombre")
                 button.btn.btn-success(type='submit') Actualizar
+
                 button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar   

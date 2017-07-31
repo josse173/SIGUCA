@@ -1,8 +1,8 @@
 /*
  * GET home page.
  * Rutas
- */
-
+ */                 
+ var fs = require('fs');
  var mongoose = require('mongoose');
  var nodemailer = require('nodemailer');
  var moment = require('moment');
@@ -40,15 +40,35 @@ var Solicitudes = require('../models/Solicitudes');
 var Cierre = require('../models/Cierre');
 var emailSIGUCA = 'siguca@greencore.co.cr';
 
+//***************************************
+//var multer=require('multer');
+//var upload = multer({ dest: '' });
+
+var multer  =  require('multer');  
+
+//************************************
 module.exports = function(app, io) {
     /*
     *   Redirecciona a la página principal (index.html)
     */
+  
+    
     app.get('/', function (req, res) {
         res.render('index', {
             usuario: req.user
         });
     });
+
+ 
+   
+    //var upload = multer({storage: 'pru/'});
+   // app.post('/imagen',upload.single('myimage'),function(req,res,next){
+    //    console.log('test :'+ JSON.stringify(req.file));
+    //    console.log('test :'+ JSON.stringify(req.files));
+    //    res.end('Imagen Cargada en el servidor');
+    //});
+  
+  
 
     //******************************************************************************
     /*
@@ -193,7 +213,8 @@ module.exports = function(app, io) {
     app.post('/getionarSolicitudAjax/:id', autentificado, function (req, res) {
         var solicitud = req.body;
         solicitud.id = req.params.id;
-        if(solicitud.estado != 'Pendiente') {
+        var estadoreal = 'Pendiente'+solicitud.id;
+        if(solicitud.estado != estadoreal) {
             crudSolicitud.gestionarSoli(solicitud, function (err, msj) { 
                 if (err) res.json(err);
                 else res.send(msj);
@@ -298,15 +319,16 @@ module.exports = function(app, io) {
     */
     app.get('/rfidReader', function (req, res) {
             //pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta=123&tipoMarca=6
-            var pwd1 = req.param('pwd1');
-            var pwd2 = req.param('pwd2');
+            //var pwd1 = req.param('pwd1');
+            //var pwd2 = req.param('pwd2');
             var codTarjeta = req.param('codTarjeta');
             var tipoMarca = req.param('tipoMarca');
-            if(pwd1 == 'ooKa6ieC' && pwd2 == 'of2Oobai' ) {
-                crud.rfidReader(codTarjeta, tipoMarca, function (msj) {
-                    res.send(msj);
+            //if(pwd1 == 'ooKa6ieC' && pwd2 == 'of2Oobai' ) {
+            
+            crudMarca.rfidReader(codTarjeta, tipoMarca, function (msj) {
+            res.send(msj);
                 });
-            }
+            //}
         });
 
     /*
@@ -472,11 +494,57 @@ module.exports = function(app, io) {
                 id: req.params.id,
                 username: req.body.username
             };
-            crud.changeUsername(user, function() { 
+            crudUsuario.changeUsername(user, function() { 
                 res.redirect('/configuracion');
             });
         }
     });
+
+
+ //  var storage = multer.diskStorage({
+   //     destination: function(req, file, cb) {
+    //        cb(null, './uploads/');
+    //    },
+    //    filename: function(req, file, cb) {
+    //        var ext = file.originalname.split('.').pop();
+    //        cb(null, file.fieldname + '-' + Date.now() + '.' + ext);
+    //    }
+   // });
+
+   // upload = multer({ storage: storage });
+   // app.post('/IMAGENXD/:id', autentificado,upload.single('upl'), function (req, res,next) {
+   //    //console.log('body', req.body);
+        //console.log('file', req.file);
+    //    console.log('file', req.files);
+    //    res.redirect('/configuracion');
+    //});
+
+
+// Funcionalidad para cargar la imagen en el servidor, con la validacionde  png , la ruta donde  se  guarda
+// se define en /config/express.js 
+    app.post('/IMAGEN/:id', autentificado, function(req, res) {
+    
+
+        var extension=String(req.files.upl.type);
+        var extension = extension.substring(6); 
+        console.log(extension);
+        if(extension!=="png"){
+            res.send("Solo se aceptan .png");
+        }
+        else{
+        var tmp_path = String(req.files.upl.path);
+        var target_path = '/usr/local/bin/siguca/imagenes/'+req.body.codigo+'.'+extension;
+        fs.rename(tmp_path, target_path, function(err) {
+            if (err) throw err;
+            fs.unlink(tmp_path, function() {
+                if (err) throw err;
+            });
+        });
+        res.redirect('/configuracion');
+    }
+    });
+
+
 
     /*
     *   Cambia la contraseña de los usuarios
@@ -484,10 +552,12 @@ module.exports = function(app, io) {
     app.post('/cambioPassword/:id', autentificado, function (req, res) {
         var user = req.body;
         user.id = req.params.id;
-        crud.changePassword(user, function () {
+        crudUsuario.changePassword(user, function () {
             res.redirect('/configuracion');
         });
     });
+
+
 
 
     //******************************************************************************
@@ -641,6 +711,8 @@ module.exports = function(app, io) {
             else res.send(msj);
         });
     });
+    
+    
 
     io.sockets.on('connection', function(socket){
 
@@ -649,6 +721,8 @@ module.exports = function(app, io) {
             var epoch = (date.getTime() - date.getMilliseconds())/1000;
             socket.emit('connected', epoch);
         });
+
+    
 
         /* Recibe la orden de lista y filtra cierres por tipo de usuario
         socket.on('listar', function (departamentoId){
