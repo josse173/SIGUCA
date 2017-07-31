@@ -1,3 +1,4 @@
+var config = require("../config");
 module.exports = {
 	login : function (req, res) {
 		req.session.name = req.user.tipo;
@@ -9,6 +10,9 @@ module.exports = {
 		}
 		if (req.session.name == "Empleado") {
 			res.redirect('/escritorioEmpl');
+		}
+		if (req.session.name == config.empleado2) {
+			res.redirect('/');
 		}
 	},
     logout : function (req, res) {

@@ -10,6 +10,7 @@ Solicitudes 	= require('../models/Solicitudes'),
 Cierre 			= require('../models/Cierre'),
 util 			= require('../util/util'),
 emailSIGUCA 	= 'siguca@greencore.co.cr';
+var config 			= require('../config');
 
 //--------------------------------------------------------------------
 //	Métodos Usuario
@@ -64,7 +65,8 @@ exports.listUsuarios = function(cb){
 					title: 'Gestionar empleados | SIGUCA',
 					empleados: empleados, 
 					horarios: horarios,
-					departamentos: departamentos
+					departamentos: departamentos,
+					tipoEmpleado: config.empleado2
 				};
 				return cb(err, render);
             });//Departamento

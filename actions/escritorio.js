@@ -11,6 +11,7 @@ var CierrePersonal = require('../models/CierrePersonal');
 var util = require('../util/util');
 var crud = require('../routes/crud');
 var crudUsuario = require('../routes/crudUsuario');
+var config 			= require('../config');
 
 module.exports = {
 	escritorio : function (req, res) {
@@ -138,12 +139,14 @@ module.exports = {
 				Horario.find().exec(function(error, horarios) {
 					Departamento.find().exec(function(error, departamentos) {
 						if (error) return res.json(error);
+						console.log("EL tipo de empleado es: " + config.empleado2);
 						return res.render('escritorio', {
 							title: 'Escritorio Administrador | SIGUCA',
 							usuario: req.user,
 							horarios: horarios,
 							departamentos: departamentos,
 							usuarios: usuarios,
+							tipoEmpleado: config.empleado2
 						});
 					});
 				});
