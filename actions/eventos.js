@@ -334,10 +334,19 @@ function filtrarPorFecha(req){
   diaGte.milliseconds(0);
   /*var epochDesde = (diaGte.getTime() - diaGte.getMilliseconds())/1000 - 86400*7;
   var epochHasta = (diaLt.getTime() - diaLt.getMilliseconds())/1000;*/
-  return {
-    //'$gte': diaGte.unix() //Se comenta para que traiga todos los elementos cuando no se indica rango de fechas
+  
+  
+   //Si corresponde a las justificaciones envia todos los registros
+  if(req.route.path!=='/reportes'){
+    return {};
   }
+  
+  //Si es la vista de reportes solo envia los registros del día
+  return {
+    '$gte': diaGte.unix() //Se comenta para que traiga todos los elementos cuando no se indica rango de fechas
+  };
   //return {};
+  
 }
 
 function getTitulo(option){
