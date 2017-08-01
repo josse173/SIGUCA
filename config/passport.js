@@ -6,6 +6,7 @@ var mongoose = require('mongoose'),
     LocalStrategy = require('passport-local').Strategy,
     Usuario = require('../models/Usuario');
 var flash = require('connect-flash');
+var config2 = require('../config');
 
 module.exports = function (passport, config) {
 
@@ -37,6 +38,9 @@ module.exports = function (passport, config) {
         }
         if (!user.validPassword(password)) {
           return done(null, false, { messages: 'Contraseña inválida.' })
+        }
+        if (user.tipo === config2.empleado2) {
+          return done(null, false, { messages: 'El usuario no tiene permisos para iniciar sesión.' })
         }
         return done(null, user)
       });
