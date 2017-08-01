@@ -24,7 +24,7 @@ module.exports = {
       //**************************************************************************
       //Preparación de los queries para filtrar datos
       var queryEpoch = filtrarPorFecha(req);
-      var titulo = getTitulo(req.route.path);
+      var titulo = getTitulo(req.route.path.substring(0, 9));
       var justQuery = {};
       var extraQuery = {tipoSolicitudes:'Extras'};
       var permisosQuery = {tipoSolicitudes:'Permisos'};
@@ -204,8 +204,9 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos,
     Justificaciones.find(justQuery).populate(populateQuery).exec(function(error, justificaciones){
       Solicitudes.find(extraQuery).populate(populateQuery).exec(function(error, extras) {
         Solicitudes.find(permisosQuery).populate(populateQuery).exec(function(error, permisos) {
-          if(req.route.path!=='/reportes'){
-            return renderFiltro(res, titulo, req.user, departamentos, usuarios, marcas, 
+          if(req.route.path.substring(0, 9) !=='/reportes'){
+            
+            return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, marcas, 
               justificaciones, extras, permisos, null, nombreUsuario);
           }
           else {
@@ -216,7 +217,7 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos,
               Usuario.find({'departamentos.departamento' : departamentosList}).exec(function(error, usuarios) {
                 CierrePersonal.find(cierreQuery).populate("usuario").exec(function(error, cierres) {
                 
-                return renderFiltro(res, titulo, req.user, departamentos, usuarios, marcas, 
+                return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, marcas, 
                   justificaciones, extras, permisos, cierres, nombreUsuario);
                 });
               });
@@ -231,7 +232,7 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos,
 }
 
 
-function renderFiltro(res, titulo, usuario, departamentos, 
+function renderFiltro(req, res, titulo, usuario, departamentos, 
   usuarios, marcas, justificaciones, extras, permisos, cierre, nombreUsuario){
   var cList = [];
   if(cierre){
@@ -283,27 +284,53 @@ function renderFiltro(res, titulo, usuario, departamentos,
   }//Se terminan de analizar los cierres
 
 
+  //Filtrado seleccionado por el usuario. En caso de que no se reciba, se usa por defecto marcas
+  var filtrado = req.params.filtrado || 'marcas';	
+
+  //Se declara el json en el que se envia la información a la vista
   var filtro = {
     title: titulo,
-    usuario: usuario,
-    marcas: util.unixTimeToRegularDate(marcas.filter(function(m){
-      return m.usuario;
-    }), true),
-    justificaciones: util.unixTimeToRegularDate(justificaciones.filter(function(m){
-      return m.usuario;
-    }), true),
-    extras: util.unixTimeToRegularDate(extras.filter(function(m){
-      return m.usuario;
-    }), true),
-    permisos: util.unixTimeToRegularDate(permisos.filter(function(m){
-      return m.usuario;
-    }), true),
-    cierreUsuarios: cList,
+    usuario: usuario,    
     usuarios: usuarios,
     departamentos: departamentos,
     nombreUsuario: nombreUsuario,
-    horasEmpleado: listaSumada
+    filtradoReporte: filtrado
   };
+
+
+  //Si el filtrado es "marcas/tardia"
+  if(filtrado && filtrado == "marcas" || req.route.path.substring(0, 9) !=='/reportes'){
+      filtro.marcas = util.unixTimeToRegularDate(marcas.filter(function(m){
+          return m.usuario;
+        }), true);
+  }
+
+  //Si el filtrado es por horas
+  if(filtrado && filtrado == "horas" || req.route.path.substring(0, 9) !=='/reportes'){
+    filtro.horasEmpleado = listaSumada;
+    filtro.cierreUsuarios = cList;
+  }
+
+  //Si el filtrado es por justificaciones
+  if(filtrado && filtrado == "justificaciones" || req.route.path.substring(0, 9) !=='/reportes'){
+    filtro.justificaciones = util.unixTimeToRegularDate(justificaciones.filter(function(m){
+      return m.usuario;
+    }), true);
+  }
+    
+  //Si el filtrado es por extras
+  if(filtrado && filtrado == "extras" || req.route.path.substring(0, 9) !=='/reportes'){
+    
+    filtro.extras = util.unixTimeToRegularDate(extras.filter(function(m){
+      return m.usuario;
+    }), true);
+
+    filtro.permisos = util.unixTimeToRegularDate(permisos.filter(function(m){
+      return m.usuario;
+    }), true);
+
+  }
+
   return (titulo === 'Reportes | SIGUCA') ? res.render('reportes', filtro) : res.render('gestionarEventos', filtro); 
 }
 //
@@ -337,7 +364,7 @@ function filtrarPorFecha(req){
   
   
    //Si corresponde a las justificaciones envia todos los registros
-  if(req.route.path!=='/reportes'){
+  if(req.route.path.substring(0, 9) !=='/reportes'){
     return {};
   }
   

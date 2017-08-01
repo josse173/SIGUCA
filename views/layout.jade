@@ -83,10 +83,27 @@ html
                       a(href="/gestionarEventos")
                         i.icon-cogs.icon-large
                         |&nbsp;Acciones
-                    li
-                      a(href="/reportes")
+                    //-li
+                     a(href="/reportes")
                         i.icon-edit.icon-large
                         |&nbsp;Reportes
+
+                    li
+                      div.dropdown
+                        button.btn.btn-primary.dropdown-toggle(type='button',data-toggle="dropdown") 
+                          i.icon-edit.icon-large
+                          |&nbsp;Reportes
+                          span.caret
+                        ul.dropdown-menu
+                          li
+                            a(href="/reportes/marcas") Marcas/Tardías
+                          li
+                            a(href="/reportes/horas") Horas
+                          li
+                            a(href="/reportes/justificaciones") Justificaciones
+                          li
+                            a(href="/reportes/extras") Solicitudes
+
                   if(usuario.tipo == 'Supervisor' || usuario.tipo == 'Empleado')
                     li
                       a(href="/eventos")

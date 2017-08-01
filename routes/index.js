@@ -135,6 +135,10 @@ module.exports = function(app, io) {
 
     app.post('/reportes', autentificado, event_actions.filtrarEventos);
 
+    //Obtiene el filtrado elegido
+    app.get('/reportes/:filtrado', autentificado, event_actions.filtrarEventos);
+    app.post('/reportes/:filtrado', autentificado, event_actions.filtrarEventos);
+
     /*
     *   - Filtra los eventos por usuario y rango de fecha. 
     *   - Dependiendo si es reporte o gestión de eventos, filtra los eventos por distintos estados.
