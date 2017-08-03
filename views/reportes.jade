@@ -210,12 +210,9 @@ block content
             else
               h3 Marcas 
               p No se han encontrado registros 
-                       
-         
-         
-                   
-              
-           if(tarde)
+                           
+           //-Tardias  
+          if(tarde)
             if(marcas.length != 0)
               h3 Reporte tardias
               .footable
@@ -232,7 +229,100 @@ block content
                       
             else
               h3 Reporte tardias 
-              p No se han encontrado registros             
+              p No se han encontrado registros   
+
+          if(marcas.length != 0)
+              -var primeraVez=0
+              - var entro=false
+              -var ordenadas=new Array()
+              - var temporal = new Array() 
+
+              h3 Marcas diarias
+
+              .footable
+                table#marcassPDF
+                    thead
+                      tr
+                        th Usuario
+                        th Entrada
+                        th Salida Almuerzo
+                        th Entrada Almuerzo
+                        th Salida a Receso
+                        th Entrada a Receso
+                        th Salida
+                    tbody
+                      -for (var i = 0; i <marcas.length; i++)
+                        if (primeraVez==0)
+                            -var objMarcas = new Object();
+                            -objMarcas.nombre=marcas[i].usuario.nombre
+                            -objMarcas.dia=marcas[i].fecha.dia
+                            -objMarcas.mes=marcas[i].fecha.mes
+                            -objMarcas.año=marcas[i].fecha.año
+                            -objMarcas.apellido1=marcas[i].usuario.apellido1
+                            -temporal.push(objMarcas)
+                            -primeraVez++ 
+                        else
+                          -for (var j = 0; j <temporal.length; j++)
+                            -entro=false;
+                            if (temporal[j].nombre==marcas[i].usuario.nombre && temporal[j].apellido1==marcas[i].usuario.apellido1 && temporal[j].dia==marcas[i].fecha.dia && temporal[j].mes==marcas[i].fecha.mes  && temporal[j].año==marcas[i].fecha.año)
+                              -entro=true;
+                              -j=temporal.length
+                                
+                          if(entro==false)
+                            -var objMarcas = new Object()
+                            -objMarcas.nombre=marcas[i].usuario.nombre
+                            -objMarcas.dia=marcas[i].fecha.dia
+                            -objMarcas.mes=marcas[i].fecha.mes
+                            -objMarcas.año=marcas[i].fecha.año
+                            -objMarcas.apellido1=marcas[i].usuario.apellido1
+                            -temporal.push(objMarcas)    
+                      
+                    
+                      -for(var r=0; r<temporal.length;r++)
+                        -var marcasOrdenadas = new Object()
+                        -for(var m=0;m<marcas.length;m++)
+                          if (temporal[r].nombre==marcas[m].usuario.nombre && temporal[r].apellido1==marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia && temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año && marcas[m].tipoMarca=="Entrada")
+
+                            -marcasOrdenadas.nombre=marcas[m].usuario.nombre
+                            -marcasOrdenadas.apellido1=marcas[m].usuario.apellido1
+                            -marcasOrdenadas.entrada=marcas[m].fecha.str
+
+                          else if (temporal[r].nombre==marcas[m].usuario.nombre && temporal[r].apellido1==marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia && temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año && marcas[m].tipoMarca=="Salida")
+                            -marcasOrdenadas.salida=marcas[m].fecha.str
+
+                          else if (temporal[r].nombre==marcas[m].usuario.nombre && temporal[r].apellido1==marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia && temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año && marcas[m].tipoMarca=="Salida a Receso")
+                            -marcasOrdenadas.salidaReceso=marcas[m].fecha.str
+
+                          else if (temporal[r].nombre==marcas[m].usuario.nombre && temporal[r].apellido1==marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia && temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año && marcas[m].tipoMarca=="Entrada de Receso")
+                            -marcasOrdenadas.entradaReceso=marcas[m].fecha.str
+
+                          else if (temporal[r].nombre==marcas[m].usuario.nombre && temporal[r].apellido1==marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia && temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año && marcas[m].tipoMarca=="Salida al Almuerzo")
+                            -marcasOrdenadas.salidaAlmuerzo=marcas[m].fecha.str
+
+                          else if (temporal[r].nombre==marcas[m].usuario.nombre && temporal[r].apellido1==marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia && temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año && marcas[m].tipoMarca=="Entrada de Almuerzo")
+                            -marcasOrdenadas.entradaAlmuerzo=marcas[m].fecha.str
+
+                        -ordenadas.push(marcasOrdenadas)    
+
+
+                  
+                      -for(var s=0;s<ordenadas.length;s++)  
+                        tr
+                          td  #{ordenadas[s].nombre} #{ordenadas[s].apellido1}
+                          td  #{ordenadas[s].entrada}
+                          td  #{ordenadas[s].salidaAlmuerzo}
+                          td  #{ordenadas[s].entradaAlmuerzo}
+                          td  #{ordenadas[s].salidaReceso}
+                          td  #{ordenadas[s].entradaReceso}
+                          td  #{ordenadas[s].salida}
+            else
+              h3 Marcas diarias
+              p No se han encontrado registros     
+
+
+         
+
+
          
           
 
