@@ -6,15 +6,14 @@ block sigucaCSS
 
 block content
     div.container
-      
-      .info
-       h3 Reportes de eventos 
-       h4 #{empleado}   
+
+      div.text-center
+        .milky Reportes de #{tipoReporte}
+
 
       div.filter
-        h3 Filtros   
         table
-          form(role='form', method="POST", action="/reportes")
+          form(role='form', method="POST", action="/reportes/"+filtradoReporte)
             td
               select.form-control.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro") 
                 option(value= "todos|reportes") Todos los usuarios
@@ -28,13 +27,13 @@ block content
             td
               label.labelFiltro.labFilLeft(for='fechaDesde') Desde:
                 div.input-group
-                  input#date_range_start.form-control(type='text', name='fechaDesde')
+                  input#date_range_start.form-control(type='text', name='fechaDesde', value=rangoFecha.fechaDesde)
                   span.input-group-addon
                     i.icon-calendar
             td
               label.labelFiltro(for='fechaHasta') Hasta:
                 div.input-group
-                  input#date_range_end.form-control(type='text', name='fechaHasta')
+                  input#date_range_end.form-control(type='text', name='fechaHasta', value=rangoFecha.fechaHasta)
                   span.input-group-addon
                     i.icon-calendar
             td
@@ -52,30 +51,66 @@ block content
                 th(data-sort-ignore="true") Acciones
                 th(data-sort-ignore="true") Cantidad
             tbody#calDetalle
-                tr
-                  td Marcas registradas
-                  if(marcas && marcas.length != 0)
-                    td #{marcas.length}
-                  else
-                    td 0
-                tr
-                  td Justificaciones
-                  if(justificaciones && justificaciones.length != 0)
-                    td #{justificaciones.length}
-                  else
-                    td 0
-                tr
-                  td Solicitudes de permisos
-                  if(permisos && permisos.length != 0)
-                    td #{permisos.length}
-                  else
-                    td 0
-                tr
-                  td Solicitudes de horas extraordinarias
-                  if(extras && extras.length != 0)
-                    td #{extras.length}
-                  else
-                    td 0
+                //-Marcas
+                if(marcas)
+                  tr
+                    td Marcas registradas
+                    if(marcas.length != 0)
+                      td #{marcas.length}
+                    else
+                      td 0
+                
+                //-Justificiones
+                if(justificaciones)
+                  tr
+                    td Justificaciones
+                    if(justificaciones.length != 0)
+                      td #{justificaciones.length}
+                    else
+                      td 0
+
+                //-Solicitudes de permisos
+                if(permisos)
+                  tr
+                    td Solicitudes de permisos
+                    if(permisos.length != 0)
+                      td #{permisos.length}
+                    else
+                      td 0
+
+                //-Solicitudes de horas extraordinarias
+                if(extras)
+                  tr
+                    td Solicitudes de horas extraordinarias
+                    if(extras.length != 0)
+                      td #{extras.length}
+                    else
+                      td 0
+                
+                //-Horas laboradas
+                if(horasEmpleado)
+                  tr
+                    td total de horas laboradas
+                    if(horasEmpleado.length != 0)
+                      //-Se calcula el total de horas laboradas por empleado
+                      -var sumaHoras = 0, sumaMinutos = 0;
+                      each empleadoTem, p in horasEmpleado
+                        - sumaHoras += empleadoTem.tiempo.horas;
+                        if(sumaMinutos + empleadoTem.tiempo.minutos >= 60)
+                          - sumaHoras ++
+                          - sumaMinutos = (sumaMinutos + empleadoTem.tiempo.minutos) - 60
+                        else
+                          -sumaMinutos += empleadoTem.tiempo.minutos        
+
+                      //- Se le da formato al tiempo sumado
+                      - var tiempo ="";
+                      - if(sumaHoras < 10 ) sumaHoras = "0" + sumaHoras;
+                      - if(sumaMinutos < 10 ) sumaMinutos = "0" + sumaMinutos;
+                      - tiempo = sumaHoras+":"+sumaMinutos;
+                      td #{tiempo}
+                    else
+                      td 0
+                  
         br
         div.tablasReportes
           if(resumen && resumen.length != 0)
@@ -94,361 +129,316 @@ block content
                   tr
                     td(colspan='2')
 
-          if(nombreUsuario && nombreUsuario!="todos")
-            h3 Búsqueda: #{nombreUsuario}
-          else
-            h3 Búsqueda: Todos los usuarios
-
-
-          br
-          h3 Horas laboradas por empleado
-          if(horasEmpleado && horasEmpleado.length != 0)
-            .tableSolicitudes.footable
-              table#totalHorasEmpleado
-                  thead
-                    tr
-                      th Usuario
-                      th Tiempo trabajado
-                          
-                  tbody
-                    each empleado, p in horasEmpleado
-                      - var x = JSON.stringify(empleado);
-                      - var tiempo ="";
-                      - var h =""+empleado.tiempo.horas;
-                      - var m =""+empleado.tiempo.minutos;
-                      - if(empleado.tiempo.horas<10) h = "0"+h;
-                      - if(empleado.tiempo.minutos<10) m = "0"+m;
-                      - tiempo = h+":"+m;
-                      - if(empleado.tiempo.horas<=0 && empleado.tiempo.minutos<=0) tiempo = "El usuario se ausentó o no marcó salida."
-                      tr
-                        td #{empleado.usuario.nombre} #{empleado.usuario.apellido1} 
-                        td #{tiempo}
-          else
-            p No se han realizado marcas hasta el momento.
-
-
-          br
-          h3 Horas Semanales 
-          if(cierreUsuarios && cierreUsuarios.length != 0)
-            .tableCierres.footable
-              table#horaTablaPDF
-                  thead
-                    tr
-                      th Fecha
-                      th Usuario
-                      th Tiempo trabajado
-                          
-                  tbody
-                    each cierre, i in cierreUsuarios
-                      - var x = JSON.stringify(cierre);
-                      - var tiempo ="";
-                      - var h =""+cierre.tiempo.horas;
-                      - var m =""+cierre.tiempo.minutos;
-                      - if(cierre.tiempo.horas<10) h = "0"+h;
-                      - if(cierre.tiempo.minutos<10) m = "0"+m;
-                      - tiempo = h+":"+m;
-                      - if(cierre.tiempo.horas<=0 && cierre.tiempo.minutos<=0) tiempo = "El usuario se ausentó o no marcó salida."
-                      tr
-                        td(data-value=cierre.epoch) #{cierre.fecha.str} 
-                        td #{cierre.usuario.nombre} #{cierre.usuario.apellido1} 
-                        td #{tiempo}
-          else
-            p No se han realizado marcas hasta el momento.
-                 
-                  
-          h3 Marcas
-          if(marcas && marcas.length != 0)
-            .footable
-              table#marcasPDF
-                  thead
-                    tr
-                      th(data-type="numeric" data-sort-initial="descending") Fecha
-                      th Usuario
-                      th Tipo
-                  tbody
-                    each marca, i in marcas
-                      tr
-                        td(data-value=marca.epoch) #{marca.fecha.str} 
-                        td #{marca.usuario.nombre} #{marca.usuario.apellido1}
-                        td #{marca.tipoMarca} 
-             
-                       
-          else
-              p No se han realizado marcas hasta el momento.
-                
-          br
-
-
-
-          -var primeraCorrida=0
-          - var entrando=false
-          -var arregloTardias=new Array()
-          - var temporalUsuario = new Array() 
-          h3 Reporte tardias
-          if(marcas && marcas.length != 0)
-            .footable
-              table#tardiasPDF
-                  thead
-                    tr
-                      th Usuario
-                      th fecha
-                      
-                  tbody
-                    -for (var i = 0; i <marcas.length; i++)
-                      if (primeraCorrida==0)
-                          -var objTardias = new Object();
-                          -objTardias.nombre=marcas[i].usuario.nombre
-                          -objTardias.dia=marcas[i].fecha.dia
-                          -objTardias.mes=marcas[i].fecha.mes
-                          -objTardias.año=marcas[i].fecha.año
-                          -objTardias.apellido1=marcas[i].usuario.apellido1
-                          -temporalUsuario.push(objTardias)
-                          -primeraCorrida++
-
-                      else
-                        -for (var j = 0; j <temporalUsuario.length; j++)
-                          -entrando=false;
-                          if (temporalUsuario[j].nombre==marcas[i].usuario.nombre && temporalUsuario[j].apellido1==marcas[i].usuario.apellido1 && temporalUsuario[j].dia==marcas[i].fecha.dia && temporalUsuario[j].mes==marcas[i].fecha.mes  && temporalUsuario[j].año==marcas[i].fecha.año)
-                            -entrando=true;
-                              
-                        if(entrando==false)
-                          -var objTardias = new Object()
-                          -objTardias.nombre=marcas[i].usuario.nombre
-                          -objTardias.dia=marcas[i].fecha.dia
-                          -objTardias.mes=marcas[i].fecha.mes
-                          -objTardias.año=marcas[i].fecha.año
-                          -objTardias.apellido1=marcas[i].usuario.apellido1
-                          -temporalUsuario.push(objTardias)  
-
-
-                        
-                    
-                    -for(var i = 0; i <temporalUsuario.length; i++)
-                      -for(var j = 0; j <marcas.length; j++) 
-                        if (temporalUsuario[i].nombre==marcas[j].usuario.nombre && temporalUsuario[i].apellido1==marcas[j].usuario.apellido1 && temporalUsuario[i].dia==marcas[j].fecha.dia && temporalUsuario[i].mes==marcas[j].fecha.mes && temporalUsuario[i].año==marcas[j].fecha.año && marcas[j].tipoMarca=="Entrada")
-                          -var horax=parseInt(String(marcas[j].fecha.hora).substr(0,2))
-                          -var minutox=parseInt(String(marcas[j].fecha.hora).substr(3,2))
-                          if (horax >6 && minutox >10) 
-                            tr 
-                              td #{marcas[j].usuario.nombre} #{marcas[j].usuario.apellido1}
-                              td #{marcas[j].fecha.str}
-
-                   
-                       
-                       
-          else
-              p No se han realizado marcas hasta el momento.
-                
-          br
-
-
-
-          -var primeraVez=0
-          - var entro=false
-          -var ordenadas=new Array()
-          - var temporal = new Array() 
-
-          h3 Marcas diarias
-          if(marcas && marcas.length != 0)
-            .footable
-              table#marcassPDF
-                  thead
-                    tr
-                      th Usuario
-                      th Entrada
-                      th Salida Almuerzo
-                      th Entrada Almuerzo
-                      th Salida a Receso
-                      th Entrada a Receso
-                      th Salida
-                  tbody
-                    -for (var i = 0; i <marcas.length; i++)
-                      if (primeraVez==0)
-                          -var objMarcas = new Object();
-                          -objMarcas.nombre=marcas[i].usuario.nombre
-                          -objMarcas.dia=marcas[i].fecha.dia
-                          -objMarcas.mes=marcas[i].fecha.mes
-                          -objMarcas.año=marcas[i].fecha.año
-                          -objMarcas.apellido1=marcas[i].usuario.apellido1
-                          -temporal.push(objMarcas)
-                          -primeraVez++
-
-                      else
-                        -for (var j = 0; j <temporal.length; j++)
-                          -entro=false;
-                          if (temporal[j].nombre==marcas[i].usuario.nombre && temporal[j].apellido1==marcas[i].usuario.apellido1 && temporal[j].dia==marcas[i].fecha.dia && temporal[j].mes==marcas[i].fecha.mes  && temporal[j].año==marcas[i].fecha.año)
-                            -entro=true;
-                              
-                        if(entro==false)
-                          -var objMarcas = new Object()
-                          -objMarcas.nombre=marcas[i].usuario.nombre
-                          -objMarcas.dia=marcas[i].fecha.dia
-                          -objMarcas.mes=marcas[i].fecha.mes
-                          -objMarcas.año=marcas[i].fecha.año
-                          -objMarcas.apellido1=marcas[i].usuario.apellido1
-                          -temporal.push(objMarcas)    
-                    
-                  
-                    -for(var r=0; r<temporal.length;r++)
-                      -var marcasOrdenadas = new Object()
-                      -for(var m=0;m<marcas.length;m++)
-                        if (temporal[r].nombre==marcas[m].usuario.nombre && temporal[r].apellido1==marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia && temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año && marcas[m].tipoMarca=="Entrada")
-
-                          -marcasOrdenadas.nombre=marcas[m].usuario.nombre
-                          -marcasOrdenadas.apellido1=marcas[m].usuario.apellido1
-                          -marcasOrdenadas.entrada=marcas[m].fecha.str
-
-                        else if (temporal[r].nombre==marcas[m].usuario.nombre && temporal[r].apellido1==marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia && temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año && marcas[m].tipoMarca=="Salida")
-                          -marcasOrdenadas.salida=marcas[m].fecha.str
-
-                        else if (temporal[r].nombre==marcas[m].usuario.nombre && temporal[r].apellido1==marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia && temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año && marcas[m].tipoMarca=="Salida a Receso")
-                          -marcasOrdenadas.salidaReceso=marcas[m].fecha.str
-
-                        else if (temporal[r].nombre==marcas[m].usuario.nombre && temporal[r].apellido1==marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia && temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año && marcas[m].tipoMarca=="Entrada de Receso")
-                          -marcasOrdenadas.entradaReceso=marcas[m].fecha.str
-
-                        else if (temporal[r].nombre==marcas[m].usuario.nombre && temporal[r].apellido1==marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia && temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año && marcas[m].tipoMarca=="Salida al Almuerzo")
-                          -marcasOrdenadas.salidaAlmuerzo=marcas[m].fecha.str
-
-                        else if (temporal[r].nombre==marcas[m].usuario.nombre && temporal[r].apellido1==marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia && temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año && marcas[m].tipoMarca=="Entrada de Almuerzo")
-                          -marcasOrdenadas.entradaAlmuerzo=marcas[m].fecha.str
-
-                      -ordenadas.push(marcasOrdenadas)    
-
-
-                 
-                    -for(var s=0;s<ordenadas.length;s++)  
-                      tr
-                        td  #{ordenadas[s].nombre} #{ordenadas[s].apellido1}
-                        td  #{ordenadas[s].entrada}
-                        td  #{ordenadas[s].salidaAlmuerzo}
-                        td  #{ordenadas[s].entradaAlmuerzo}
-                        td  #{ordenadas[s].salidaReceso}
-                        td  #{ordenadas[s].entradaReceso}
-                        td  #{ordenadas[s].salida}
-                        
-                        
-
-                        
-          else
-              p No se han realizado marcas hasta el momento.
-              
-      
-
-          h3 Justificaciones
-          if(justificaciones && justificaciones.length != 0)
-            .tableJustificaciones  
-              table#justificacionesPDF
-                  thead
-                    tr
-                      th(data-type="numeric" data-sort-initial="descending") Fecha
-                      th Usuario
-                      th(data-hide="phone,small") Motivo
-                      th(data-hide="phone,small" data-sort-ignore="true") Detalle
-                      th(data-hide="phone,small" data-sort-ignore="true") Comentario
-                      th Estado
-                      th(data-hide="phone,small" data-sort-ignore="true") Eliminar
-                  tbody
-                    each justificacion, i in justificaciones
-                      tr
-                        td(data-value=justificacion.fechaCreada) #{justificacion.fecha.str} 
-                        if(justificacion.usuario)
-                          td #{justificacion.usuario.nombre} #{justificacion.usuario.apellido1}
-                        td #{justificacion.motivo} 
-                        td #{justificacion.detalle} 
-                        td #{justificacion.comentarioSupervisor} 
-                        td #{justificacion.estado}  
-                        td
-                          if(justificacion.usuario)
-                            button.btn.btn-default.justificacionDelete(value=justificacion.usuario.nombre+' '+justificacion.usuario.apellido1+' '+justificacion.usuario.apellido2+','+justificacion.id+','+justificacion.fecha.str, name='eliminar') 
-                             i.icon-trash.icon-large.i-danger 
-               
-                       
-          else
-            p No se han enviado justificaciones hasta el momento.
-
-          br
-          h3 Solicitudes Horas Extraordinarias
-          if(extras && extras.length != 0)
-            .tableSolicitudes.footable
-              table#extraPDF
-                  thead
-                    tr
-                      th(data-type="numeric" data-sort-initial="descending") Fecha
-                      th Usuario
-                      th(data-hide="phone,small" data-sort-ignore="true") Día de Inicio 
-                      th(data-hide="phone,small" data-sort-ignore="true") Día de Termino
-                      th(data-hide="phone,small,medium" data-sort-ignore="true") Cantidad de Horas
-                      th(data-hide="phone,small,medium") Cliente
-                      th(data-hide="phone,small,medium" data-sort-ignore="true") Motivo
-                      th(data-hide="phone,small,medium" data-sort-ignore="true") Comentario
-                      th(data-hide="phone,small") Estado
-                      th(data-hide="phone,small,medium" data-sort-ignore="true") Eliminar
-                  tbody
-                    each extra, i in extras
-                      tr
-                        td(data-value=extra.fechaCreada) #{extra.fecha.str} 
-                        if(extra.usuario)
-                        td #{extra.usuario.nombre} #{extra.usuario.apellido1} 
-                        td #{extra.diaInicio} 
-                        td #{extra.diaFinal} 
-                        td #{extra.cantHoras} 
-                        td #{extra.cliente} 
-                        td #{extra.motivo} 
-                        td #{extra.comentarioSupervisor} 
-                        td #{extra.estado} 
-                        td
-                          if(extra.usuario)
-                            button.btn.btn-default.solicitudDelete(value=extra.usuario.nombre+' '+extra.usuario.apellido1+' '+extra.usuario.apellido2+','+extra.id+','+extra.fecha.str, name='eliminar') 
-                             i.icon-trash.icon-large.i-danger 
-             
-                       
-          else
-            p No se han enviado extras hasta el momento.
-    
-          br
-          h3 Solicitudes Permisos
-          if(permisos && permisos.length != 0)
-            .tableSolicitudes.footable
-              table#permisoPDF
-                  thead
-                    tr
-                      th(data-type="numeric" data-sort-initial="descending") Fecha
-                      th Usuario
-                      th(data-hide="phone,small") Día Inicial
-                      th(data-hide="phone,small") Día Final 
-                      th(data-hide="phone,small") Cantidad Días
-                      th(data-hide="phone,small,medium") Motivo
-                      th(data-hide="phone,small,medium" data-sort-ignore="true") Detalle
-                      th(data-hide="phone,small,medium" data-sort-ignore="true") Comentario
-                      th Estado
-                      th(data-hide="phone,small,medium" data-sort-ignore="true") Eliminar
-                  tbody
-                    each permiso, i in permisos
-                      tr
-                        td(data-value=permiso.fechaCreada) #{permiso.fecha.str} 
-                        if(permiso.usuario)
-                          td #{permiso.usuario.nombre} #{permiso.usuario.apellido1} 
-                        td #{permiso.diaInicio} 
-                        td #{permiso.diaFinal} 
-                        td #{permiso.cantidadDias} 
-                        td #{permiso.motivo} 
-                        td #{permiso.detalle} 
-                        td #{permiso.comentarioSupervisor} 
-                        td #{permiso.estado} 
-                        td
-                          if(permiso.usuario)
-                            button.btn.btn-default.solicitudDelete(value=permiso.usuario.nombre+' '+permiso.usuario.apellido1+' '+permiso.usuario.apellido2+','+permiso.id+','+permiso.fecha.str, name='eliminar') 
-                             i.icon-trash.icon-large.i-danger 
           
+          if(horasEmpleado)
+            if(horasEmpleado.length != 0)
+              br
+              h3 Horas laboradas por empleado
+              .tableSolicitudes.footable
+                table#totalHorasEmpleado
+                    thead
+                      tr
+                        th Usuario
+                        th Tiempo trabajado
+                            
+                    tbody
+                      each empleado, p in horasEmpleado
+                        - var x = JSON.stringify(empleado);
+                        - var tiempo ="";
+                        - var h =""+empleado.tiempo.horas;
+                        - var m =""+empleado.tiempo.minutos;
+                        - if(empleado.tiempo.horas<10) h = "0"+h;
+                        - if(empleado.tiempo.minutos<10) m = "0"+m;
+                        - tiempo = h+":"+m;
+                        - if(empleado.tiempo.horas<=0 && empleado.tiempo.minutos<=0) tiempo = "El usuario se ausentó o no marcó salida."
+                        tr
+                          td #{empleado.usuario.nombre} #{empleado.usuario.apellido1} 
+                          td #{tiempo}
+            else
+              h3 Horas laboradas por empleado
+              p No se han encontrado registros
+
+          
+          //-Horas Semanales 
+          if(cierreUsuarios)
+            if(cierreUsuarios.length != 0)
+              br
+              h3 Horas Semanales 
+              .tableCierres.footable
+                table#horaTablaPDF
+                    thead
+                      tr
+                        th Fecha
+                        th Usuario
+                        th Tiempo trabajado
+                            
+                    tbody
+                      each cierre, i in cierreUsuarios
+                        - var x = JSON.stringify(cierre);
+                        - var tiempo ="";
+                        - var h =""+cierre.tiempo.horas;
+                        - var m =""+cierre.tiempo.minutos;
+                        - if(cierre.tiempo.horas<10) h = "0"+h;
+                        - if(cierre.tiempo.minutos<10) m = "0"+m;
+                        - tiempo = h+":"+m;
+                        - if(cierre.tiempo.horas<=0 && cierre.tiempo.minutos<=0) tiempo = "El usuario se ausentó o no marcó salida."
+                        tr
+                          td(data-value=cierre.epoch) #{cierre.fecha.str} 
+                          td #{cierre.usuario.nombre} #{cierre.usuario.apellido1} 
+                          td #{tiempo}
+            else
+              h3 Horas Semanales 
+              p No se han encontrado registros
+
+          //-Marcas
+          if(marcas)
+            if(marcas.length != 0)
+              h3 Marcas
+              .footable
+                table#marcasPDF
+                    thead
+                      tr
+                        th(data-type="numeric" data-sort-initial="descending") Fecha
+                        th Usuario
+                        th Tipo
+                    tbody
+                      each marca, i in marcas
+                        tr
+                          td(data-value=marca.epoch) #{marca.fecha.str} 
+                          td #{marca.usuario.nombre} #{marca.usuario.apellido1}
+                          td #{marca.tipoMarca} 
+            else
+              h3 Marcas 
+              p No se han encontrado registros 
+                           
+           //-Tardias  
+          if(tarde)
+            if(marcas.length != 0)
+              h3 Reporte tardias
+              .footable
+                table#tardiasPDF
+                    thead
+                      tr
+                        th Usuario
+                        th Hora
+                    tbody
+                      each tardee, i in tarde
+                        tr
+                          td #{tardee.nombre} #{tardee.apellido}
+                          td #{tardee.fecha} 
+                      
+            else
+              h3 Reporte tardias 
+              p No se han encontrado registros   
+              
+          if(marcas)
+            if(marcas.length != 0)
+                -var primeraVez=0
+                - var entro=false
+                -var ordenadas=new Array()
+                - var temporal = new Array() 
+
+                h3 Marcas diarias
+
+                .footable
+                  table#marcassPDF
+                      thead
+                        tr
+                          th Usuario
+                          th Entrada
+                          th Salida Almuerzo
+                          th Entrada Almuerzo
+                          th Salida a Receso
+                          th Entrada a Receso
+                          th Salida
+                      tbody
+                        -for (var i = 0; i <marcas.length; i++)
+                          if (primeraVez==0)
+                              -var objMarcas = new Object();
+                              -objMarcas.nombre=marcas[i].usuario.nombre
+                              -objMarcas.dia=marcas[i].fecha.dia
+                              -objMarcas.mes=marcas[i].fecha.mes
+                              -objMarcas.año=marcas[i].fecha.año
+                              -objMarcas.apellido1=marcas[i].usuario.apellido1
+                              -temporal.push(objMarcas)
+                              -primeraVez++ 
+                          else
+                            -for (var j = 0; j <temporal.length; j++)
+                              -entro=false;
+                              if (temporal[j].nombre==marcas[i].usuario.nombre && temporal[j].apellido1==marcas[i].usuario.apellido1 && temporal[j].dia==marcas[i].fecha.dia && temporal[j].mes==marcas[i].fecha.mes  && temporal[j].año==marcas[i].fecha.año)
+                                -entro=true;
+                                -j=temporal.length
+                                  
+                            if(entro==false)
+                              -var objMarcas = new Object()
+                              -objMarcas.nombre=marcas[i].usuario.nombre
+                              -objMarcas.dia=marcas[i].fecha.dia
+                              -objMarcas.mes=marcas[i].fecha.mes
+                              -objMarcas.año=marcas[i].fecha.año
+                              -objMarcas.apellido1=marcas[i].usuario.apellido1
+                              -temporal.push(objMarcas)    
                         
-          else
-            p No se han enviado permisos hasta el momento.
+                      
+                        -for(var r=0; r<temporal.length;r++)
+                          -var marcasOrdenadas = new Object()
+                          -for(var m=0;m<marcas.length;m++)
+                            if (temporal[r].nombre==marcas[m].usuario.nombre && temporal[r].apellido1==marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia && temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año && marcas[m].tipoMarca=="Entrada")
+
+                              -marcasOrdenadas.nombre=marcas[m].usuario.nombre
+                              -marcasOrdenadas.apellido1=marcas[m].usuario.apellido1
+                              -marcasOrdenadas.entrada=marcas[m].fecha.str
+
+                            else if (temporal[r].nombre==marcas[m].usuario.nombre && temporal[r].apellido1==marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia && temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año && marcas[m].tipoMarca=="Salida")
+                              -marcasOrdenadas.salida=marcas[m].fecha.str
+
+                            else if (temporal[r].nombre==marcas[m].usuario.nombre && temporal[r].apellido1==marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia && temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año && marcas[m].tipoMarca=="Salida a Receso")
+                              -marcasOrdenadas.salidaReceso=marcas[m].fecha.str
+
+                            else if (temporal[r].nombre==marcas[m].usuario.nombre && temporal[r].apellido1==marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia && temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año && marcas[m].tipoMarca=="Entrada de Receso")
+                              -marcasOrdenadas.entradaReceso=marcas[m].fecha.str
+
+                            else if (temporal[r].nombre==marcas[m].usuario.nombre && temporal[r].apellido1==marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia && temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año && marcas[m].tipoMarca=="Salida al Almuerzo")
+                              -marcasOrdenadas.salidaAlmuerzo=marcas[m].fecha.str
+
+                            else if (temporal[r].nombre==marcas[m].usuario.nombre && temporal[r].apellido1==marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia && temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año && marcas[m].tipoMarca=="Entrada de Almuerzo")
+                              -marcasOrdenadas.entradaAlmuerzo=marcas[m].fecha.str
+
+                          -ordenadas.push(marcasOrdenadas)    
 
 
+                    
+                        -for(var s=0;s<ordenadas.length;s++)  
+                          tr
+                            td  #{ordenadas[s].nombre} #{ordenadas[s].apellido1}
+                            td  #{ordenadas[s].entrada}
+                            td  #{ordenadas[s].salidaAlmuerzo}
+                            td  #{ordenadas[s].entradaAlmuerzo}
+                            td  #{ordenadas[s].salidaReceso}
+                            td  #{ordenadas[s].entradaReceso}
+                            td  #{ordenadas[s].salida}
+              else
+                h3 Marcas diarias
+                p No se han encontrado registros     
 
 
+         
 
+
+         
+          
+
+          //-Justificaciones     
+          if(justificaciones)
+            if(justificaciones.length != 0)
+              h3 Justificaciones
+              .tableJustificaciones  
+                table#justificacionesPDF
+                    thead
+                      tr
+                        th(data-type="numeric" data-sort-initial="descending") Fecha
+                        th Usuario
+                        th(data-hide="phone,small") Motivo
+                        th(data-hide="phone,small" data-sort-ignore="true") Detalle
+                        th(data-hide="phone,small" data-sort-ignore="true") Comentario
+                        th Estado
+                        th(data-hide="phone,small" data-sort-ignore="true") Eliminar
+                    tbody
+                      each justificacion, i in justificaciones
+                        tr
+                          td(data-value=justificacion.fechaCreada) #{justificacion.fecha.str} 
+                          if(justificacion.usuario)
+                            td #{justificacion.usuario.nombre} #{justificacion.usuario.apellido1}
+                          td #{justificacion.motivo} 
+                          td #{justificacion.detalle} 
+                          td #{justificacion.comentarioSupervisor} 
+                          td #{justificacion.estado}  
+                          td
+                            if(justificacion.usuario)
+                              button.btn.btn-default.justificacionDelete(value=justificacion.usuario.nombre+' '+justificacion.usuario.apellido1+' '+justificacion.usuario.apellido2+','+justificacion.id+','+justificacion.fecha.str, name='eliminar') 
+                             i.icon-trash.icon-large.i-danger 
+            else
+              h3 Justificaciones
+              p No se han encontrado registros        
+                       
+          //-Solicitudes Horas Extraordinarias
+          if(extras)
+            if(extras.length != 0)
+              br
+              h3 Solicitudes Horas Extraordinarias
+              .tableSolicitudes.footable
+                table#extraPDF
+                    thead
+                      tr
+                        th(data-type="numeric" data-sort-initial="descending") Fecha
+                        th Usuario
+                        th(data-hide="phone,small" data-sort-ignore="true") Día de Inicio 
+                        th(data-hide="phone,small" data-sort-ignore="true") Día de Termino
+                        th(data-hide="phone,small,medium" data-sort-ignore="true") Cantidad de Horas
+                        th(data-hide="phone,small,medium") Cliente
+                        th(data-hide="phone,small,medium" data-sort-ignore="true") Motivo
+                        th(data-hide="phone,small,medium" data-sort-ignore="true") Comentario
+                        th(data-hide="phone,small") Estado
+                        th(data-hide="phone,small,medium" data-sort-ignore="true") Eliminar
+                    tbody
+                      each extra, i in extras
+                        tr
+                          td(data-value=extra.fechaCreada) #{extra.fecha.str} 
+                          if(extra.usuario)
+                          td #{extra.usuario.nombre} #{extra.usuario.apellido1} 
+                          td #{extra.diaInicio} 
+                          td #{extra.diaFinal} 
+                          td #{extra.cantHoras} 
+                          td #{extra.cliente} 
+                          td #{extra.motivo} 
+                          td #{extra.comentarioSupervisor} 
+                          td #{extra.estado} 
+                          td
+                            if(extra.usuario)
+                              button.btn.btn-default.solicitudDelete(value=extra.usuario.nombre+' '+extra.usuario.apellido1+' '+extra.usuario.apellido2+','+extra.id+','+extra.fecha.str, name='eliminar') 
+                              i.icon-trash.icon-large.i-danger 
+            else
+              h3 Solicitudes Horas Extraordinarias
+              p No se han encontrado registros 
+          
+          //-Solicitudes Permisos
+          if(permisos)
+            if(permisos.length != 0)
+              br
+              h3 Solicitudes Permisos
+              .tableSolicitudes.footable
+                table#permisoPDF
+                    thead
+                      tr
+                        th(data-type="numeric" data-sort-initial="descending") Fecha
+                        th Usuario
+                        th(data-hide="phone,small") Día Inicial
+                        th(data-hide="phone,small") Día Final 
+                        th(data-hide="phone,small") Cantidad Días
+                        th(data-hide="phone,small,medium") Motivo
+                        th(data-hide="phone,small,medium" data-sort-ignore="true") Detalle
+                        th(data-hide="phone,small,medium" data-sort-ignore="true") Comentario
+                        th Estado
+                        th(data-hide="phone,small,medium" data-sort-ignore="true") Eliminar
+                    tbody
+                      each permiso, i in permisos
+                        tr
+                          td(data-value=permiso.fechaCreada) #{permiso.fecha.str} 
+                          if(permiso.usuario)
+                            td #{permiso.usuario.nombre} #{permiso.usuario.apellido1} 
+                          td #{permiso.diaInicio} 
+                          td #{permiso.diaFinal} 
+                          td #{permiso.cantidadDias} 
+                          td #{permiso.motivo} 
+                          td #{permiso.detalle} 
+                          td #{permiso.comentarioSupervisor} 
+                          td #{permiso.estado} 
+                          td
+                            if(permiso.usuario)
+                              button.btn.btn-default.solicitudDelete(value=permiso.usuario.nombre+' '+permiso.usuario.apellido1+' '+permiso.usuario.apellido2+','+permiso.id+','+permiso.fecha.str, name='eliminar') 
+                              i.icon-trash.icon-large.i-danger 
+            else
+              h3 Solicitudes Permisos
+              p No se han encontrado registros 
 
 block sigucaJS  
   script(src="/js/app/reportes.js")

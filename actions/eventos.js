@@ -24,7 +24,7 @@ module.exports = {
       //**************************************************************************
       //Preparación de los queries para filtrar datos
       var queryEpoch = filtrarPorFecha(req);
-      var titulo = getTitulo(req.route.path);
+      var titulo = getTitulo(req.route.path.substring(0, 9));
       var justQuery = {};
       var extraQuery = {tipoSolicitudes:'Extras'};
       var permisosQuery = {tipoSolicitudes:'Permisos'};
@@ -204,8 +204,9 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos,
     Justificaciones.find(justQuery).populate(populateQuery).exec(function(error, justificaciones){
       Solicitudes.find(extraQuery).populate(populateQuery).exec(function(error, extras) {
         Solicitudes.find(permisosQuery).populate(populateQuery).exec(function(error, permisos) {
-          if(req.route.path!=='/reportes'){
-            return renderFiltro(res, titulo, req.user, departamentos, usuarios, marcas, 
+          if(req.route.path.substring(0, 9) !=='/reportes'){
+            
+            return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, marcas, 
               justificaciones, extras, permisos, null, nombreUsuario);
           }
           else {
@@ -216,7 +217,7 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos,
               Usuario.find({'departamentos.departamento' : departamentosList}).exec(function(error, usuarios) {
                 CierrePersonal.find(cierreQuery).populate("usuario").exec(function(error, cierres) {
                 
-                return renderFiltro(res, titulo, req.user, departamentos, usuarios, marcas, 
+                return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, marcas, 
                   justificaciones, extras, permisos, cierres, nombreUsuario);
                 });
               });
@@ -231,7 +232,7 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos,
 }
 
 
-function renderFiltro(res, titulo, usuario, departamentos, 
+function renderFiltro(req, res, titulo, usuario, departamentos, 
   usuarios, marcas, justificaciones, extras, permisos, cierre, nombreUsuario){
   var cList = [];
   if(cierre){
@@ -259,13 +260,13 @@ function renderFiltro(res, titulo, usuario, departamentos,
           //Suma el tiempo trabajado analizando que si esta en el minuto 59 debe sumar la hora
           
           listaSumada[p].tiempo.horas += original.tiempo.horas;
-          if(listaSumada[p].tiempo.minutos == 59){
-            listaSumada[p].tiempo.minutos = 0;
+          listaSumada[p].tiempo.minutos += original.tiempo.minutos;
+
+          if(listaSumada[p].tiempo.minutos > 59){
+            listaSumada[p].tiempo.minutos = listaSumada[p].tiempo.minutos -60;
             listaSumada[p].tiempo.horas++;
           }
-          else{
-            listaSumada[p].tiempo.minutos += original.tiempo.minutos;
-          }
+         
           revisado = true;
         }
       }//Fin de la busqueda del elemento a analizar en la lista de elementos analizados
@@ -283,30 +284,152 @@ function renderFiltro(res, titulo, usuario, departamentos,
   }//Se terminan de analizar los cierres
 
 
+  //Filtrado seleccionado por el usuario. En caso de que no se reciba, se usa por defecto marcas
+  var filtrado = req.params.filtrado || 'marcas';	
+
+  //En caso de no recibir rango de fechas se pasa la fecha de hoy
+  var fechaDesde, fechaHasta;
+
+  var fecha = new Date();
+  var dia = fecha.getDate();
+  var mes = fecha.getMonth()+1;
+
+  if(dia < 10)
+    dia = "0" + dia;
+  if(mes < 10)
+    mes = "0" + mes;
+    
+  fechaDesde = dia + "/" + mes + "/" + fecha.getFullYear();
+  fechaHasta = dia + "/" + mes + "/" + fecha.getFullYear();
+  if(req.body.fechaDesde != "" && req.body.fechaDesde != null){
+    fechaDesde = req.body.fechaDesde;
+  }
+
+  if(req.body.fechaHasta != "" && req.body.fechaHasta != null){
+    fechaHasta = req.body.fechaHasta;
+  }
+
+  //Se declara el json en el que se envia la información a la vista
   var filtro = {
     title: titulo,
-    usuario: usuario,
-    marcas: util.unixTimeToRegularDate(marcas.filter(function(m){
-      return m.usuario;
-    }), true),
-    justificaciones: util.unixTimeToRegularDate(justificaciones.filter(function(m){
-      return m.usuario;
-    }), true),
-    extras: util.unixTimeToRegularDate(extras.filter(function(m){
-      return m.usuario;
-    }), true),
-    permisos: util.unixTimeToRegularDate(permisos.filter(function(m){
-      return m.usuario;
-    }), true),
-    cierreUsuarios: cList,
+    usuario: usuario,    
     usuarios: usuarios,
     departamentos: departamentos,
     nombreUsuario: nombreUsuario,
-    horasEmpleado: listaSumada
+    filtradoReporte: filtrado,
+    tipoReporte: filtrado,
+    rangoFecha: {
+      fechaDesde: fechaDesde,
+      fechaHasta: fechaHasta
+    }
   };
+
+
+  //Si el filtrado es "marcas/tardia"
+  if(filtrado && filtrado == "marcas" || req.route.path.substring(0, 9) !=='/reportes'){
+      filtro.marcas = util.unixTimeToRegularDate(marcas.filter(function(m){
+          return m.usuario;
+        }), true);
+        filtro.tarde=ordenarTardias(filtro.marcas);
+  }
+
+  //Si el filtrado es por horas
+  if(filtrado && filtrado == "horas" || req.route.path.substring(0, 9) !=='/reportes'){
+    filtro.horasEmpleado = listaSumada;
+    filtro.cierreUsuarios = cList;
+  }
+
+  //Si el filtrado es por justificaciones
+  if(filtrado && filtrado == "justificaciones" || req.route.path.substring(0, 9) !=='/reportes'){
+    filtro.justificaciones = util.unixTimeToRegularDate(justificaciones.filter(function(m){
+      return m.usuario;
+    }), true);
+  }
+    
+  //Si el filtrado es por extras
+  if(filtrado && filtrado == "extras" || req.route.path.substring(0, 9) !=='/reportes'){
+    
+    filtro.extras = util.unixTimeToRegularDate(extras.filter(function(m){
+      return m.usuario;
+    }), true);
+
+    filtro.permisos = util.unixTimeToRegularDate(permisos.filter(function(m){
+      return m.usuario;
+    }), true);
+
+  }
+
   return (titulo === 'Reportes | SIGUCA') ? res.render('reportes', filtro) : res.render('gestionarEventos', filtro); 
 }
 //
+
+
+
+function ordenarTardias(marcas){
+ 
+
+  var primeraCorrida=0;
+  var entrando=false;
+  var arregloTardias=new Array();
+  var temporalUsuario = new Array();
+
+  for (var i = 0; i <marcas.length; i++){ 
+    if (primeraCorrida==0){
+      var objTardias = new Object();
+      objTardias.nombre=marcas[i].usuario.nombre;
+      objTardias.dia=marcas[i].fecha.dia;
+      objTardias.mes=marcas[i].fecha.mes;
+      objTardias.año=marcas[i].fecha.año;
+      objTardias.apellido1=marcas[i].usuario.apellido1;
+      temporalUsuario.push(objTardias);
+      primeraCorrida++;
+      }
+    else{
+      for (var j = 0; j <temporalUsuario.length; j++){
+
+        entrando=false;
+        if (temporalUsuario[j].nombre==marcas[i].usuario.nombre && temporalUsuario[j].apellido1==marcas[i].usuario.apellido1 && temporalUsuario[j].dia==marcas[i].fecha.dia && temporalUsuario[j].mes==marcas[i].fecha.mes && temporalUsuario[j].año==marcas[i].fecha.año){
+           entrando=true;
+           j=temporalUsuario.length;
+        }
+         
+    }
+    if(entrando==false){
+      var objTardias = new Object();
+      objTardias.nombre=marcas[i].usuario.nombre;
+      objTardias.dia=marcas[i].fecha.dia;
+      objTardias.mes=marcas[i].fecha.mes;
+      objTardias.año=marcas[i].fecha.año;
+      objTardias.apellido1=marcas[i].usuario.apellido1;
+      temporalUsuario.push(objTardias);
+    }
+    }
+
+  }
+
+  for(var i = 0; i <temporalUsuario.length; i++){
+    for(var j = 0; j <marcas.length; j++){
+      if (temporalUsuario[i].nombre==marcas[j].usuario.nombre && temporalUsuario[i].apellido1==marcas[j].usuario.apellido1 && temporalUsuario[i].dia==marcas[j].fecha.dia && temporalUsuario[i].mes==marcas[j].fecha.mes && temporalUsuario[i].año==marcas[j].fecha.año && marcas[j].tipoMarca=="Entrada"){
+        var horax=parseInt(String(marcas[j].fecha.hora).substr(0,2));
+        var minutox=parseInt(String(marcas[j].fecha.hora).substr(3,2));
+        if (horax >6 && minutox >10) {
+        var objTardiaFinal = new Object();
+        objTardiaFinal.nombre=marcas[j].usuario.nombre;
+        objTardiaFinal.apellido=marcas[j].usuario.apellido1;
+        objTardiaFinal.fecha=marcas[j].fecha.str;
+        arregloTardias.push(objTardiaFinal);
+        }
+      }
+  }
+}
+return arregloTardias;
+
+}
+
+
+
+
+
 function filtrarPorFecha(req){
   //Si el query es para un intervalo de fechas determinado, se agregan a las fechas en formato "unix"
   if(req.body.fechaDesde && req.body.fechaDesde != ''){
@@ -337,7 +460,8 @@ function filtrarPorFecha(req){
   
   
    //Si corresponde a las justificaciones envia todos los registros
-  if(req.route.path!=='/reportes'){
+
+  if(req.route.path.substring(0, 9) !=='/reportes'){
     return {};
   }
   
