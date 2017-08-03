@@ -6,13 +6,12 @@ block sigucaCSS
 
 block content
     div.container
-      
-      .info
-       h3 Reportes de eventos 
-       h4 #{empleado}   
+
+      div.text-center
+        .milky Reportes de #{tipoReporte}
+
 
       div.filter
-        h3 Filtros   
         table
           form(role='form', method="POST", action="/reportes/"+filtradoReporte)
             td
@@ -28,13 +27,13 @@ block content
             td
               label.labelFiltro.labFilLeft(for='fechaDesde') Desde:
                 div.input-group
-                  input#date_range_start.form-control(type='text', name='fechaDesde')
+                  input#date_range_start.form-control(type='text', name='fechaDesde', value=rangoFecha.fechaDesde)
                   span.input-group-addon
                     i.icon-calendar
             td
               label.labelFiltro(for='fechaHasta') Hasta:
                 div.input-group
-                  input#date_range_end.form-control(type='text', name='fechaHasta')
+                  input#date_range_end.form-control(type='text', name='fechaHasta', value=rangoFecha.fechaHasta)
                   span.input-group-addon
                     i.icon-calendar
             td
@@ -129,12 +128,6 @@ block content
                 tfoot
                   tr
                     td(colspan='2')
-
-          if(nombreUsuario && nombreUsuario!="todos")
-            h3 Búsqueda: #{nombreUsuario}
-          else
-            h3 Búsqueda: Todos los usuarios
-
 
           
           if(horasEmpleado)

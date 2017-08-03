@@ -261,7 +261,7 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
           
           listaSumada[p].tiempo.horas += original.tiempo.horas;
           listaSumada[p].tiempo.minutos += original.tiempo.minutos;
-          
+
           if(listaSumada[p].tiempo.minutos > 59){
             listaSumada[p].tiempo.minutos = listaSumada[p].tiempo.minutos -60;
             listaSumada[p].tiempo.horas++;
@@ -287,6 +287,28 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
   //Filtrado seleccionado por el usuario. En caso de que no se reciba, se usa por defecto marcas
   var filtrado = req.params.filtrado || 'marcas';	
 
+  //En caso de no recibir rango de fechas se pasa la fecha de hoy
+  var fechaDesde, fechaHasta;
+
+  var fecha = new Date();
+  var dia = fecha.getDate();
+  var mes = fecha.getMonth()+1;
+
+  if(dia < 10)
+    dia = "0" + dia;
+  if(mes < 10)
+    mes = "0" + mes;
+    
+  fechaDesde = dia + "/" + mes + "/" + fecha.getFullYear();
+  fechaHasta = dia + "/" + mes + "/" + fecha.getFullYear();
+  if(req.body.fechaDesde != "" && req.body.fechaDesde != null){
+    fechaDesde = req.body.fechaDesde;
+  }
+
+  if(req.body.fechaHasta != "" && req.body.fechaHasta != null){
+    fechaHasta = req.body.fechaHasta;
+  }
+
   //Se declara el json en el que se envia la información a la vista
   var filtro = {
     title: titulo,
@@ -294,7 +316,12 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
     usuarios: usuarios,
     departamentos: departamentos,
     nombreUsuario: nombreUsuario,
-    filtradoReporte: filtrado
+    filtradoReporte: filtrado,
+    tipoReporte: filtrado,
+    rangoFecha: {
+      fechaDesde: fechaDesde,
+      fechaHasta: fechaHasta
+    }
   };
 
 
