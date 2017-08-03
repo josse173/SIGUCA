@@ -330,6 +330,7 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
       filtro.marcas = util.unixTimeToRegularDate(marcas.filter(function(m){
           return m.usuario;
         }), true);
+        filtro.tarde=ordenarTardias(filtro.marcas);
   }
 
   //Si el filtrado es por horas
@@ -361,6 +362,74 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
   return (titulo === 'Reportes | SIGUCA') ? res.render('reportes', filtro) : res.render('gestionarEventos', filtro); 
 }
 //
+
+
+
+function ordenarTardias(marcas){
+ 
+
+  var primeraCorrida=0;
+  var entrando=false;
+  var arregloTardias=new Array();
+  var temporalUsuario = new Array();
+
+  for (var i = 0; i <marcas.length; i++){ 
+    if (primeraCorrida==0){
+      var objTardias = new Object();
+      objTardias.nombre=marcas[i].usuario.nombre;
+      objTardias.dia=marcas[i].fecha.dia;
+      objTardias.mes=marcas[i].fecha.mes;
+      objTardias.año=marcas[i].fecha.año;
+      objTardias.apellido1=marcas[i].usuario.apellido1;
+      temporalUsuario.push(objTardias);
+      primeraCorrida++;
+      }
+    else{
+      for (var j = 0; j <temporalUsuario.length; j++){
+
+        entrando=false;
+        if (temporalUsuario[j].nombre==marcas[i].usuario.nombre && temporalUsuario[j].apellido1==marcas[i].usuario.apellido1 && temporalUsuario[j].dia==marcas[i].fecha.dia && temporalUsuario[j].mes==marcas[i].fecha.mes && temporalUsuario[j].año==marcas[i].fecha.año){
+           entrando=true;
+           j=temporalUsuario.length;
+        }
+         
+    }
+    if(entrando==false){
+      var objTardias = new Object();
+      objTardias.nombre=marcas[i].usuario.nombre;
+      objTardias.dia=marcas[i].fecha.dia;
+      objTardias.mes=marcas[i].fecha.mes;
+      objTardias.año=marcas[i].fecha.año;
+      objTardias.apellido1=marcas[i].usuario.apellido1;
+      temporalUsuario.push(objTardias);
+    }
+    }
+
+  }
+
+  for(var i = 0; i <temporalUsuario.length; i++){
+    for(var j = 0; j <marcas.length; j++){
+      if (temporalUsuario[i].nombre==marcas[j].usuario.nombre && temporalUsuario[i].apellido1==marcas[j].usuario.apellido1 && temporalUsuario[i].dia==marcas[j].fecha.dia && temporalUsuario[i].mes==marcas[j].fecha.mes && temporalUsuario[i].año==marcas[j].fecha.año && marcas[j].tipoMarca=="Entrada"){
+        var horax=parseInt(String(marcas[j].fecha.hora).substr(0,2));
+        var minutox=parseInt(String(marcas[j].fecha.hora).substr(3,2));
+        if (horax >6 && minutox >10) {
+        var objTardiaFinal = new Object();
+        objTardiaFinal.nombre=marcas[j].usuario.nombre;
+        objTardiaFinal.apellido=marcas[j].usuario.apellido1;
+        objTardiaFinal.fecha=marcas[j].fecha.str;
+        arregloTardias.push(objTardiaFinal);
+        }
+      }
+  }
+}
+return arregloTardias;
+
+}
+
+
+
+
+
 function filtrarPorFecha(req){
   //Si el query es para un intervalo de fechas determinado, se agregan a las fechas en formato "unix"
   if(req.body.fechaDesde && req.body.fechaDesde != ''){
