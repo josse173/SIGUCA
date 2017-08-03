@@ -260,13 +260,13 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
           //Suma el tiempo trabajado analizando que si esta en el minuto 59 debe sumar la hora
           
           listaSumada[p].tiempo.horas += original.tiempo.horas;
-          if(listaSumada[p].tiempo.minutos == 59){
-            listaSumada[p].tiempo.minutos = 0;
+          listaSumada[p].tiempo.minutos += original.tiempo.minutos;
+          
+          if(listaSumada[p].tiempo.minutos > 59){
+            listaSumada[p].tiempo.minutos = listaSumada[p].tiempo.minutos -60;
             listaSumada[p].tiempo.horas++;
           }
-          else{
-            listaSumada[p].tiempo.minutos += original.tiempo.minutos;
-          }
+         
           revisado = true;
         }
       }//Fin de la busqueda del elemento a analizar en la lista de elementos analizados

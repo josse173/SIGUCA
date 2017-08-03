@@ -52,30 +52,66 @@ block content
                 th(data-sort-ignore="true") Acciones
                 th(data-sort-ignore="true") Cantidad
             tbody#calDetalle
-                tr
-                  td Marcas registradas
-                  if(marcas && marcas.length != 0)
-                    td #{marcas.length}
-                  else
-                    td 0
-                tr
-                  td Justificaciones
-                  if(justificaciones && justificaciones.length != 0)
-                    td #{justificaciones.length}
-                  else
-                    td 0
-                tr
-                  td Solicitudes de permisos
-                  if(permisos && permisos.length != 0)
-                    td #{permisos.length}
-                  else
-                    td 0
-                tr
-                  td Solicitudes de horas extraordinarias
-                  if(extras && extras.length != 0)
-                    td #{extras.length}
-                  else
-                    td 0
+                //-Marcas
+                if(marcas)
+                  tr
+                    td Marcas registradas
+                    if(marcas.length != 0)
+                      td #{marcas.length}
+                    else
+                      td 0
+                
+                //-Justificiones
+                if(justificaciones)
+                  tr
+                    td Justificaciones
+                    if(justificaciones.length != 0)
+                      td #{justificaciones.length}
+                    else
+                      td 0
+
+                //-Solicitudes de permisos
+                if(permisos)
+                  tr
+                    td Solicitudes de permisos
+                    if(permisos.length != 0)
+                      td #{permisos.length}
+                    else
+                      td 0
+
+                //-Solicitudes de horas extraordinarias
+                if(extras)
+                  tr
+                    td Solicitudes de horas extraordinarias
+                    if(extras.length != 0)
+                      td #{extras.length}
+                    else
+                      td 0
+                
+                //-Horas laboradas
+                if(horasEmpleado)
+                  tr
+                    td total de horas laboradas
+                    if(horasEmpleado.length != 0)
+                      //-Se calcula el total de horas laboradas por empleado
+                      -var sumaHoras = 0, sumaMinutos = 0;
+                      each empleadoTem, p in horasEmpleado
+                        - sumaHoras += empleadoTem.tiempo.horas;
+                        if(sumaMinutos + empleadoTem.tiempo.minutos >= 60)
+                          - sumaHoras ++
+                          - sumaMinutos = (sumaMinutos + empleadoTem.tiempo.minutos) - 60
+                        else
+                          -sumaMinutos += empleadoTem.tiempo.minutos        
+
+                      //- Se le da formato al tiempo sumado
+                      - var tiempo ="";
+                      - if(sumaHoras < 10 ) sumaHoras = "0" + sumaHoras;
+                      - if(sumaMinutos < 10 ) sumaMinutos = "0" + sumaMinutos;
+                      - tiempo = sumaHoras+":"+sumaMinutos;
+                      td #{tiempo}
+                    else
+                      td 0
+                  
         br
         div.tablasReportes
           if(resumen && resumen.length != 0)
