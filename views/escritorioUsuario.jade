@@ -360,11 +360,6 @@
       .modal-header
         button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
         h4#myModalLabel.modal-title Justificaciones pendientes
-        form#solicitud-extra-form(role='form', method="POST", action="/aro").well.span4
-          h5 A continuación se muestran las justificaciones pendientes a la fecha, debe responderlas para que desaparezca esta notificación.
-          h3 Justificación en masa
-          textarea#motivo.form-control(rows="4" cols="50" name='motivo' required )
-          button.btn.btn-success Enviar
       .modal-body
         form.formJust#login-form.well.span4
           .form-group
