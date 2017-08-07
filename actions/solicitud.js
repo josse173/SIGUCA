@@ -1,4 +1,5 @@
-var crudSolicitud = require('../routes/crudSolicitud');
+var crudSolicitud = require('../routes/crudSolicitud'),
+	config 			= require('../config');
 
 
 module.exports = {
@@ -25,7 +26,7 @@ module.exports = {
 		var permiso = req.body; 
 		permiso.usuario = req.user;
 		crudSolicitud.addPermiso(permiso, function (){
-			if (req.session.name == "Empleado") {
+			if (req.session.name == "Empleado" || req.session.name == config.empleadoProfesor) {
 				res.redirect('/escritorioEmpl');
 			} else res.redirect('/escritorio');  
 		});

@@ -11,6 +11,7 @@
 //-Use block sigucaJS to add extra javascript from derivated pages
 //-Use block sigucaJS para incluír javascripts extra de páginas derivadas
 doctype
+
 html
   head
     meta(charset='utf-8')
@@ -70,7 +71,7 @@ html
                         i.icon-home.icon-large
                         |&nbsp;Escritorio
                     else
-                      if(usuario.tipo == 'Empleado')
+                      if(usuario.tipo == 'Empleado' || usuario.tipo == config.empleadoProfesor)
                         a(href="/escritorioEmpl")
                           i.icon-home.icon-large
                           |&nbsp;Escritorio
@@ -104,7 +105,7 @@ html
                           li
                             a(href="/reportes/extras") Solicitudes
 
-                  if(usuario.tipo == 'Supervisor' || usuario.tipo == 'Empleado')
+                  if(usuario.tipo == 'Supervisor' || usuario.tipo == 'Empleado' || usuario.tipo == config.empleadoProfesor)
                     li
                       a(href="/eventos")
                         i.icon-book.icon-large  

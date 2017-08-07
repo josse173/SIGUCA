@@ -46,6 +46,9 @@ var emailSIGUCA = 'siguca@greencore.co.cr';
 
 var multer  =  require('multer');  
 
+//***************************************
+var config 			= require('../config');
+
 //************************************
 module.exports = function(app, io) {
     /*
@@ -638,7 +641,7 @@ module.exports = function(app, io) {
                         });
                     });
                 }
-            } else if (req.session.name == "Empleado") {
+            } else if (req.session.name == "Empleado" || req.session.name == config.empleadoProfesor) {
                 res.json({ marcasPersonales: marcasPersonales });
             } else {
                 req.logout();

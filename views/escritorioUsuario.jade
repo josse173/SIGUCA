@@ -187,11 +187,13 @@
                     button.btnSalidaReceso.btn.btn-warning.btn-(style="width: 150px;", value = 'Salida a Receso') Salida a Receso 
                   td
                     button.btnEntradaReceso.btn.btn-warning.btn-(style="width: 150px;", value = 'Entrada de Receso') Entrada de Receso
-                tr
-                  td
-                    button.btnSalidaAlmuerzo.btn.btn-primary.btn-(style="width: 150px;", value = 'Salida al Almuerzo') Salida al Almuerzo
-                  td
-                    button.btnEntradaAlmuerzo.btn.btn-primary.btn-(style="width: 150px;", value = 'Entrada de Almuerzo') Entrada del Almuerzo
+                
+                if(usuario.tipo != config.empleadoProfesor)
+                  tr
+                    td
+                      button.btnSalidaAlmuerzo.btn.btn-primary.btn-(style="width: 150px;", value = 'Salida al Almuerzo') Salida al Almuerzo
+                    td
+                      button.btnEntradaAlmuerzo.btn.btn-primary.btn-(style="width: 150px;", value = 'Entrada de Almuerzo') Entrada del Almuerzo
               .form-group
                 label()
                   button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
@@ -219,12 +221,13 @@
                 tr
                   td
                     button.btnEntradaReceso.btn.btn-warning.btn-(style="width: 100%;", value = 'Entrada de Receso') Entrada de Receso
-                tr
-                  td
-                    button.btnSalidaAlmuerzo.btn.btn-primary.btn-(style="width: 100%;", value = 'Salida al Almuerzo') Salida al Almuerzo
-                tr
-                  td
-                    button.btnEntradaAlmuerzo.btn.btn-primary.btn-(style="width: 100%;", value = 'Entrada de Almuerzo') Entrada del Almuerzo
+                if(usuario.tipo != config.empleadoProfesor)
+                  tr
+                    td
+                      button.btnSalidaAlmuerzo.btn.btn-primary.btn-(style="width: 100%;", value = 'Salida al Almuerzo') Salida al Almuerzo
+                  tr
+                    td
+                      button.btnEntradaAlmuerzo.btn.btn-primary.btn-(style="width: 100%;", value = 'Entrada de Almuerzo') Entrada del Almuerzo
               .form-group
                 label()
                   button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
