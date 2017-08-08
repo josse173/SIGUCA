@@ -28,7 +28,7 @@ module.exports = {
     }),
 
     ejecutarCierrePorUsuarioAlMarcarSalida:function(id){
-
+    
    
     var hoy = new Date();
 
@@ -91,7 +91,7 @@ module.exports = {
                                 if(usuarios[i]._id.equals(cierre[j].usuario) && usuarios[i].horarioEmpleado && usuarios[i].horarioEmpleado!="" ){
                                     entro=true;
                                     j=cierre.length;
-                                    console.log("ahora si");
+                                    
                                 } 
                             }
                             if(entro==false){

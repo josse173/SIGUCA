@@ -21,7 +21,9 @@
  //**********************************************
  var crudUsuario = require('./crudUsuario');
  var crudSolicitud = require('./crudSolicitud');
- var crudJustificaciones = require('./crudJustificaciones');
+ 
+ 
+
  var crudHorario = require('./crudHorario');
  var crudMarca = require('./crudMarca');
  var crudDepartamento = require('./crudDepartamento');
@@ -202,31 +204,9 @@ module.exports = function(app, io) {
     */
     app.post('/solicitud_permisos', autentificado, solicitud_actions.crearPermiso);
 
+    app.post('/justificacionMasa', autentificado, justificacion_actions.justificacionEnMasa);
 
-
-    app.post('/aro', autentificado, function (req, res) { 
-        var epochTime = moment().unix();
-        var detalle = (req.body.detalle);
-        console.log(detalle);
-        var justificacionActualizada = {
-                detalle: detalle,
-                estado: "Pendiente",
-                fechaJustificada:epochTime
-             };
-        Justificaciones.find( {usuario: req.user.id, estado:'Incompleto'}
-        ).exec(function(err, justificaciones) {
-        var arrayJust = util.unixTimeToRegularDate(justificaciones, true);
-        
-        var vector=new Array();
-        for(temporal in arrayJust){
-            vector.push(arrayJust[temporal].estado);
-        }
-        
        
-        Justificaciones.update({$in:{estado:vector.estado}, $set: {justificacionActualizada }});
-        //Justificaciones.findByIdAndupdate({"_id":{$in:[vector[0]]}},{ $set: {justificacionActualizada }});
-        });
-    }); 
 
 
     /*
