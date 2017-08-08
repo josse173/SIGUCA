@@ -71,10 +71,11 @@ function marca (marca, cb) {
 							saveMarca(newMarca,cb,msg);
 							cierre.ejecutarCierrePorUsuarioAlMarcarSalida(newMarca.usuario);
 							//cierre.ejecutarCierre();
+							//cierre.ejecutarCierre();
 						});
 					
 					//Metodo que ejecuta el cierre 
-					cierre.ejecutarCierrePorUsuarioAlMarcarSalida(newMarca.usuario);
+					//cierre.ejecutarCierrePorUsuarioAlMarcarSalida(newMarca.usuario);
 					//cierre.ejecutarCierre();
 					return msgTem;
 				}

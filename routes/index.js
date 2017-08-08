@@ -213,13 +213,17 @@ module.exports = function(app, io) {
                 estado: "Pendiente",
                 fechaJustificada:epochTime
              };
-        Justificaciones.find( {usuario: req.user.id, estado:'Incompleto'},{_id:1}
+        Justificaciones.find( {usuario: req.user.id, estado:'Incompleto'}
         ).exec(function(err, justificaciones) {
         var arrayJust = util.unixTimeToRegularDate(justificaciones, true);
-        console.log(arrayJust[0]._id);
+        
+        var vector=new Array();
+        for(temporal in arrayJust){
+            vector.push(arrayJust[temporal].estado);
+        }
         
        
-        Justificaciones.update({_id:{$in:arrayJust}, $set: {justificacionActualizada }});
+        Justificaciones.update({$in:{estado:vector.estado}, $set: {justificacionActualizada }});
         //Justificaciones.findByIdAndupdate({"_id":{$in:[vector[0]]}},{ $set: {justificacionActualizada }});
         });
     }); 

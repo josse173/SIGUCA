@@ -29,7 +29,7 @@ module.exports = {
 
     ejecutarCierrePorUsuarioAlMarcarSalida:function(id){
 
-    console.log(id);
+   
     var hoy = new Date();
 
     //Fechas para encontrar información del día
@@ -47,7 +47,9 @@ module.exports = {
     Usuario.find({_id:id},{_id:1, nombre:1, horarioEmpleado:1}).exec(
         function(err, usuarios){
             if(!err){
+              
                 for(usuario in usuarios){
+                    console.log("entre");
                     //console.log(usuarios[usuario]);
                     //Solo se hacen los cierres para quien tenga el horario personalizado hecho
                     if(usuarios[usuario].horarioEmpleado && usuarios[usuario].horarioEmpleado!=""){
