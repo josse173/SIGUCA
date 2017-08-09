@@ -1,7 +1,8 @@
 var moment = require('moment');
 var crudJustificaciones = require('../routes/crudJustificaciones');
 var config 			= require('../config');
-
+var Justificaciones = require('../models/Justificaciones');
+ var util = require('../util/util');
 module.exports = {
 	edit:function (req, res) {
 		crudJustificaciones.loadJust(req.params.id, function(just) { 
@@ -32,5 +33,32 @@ module.exports = {
 			if(err) res.json(err);
 			else res.send(msj);
 		});
+	},
+
+	justificacionEnMasa:function(req,res){
+		var epochTime = moment().unix();
+        var detalle = (req.body.detalle);
+        console.log(detalle);
+
+        var justificacionActualizada = {
+                detalle: detalle,
+                estado: "Pendiente",
+                fechaJustificada:epochTime
+        };
+        Justificaciones.find( {usuario: req.user.id, estado:'Incompleto'}
+        ).exec(function(err, justificaciones) {
+        var arrayJust = util.unixTimeToRegularDate(justificaciones, true);
+        for(temporal in arrayJust){
+             Justificaciones.findByIdAndUpdate(arrayJust[temporal]._id, justificacionActualizada, function (err, justActualizada) {
+        
+            });
+		}
+		
+	
+		
+		});
+		res.redirect('/escritorioEmpl');
+
 	}
+
 }
