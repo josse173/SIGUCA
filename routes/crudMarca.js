@@ -2,13 +2,14 @@ var mongoose 		= require('mongoose'),
 nodemailer 			= require('nodemailer'),
 moment 				= require('moment'),
 Usuario 			= require('../models/Usuario'),
+cierre 				= require('../actions/tareas.js'),
 Marca 				= require('../models/Marca'),
 util 				= require('../util/util'),
 crudHorario 		= require('./crudHorario'),
 crud 				= require('./crud'),
 crudJustificaciones = require('../routes/crudJustificaciones'),
 config 				= require('../config.json');
-
+cierrePersonal 		= require ('../models/CierrePersonal.js');
 
 //--------------------------------------------------------------------
 //		Métodos Marcas
@@ -35,6 +36,7 @@ function marca (marca, cb) {
 		epochTimeLte = date.hours(23).minutes(59).seconds(59).unix();
 		marca.epoch = epochTime;
 		var newMarca = Marca(marca);
+		
 		Marca.find(
 		{
 			epoch:{'$gte': epochTimeGte, '$lte': epochTimeLte}, 
@@ -64,10 +66,17 @@ function marca (marca, cb) {
 						marcas.recesos[marcas.recesos.length-1].recesoIn
 						)){
 						//
-					return revisarMarca(newMarca.usuario, newMarca,
+					var msgTem = revisarMarca(newMarca.usuario, newMarca,
 						function(msg){
 							saveMarca(newMarca,cb,msg);
+							cierre.ejecutarCierrePorUsuarioAlMarcarSalida(newMarca.usuario);
+							//cierre.ejecutarCierre();
 						});
+					
+					//Metodo que ejecuta el cierre 
+					cierre.ejecutarCierrePorUsuarioAlMarcarSalida(newMarca.usuario);
+					//cierre.ejecutarCierre();
+					return msgTem;
 				}
 				else cb("La marca de salida no fue registrada, ya que fue registrada anteriormente,"+
 					"se encuentra en almuerzo o en receso.");
@@ -174,7 +183,19 @@ function marca (marca, cb) {
 	}
 }
 
-exports.deleteMarca = function(id, cb){
+exports.deleteMarca = function(id,tipoMarca,usuarioId, cb){
+	
+	var epochMin = moment();
+    epochMin.hours(0);
+    epochMin.minutes(0);
+    epochMin.seconds(0);
+
+    var epochMax = moment();
+    epochMax.hours(23);
+    epochMax.minutes(59);
+    epochMax.seconds(59);
+
+
 	Marca.findById(id, function (err, marca) {
 		var epoch = moment().unix();
 		if(!marca){
@@ -183,6 +204,17 @@ exports.deleteMarca = function(id, cb){
 		else if(marca && epoch - marca.epoch <= 600){
 			Marca.findByIdAndRemove(id, function (err, marca) {
 				if (err) cb(err);
+			if(tipoMarca=="Salida"){
+				
+				
+				cierrePersonal.remove({'usuario':usuarioId,epoch: { "$gte": epochMin.unix(),"$lte":epochMax.unix()}},function(err,cierre){
+					
+				});
+				
+				
+				
+			}
+		
 				return cb('Se eliminó correctamente.');
 			});
 		} else {
@@ -317,7 +349,6 @@ function revisarMarca(_idUser, marca, cb){
 
 function workedHour(_idUser,horario, mOut, mReal,cb){
 
-		var prueba="xD";
 		var date =  moment().format('L').split("/");
 		var epochGte = moment();
 		epochGte.year(date[2]).month(date[0]-1).date(date[1]);
@@ -334,7 +365,7 @@ function workedHour(_idUser,horario, mOut, mReal,cb){
 			"$lte":epochLte.unix()
 		}}, function (err, marcas) {
 			
-		console.log(prueba);
+	
 		var m2 ="ok";
 		if(err) m2 = err;
 		varepoch: mcs = [];
@@ -423,7 +454,7 @@ function workedHour(_idUser,horario, mOut, mReal,cb){
 				var obj=new Object();
 				obj.horas=horas;
 				obj.minutos=minutos;
-				console.log("horas y minutossss"+obj.horas+":"+obj.minutos);
+				
 
 
 
@@ -448,7 +479,7 @@ function workedHour(_idUser,horario, mOut, mReal,cb){
 					horaSalida=0;
 					minutoSalida=minutoEntrada-temporalMinutoSalida;
 				}
-				console.log("Horario"+horaSalida+":"+minutoSalida);
+				
 
 				if(horaSalida>obj.horas){
 					addJustIncompleta(_idUser, "Salida antes de hora establecida", 

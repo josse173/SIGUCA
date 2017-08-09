@@ -457,7 +457,7 @@ $("#extraLink").click(function(){
         'transition': 'slide',
         'message': '¿Está seguro de eliminar la marca de <br/><strong>' +  split[0] + '</strong>?',
         'onok': function(){ 
-            $.get('/marca/delete/'+split[1], function (data){
+            $.get('/marca/delete/'+split[1]+'/'+split[2], function (data){
                 if(data == 'Se eliminó correctamente.'){
                     footable.removeRow(row);
                     alertify.message('Se eliminó la marca <strong>' +  split[0] + '</strong> con éxito');
