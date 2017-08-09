@@ -93,7 +93,7 @@ module.exports = {
 			}
 		},
 		escritorioEmpl : function (req, res) {
-			if (req.session.name == "Empleado") {
+			if (req.session.name == "Empleado" || req.session.name == config.empleadoProfesor) {
         	//Se toma la hora actual
         	var epochGte = moment();
         	epochGte.hours(0);
@@ -146,7 +146,8 @@ module.exports = {
 							horarios: horarios,
 							departamentos: departamentos,
 							usuarios: usuarios,
-							tipoEmpleado: config.empleado2
+							tipoEmpleado: config.empleado2,
+							empleadoProfesor: config.empleadoProfesor
 						});
 					});
 				});

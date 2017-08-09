@@ -66,7 +66,8 @@ exports.listUsuarios = function(cb){
 					empleados: empleados, 
 					horarios: horarios,
 					departamentos: departamentos,
-					tipoEmpleado: config.empleado2
+					tipoEmpleado: config.empleado2,
+					empleadoProfesor: config.empleadoProfesor
 				};
 				return cb(err, render);
             });//Departamento

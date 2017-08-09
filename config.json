@@ -5,5 +5,6 @@
 "rangoMarcaEntrada" : 10,
 "rangoMarcaSalida" : 0,
 "periodoLibreTrabajo": 1,
-"empleado2" : "Usuarion sin acceso web"
+"empleado2" : "Usuario sin acceso web",
+"empleadoProfesor" : "Profesor"
 }
