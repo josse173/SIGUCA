@@ -70,7 +70,7 @@ block content
                       - var date = new Date();
                       - var epoch = (date.getTime() - date.getMilliseconds())/1000;
                       if(epoch - marca.epoch <= 500)
-                        button.btn.btn-default.marcaDelete(value=marca.fecha+","+marca.id)
+                        button.btn.btn-default.marcaDelete(value=marca.fecha+","+marca.id+","+marca.tipoMarca)
                           i.icon-trash.icon-large.i-danger 
               tfoot
                 tr
