@@ -200,35 +200,35 @@ module.exports = {
 function getInformacionRender(req, res, titulo, usuarios, departamentos, 
   marcaQuery, justQuery, extraQuery, permisosQuery, cierreQuery, populateQuery, nombreUsuario){
   //Filtrar -departamento -usuario -fecha
-  Marca.find(marcaQuery).populate(populateQuery).exec(function(error, marcas){
+  
     Justificaciones.find(justQuery).populate(populateQuery).exec(function(error, justificaciones){
       Solicitudes.find(extraQuery).populate(populateQuery).exec(function(error, extras) {
         Solicitudes.find(permisosQuery).populate(populateQuery).exec(function(error, permisos) {
           if(req.route.path.substring(0, 9) !=='/reportes'){
             
-            return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, marcas, 
+            return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, null, 
               justificaciones, extras, permisos, null, nombreUsuario);
           }
           else {
-            
-            cierreQuery.usuario = { $in: usuarios };
+            Marca.find(marcaQuery).populate(populateQuery).exec(function(error, marcas){
+              cierreQuery.usuario = { $in: usuarios };
 
-            Departamento.findOne({_id: req.user.departamentos[0].departamento}).exec(function(error, departamentosList){
-              Usuario.find({'departamentos.departamento' : departamentosList}).exec(function(error, usuarios) {
-                CierrePersonal.find(cierreQuery).populate("usuario").exec(function(error, cierres) {
-                
-                return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, marcas, 
-                  justificaciones, extras, permisos, cierres, nombreUsuario);
+              Departamento.findOne({_id: req.user.departamentos[0].departamento}).exec(function(error, departamentosList){
+                Usuario.find({'departamentos.departamento' : departamentosList}).exec(function(error, usuarios) {
+                  CierrePersonal.find(cierreQuery).populate("usuario").exec(function(error, cierres) {
+                  
+                  return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, marcas, 
+                    justificaciones, extras, permisos, cierres, nombreUsuario);
+                  });
                 });
-              });
 
-            });//Fin Departamento
+              });//Fin Departamento
             
+            });//Marcas
           }
         });//Solicitudes permisos
       });//Solicitudes horas extra
     });//Justificaciones
-  });//Marcas
 }
 
 
@@ -326,7 +326,7 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
 
 
   //Si el filtrado es "marcas/tardia"
-  if(filtrado && filtrado == "marcas" || req.route.path.substring(0, 9) !=='/reportes'){
+  if(filtrado && filtrado == "marcas" && req.route.path.substring(0, 9) =='/reportes'){
       filtro.marcas = util.unixTimeToRegularDate(marcas.filter(function(m){
           return m.usuario;
         }), true);

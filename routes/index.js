@@ -46,6 +46,9 @@ var emailSIGUCA = 'siguca@greencore.co.cr';
 
 var multer  =  require('multer');  
 
+//***************************************
+var config 			= require('../config');
+
 //************************************
 module.exports = function(app, io) {
     /*
@@ -200,6 +203,32 @@ module.exports = function(app, io) {
     app.post('/solicitud_permisos', autentificado, solicitud_actions.crearPermiso);
 
 
+
+    app.post('/aro', autentificado, function (req, res) { 
+        var epochTime = moment().unix();
+        var detalle = (req.body.detalle);
+        console.log(detalle);
+        var justificacionActualizada = {
+                detalle: detalle,
+                estado: "Pendiente",
+                fechaJustificada:epochTime
+             };
+        Justificaciones.find( {usuario: req.user.id, estado:'Incompleto'}
+        ).exec(function(err, justificaciones) {
+        var arrayJust = util.unixTimeToRegularDate(justificaciones, true);
+        
+        var vector=new Array();
+        for(temporal in arrayJust){
+            vector.push(arrayJust[temporal].estado);
+        }
+        
+       
+        Justificaciones.update({$in:{estado:vector.estado}, $set: {justificacionActualizada }});
+        //Justificaciones.findByIdAndupdate({"_id":{$in:[vector[0]]}},{ $set: {justificacionActualizada }});
+        });
+    }); 
+
+
     /*
     *  Actualiza una solicitud tipo permiso anticipado
     */
@@ -294,8 +323,8 @@ module.exports = function(app, io) {
     /*
     *  Elimina una marca en específico si fue creada hace menos de 10 minutos
     */
-    app.get('/marca/delete/:id', autentificado, function (req, res) {
-        crudMarca.deleteMarca(req.params.id, function (msj) {
+    app.get('/marca/delete/:id/:tipoMarca', autentificado, function (req, res) {
+        crudMarca.deleteMarca(req.params.id,req.params.tipoMarca,req.user.id, function (msj) {
             res.send(msj);
         });
     });
@@ -638,7 +667,7 @@ module.exports = function(app, io) {
                         });
                     });
                 }
-            } else if (req.session.name == "Empleado") {
+            } else if (req.session.name == "Empleado" || req.session.name == config.empleadoProfesor) {
                 res.json({ marcasPersonales: marcasPersonales });
             } else {
                 req.logout();

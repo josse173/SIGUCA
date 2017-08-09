@@ -54,6 +54,7 @@ function selectValue(){
 function clock(epoch){
     setInterval(function(){
         var currentTime = new Date(0);
+
         currentTime.setUTCSeconds(epoch)
         var currentHours = currentTime.getHours ( );
         var currentMinutes = currentTime.getMinutes ( );

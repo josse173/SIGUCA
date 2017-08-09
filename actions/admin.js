@@ -8,7 +8,7 @@ module.exports = {
 		if (req.session.name == "Supervisor") {
 			res.redirect('/escritorio');
 		}
-		if (req.session.name == "Empleado") {
+		if (req.session.name == "Empleado" || req.session.name == config.empleadoProfesor) {
 			res.redirect('/escritorioEmpl');
 		}
 		if (req.session.name == config.empleado2) {

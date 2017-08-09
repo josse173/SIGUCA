@@ -25,22 +25,11 @@ module.exports = {
         },
         start: false,
         timeZone: "America/Costa_Rica"
-    })
-}
-var once = false;
+    }),
 
-function crearCierre(epoch, ejecutar){
-    var hoy = new Date();
-    var queryCierre = {epoch:epoch};
-    var nuevoCierre = new CierrePersonal(queryCierre);
-    nuevoCierre.save(function (err, cierre) {
-        if (err) 
-            console.log("Error al crear cierre en la fecha '"+hoy+"' Mensaje: "+error);
-        ejecutar(cierre._id);
-    });
-}
+    ejecutarCierrePorUsuarioAlMarcarSalida:function(id){
 
-function ejecutarCierre(){
+   
     var hoy = new Date();
 
     //Fechas para encontrar información del día
@@ -55,10 +44,12 @@ function ejecutarCierre(){
     epochMax.seconds(59);
 
     //Se realiza el cierre para todos los usuarios menos el tipo administrador
-    Usuario.find({tipo:{"$ne":"Administrador"}},{_id:1, nombre:1, horarioEmpleado:1}).exec(
+    Usuario.find({_id:id},{_id:1, nombre:1, horarioEmpleado:1}).exec(
         function(err, usuarios){
             if(!err){
+              
                 for(usuario in usuarios){
+                    console.log("entre");
                     //console.log(usuarios[usuario]);
                     //Solo se hacen los cierres para quien tenga el horario personalizado hecho
                     if(usuarios[usuario].horarioEmpleado && usuarios[usuario].horarioEmpleado!=""){
@@ -69,7 +60,85 @@ function ejecutarCierre(){
                 }
             } 
         });
+},
+
+    ejecutarCierre:function(){
+    var hoy = new Date();
+
+    //Fechas para encontrar información del día
+    var epochMin = moment();
+    epochMin.hours(0);
+    epochMin.minutes(0);
+    epochMin.seconds(0);
+
+    var epochMax = moment();
+    epochMax.hours(23);
+    epochMax.minutes(59);
+    epochMax.seconds(59);
+
+    //Se realiza el cierre para todos los usuarios menos el tipo administrador
+    var contador=0;
+    var entro =false;
+    Usuario.find({tipo:{"$ne":"Administrador"}},{_id:1, nombre:1, horarioEmpleado:1}).exec(
+        function(err, usuarios){
+            if(!err){
+                CierrePersonal.find({epoch: { "$gte": epochMin.unix(),"$lte":epochMax.unix()}}).exec(function(error,cierre){
+                    if(!error){
+                     
+                        for(var i=0;i<usuarios.length;i++){
+                            entro=false;
+                            for(var j=0;j<cierre.length;j++){
+                                if(usuarios[i]._id.equals(cierre[j].usuario) && usuarios[i].horarioEmpleado && usuarios[i].horarioEmpleado!="" ){
+                                    entro=true;
+                                    j=cierre.length;
+                                    console.log("ahora si");
+                                } 
+                            }
+                            if(entro==false){
+
+                                buscarHorario(usuarios[i]._id,epochMin, epochMax, usuarios[i].horarioEmpleado); 
+                            }
+                            
+                        }         
+                        
+                    }
+                });
+                
+                /*
+                for(usuario in usuarios){
+                    //console.log(usuarios[usuario]);
+                    //Solo se hacen los cierres para quien tenga el horario personalizado hecho
+                    if(usuarios[usuario].horarioEmpleado && usuarios[usuario].horarioEmpleado!=""){
+                        //console.log(usuarios[usuario].horarioEmpleado);
+                        buscarHorario(usuarios[usuario]._id, 
+                            epochMin, epochMax, usuarios[usuario].horarioEmpleado); 
+                    }
+                }
+                */
+            } 
+        });
 }
+
+
+}
+var once = false;
+
+function crearCierre(epoch, ejecutar){
+    var hoy = new Date();
+    var queryCierre = {epoch:epoch};
+    var nuevoCierre = new CierrePersonal(queryCierre);
+    nuevoCierre.save(function (err, cierre) {
+        if (err) 
+            console.log("Error al crear cierre en la fecha '"+hoy+"' Mensaje: "+error);
+        ejecutar(cierre._id);
+    });
+}
+
+
+
+
+
+
 
 function buscarHorario(_idUser, epochMin, epochMax, horarioEmpleado){
     crudHorario.getById(horarioEmpleado, 

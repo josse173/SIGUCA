@@ -1,5 +1,6 @@
 var moment = require('moment');
 var crudJustificaciones = require('../routes/crudJustificaciones');
+var config 			= require('../config');
 
 module.exports = {
 	edit:function (req, res) {
@@ -12,7 +13,7 @@ module.exports = {
 		just.id = req.user.id;
 		//console.log(just);
 		crudJustificaciones.addJust(just, function (){
-			if (req.session.name == "Empleado") {
+			if (req.session.name == "Empleado" || req.session.name == config.empleadoProfesor) {
 				res.redirect('/escritorioEmpl');
 			} else res.redirect('/escritorio');
         });///verificar
