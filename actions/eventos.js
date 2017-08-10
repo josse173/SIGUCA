@@ -213,16 +213,11 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos,
             Marca.find(marcaQuery).populate(populateQuery).exec(function(error, marcas){
               cierreQuery.usuario = { $in: usuarios };
 
-              Departamento.findOne({_id: req.user.departamentos[0].departamento}).exec(function(error, departamentosList){
-                Usuario.find({'departamentos.departamento' : departamentosList}).exec(function(error, usuarios) {
                   CierrePersonal.find(cierreQuery).populate("usuario").exec(function(error, cierres) {
                   
                   return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, marcas, 
                     justificaciones, extras, permisos, cierres, nombreUsuario);
                   });
-                });
-
-              });//Fin Departamento
             
             });//Marcas
           }
