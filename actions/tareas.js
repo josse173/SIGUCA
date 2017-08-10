@@ -184,14 +184,14 @@ function buscarInformacionUsuarioCierre( _idUser, epochMin, epochMax, horario){
                 if(!marcas.entrada){
                     //console.log("Omisión de marca de entrada");
                     addJustIncompleta(_idUser, "Omisión de marca de entrada", "");
-                    agregarUsuarioACierre(_idUser, {h:-1,m:-1});
+                    //agregarUsuarioACierre(_idUser, {h:-1,m:-1});
                 } 
                 //Solo se genera una notificación de omisión de marca de salida si
                 //el usuario incumplió las horas de trabajo
                 else if(!marcas.salida){
                     //console.log("Omisión de marca de salida");
                     addJustIncompleta(_idUser, "Omisión de marca de salida", "");
-                    agregarUsuarioACierre(_idUser, {h:-1,m:-1});
+                    //agregarUsuarioACierre(_idUser, {h:-1,m:-1});
                 }
             }
         }
