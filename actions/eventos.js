@@ -211,13 +211,16 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos,
           }
           else {
             Marca.find(marcaQuery).populate(populateQuery).exec(function(error, marcas){
-              cierreQuery.usuario = { $in: usuarios };
+              //Si no se filtro por usuario se hace el filtrado por departamentos
+              if(!cierreQuery.usuario){
+                cierreQuery.usuario = { $in: usuarios };
+              }
 
-                  CierrePersonal.find(cierreQuery).populate("usuario").exec(function(error, cierres) {
-                  
-                  return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, marcas, 
-                    justificaciones, extras, permisos, cierres, nombreUsuario);
-                  });
+              CierrePersonal.find(cierreQuery).populate("usuario").exec(function(error, cierres) {
+              
+              return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, marcas, 
+                justificaciones, extras, permisos, cierres, nombreUsuario);
+              });
             
             });//Marcas
           }
