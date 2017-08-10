@@ -18,12 +18,21 @@ block content
               select.form-control.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro") 
                 option(value= "todos|reportes") Todos los usuarios
                 each user in usuarios
-                  option(value= user._id + "|reportes") #{user.apellido1} #{user.apellido2}, #{user.nombre}
+                  //-Se verifica si la informacion esta siendo filtrada por usuario
+                  if(filtroUsuario && filtroUsuario == user._id)
+                    option(value= user._id + "|reportes", selected) #{user.apellido1} #{user.apellido2}, #{user.nombre}
+                  else
+                    option(value= user._id + "|reportes") #{user.apellido1} #{user.apellido2}, #{user.nombre}
+
             td
               select.form-control#selectFiltro.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro_departamento") 
                 option(value= "todos") Todos los departamentos
                 each dep in departamentos
-                  option(value=dep._id ) #{dep.nombre}
+                  //-Se verifica si la informacion esta siendo filtrada por departamento
+                  if(filtroDepartamento && filtroDepartamento == dep._id)
+                    option(value=dep._id, selected) #{dep.nombre}
+                  else
+                    option(value=dep._id ) #{dep.nombre}
             td
               label.labelFiltro.labFilLeft(for='fechaDesde') Desde:
                 div.input-group

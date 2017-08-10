@@ -139,7 +139,6 @@ module.exports = {
 				Horario.find().exec(function(error, horarios) {
 					Departamento.find().exec(function(error, departamentos) {
 						if (error) return res.json(error);
-						console.log("EL tipo de empleado es: " + config.empleado2);
 						return res.render('escritorio', {
 							title: 'Escritorio Administrador | SIGUCA',
 							usuario: req.user,

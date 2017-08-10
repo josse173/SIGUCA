@@ -47,7 +47,6 @@ module.exports = {
         cierreQuery.usuario = usuarioId;
       }
       justQuery.estado = extraQuery.estado = permisosQuery.estado = getEstado(titulo);
-
       crudUsuario.getById(usuarioId, function (err, usuario){
         var querrySupervisores = {
           _id:{
@@ -211,16 +210,28 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos,
           }
           else {
             Marca.find(marcaQuery).populate(populateQuery).exec(function(error, marcas){
-              //Si no se filtro por usuario se hace el filtrado por departamentos
-              if(!cierreQuery.usuario){
-                cierreQuery.usuario = { $in: usuarios };
+
+              var usuarioQueryFiltrado = {};
+              //Si se realizo un filtrado por departamento
+              if(req.body.filtro_departamento && req.body.filtro_departamento!="todos"){
+                usuarioQueryFiltrado.departamentos = {$elemMatch:{departamento:{"$in":req.body.filtro_departamento}}}; 
               }
 
-              CierrePersonal.find(cierreQuery).populate("usuario").exec(function(error, cierres) {
-              
-              return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, marcas, 
-                justificaciones, extras, permisos, cierres, nombreUsuario);
-              });
+              Usuario.find(usuarioQueryFiltrado).exec(function(error, usuariosFiltradoDepartamento){
+                //Si no se filtro por usuario se hace el filtrado por departamentos
+                if(!cierreQuery.usuario && (!req.body.filtro_departamento || req.body.filtro_departamento=="todos")){
+                  cierreQuery.usuario = { $in: usuarios };
+                }else if(req.body.filtro_departamento && req.body.filtro_departamento!="todos"){
+                  cierreQuery.usuario = {$in: usuariosFiltradoDepartamento};
+                }
+
+                CierrePersonal.find(cierreQuery).populate("usuario").exec(function(error, cierres) {
+                
+                return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, marcas, 
+                  justificaciones, extras, permisos, cierres, nombreUsuario);
+                });
+
+              });//Fin usuarios filtrados por departamento
             
             });//Marcas
           }
@@ -254,6 +265,7 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
 
       revisado = false;
       for(var p = 0; p < listaSumada.length;p++){
+
         if(listaSumada[p].usuario.nombre == original.usuario.nombre){//Si existe lo suma
           //Suma el tiempo trabajado analizando que si esta en el minuto 59 debe sumar la hora
           
@@ -322,6 +334,15 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
     }
   };
 
+  //Se especifica el valor por defecto de los select para filtrado por usuario
+  if(req.body.filtro && req.body.filtro.split('|')[0] != 'todos'){
+    filtro.filtroUsuario = req.body.filtro.split('|')[0];
+  }
+
+  //Se especifica el valor por defecto de los select para filtrado por departamento
+  if(req.body.filtro_departamento && req.body.filtro_departamento!="todos"){
+    filtro.filtroDepartamento = req.body.filtro_departamento;
+  }
 
   //Si el filtrado es "marcas/tardia"
   if(filtrado && filtrado == "marcas" && req.route.path.substring(0, 9) =='/reportes'){
