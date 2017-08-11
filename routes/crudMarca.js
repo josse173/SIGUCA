@@ -480,8 +480,7 @@ function workedHour(_idUser,horario, mOut, mReal,cb){
 					minutoSalida=minutoEntrada-temporalMinutoSalida;
 				}
 				
-				console.log("hora salida"+horaSalida+ "minuto de salida"+minutoSalida);
-				console.log("hora trabajadas"+obj.horas+ "minuto de salida"+obj.minutos);
+			
 				if(horaSalida>obj.horas){
 					addJustIncompleta(_idUser, "Salida antes de hora establecida", 
 											"Hora de salida: "+ util.horaStr(mReal.hora, mReal.minutos)+

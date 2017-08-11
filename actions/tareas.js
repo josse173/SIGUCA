@@ -49,7 +49,7 @@ module.exports = {
             if(!err){
               
                 for(usuario in usuarios){
-                    console.log("entre");
+                  
                     //console.log(usuarios[usuario]);
                     //Solo se hacen los cierres para quien tenga el horario personalizado hecho
                     if(usuarios[usuario].horarioEmpleado && usuarios[usuario].horarioEmpleado!=""){
