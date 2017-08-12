@@ -480,18 +480,23 @@ function workedHour(_idUser,horario, mOut, mReal,cb){
 					minutoSalida=minutoEntrada-temporalMinutoSalida;
 				}
 				
-
+			
 				if(horaSalida>obj.horas){
 					addJustIncompleta(_idUser, "Salida antes de hora establecida", 
 											"Hora de salida: "+ util.horaStr(mReal.hora, mReal.minutos)+
 											" - Hora de marca: "+ util.horaStr(mOut.hour(), mOut.minutes()), cb);
 
 				}else if(obj.horas==horaSalida){
-					if(minutoSalida>obj.minutos){
+		
+					if(minutoSalida>=obj.minutos){
 						addJustIncompleta(_idUser, "Salida antes de hora establecida", 
 											"Hora de salida: "+ util.horaStr(mReal.hora, mReal.minutos)+
 											" - Hora de marca: "+ util.horaStr(mOut.hour(), mOut.minutes()), cb);
 
+					}
+					else{
+						
+						cb("");					
 					}
 				}
 				else{
