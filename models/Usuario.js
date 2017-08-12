@@ -23,10 +23,12 @@ var SchemaUsuario = new Schema({
    type: String,
    default: ''
  },
- tipo : {
-   type: String,
-   default: ''
- },
+ tipo : [
+    {
+        type: String,
+        default: ''
+    }
+  ],
  estado: {
    type: String,
    default: 'Activo'

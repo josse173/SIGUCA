@@ -15,7 +15,7 @@ block content
         div.input-group.margin-bottom-sm
           span.input-group-addon
             i.icon-user
-          input.form-control#textInput(type="text", name="username", placeholder="Usuario")
+          input.form-control#username(type="text", name="username", placeholder="Usuario")
       div.form-group
         label(for="passwordInput")
           |Contraseña:
@@ -23,6 +23,16 @@ block content
           span.input-group-addon
             i.icon-key
           input.form-control#passInput(type="password", name="password", placeholder="Contraseña")
+
+      div.form-group
+        button(class="col-xs-4",onClick="return verificarTipos()")#btn-login.btn.btn-success
+          |Actualizar Tipos
+      
+      div.form-group
+        select.form-control#selectTem(data-style="btn-inverse", data-width="140px", name="tipo") 
+          option Seleccionar tipo
+
+      div.form-group
         button(class="col-xs-offset-4 col-md-offset-4",type="submit",data-target="#mensajeLogin")#btn-login.btn.btn-success
           i.icon-lock.icon-white
           |  Ingresar
@@ -38,3 +48,6 @@ block content
         .well
           label 
           |Bienvenido
+          
+block sigucaJS
+  script(src="/js/app/sesion.js")

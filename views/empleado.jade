@@ -29,7 +29,13 @@ block content
               td #{empleado.apellido1} #{empleado.apellido2} 
               td #{empleado.cedula} 
               td #{empleado.email} 
-              td #{empleado.tipo} 
+              td
+                each tipo, t in empleado.tipo
+                  ul
+                    if(tipo)
+                      li #{tipo}
+                    else
+                      li No tiene tipos de usuario asignados
               td 
                 each departamentos, i in empleado.departamentos
                   ul
@@ -83,7 +89,7 @@ block content
                     br   
                     label(for="tipoInput") Tipo de Usuario:
                       br
-                      select.form-control#selectTipo.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="tipo") 
+                      select.form-control#selectTipo.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="tipo" , multiple="multiple") 
                         option Empleado
                         option Supervisor
                         option Administrador

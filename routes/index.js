@@ -415,6 +415,17 @@ module.exports = function(app, io) {
             res.send(msj);
         });
     });
+    
+    /*
+    *  Obtiene un usuario
+    */
+    app.get('/empleado/tipo/get', function (req, res) {
+        Usuario.findOne({username:req.query.username2}, function (err, user) {
+            if (err) { return res.json(err) }
+            res.json(user);
+        });
+    });
+
 
     //******************************************************************************
     /*
