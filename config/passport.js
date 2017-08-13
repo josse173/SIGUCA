@@ -42,6 +42,8 @@ module.exports = function (passport, config) {
         if (user.tipo === config2.empleado2) {
           return done(null, false, { messages: 'El usuario no tiene permisos para iniciar sesión.' })
         }
+        user.tipo = req.body.tipo;
+
         return done(null, user)
       });
     }));

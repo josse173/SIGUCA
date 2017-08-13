@@ -15,6 +15,7 @@ var config 			= require('../config');
 
 module.exports = {
 	escritorio : function (req, res) {
+		req.user.tipo = req.session.name;
 		if (req.session.name == "Supervisor") {
 			var epochGte = moment().hours(0).minutes(0).seconds(0).milliseconds(0);
 
@@ -93,6 +94,7 @@ module.exports = {
 			}
 		},
 		escritorioEmpl : function (req, res) {
+			req.user.tipo = req.session.name;
 			if (req.session.name == "Empleado" || req.session.name == config.empleadoProfesor) {
         	//Se toma la hora actual
         	var epochGte = moment();
@@ -134,7 +136,9 @@ module.exports = {
 	    }
 	},
 	escritorioAdmin : function (req, res) {
+		req.user.tipo = req.session.name;
 		if (req.session.name ==="Administrador") {
+			console.log("en escriAdmin2: ");
 			Usuario.find().exec(function(error, usuarios) {
 				Horario.find().exec(function(error, horarios) {
 					Departamento.find().exec(function(error, departamentos) {
@@ -152,6 +156,8 @@ module.exports = {
 				});
 			});
 		} else {
+
+			console.log("en escriAdmin4: ");
 			req.logout();
 			res.redirect('/');
 		}

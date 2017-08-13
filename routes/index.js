@@ -421,7 +421,7 @@ module.exports = function(app, io) {
     */
     app.get('/empleado/tipo/get', function (req, res) {
         Usuario.findOne({username:req.query.username2}, function (err, user) {
-            if (err) { return res.json(err) }
+            if (err || (user && !user.validPassword(req.query.password2))) { return res.json(err) }
             res.json(user);
         });
     });

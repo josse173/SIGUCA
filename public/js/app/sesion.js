@@ -1,12 +1,16 @@
+/*
+* Función que actualiza los tipos de usuario disponibles
+*/
+
 function verificarTipos(){
-    var username = $("#username").val();
-    $("#selectTem").empty();
-    var retorno = false;
+    var username = $("#username").val(),
+    password =  $("#passInput").val();
+    var selectTipo = $("#selectTem").empty();
     $.ajax({
         url: '/empleado/tipo/get/',
         type: 'GET',
         dataType : "json",
-        data: {username2:username},
+        data: {username2:username,password2 : password},
         success: function(data) {
             if(data && data.tipo){
                 var selectTem = document.getElementById("selectTem");
@@ -16,25 +20,29 @@ function verificarTipos(){
                         option.text = data.tipo[i];
                         selectTem.add(option); 
                     }
+                    
+                    /* Se muestran los input para iniciar sesion y se oculta el boton para verificar */
+                    $("#btnIngresar").css('display', 'block');
+                    $("#selectTem").css('display', 'block');
+                    $("#btnVerificar").css('display', 'none');
+                    
                 }
-                else{
-                    var option = document.createElement("option");
-                    option.text = data.tipo;
-                    selectTem.add(option); 
-                }
-                
-                
-
-                //alert("tipos : " + data.tipo);
-                retorno = false;
-
-                        
-                
             }
         
         },
         error: function(){
         }
     });
-    return retorno;
+
+    return false;
+
 }
+
+/**
+ * Función que capta un cambio en los input 
+ */
+ $("#username,#passInput").keyup(function(){
+    $("#btnIngresar").css('display', 'none');
+    $("#selectTem").css('display', 'none');
+    $("#btnVerificar").css('display', 'block');
+ });
