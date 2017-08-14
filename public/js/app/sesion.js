@@ -21,10 +21,15 @@ function verificarTipos(){
                         selectTem.add(option); 
                     }
                     
-                    /* Se muestran los input para iniciar sesion y se oculta el boton para verificar */
-                    $("#btnIngresar").css('display', 'block');
-                    $("#selectTem").css('display', 'block');
-                    $("#btnVerificar").css('display', 'none');
+                    if(data.tipo.length <= 1){
+                        $("#login-form").submit();
+                    }else{
+                        /* Se muestran los input para iniciar sesion y se oculta el boton para verificar */
+                        $("#btnIngresar").css('display', 'block');
+                        $("#selectTem").css('display', 'block');
+                        $("#btnVerificar").css('display', 'none');
+                    }
+                    
                     
                 }
             }
