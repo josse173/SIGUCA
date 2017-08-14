@@ -279,6 +279,7 @@ module.exports = function(app, io) {
             epochLte.hour(23).minutes(59).seconds(59);
             crudMarca.find({
                 usuario:req.user.id,
+                tipoUsuario: req.session.name,
                 epoch:{
                 "$gte":epochGte.unix(),
                 "$lte":epochLte.unix()

@@ -39,7 +39,7 @@ module.exports = {
 						}; 
 						Justificaciones.find(queryInUsers).populate('usuario').exec(function(error, justCount) {
 							Solicitudes.find(queryInUsers).populate('usuario').exec(function(error, soliCount) {
-								Marca.find({usuario: req.user.id, epoch:{"$gte": epochGte.unix()}},{_id:0,tipoMarca:1,epoch:1}).exec(function(error, marcas){
+								Marca.find({usuario: req.user.id, tipoUsuario: req.session.name, epoch:{"$gte": epochGte.unix()}},{_id:0,tipoMarca:1,epoch:1}).exec(function(error, marcas){
 									Justificaciones.find({usuario: req.user.id, estado:'Incompleto'}).populate('usuario').exec(function(error, justificaciones) {
 										Solicitudes.find({estado:'Pendiente'}).populate('usuario').exec(function(error, solicitudes) { 
 											Usuario.find({_id:req.user.id},{_id:0,departamentos: 1}).populate('departamentos.departamento').exec(function(error, supervisor){
@@ -67,6 +67,12 @@ module.exports = {
 
 													//Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
 													req.user.tipo = req.session.name;
+												
+													//En caso de ser profesor no se pasan las justificaciones
+													if(req.user.tipo.length > 1 && req.session.name == config.empleadoProfesor){
+														arrayJust = null;
+													}
+
 													return res.render('escritorio', {
 														title: 'Escritorio Supervisor | SIGUCA',
 														departamentos: supervisor[0].departamentos, 
@@ -97,7 +103,6 @@ module.exports = {
 			}
 		},
 		escritorioEmpl : function (req, res) {
-			req.user.tipo = req.session.name;
 			if (req.session.name == "Empleado" || req.session.name == config.empleadoProfesor) {
         	//Se toma la hora actual
         	var epochGte = moment();
@@ -111,7 +116,7 @@ module.exports = {
     		//Se busca en la base de datos las marcas del mismo día
 	        //console.log(req.user.id);
 	        Marca.find(
-	        	{usuario: req.user.id, epoch:{"$gte": epochGte.unix()}},
+	        	{usuario: req.user.id, epoch:{"$gte": epochGte.unix()}, tipoUsuario: req.session.name},
 	        	{_id:0,tipoMarca:1,epoch:1}
 	        	).exec(
 	        	function(error, marcas) {
@@ -124,9 +129,14 @@ module.exports = {
 	        				var arrayMarcas = util.eventosAjuste(marcas, supervisor, "escritorioEmpl");
 							var arrayJust = util.unixTimeToRegularDate(justificaciones, true);
 													
+							//En caso de ser profesor no se pasan las justificaciones
+							if(req.user.tipo.length > 1 && req.session.name == config.empleadoProfesor){
+								arrayJust = new Array();
+							}
 
 							//Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
 							req.user.tipo = req.session.name;	
+
 	        				return res.render('escritorio', {
 	        					title: 'Escritorio Empleado | SIGUCA',
 	        					usuario: req.user, 

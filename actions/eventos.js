@@ -102,8 +102,14 @@ module.exports = {
                 arrayPermisos = util.unixTimeToRegularDate(arrayPermisos, true);
                 listaCierre = util.unixTimeToRegularDate(listaCierre, true);
 
-                //Se asigna el tipo de usuario con el cual ha iniciado sesion
-                req.user.tipo = req.session.name;
+                //En caso de ser profesor no se pasan las justificaciones
+                if(req.user.tipo.length > 1 && req.session.name == config.empleadoProfesor){
+                  arrayJust = new Array();
+                  listaCierre = new Array();
+                }
+
+                //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
+                req.user.tipo = req.session.name;	
                 if (error) return res.json(error);
                 return res.render('eventos', {
                   title: 'Solicitudes/Justificaciones | SIGUCA',
@@ -132,7 +138,7 @@ module.exports = {
   filtrarEventosEmpl : function (req, res) {
     if (req.session.name != "Administrador") {
 
-      var marcaQuery = {usuario: req.user.id};
+      var marcaQuery = {usuario: req.user.id, tipoUsuario: req.session.name};
       var justQuery = {usuario: req.user.id};
       var cierreQuery = {usuario: req.user.id};
       var extraQuery = {usuario: req.user.id, tipoSolicitudes:'Extras', };
@@ -176,8 +182,15 @@ module.exports = {
                 arrayPermisos = util.unixTimeToRegularDate(arrayPermisos, true);
                 listaCierre = util.unixTimeToRegularDate(listaCierre, true);
 
-                //Se asigna el tipo de usuario con el cual ha iniciado sesion
-                req.user.tipo = req.session.name;
+                //En caso de ser profesor no se pasan las justificaciones
+                if(req.user.tipo.length > 1 && req.session.name == config.empleadoProfesor){
+                  arrayJust = new Array();
+                  listaCierre =  new Array();
+                }
+
+                //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
+                req.user.tipo = req.session.name;	
+
                 if (error) return res.json(error);
                 return res.render('eventos', {
                   title: 'Solicitudes/Justificaciones | SIGUCA',

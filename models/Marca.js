@@ -22,7 +22,7 @@ var SchemaMarca = new Schema({
     },
     tipoUsuario: { // En el caso de que el usuario tenga varios roles, aquí se va a especificar el tipo al cual pertenece esta marca
         type: String,
-        default: "Empleado"
+        default: ""
     },
 });
 
