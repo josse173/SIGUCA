@@ -321,6 +321,8 @@ module.exports = function(app, io) {
     *  Redirecciona a la configuración de empleado
     */
     app.get('/configuracion', autentificado, function (req, res) {
+        //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
+        req.user.tipo = req.session.name;
         res.render('configuracion', {
             title: 'Configuración | SIGUCA',
             usuario: req.user
@@ -348,6 +350,8 @@ module.exports = function(app, io) {
     *  Redirecciona a la página de ayuda
     */
     app.get('/ayuda', autentificado, function (req, res) {
+        //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
+        req.user.tipo = req.session.name;
         res.render('ayuda', {
             title: 'Ayuda | SIGUCA',
             usuario: req.user
@@ -378,6 +382,8 @@ module.exports = function(app, io) {
     app.get('/empleado', autentificado, function (req, res) {
         crudUsuario.listUsuarios(function (err, listaUsuarios){
             if (err) return res.json(err);
+            //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
+            req.user.tipo = req.session.name;
             listaUsuarios.usuario = req.user;
             return res.render('empleado', listaUsuarios);
         });       
@@ -445,6 +451,8 @@ module.exports = function(app, io) {
     app.get('/departamento', autentificado, function (req, res) {
         crudDepartamento.listDepa(function (err, departamentos) {
             if (err) return res.json(err);
+            //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
+            req.user.tipo = req.session.name;
             return res.render('departamento', {
                 title: 'Nuevo Departamento | SIGUCA',
                 departamentos: departamentos,
@@ -490,6 +498,8 @@ module.exports = function(app, io) {
     *  sede se crearon las marcas manuales.
     */
     app.get('/dispositivos', autentificado, function (req, res) { 
+        //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
+        req.user.tipo = req.session.name;
         res.render('dispositivos', {
             title: 'Dispositivos | SIGUCA',
             usuario: req.user
@@ -670,6 +680,8 @@ module.exports = function(app, io) {
     //
 
     app.get('/dispositivos', autentificado, function (req, res) { 
+        //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
+        req.user.tipo = req.session.name;
         res.render('dispositivos', {
             title: 'Dispositivos | SIGUCA',
             usuario: req.username
@@ -697,6 +709,8 @@ module.exports = function(app, io) {
     app.get('/horarioN', autentificado, function (req, res) {
         crud.listHorario(function (err, horarios) {
             if (err) return res.json(err);
+            //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
+            req.user.tipo = req.session.name;
             return res.render('horarioN', {
                 title: 'Nuevo Horario | SIGUCA',
                 horarios: horarios,

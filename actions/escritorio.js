@@ -64,6 +64,9 @@ module.exports = {
 													var arrayJust = util.unixTimeToRegularDate(justificaciones);
 													if (error) return res.json(error);
 													//console.log(cierreUsuarios);
+
+													//Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
+													req.user.tipo = req.session.name;
 													return res.render('escritorio', {
 														title: 'Escritorio Supervisor | SIGUCA',
 														departamentos: supervisor[0].departamentos, 
@@ -119,7 +122,11 @@ module.exports = {
 	        				if (err) return res.json(err);
 	        				var supervisor = {departamentos: [1]};
 	        				var arrayMarcas = util.eventosAjuste(marcas, supervisor, "escritorioEmpl");
-	        				var arrayJust = util.unixTimeToRegularDate(justificaciones, true);
+							var arrayJust = util.unixTimeToRegularDate(justificaciones, true);
+													
+
+							//Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
+							req.user.tipo = req.session.name;	
 	        				return res.render('escritorio', {
 	        					title: 'Escritorio Empleado | SIGUCA',
 	        					usuario: req.user, 
@@ -143,6 +150,9 @@ module.exports = {
 				Horario.find().exec(function(error, horarios) {
 					Departamento.find().exec(function(error, departamentos) {
 						if (error) return res.json(error);
+
+						//Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
+						req.user.tipo = req.session.name;
 						return res.render('escritorio', {
 							title: 'Escritorio Administrador | SIGUCA',
 							usuario: req.user,
