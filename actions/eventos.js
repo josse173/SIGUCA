@@ -84,7 +84,7 @@ module.exports = {
     epochMin.minutes(0);
     epochMin.seconds(0);
     if (req.session.name != "Administrador") {
-      Marca.find({usuario: req.user.id, epoch: {'$gte' : epochMin.unix()}}).exec(function(error, marcas) {
+      Marca.find({usuario: req.user.id, tipoUsuario: req.session.name, epoch: {'$gte' : epochMin.unix()}}).exec(function(error, marcas) {
         Justificaciones.find({usuario: req.user.id}).exec(function(error, justificaciones) {
           Solicitudes.find({usuario: req.user.id, tipoSolicitudes:'Extras'}).exec(function(error, extras) {
             Solicitudes.find({usuario: req.user.id, tipoSolicitudes:'Permisos'}).exec(function(error, permisos) {
@@ -102,6 +102,8 @@ module.exports = {
                 arrayPermisos = util.unixTimeToRegularDate(arrayPermisos, true);
                 listaCierre = util.unixTimeToRegularDate(listaCierre, true);
 
+                //Se asigna el tipo de usuario con el cual ha iniciado sesion
+                req.user.tipo = req.session.name;
                 if (error) return res.json(error);
                 return res.render('eventos', {
                   title: 'Solicitudes/Justificaciones | SIGUCA',
@@ -173,6 +175,9 @@ module.exports = {
                 arrayExtras = util.unixTimeToRegularDate(arrayExtras, true);
                 arrayPermisos = util.unixTimeToRegularDate(arrayPermisos, true);
                 listaCierre = util.unixTimeToRegularDate(listaCierre, true);
+
+                //Se asigna el tipo de usuario con el cual ha iniciado sesion
+                req.user.tipo = req.session.name;
                 if (error) return res.json(error);
                 return res.render('eventos', {
                   title: 'Solicitudes/Justificaciones | SIGUCA',
@@ -204,7 +209,8 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos,
       Solicitudes.find(extraQuery).populate(populateQuery).exec(function(error, extras) {
         Solicitudes.find(permisosQuery).populate(populateQuery).exec(function(error, permisos) {
           if(req.route.path.substring(0, 9) !=='/reportes'){
-            
+            //Se asigna el tipo de usuario con el cual ha iniciado sesion
+            req.user.tipo = req.session.name;
             return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, null, 
               justificaciones, extras, permisos, null, nombreUsuario);
           }
@@ -227,6 +233,8 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos,
 
                 CierrePersonal.find(cierreQuery).populate("usuario").exec(function(error, cierres) {
                 
+                //Se asigna el tipo de usuario con el cual ha iniciado sesion
+                req.user.tipo = req.session.name;
                 return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, marcas, 
                   justificaciones, extras, permisos, cierres, nombreUsuario);
                 });

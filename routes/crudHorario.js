@@ -22,6 +22,7 @@ exports.getAll = function(cb){
 }
 
 exports.getById = function(id, cb){
+	//HorarioEmpleado.findById(id, function (err, horarios) {
 	HorarioEmpleado.findById(id, function (err, horarios) {
 		return cb(err, horarios);
 	});

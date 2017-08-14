@@ -258,8 +258,8 @@ module.exports = function(app, io) {
     *  Crea una nueva marca vía página web
     */
     app.post('/marca', autentificado, function (req, res) {
-        crudMarca.addMarca(
-            {tipoMarca: req.body.marca, usuario: req.user.id}, 
+        crudMarca.addMarca(req.session.name,
+            {tipoMarca: req.body.marca, usuario: req.user.id,tipoUsuario: req.session.name}, 
             function(msj, msjJust){
                 res.json({result:msj, justificacion:msjJust});
             });
@@ -304,7 +304,7 @@ module.exports = function(app, io) {
     *  Elimina una marca en específico si fue creada hace menos de 10 minutos
     */
     app.get('/marca/delete/:id/:tipoMarca', autentificado, function (req, res) {
-        crudMarca.deleteMarca(req.params.id,req.params.tipoMarca,req.user.id, function (msj) {
+        crudMarca.deleteMarca(req.params.id,req.params.tipoMarca,req.user.id, req.session.name, function (msj) {
             res.send(msj);
         });
     });

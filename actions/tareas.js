@@ -27,7 +27,7 @@ module.exports = {
         timeZone: "America/Costa_Rica"
     }),
 
-    ejecutarCierrePorUsuarioAlMarcarSalida:function(id){
+    ejecutarCierrePorUsuarioAlMarcarSalida:function(tipoUsuario,id){
     
    
     var hoy = new Date();
@@ -44,7 +44,7 @@ module.exports = {
     epochMax.seconds(59);
 
     //Se realiza el cierre para todos los usuarios menos el tipo administrador
-    Usuario.find({_id:id},{_id:1, nombre:1, horarioEmpleado:1}).exec(
+    Usuario.find({_id:id},{_id:1, nombre:1, horarioEmpleado:1,tipoUsuario:1}).exec(
         function(err, usuarios){
             if(!err){
               
@@ -54,7 +54,7 @@ module.exports = {
                     //Solo se hacen los cierres para quien tenga el horario personalizado hecho
                     if(usuarios[usuario].horarioEmpleado && usuarios[usuario].horarioEmpleado!=""){
                         //console.log(usuarios[usuario].horarioEmpleado);
-                        buscarHorario(usuarios[usuario]._id, 
+                        buscarHorario(usuarios[usuario]._id, tipoUsuario,
                             epochMin, epochMax, usuarios[usuario].horarioEmpleado); 
                     }
                 }
@@ -140,22 +140,23 @@ function crearCierre(epoch, ejecutar){
 
 
 
-function buscarHorario(_idUser, epochMin, epochMax, horarioEmpleado){
+function buscarHorario(_idUser, tipoUsuario, epochMin, epochMax, horarioEmpleado){
     crudHorario.getById(horarioEmpleado, 
         function(error, horario){
             if(!error && horario){
                 buscarInformacionUsuarioCierre(
-                 _idUser,epochMin, epochMax, horario);
+                 tipoUsuario,_idUser,epochMin, epochMax, horario);
             }
         });
 }
 
 
 
-function buscarInformacionUsuarioCierre( _idUser, epochMin, epochMax, horario){
+function buscarInformacionUsuarioCierre( tipoUsuario,_idUser, epochMin, epochMax, horario){
     Marca.find(
     {
         usuario: _idUser,
+        tipoUsuario:tipoUsuario,
         epoch: {
             "$gte": epochMin.unix(), 
             "$lte":epochMax.unix()
@@ -179,7 +180,7 @@ function buscarInformacionUsuarioCierre( _idUser, epochMin, epochMax, horario){
                     )
                 ){
                     //
-                registroHorasRegulares(_idUser, marcas, tiempoDia, horario);
+                registroHorasRegulares(tipoUsuario, _idUser, marcas, tiempoDia, horario);
                 
                 if(!marcas.entrada){
                     //console.log("Omisión de marca de entrada");
@@ -198,7 +199,7 @@ function buscarInformacionUsuarioCierre( _idUser, epochMin, epochMax, horario){
     });
 }
 
-function registroHorasRegulares(_idUser, marcas, tiempoDia, horario){
+function registroHorasRegulares(tipoUsuario, _idUser, marcas, tiempoDia, horario){
     var tiempo = util.tiempoTotal(marcas);
     var hIn = {
         h:tiempoDia.entrada.hora,
@@ -227,7 +228,7 @@ function registroHorasRegulares(_idUser, marcas, tiempoDia, horario){
     console.log(totalJornada);
     console.log(tiempo);
     var comparaH = util.compararHoras(totalJornada.h, totalJornada.m, tiempo.h, tiempo.m);
-    agregarUsuarioACierre(_idUser, {h:tiempo.h,m:tiempo.m});
+    agregarUsuarioACierre(tipoUsuario, _idUser, {h:tiempo.h,m:tiempo.m});
     //No importa la hora que salió, lo importante es que cumpla la jornada
     if(comparaH==1){
         console.log("Jornada laborada menor que la establecida");
@@ -237,9 +238,10 @@ function registroHorasRegulares(_idUser, marcas, tiempoDia, horario){
     }
 }
 
-function agregarUsuarioACierre(_idUser, tiempo){
+function agregarUsuarioACierre(tipoUsuario, _idUser, tiempo){
     var obj = {
         usuario: _idUser,
+        tipoUsuario: tipoUsuario,
         tiempo: {
             horas:tiempo.h,
             minutos:tiempo.m

@@ -14,8 +14,8 @@ cierrePersonal 		= require ('../models/CierrePersonal.js');
 //--------------------------------------------------------------------
 //		Métodos Marcas
 //---------------------------------------------------------------------
-exports.addMarca = function(m, cb){
-	marca(m, cb);
+exports.addMarca = function(tipoUsuario,m, cb){
+	marca(tipoUsuario, m, cb);
 }
 
 function saveMarca(m, cb, msg){
@@ -28,7 +28,7 @@ function saveMarca(m, cb, msg){
 	});
 }
 
-function marca (marca, cb) {
+function marca (tipoUsuario, marca, cb) {
 	if(marca.tipoMarca != 'error') {
 		var date = moment(),
 		epochTime = date.unix(),
@@ -40,7 +40,8 @@ function marca (marca, cb) {
 		Marca.find(
 		{
 			epoch:{'$gte': epochTimeGte, '$lte': epochTimeLte}, 
-			usuario: newMarca.usuario
+			usuario: newMarca.usuario,
+			tipoUsuario: tipoUsuario
 		}).sort({epoch: 1}).exec(function (err, marcas){
 			var marcas = util.clasificarMarcas(marcas);
 			if(newMarca.tipoMarca=="Entrada" ){
@@ -69,7 +70,7 @@ function marca (marca, cb) {
 					var msgTem = revisarMarca(newMarca.usuario, newMarca,
 						function(msg){
 							saveMarca(newMarca,cb,msg);
-							cierre.ejecutarCierrePorUsuarioAlMarcarSalida(newMarca.usuario);
+							cierre.ejecutarCierrePorUsuarioAlMarcarSalida(tipoUsuario,newMarca.usuario);
 							//cierre.ejecutarCierre();
 						
 						});
@@ -182,7 +183,7 @@ function marca (marca, cb) {
 	}
 }
 
-exports.deleteMarca = function(id,tipoMarca,usuarioId, cb){
+exports.deleteMarca = function(id,tipoMarca,usuarioId, tipoUsuario, cb){
 	
 	var epochMin = moment();
     epochMin.hours(0);
@@ -206,7 +207,7 @@ exports.deleteMarca = function(id,tipoMarca,usuarioId, cb){
 			if(tipoMarca=="Salida"){
 				
 				
-				cierrePersonal.remove({'usuario':usuarioId,epoch: { "$gte": epochMin.unix(),"$lte":epochMax.unix()}},function(err,cierre){
+				cierrePersonal.remove({'usuario':usuarioId, tipoUsuario:tipoUsuario, epoch: { "$gte": epochMin.unix(),"$lte":epochMax.unix()}},function(err,cierre){
 					
 				});
 				
