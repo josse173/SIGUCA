@@ -37,10 +37,21 @@ block content
        
       .col-xs-12
         h3 Justificaciones
+        h5 Justificaciones en grupo
+        textarea.form-control.comentarioDelSupervisorMasa(rows="1" cols="50", id="comentarioDelSupervisor", placeholder="Añada comentario" ,style='display:none' )
+        select.select_picker.estadoMasa(id='estadoMasa', data-width="auto" ,data-style="btn-inverse",style='display:none')
+                          option(value='Seleccionar') Seleccionar
+                          option(value='Pendiente') Pendiente
+                          option(value='Aceptada') Aprobar
+                          option(value='Rechazada') Rechazar
+                          option(value='Incompleto') Incompleto
+        button.filtro.form-control.btn.btn-success(type='button',id='justificarMasa' ,style='display:none') Justificar
+       
         if(justificaciones!=null && justificaciones.length != 0)
           table.tableJustificaciones.footable(data-page-navigation=".pagination" data-page-size="5" )
               thead
                 tr
+                  th
                   th(data-type="numeric" data-sort-initial="descending")  Fecha
                   th Usuario
                   th Motivo
@@ -53,6 +64,8 @@ block content
                 each justificacion, i in justificaciones
                   form(role='form', method="POST", action="/getionarJustificacion/"+justificacion.id)
                     tr
+                      td
+                        input.justificar.justificarArray(type='checkbox',checked=false, id='check' ,value=justificacion.id )
                       td(data-value=justificacion.fechaCreada) #{justificacion.fecha.str} 
                       td #{justificacion.usuario.nombre} #{justificacion.usuario.apellido1}
                       td #{justificacion.motivo} 
@@ -60,7 +73,7 @@ block content
                       td
                         textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
                       td
-                        select.select_picker(name='estado' data-width="auto" data-style="btn-inverse")
+                        select.select_picker.estado(name='estado' data-width="auto" data-style="btn-inverse")
                           option(value='Pendiente') Pendiente
                           option(value='Aceptada') Aprobar
                           option(value='Rechazada') Rechazar
@@ -173,3 +186,6 @@ block content
                     .pagination.pagination-centered.hide-if-no-paging
         else
           p No se han enviado permisos hasta el momento. 
+
+block sigucaJS  
+  script(src="/js/app/gestionarEventos.js")

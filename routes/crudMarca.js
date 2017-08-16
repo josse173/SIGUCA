@@ -209,10 +209,6 @@ exports.deleteMarca = function(id,tipoMarca,usuarioId, cb){
 				cierrePersonal.remove({'usuario':usuarioId,epoch: { "$gte": epochMin.unix(),"$lte":epochMax.unix()}},function(err,cierre){
 					
 				});
-				
-				
-				
-				
 			}
 		
 				return cb('Se eliminó correctamente.');

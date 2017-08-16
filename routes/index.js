@@ -21,7 +21,7 @@
  //**********************************************
  var crudUsuario = require('./crudUsuario');
  var crudSolicitud = require('./crudSolicitud');
- 
+ var crudJustificaciones = require('./crudJustificaciones');
  
 
  var crudHorario = require('./crudHorario');
@@ -204,7 +204,25 @@ module.exports = function(app, io) {
     */
     app.post('/solicitud_permisos', autentificado, solicitud_actions.crearPermiso);
 
-    app.post('/justificacionMasa', autentificado, justificacion_actions.justificacionEnMasa);
+    app.post('/justificacionMasa', autentificado, function(req,res){
+
+        for(var i=0;i<req.body.vector.length;i++){
+            var justificacion= new Object();
+            justificacion.id = req.body.vector[i].id;
+            justificacion.estado = req.body.vector[i].estado;
+            justificacion.comentarioSupervisor = req.body.vector[i].comentarioSupervisor;
+
+            if(justificacion.estado != 'Pendiente') {
+            crudJustificaciones.gestionarJustifcacion(justificacion, function (err, msj) { 
+              
+            }, req.user.id);
+            } else {
+         
+            }
+        }//end for
+        res.json({});
+        
+    });
 
        
 
@@ -241,6 +259,7 @@ module.exports = function(app, io) {
     *  Actualiza el estado y el comentario del supervisor a una justificacion en específico
     */
     app.post('/getionarJustificacionAjax/:id', autentificado, function (req, res) {
+
         var justificacion = req.body;
         justificacion.id = req.params.id;
         if(justificacion.estado != 'Pendiente') {

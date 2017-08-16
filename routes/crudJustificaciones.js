@@ -138,6 +138,7 @@ exports.deleteJust = function(id, cb){
 
 
 exports.gestionarJust = function(justificacion, cb, idUser){
+	console.log("entre");
 	Usuario.findById(idUser, function (errUser, supervisor) { 
 		Justificaciones.findByIdAndUpdate(
 			justificacion.id, 
@@ -175,6 +176,50 @@ exports.gestionarJust = function(justificacion, cb, idUser){
 					+ "\r\n\r\n Saludos cordiales."
 				});
 				return cb(err, 'Se elimino');
+			});
+		//
+	});
+}
+
+exports.gestionarJustifcacion = function(justificacion, cb, idUser){
+	console.log("entre");
+	Usuario.findById(idUser, function (errUser, supervisor) { 
+		Justificaciones.findByIdAndUpdate(
+			justificacion.id, 
+			{
+				estado: justificacion.estado, 
+				comentarioSupervisor: justificacion.comentarioSupervisor
+			}
+			).populate('usuario').exec(function (err, just) { 
+				if (err) return cb(err, '');
+				var transporter = nodemailer.createTransport('smtps://'+config.emailUser+':'+config.emailPass+'@'+config.emailEmail);
+				var a = new Date(just.fechaCreada * 1000);
+				var date = ""+a.getDate()+"/"+util.getMes(a.getMonth())+"/"+a.getFullYear();
+
+				var justtext = "\r\n\r\nFecha de creación:"+date+"\n"
+				+ "Motivo:"+just.motivo+"\n"
+				+ "Detalle:"+just.detalle+"\r\n\r\n";
+				var superV = "";
+				if(!errUser && supervisor) {
+					superV += supervisor.nombre;
+					superV += " " + supervisor.apellido1;
+					superV += " " + supervisor.apellido2;
+				}
+				transporter.sendMail({
+					from: emailSIGUCA,
+					to: just.usuario.email,
+					subject: 'Respuesta a justificación en SIGUCA',
+					text: " Estimado(a) " + just.usuario.nombre 
+					+ ",\r\n\r\nPor este medio se le notifica que "
+					+"la siguiente justificación ha sido respondida:"
+					+ justtext
+					+ "Le informamos que la justificación fue " + justificacion.estado 
+					+ " por el supervisor " + superV
+					+ ", con el siguiente comentario"
+					+ "\r\n\r\n " + justificacion.comentarioSupervisor
+					+ "\r\n\r\n Saludos cordiales."
+				});
+				//return cb(err, 'Se elimino');
 			});
 		//
 	});
