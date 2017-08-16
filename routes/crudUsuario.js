@@ -16,6 +16,17 @@ var config 			= require('../config');
 //	Métodos Usuario
 //---------------------------------------------------------------------
 exports.addUsuario = function(us, cb){
+	//Inserta los tipos de usuario como array
+	var arrayTipo = [];
+	if(us.tipo instanceof Array){
+		for( var t in us.tipo){
+			arrayTipo.push(us.tipo[t]); 
+		}
+	} else {
+		arrayTipo.push(us.tipo[t]);
+	}
+
+	//Inserta los departamentos como array
 	var array = [];
 	if(us.idDepartamento instanceof Array){
 		for( var i in us.idDepartamento){
@@ -29,7 +40,7 @@ exports.addUsuario = function(us, cb){
 		if (!user) {
 			var newUser = new Usuario({
 				username: us.username, 
-				tipo: us.tipo,
+				tipo: arrayTipo,
 				estado: "Activo",
 				nombre: us.nombre,
 				apellido1: us.apellido1,
@@ -88,8 +99,20 @@ exports.getById = function(id, cb){
 }
 
 exports.updateUsuario = function(data, cb){
+
+	var arrayTipo = [];
+	if(data.empleado.tipo instanceof Array){
+		for( var t in data.empleado.tipo){
+			arrayTipo.push(data.empleado.tipo[t]); 
+		}
+	} else {
+		arrayTipo.push(data.empleado.tipo);
+	}
+	data.empleado.tipo = arrayTipo;
+
+	//Genera el array de departamentos
 	var array = [];
-	if(data.empleado.departamentos instanceof Array && data.empleado.tipo == "Supervisor"){
+	if(data.empleado.departamentos instanceof Array){
 		for( var i in data.empleado.departamentos){
 			array.push({departamento:data.empleado.departamentos[i]});
 		}

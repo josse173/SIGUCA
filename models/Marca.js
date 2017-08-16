@@ -20,6 +20,10 @@ var SchemaMarca = new Schema({
         type: Number,
         default: 0
     },
+    tipoUsuario: { // En el caso de que el usuario tenga varios roles, aquí se va a especificar el tipo al cual pertenece esta marca
+        type: String,
+        default: ""
+    },
 });
 
 module.exports = mongoose.model('Marca', SchemaMarca);
