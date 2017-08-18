@@ -11,6 +11,10 @@ var SchemaCierrePersonal = new Schema(
         type: Schema.Types.ObjectId,
         ref: 'Usuario'
     },
+    tipoUsuario: {
+        type: String,
+        default: ""
+    },
     tiempo:{
         horas: {
             type: Number,

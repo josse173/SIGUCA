@@ -14,8 +14,8 @@ justificaciones 	= require ('../models/Justificaciones.js');
 //--------------------------------------------------------------------
 //		Métodos Marcas
 //---------------------------------------------------------------------
-exports.addMarca = function(m, cb){
-	marca(m, cb);
+exports.addMarca = function(tipoUsuario,m, cb){
+	marca(tipoUsuario, m, cb);
 }
 
 function saveMarca(m, cb, msg){
@@ -28,7 +28,7 @@ function saveMarca(m, cb, msg){
 	});
 }
 
-function marca (marca, cb) {
+function marca (tipoUsuario, marca, cb) {
 	if(marca.tipoMarca != 'error') {
 		var date = moment(),
 		epochTime = date.unix(),
@@ -40,7 +40,8 @@ function marca (marca, cb) {
 		Marca.find(
 		{
 			epoch:{'$gte': epochTimeGte, '$lte': epochTimeLte}, 
-			usuario: newMarca.usuario
+			usuario: newMarca.usuario,
+			tipoUsuario: tipoUsuario
 		}).sort({epoch: 1}).exec(function (err, marcas){
 			var marcas = util.clasificarMarcas(marcas);
 			if(newMarca.tipoMarca=="Entrada" ){
@@ -48,7 +49,7 @@ function marca (marca, cb) {
 					&& !marcas.almuerzoIn && !marcas.almuerzoOut
 					&& marcas.recesos.length==0){
 						//
-					return revisarMarca(newMarca.usuario, newMarca,
+					return revisarMarca(tipoUsuario, newMarca.usuario, newMarca,
 						function(msg){
 							saveMarca(newMarca,cb,msg);
 						});
@@ -66,10 +67,10 @@ function marca (marca, cb) {
 						marcas.recesos[marcas.recesos.length-1].recesoIn
 						)){
 						//
-					var msgTem = revisarMarca(newMarca.usuario, newMarca,
+					var msgTem = revisarMarca(tipoUsuario, newMarca.usuario, newMarca,
 						function(msg){
 							saveMarca(newMarca,cb,msg);
-							cierre.ejecutarCierrePorUsuarioAlMarcarSalida(newMarca.usuario);
+							cierre.ejecutarCierrePorUsuarioAlMarcarSalida(tipoUsuario,newMarca.usuario);
 							//cierre.ejecutarCierre();
 						
 						});
@@ -182,7 +183,7 @@ function marca (marca, cb) {
 	}
 }
 
-exports.deleteMarca = function(id,tipoMarca,usuarioId, cb){
+exports.deleteMarca = function(id,tipoMarca,usuarioId, tipoUsuario, cb){
 	
 
 
@@ -213,7 +214,7 @@ exports.deleteMarca = function(id,tipoMarca,usuarioId, cb){
 			if(tipoMarca=="Salida"){
 				
 				
-				cierrePersonal.remove({'usuario':usuarioId,epoch: { "$gte": epochMin.unix(),"$lte":epochMax.unix()}},function(err,cierre){
+				cierrePersonal.remove({'usuario':usuarioId, tipoUsuario:tipoUsuario, epoch: { "$gte": epochMin.unix(),"$lte":epochMax.unix()}},function(err,cierre){
 					
 				});
 
@@ -265,7 +266,7 @@ exports.rfidReader = function(codTarjeta, tipoMarca, cb) {
 	});
 }
 
-function revisarMarca(_idUser, marca, cb){
+function revisarMarca(tipoUsuario, _idUser, marca, cb){
 	
 	var epochMin = moment();
 	epochMin.hours(0);
@@ -275,7 +276,7 @@ function revisarMarca(_idUser, marca, cb){
 	epochMax.hours(23);
 	epochMax.minutes(59);
 	epochMax.seconds(59);
-	Usuario.findById(_idUser,{_id:1, nombre:1, horarioEmpleado:1}).exec(
+	Usuario.findById(_idUser,{_id:1, nombre:1, horarioEmpleado:1, tipo:1}).exec(
 		function(err, usuario){
 			if(!err && usuario.horarioEmpleado && usuario.horarioEmpleado!=""){
 				crudHorario.getById(usuario.horarioEmpleado, 
@@ -322,16 +323,29 @@ function revisarMarca(_idUser, marca, cb){
 									var mIn = moment.unix(marca.epoch);
 									var mReal = tiempoDia.entrada;
 									if(util.compararHoras(mIn.hour(), mIn.minutes(),mReal.hora,mReal.minutos)==1){
-										addJustIncompleta(_idUser, "Entrada tardía", 
-											"Hora de entrada: "+ util.horaStr(mReal.hora, mReal.minutos)+
-											" - Hora de marca: "+ util.horaStr(mIn.hour(), mIn.minutes()),cb);
+										if(
+											(usuario.tipo.length > 1 && tipoUsuario != config. empleadoProfesor) ||
+											(usuario.tipo.length == 1)
+										){
+											addJustIncompleta(_idUser, "Entrada tardía", 
+												"Hora de entrada: "+ util.horaStr(mReal.hora, mReal.minutos)+
+												" - Hora de marca: "+ util.horaStr(mIn.hour(), mIn.minutes()),cb);
+
+										}else cb("");
 									}
 									else cb("");
 								} else if(marca.tipoMarca=="Salida"){
 									var mOut= moment.unix(marca.epoch);
 									var mReal = tiempoDia.salida;
 
-									workedHour(_idUser, tiempoDia, mOut, mReal,cb);
+									if(
+											(usuario.tipo.length > 1 && tipoUsuario != config. empleadoProfesor) ||
+											(usuario.tipo.length == 1)
+										){
+											workedHour(_idUser, tiempoDia, mOut, mReal,cb);
+										}
+										else cb("");
+									
 									/*
 									if(util.determinarJustificacion(tiempoDia)==0){
 										addJustIncompleta(_idUser, "Salida antes de hora establecida", 
