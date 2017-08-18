@@ -13,7 +13,7 @@ var crudJustificaciones = require('../routes/crudJustificaciones');
 
 module.exports = {
     cierreAutomatico : new CronJob({
-        //cronTime: '* * * * * *',
+       /// cronTime: '* * * * * *',
         cronTime: '00 50 23 * * 0-7',
         onTick: function() {
             //if(!once){
@@ -60,9 +60,12 @@ module.exports = {
                 }
             } 
         });
-},
+    }
+    
+}
 
-    ejecutarCierre:function(){
+
+function ejecutarCierre(){
     var hoy = new Date();
 
     //Fechas para encontrar información del día
@@ -75,52 +78,61 @@ module.exports = {
     epochMax.hours(23);
     epochMax.minutes(59);
     epochMax.seconds(59);
-
-    //Se realiza el cierre para todos los usuarios menos el tipo administrador
     var contador=0;
+    //Se realiza el cierre para todos los usuarios menos el tipo administrador
     var entro =false;
-    Usuario.find({tipo:{"$ne":"Administrador"}},{_id:1, nombre:1, horarioEmpleado:1}).exec(
+    Usuario.find({tipo:{"$ne":"Administrador"}},{_id:1, nombre:1, horarioEmpleado:1,tipo:1}).exec(
         function(err, usuarios){
             if(!err){
                 CierrePersonal.find({epoch: { "$gte": epochMin.unix(),"$lte":epochMax.unix()}}).exec(function(error,cierre){
                     if(!error){
-                     
+                        
                         for(var i=0;i<usuarios.length;i++){
                             entro=false;
-                            for(var j=0;j<cierre.length;j++){
-                                if(usuarios[i]._id.equals(cierre[j].usuario) && usuarios[i].horarioEmpleado && usuarios[i].horarioEmpleado!="" ){
-                                    entro=true;
-                                    j=cierre.length;
-                                    
-                                } 
-                            }
-                            if(entro==false){
 
-                                buscarHorario(usuarios[i]._id,epochMin, epochMax, usuarios[i].horarioEmpleado); 
+                            var arrayTipo = new Array();
+                            if(usuarios[i].tipo.length>1){
+                                for( var s in usuarios[i].tipo){
+                                    arrayTipo.push(usuarios[i].tipo[s]); 
+                                }
+                            } else {
+                                arrayTipo.push(usuarios[i].tipo);
+                            }
+
+                            for( var t in arrayTipo){
+                                
+                                entro=false;
+                                var valor= arrayTipo[t];
+                                //Recorre los cierres buscando coincidencia con el tipo t
+                                for(var j=0;j<cierre.length;j++){
+
+                                    //Valida si cada tipo del usuario tiene cierre sino lo genera
+                                    if(usuarios[i]._id.equals(cierre[j].usuario) && valor==cierre[j].tipoUsuario){
+                                        entro= true;
+                                        j=cierre.length;
+                                    } 
+                                }
+
+                                //Si no tiene cierres este usuario con este rol se genera el cierre
+                                if(!entro && usuarios[i].horarioEmpleado && usuarios[i].horarioEmpleado!=""){
+                                   
+                                    buscarHorario(usuarios[i]._id,valor,epochMin, epochMax, usuarios[i].horarioEmpleado); 
+                                }
                             }
                             
-                        }         
+                        }
+                            
+                    }  
+                            
                         
-                    }
                 });
-                
-                /*
-                for(usuario in usuarios){
-                    //console.log(usuarios[usuario]);
-                    //Solo se hacen los cierres para quien tenga el horario personalizado hecho
-                    if(usuarios[usuario].horarioEmpleado && usuarios[usuario].horarioEmpleado!=""){
-                        //console.log(usuarios[usuario].horarioEmpleado);
-                        buscarHorario(usuarios[usuario]._id, 
-                            epochMin, epochMax, usuarios[usuario].horarioEmpleado); 
-                    }
-                }
-                */
-            } 
+            }
         });
-}
+    }
+                
+                
 
 
-}
 var once = false;
 
 function crearCierre(epoch, ejecutar){
@@ -141,6 +153,7 @@ function crearCierre(epoch, ejecutar){
 
 
 function buscarHorario(_idUser, tipoUsuario, epochMin, epochMax, horarioEmpleado){
+
     crudHorario.getById(horarioEmpleado, 
         function(error, horario){
             if(!error && horario){
@@ -153,6 +166,7 @@ function buscarHorario(_idUser, tipoUsuario, epochMin, epochMax, horarioEmpleado
 
 
 function buscarInformacionUsuarioCierre( tipoUsuario,_idUser, epochMin, epochMax, horario){
+  
     Marca.find(
     {
         usuario: _idUser,
@@ -180,19 +194,21 @@ function buscarInformacionUsuarioCierre( tipoUsuario,_idUser, epochMin, epochMax
                     )
                 ){
                     //
+               
                 registroHorasRegulares(tipoUsuario, _idUser, marcas, tiempoDia, horario);
-                
+                console.log("horas regulares");
                 if(!marcas.entrada){
-                    //console.log("Omisión de marca de entrada");
                     addJustIncompleta(_idUser, "Omisión de marca de entrada", "");
-                    //agregarUsuarioACierre(_idUser, {h:-1,m:-1});
+                    //agregarUsuarioACierre(tipoUsuario,_idUser, {h:0,m:0});
                 } 
                 //Solo se genera una notificación de omisión de marca de salida si
                 //el usuario incumplió las horas de trabajo
                 else if(!marcas.salida){
+                  
+
                     //console.log("Omisión de marca de salida");
                     addJustIncompleta(_idUser, "Omisión de marca de salida", "");
-                    //agregarUsuarioACierre(_idUser, {h:-1,m:-1});
+                   // agregarUsuarioACierre(tipoUsuario,_idUser, {h:0,m:0});
                 }
             }
         }

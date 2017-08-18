@@ -11,6 +11,18 @@ emailSIGUCA 	= 'siguca@greencore.co.cr';
 //--------------------------------------------------------------------
 //	Métodos Justificaciones          
 //	---------------------------------------------------------------------*/
+
+exports.deleteJustificationExit = function(usuarioId,epoch1,epochMax){
+	Justificaciones.remove({'usuario':usuarioId,fechaCreada: { "$gte": epoch1 ,"$lte":epochMax}},function(err,marcaE){
+					
+	});
+}
+
+exports.deleteJustificationEntrance = function(usuarioId,epochMin,epochMax){
+	Justificaciones.remove({'usuario':usuarioId,fechaCreada: { "$gte": epochMin,"$lte":epochMax}},function(err,marcaE){});
+
+}
+
 exports.addJust = function(justificacion, cb){
 	var epochTime = moment().unix();
 
