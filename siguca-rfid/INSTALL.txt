@@ -1,3 +1,0 @@
-sudo apt install vim nfs-common python-tk python-rpi.gpio python-pip
-
-sudo pip install pyserial pymongo rpi.gpio

@@ -10,7 +10,7 @@ crud 				= require('./crud'),
 crudJustificaciones = require('../routes/crudJustificaciones'),
 config 				= require('../config.json');
 cierrePersonal 		= require ('../models/CierrePersonal.js');
-justificaciones 	= require ('../models/Justificaciones.js');
+
 //--------------------------------------------------------------------
 //		Métodos Marcas
 //---------------------------------------------------------------------
@@ -185,12 +185,6 @@ function marca (tipoUsuario, marca, cb) {
 
 exports.deleteMarca = function(id,tipoMarca,usuarioId, tipoUsuario, cb){
 	
-
-
-	var date = new Date();
-	var epoch1 = (date.getTime() - date.getMilliseconds())/1000-600;
-	console.log(epoch1);
-
 	var epochMin = moment();
     epochMin.hours(0);
     epochMin.minutes(0);
@@ -203,7 +197,6 @@ exports.deleteMarca = function(id,tipoMarca,usuarioId, tipoUsuario, cb){
 
 
 	Marca.findById(id, function (err, marca) {
-		
 		var epoch = moment().unix();
 		if(!marca){
 			return cb('La marca había sido eliminada anteriormente');
@@ -215,16 +208,6 @@ exports.deleteMarca = function(id,tipoMarca,usuarioId, tipoUsuario, cb){
 				
 				
 				cierrePersonal.remove({'usuario':usuarioId, tipoUsuario:tipoUsuario, epoch: { "$gte": epochMin.unix(),"$lte":epochMax.unix()}},function(err,cierre){
-					
-				});
-
-				justificaciones.remove({'usuario':usuarioId,fechaCreada: { "$gte": epoch1 ,"$lte":epochMax.unix()}},function(err,marcaE){
-					
-				});
-
-			}else if(tipoMarca=="Entrada"){
-				
-				justificaciones.remove({'usuario':usuarioId,fechaCreada: { "$gte": epochMin.unix(),"$lte":epochMax.unix()}},function(err,marcaE){
 					
 				});
 			}

@@ -224,18 +224,6 @@ module.exports = function(app, io) {
         
     });
 
-
-     app.post('/justificacionDeleteMasa', autentificado, function(req,res){
-
-        for(var i=0;i<req.body.vector.length;i++){
-            crudJustificaciones.deleteJustMasa(req.body.vector[i].id, function (err, msj) {
-		    });   
-        }//end for
-        res.json({});
-        
-    });
-
-
        
 
 

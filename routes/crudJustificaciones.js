@@ -137,29 +137,6 @@ exports.deleteJust = function(id, cb){
 }
 
 
-exports.deleteJustMasa = function(id, cb){
-	Justificaciones.findByIdAndRemove(id).populate('usuario').exec(function (err, just) { 
-		var fecha = "";
-		if(just.fechaCreada)
-			fecha = moment(just.fechaCreada);
-
-		var transporter = nodemailer.createTransport('smtps://'+config.emailUser+':'+config.emailPass+'@'+config.emailEmail);
-
-		transporter.sendMail({
-			from: emailSIGUCA,
-			to: just.usuario.email,
-			subject: 'Se ha eliminado una justificación en SIGUCA',
-			text: " Estimado(a) " + just.usuario.nombre + " " + just.usuario.apellido1 + " " + just.usuario.apellido2
-			+ " \r\n Su supervisor ha eliminado una de las justificaciones presentadas, en la cuál se indicabá lo siguiente: " 
-			+ " \r\n Fecha: " + fecha
-			+ " \r\n Motivo: " + just.motivo
-			+ " \r\n Detalle: " + just.detalle
-		});
-
-	});
-}
-
-
 exports.gestionarJust = function(justificacion, cb, idUser){
 	console.log("entre");
 	Usuario.findById(idUser, function (errUser, supervisor) { 
