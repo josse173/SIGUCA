@@ -403,6 +403,10 @@ $("#extraLink").click(function(){
 
         var justificacion = $(this).val();
         var split = justificacion.split(',');
+        for(var i =0;i<split.length;i++){
+         
+            alert( split[1]);
+        }
         alertify.dialog('confirm')
         .set({
             'labels':{ok:'Eliminar', cancel:'Cancelar'},
