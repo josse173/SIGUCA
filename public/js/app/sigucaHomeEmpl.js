@@ -150,6 +150,12 @@ $('#btnIr').click(function(){
                 if (minutos.length < 2) {
                     minutos = "0"+minutos;
                 }
+
+                if(minutos>59){
+                    horas++;
+                    minutos=minutos-60;
+                }
+
                 var cantidadFinal= horas+":"+minutos;
                 $(".qwer").text(cantidadFinal); 
  
