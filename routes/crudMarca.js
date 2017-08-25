@@ -30,9 +30,7 @@ function saveMarca(m, cb, msg){
 }
 
 function marca (tipoUsuario, marca, cb) {
-	console.log("tipo marca:  " + marca.tipoMarca);
-	console.log("usuario:  " + marca.usuario);
-	console.log("tipo usuario:  " + tipoUsuario);
+	
 
 	if(marca.tipoMarca != 'error') {
 		var date = moment(),
@@ -289,7 +287,6 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 				crudHorario.getById(usuario.horarioEmpleado, 
 					function(error, horario){
 						if(!error && horario){
-							console.log("okk");
 							var today = moment();
 							var dia = ["domingo", "lunes", "martes", "miercoles", 
 							"jueves", "viernes", "sabado"][today.day()];
@@ -351,6 +348,7 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 											(usuario.tipo.length > 1 && tipoUsuario != config. empleadoProfesor) ||
 											(usuario.tipo.length == 1)
 										){
+										
 											workedHour(_idUser, tiempoDia, mOut, mReal,cb);
 										}
 										else cb("");
@@ -644,8 +642,7 @@ function workedHour(_idUser,horario, mOut, mReal,cb){
 				obj.horas=horas;
 				obj.minutos=minutos;
 				
-
-
+				
 
 				var horaSalida= parseInt(horario.salida.hora-config.periodoLibreTrabajo);
 				var horaEntrada= parseInt(horario.entrada.hora);
@@ -653,11 +650,15 @@ function workedHour(_idUser,horario, mOut, mReal,cb){
 				var minutoEntrada=parseInt(horario.entrada.minutos-config.rangoMarcaEntrada);
 
 				
+				
 				temporalMinutoSalida=minutoSalida;
 				temporalHoraSalida=horaSalida;
 
 				horaSalida=horaSalida-horaEntrada;
 				minutoSalida=minutoSalida-minutoEntrada;
+
+			
+				
 
 				if(horaSalida>0 && minutoSalida<0 ){
 					horaSalida--;
@@ -668,6 +669,13 @@ function workedHour(_idUser,horario, mOut, mReal,cb){
 					horaSalida=0;
 					minutoSalida=minutoEntrada-temporalMinutoSalida;
 				}
+				
+			
+				if(obj.minutos>59){
+					obj.horas++;
+					obj.minutos=obj.minutos-60;
+				}
+				
 				
 			
 				if(horaSalida>obj.horas){
