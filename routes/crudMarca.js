@@ -513,6 +513,12 @@ function workedHourSchedule(_idUser,horarioEmpleado,mOut,cb){
 			minutosTrabajadosFinal=60-minutosTrabajadosFinal;
 			horasTrabajadasFinal--;
 		}
+
+		if(minutosTrabajados>60){
+			horasTrabajadas++;
+			minutosTrabajados=minutosTrabajados-60;
+		}
+
 		
 		if(horasTrabajadas>horasTrabajadasFinal){
 			return cb("");
