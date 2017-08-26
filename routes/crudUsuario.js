@@ -100,35 +100,75 @@ exports.getById = function(id, cb){
 
 exports.updateUsuario = function(data, cb){
 
-	var arrayTipo = [];
-	if(data.empleado.tipo instanceof Array){
-		for( var t in data.empleado.tipo){
-			arrayTipo.push(data.empleado.tipo[t]); 
-		}
-	} else {
-		arrayTipo.push(data.empleado.tipo);
-	}
-	data.empleado.tipo = arrayTipo;
 
-	//Genera el array de departamentos
-	var array = [];
-	if(data.empleado.departamentos instanceof Array){
-		for( var i in data.empleado.departamentos){
-			array.push({departamento:data.empleado.departamentos[i]});
+	if(data.empleado.horario=="Sin horario"){
+		delete data.empleado.horario;
+
+		var arrayTipo = [];
+		if(data.empleado.tipo instanceof Array){
+			for( var t in data.empleado.tipo){
+				arrayTipo.push(data.empleado.tipo[t]); 
+			}
+		} else {
+			arrayTipo.push(data.empleado.tipo);
 		}
-		data.empleado.departamentos = array;
-	} else if (data.empleado.departamentos){
-		array.push({departamento:data.empleado.departamentos});
-		data.empleado.departamentos = array;
-	}
-	if(data.empleado.password && data.empleado.password != ""){
-		data.empleado.password = Usuario.generateHash(data.empleado.password);
-	} else {
-		delete data.empleado.password;
-	}
-	Usuario.findByIdAndUpdate(data.id, data.empleado, function (err, empleado) { 
-		return cb(err, empleado);
-	});
+		data.empleado.tipo = arrayTipo;
+
+		//Genera el array de departamentos
+		var array = [];
+		if(data.empleado.departamentos instanceof Array){
+			for( var i in data.empleado.departamentos){
+				array.push({departamento:data.empleado.departamentos[i]});
+			}
+			data.empleado.departamentos = array;
+		} else if (data.empleado.departamentos){
+			array.push({departamento:data.empleado.departamentos});
+			data.empleado.departamentos = array;
+		}
+		if(data.empleado.password && data.empleado.password != ""){
+			data.empleado.password = Usuario.generateHash(data.empleado.password);
+		} else {
+			delete data.empleado.password;
+		}
+		Usuario.findByIdAndUpdate(data.id, data.empleado, function (err, empleado) { 
+			return cb(err, empleado);
+		});
+	}else{
+
+		var arrayTipo = [];
+		if(data.empleado.tipo instanceof Array){
+			for( var t in data.empleado.tipo){
+				arrayTipo.push(data.empleado.tipo[t]); 
+			}
+		} else {
+			arrayTipo.push(data.empleado.tipo);
+		}
+		data.empleado.tipo = arrayTipo;
+
+		//Genera el array de departamentos
+		var array = [];
+		if(data.empleado.departamentos instanceof Array){
+			for( var i in data.empleado.departamentos){
+				array.push({departamento:data.empleado.departamentos[i]});
+			}
+			data.empleado.departamentos = array;
+		} else if (data.empleado.departamentos){
+			array.push({departamento:data.empleado.departamentos});
+			data.empleado.departamentos = array;
+		}
+		if(data.empleado.password && data.empleado.password != ""){
+			data.empleado.password = Usuario.generateHash(data.empleado.password);
+		} else {
+			delete data.empleado.password;
+		}
+		Usuario.update({_id:data.id},{ $unset: {horarioEmpleado: ""}},function(error,correcto){
+                        });
+		Usuario.findByIdAndUpdate(data.id, data.empleado, function (err, empleado) { 
+			return cb(err, empleado);
+		});
+		}
+	
+	
 }
 
 exports.deleteUsuario = function(id, cb){
