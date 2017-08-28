@@ -13,11 +13,17 @@ $(".justificar").click(function(){
         $("#comentarioDelSupervisor").css('display','block');
         $("#justificarMasa").css('display','block');
         $("#estadoMasa").css('display','block');
+        $("#justificacionDeleteMasa").css('display','block');
+        $("#justificacionesTitulo").css('display','block');
+       
+    
      
     }else{
         $("#comentarioDelSupervisor").css('display','none');
         $("#justificarMasa").css('display','none');
         $("#estadoMasa").css('display','none');
+        $("#justificacionDeleteMasa").css('display','none');
+        $("#justificacionesTitulo").css('display','none');
     }
 
 });

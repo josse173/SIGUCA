@@ -37,19 +37,22 @@ block content
        
       .col-xs-12
         h3 Justificaciones
-        h5 Justificaciones en grupo
+        h5.justificacionesTitulo(id="justificacionesTitulo",style='display:none') Justificaciones en grupo
         textarea.form-control.comentarioDelSupervisorMasa(rows="1" cols="50", id="comentarioDelSupervisor", placeholder="Añada comentario" ,style='display:none' )
-        select.select_picker.estadoMasa(id='estadoMasa', data-width="auto" ,data-style="btn-inverse",style='display:none')
-                          option(value='Seleccionar') Seleccionar
-                          option(value='Pendiente') Pendiente
-                          option(value='Aceptada') Aprobar
-                          option(value='Rechazada') Rechazar
-                          option(value='Incompleto') Incompleto
+    
+        select.select_picker.estadoMasa(id='estadoMasa', data-width="auto" ,data-style="btn-inverse",style='display:none;float:left')
+                        option(value='Seleccionar') Seleccionar
+                        option(value='Pendiente') Pendiente
+                        option(value='Aceptada') Aprobar
+                        option(value='Rechazada') Rechazar
+                        option(value='Incompleto') Incompleto
 
-        button.btn.btn-default.justificacionDeleteMasa(id="justificacionDeleteMasa") 
-                          i.icon-trash.icon-large.i-danger 
-
-        button.filtro.form-control.btn.btn-success(type='button',id='justificarMasa' ,style='display:none') Justificar
+        button.btn.btn-default.justificacionDeleteMasa(id="justificacionDeleteMasa",style='display:none;float:left') 
+          i.icon-trash.icon-large.i-danger 
+      
+        button.btn.btn-default(type='button',id='justificarMasa' ,style='display:none;float:left') 
+          i.icon-ok.icon-large.i-success
+        
        
         if(justificaciones!=null && justificaciones.length != 0)
           table.tableJustificaciones.footable(data-page-navigation=".pagination" data-page-size="5" )
