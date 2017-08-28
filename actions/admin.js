@@ -1,7 +1,7 @@
 var config = require("../config");
 module.exports = {
 	login : function (req, res) {
-		req.session.name = req.user.tipo;
+		req.session.name = req.user.tipo+"";
 		if (req.session.name == "Administrador") {
 			res.redirect('/escritorioAdmin');
 		}

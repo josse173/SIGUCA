@@ -36,6 +36,13 @@ module.exports = {
 	},
 
 	justificacionEnMasa:function(req,res){
+
+		for(var i=0;i<req.body.vector.length;i++){
+            console.log(req.body.vector[i].id);
+        }
+		//console.log("llege");
+		//console.log(req.body.justArray);
+		/*
 		var epochTime = moment().unix();
         var detalle = (req.body.detalle);
         console.log(detalle);
@@ -58,6 +65,7 @@ module.exports = {
 		
 		});
 		res.redirect('/escritorioEmpl');
+		*/
 
 	}
 

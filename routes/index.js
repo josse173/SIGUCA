@@ -21,7 +21,7 @@
  //**********************************************
  var crudUsuario = require('./crudUsuario');
  var crudSolicitud = require('./crudSolicitud');
- 
+ var crudJustificaciones = require('./crudJustificaciones');
  
 
  var crudHorario = require('./crudHorario');
@@ -204,7 +204,37 @@ module.exports = function(app, io) {
     */
     app.post('/solicitud_permisos', autentificado, solicitud_actions.crearPermiso);
 
-    app.post('/justificacionMasa', autentificado, justificacion_actions.justificacionEnMasa);
+    app.post('/justificacionMasa', autentificado, function(req,res){
+
+        for(var i=0;i<req.body.vector.length;i++){
+            var justificacion= new Object();
+            justificacion.id = req.body.vector[i].id;
+            justificacion.estado = req.body.vector[i].estado;
+            justificacion.comentarioSupervisor = req.body.vector[i].comentarioSupervisor;
+
+            if(justificacion.estado != 'Pendiente') {
+            crudJustificaciones.gestionarJustifcacion(justificacion, function (err, msj) { 
+              
+            }, req.user.id);
+            } else {
+         
+            }
+        }//end for
+        res.json({});
+        
+    });
+
+
+     app.post('/justificacionDeleteMasa', autentificado, function(req,res){
+
+        for(var i=0;i<req.body.vector.length;i++){
+            crudJustificaciones.deleteJustMasa(req.body.vector[i].id, function (err, msj) {
+		    });   
+        }//end for
+        res.json({});
+        
+    });
+
 
        
 
@@ -241,6 +271,7 @@ module.exports = function(app, io) {
     *  Actualiza el estado y el comentario del supervisor a una justificacion en específico
     */
     app.post('/getionarJustificacionAjax/:id', autentificado, function (req, res) {
+
         var justificacion = req.body;
         justificacion.id = req.params.id;
         if(justificacion.estado != 'Pendiente') {
@@ -258,8 +289,8 @@ module.exports = function(app, io) {
     *  Crea una nueva marca vía página web
     */
     app.post('/marca', autentificado, function (req, res) {
-        crudMarca.addMarca(
-            {tipoMarca: req.body.marca, usuario: req.user.id}, 
+        crudMarca.addMarca(req.session.name,
+            {tipoMarca: req.body.marca, usuario: req.user.id,tipoUsuario: req.session.name}, 
             function(msj, msjJust){
                 res.json({result:msj, justificacion:msjJust});
             });
@@ -279,6 +310,7 @@ module.exports = function(app, io) {
             epochLte.hour(23).minutes(59).seconds(59);
             crudMarca.find({
                 usuario:req.user.id,
+                tipoUsuario: req.session.name,
                 epoch:{
                 "$gte":epochGte.unix(),
                 "$lte":epochLte.unix()
@@ -304,7 +336,7 @@ module.exports = function(app, io) {
     *  Elimina una marca en específico si fue creada hace menos de 10 minutos
     */
     app.get('/marca/delete/:id/:tipoMarca', autentificado, function (req, res) {
-        crudMarca.deleteMarca(req.params.id,req.params.tipoMarca,req.user.id, function (msj) {
+        crudMarca.deleteMarca(req.params.id,req.params.tipoMarca,req.user.id, req.session.name, function (msj) {
             res.send(msj);
         });
     });
@@ -321,6 +353,8 @@ module.exports = function(app, io) {
     *  Redirecciona a la configuración de empleado
     */
     app.get('/configuracion', autentificado, function (req, res) {
+        //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
+        req.user.tipo = req.session.name;
         res.render('configuracion', {
             title: 'Configuración | SIGUCA',
             usuario: req.user
@@ -336,9 +370,10 @@ module.exports = function(app, io) {
             //var pwd2 = req.param('pwd2');
             var codTarjeta = req.param('codTarjeta');
             var tipoMarca = req.param('tipoMarca');
+            var tipoUsuario = req.param('tipo');
             //if(pwd1 == 'ooKa6ieC' && pwd2 == 'of2Oobai' ) {
             
-            crudMarca.rfidReader(codTarjeta, tipoMarca, function (msj) {
+            crudMarca.rfidReader(tipoUsuario,codTarjeta, tipoMarca, function (msj) {
             res.send(msj);
                 });
             //}
@@ -348,6 +383,8 @@ module.exports = function(app, io) {
     *  Redirecciona a la página de ayuda
     */
     app.get('/ayuda', autentificado, function (req, res) {
+        //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
+        req.user.tipo = req.session.name;
         res.render('ayuda', {
             title: 'Ayuda | SIGUCA',
             usuario: req.user
@@ -378,6 +415,8 @@ module.exports = function(app, io) {
     app.get('/empleado', autentificado, function (req, res) {
         crudUsuario.listUsuarios(function (err, listaUsuarios){
             if (err) return res.json(err);
+            //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
+            req.user.tipo = req.session.name;
             listaUsuarios.usuario = req.user;
             return res.render('empleado', listaUsuarios);
         });       
@@ -415,6 +454,17 @@ module.exports = function(app, io) {
             res.send(msj);
         });
     });
+    
+    /*
+    *  Obtiene un usuario
+    */
+    app.get('/empleado/tipo/get', function (req, res) {
+        Usuario.findOne({username:req.query.username2}, function (err, user) {
+            if (err || (user && !user.validPassword(req.query.password2))) { return res.json(err) }
+            res.json(user);
+        });
+    });
+
 
     //******************************************************************************
     /*
@@ -434,6 +484,8 @@ module.exports = function(app, io) {
     app.get('/departamento', autentificado, function (req, res) {
         crudDepartamento.listDepa(function (err, departamentos) {
             if (err) return res.json(err);
+            //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
+            req.user.tipo = req.session.name;
             return res.render('departamento', {
                 title: 'Nuevo Departamento | SIGUCA',
                 departamentos: departamentos,
@@ -479,6 +531,8 @@ module.exports = function(app, io) {
     *  sede se crearon las marcas manuales.
     */
     app.get('/dispositivos', autentificado, function (req, res) { 
+        //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
+        req.user.tipo = req.session.name;
         res.render('dispositivos', {
             title: 'Dispositivos | SIGUCA',
             usuario: req.user
@@ -659,6 +713,8 @@ module.exports = function(app, io) {
     //
 
     app.get('/dispositivos', autentificado, function (req, res) { 
+        //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
+        req.user.tipo = req.session.name;
         res.render('dispositivos', {
             title: 'Dispositivos | SIGUCA',
             usuario: req.username
@@ -686,6 +742,8 @@ module.exports = function(app, io) {
     app.get('/horarioN', autentificado, function (req, res) {
         crud.listHorario(function (err, horarios) {
             if (err) return res.json(err);
+            //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
+            req.user.tipo = req.session.name;
             return res.render('horarioN', {
                 title: 'Nuevo Horario | SIGUCA',
                 horarios: horarios,
