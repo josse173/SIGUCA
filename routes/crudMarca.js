@@ -29,6 +29,10 @@ function saveMarca(m, cb, msg){
 }
 
 function marca (tipoUsuario, marca, cb) {
+	console.log("tipo marca:  " + marca.tipoMarca);
+	console.log("usuario:  " + marca.usuario);
+	console.log("tipo usuario:  " + tipoUsuario);
+
 	if(marca.tipoMarca != 'error') {
 		var date = moment(),
 		epochTime = date.unix(),
@@ -243,7 +247,7 @@ exports.find = function(query, cb){
 }
 
 
-exports.rfidReader = function(codTarjeta, tipoMarca, cb) {
+exports.rfidReader = function(tipoUsuario, codTarjeta, tipoMarca, cb) {
 	Usuario.findOne({codTarjeta: codTarjeta}, function (err, usuario) {
 		var tipo;
 		if(tipoMarca == 1) {
@@ -259,7 +263,8 @@ exports.rfidReader = function(codTarjeta, tipoMarca, cb) {
 		} else if(tipoMarca == 6){
 			tipo = 'Salida';
 		} else tipo = 'error';
-		marca({usuario: usuario, tipoMarca: tipo}, 
+
+		marca(tipoUsuario, {usuario: usuario.id, tipoMarca: tipo,tipoUsuario: tipoUsuario}, 
 			function(msj){					
 				return cb(msj);
 			});

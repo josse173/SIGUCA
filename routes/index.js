@@ -370,9 +370,10 @@ module.exports = function(app, io) {
             //var pwd2 = req.param('pwd2');
             var codTarjeta = req.param('codTarjeta');
             var tipoMarca = req.param('tipoMarca');
+            var tipoUsuario = req.param('tipo');
             //if(pwd1 == 'ooKa6ieC' && pwd2 == 'of2Oobai' ) {
             
-            crudMarca.rfidReader(codTarjeta, tipoMarca, function (msj) {
+            crudMarca.rfidReader(tipoUsuario,codTarjeta, tipoMarca, function (msj) {
             res.send(msj);
                 });
             //}

@@ -3,7 +3,7 @@
  #  GreenCore Solutions
  #* Python-Extension to SIGUCA application
  #*
- #* Copyright 2016 by Bradley Hidalgo Guzmán <bfhg.17@hotmail.com>
+ #* Copyright 2016 by Bradley Hidalgo Guzman <bfhg.17@hotmail.com>
  #*
  #* This file is part of SIGUCA open source application.
  #* 
@@ -35,7 +35,7 @@ from PIL import Image
 
 #SETTINGS AND CONFIGURATIONS
 #IP OF NODE JS SERVER WHERE SIGUCA IS RUNNING
-server_IP='10.42.30.13'
+server_IP='10.42.22.189'
 #PORT OF THE MONGODB 
 port='27017'
 #PORT OF OF SIGUCA NODE JS PORT 
@@ -53,7 +53,7 @@ db = connection.sigucadb
 collection = db.usuarios
 codigosExistentes=list(collection.find({},{"codTarjeta": 1,"_id":0}))
 #Methods to define the timestamps thought the web browser
-def Entrada(dec):
+def Entrada(dec,tipo):
     #These methods request a subprocess to execute a query to the ip and also the kind of timestamp
     #browser = subprocess.Popen([browserSelection, 'http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=1'])
     #These sleeps are important and necessary to call the browser and execute the post.
@@ -66,7 +66,7 @@ def Entrada(dec):
     frame3 = Frame(root3)
     frame3.pack()
     root3.config(background="black",cursor="none")
-    f = urllib.urlopen('http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=1')
+    f = urllib.urlopen('http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=1&tipo='+tipo)
     data = f.read()
     try:
 	if (data == "La marca de entrada fue registrada anteriormente."):
@@ -77,14 +77,14 @@ def Entrada(dec):
         pass
     root3.after(4000, lambda: root3.destroy())
     root3.mainloop()
-    root.destroy()
-def SalidaReceso(dec):
+    
+def SalidaReceso(dec,tipo):
     root3 = Tk()
     root3.attributes('-fullscreen', True)
     frame3 = Frame(root3)
     frame3.pack()
     root3.config(background="black",cursor="none")
-    f = urllib.urlopen('http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=2')
+    f = urllib.urlopen('http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=2&tipo='+tipo)
     data = f.read()
    
     try:
@@ -96,8 +96,7 @@ def SalidaReceso(dec):
         pass
     root3.after(4000, lambda: root3.destroy())
     root3.mainloop()
-    root.destroy()
-def EntradaReceso(dec):
+def EntradaReceso(dec,tipo):
     #browser = subprocess.Popen([browserSelection, 'http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=3'])
     #time.sleep(1)
     #browser.terminate()
@@ -107,7 +106,7 @@ def EntradaReceso(dec):
     frame3 = Frame(root3)
     frame3.pack()
     root3.config(background="black",cursor="none")
-    f = urllib.urlopen('http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=3')
+    f = urllib.urlopen('http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=3&tipo='+tipo)
     data = f.read()
     try:
         #w2 = Label(root3, text=data, wraplength=650,  fg = "light green", bg = "black", font = "Helvetica 16 bold").pack()
@@ -119,8 +118,7 @@ def EntradaReceso(dec):
         pass
     root3.after(4000, lambda: root3.destroy())
     root3.mainloop()
-    root.destroy()
-def SalidaAlmuerzo(dec):
+def SalidaAlmuerzo(dec,tipo):
    # browser = subprocess.Popen([browserSelection, 'http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=4'])
    # time.sleep(1)
    # browser.terminate()
@@ -130,7 +128,7 @@ def SalidaAlmuerzo(dec):
     frame3 = Frame(root3)
     frame3.pack()
     root3.config(background="black",cursor="none")
-    f = urllib.urlopen('http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=4')
+    f = urllib.urlopen('http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=4&tipo='+tipo)
     data = f.read()
     try:
        # w2 = Label(root3, text=data, wraplength=650,  fg = "light green", bg = "black", font = "Helvetica 16 bold").pack()
@@ -142,8 +140,7 @@ def SalidaAlmuerzo(dec):
         pass
     root3.after(4000, lambda: root3.destroy())
     root3.mainloop()
-    root.destroy()
-def EntradaAlmuerzo(dec):
+def EntradaAlmuerzo(dec,tipo):
     #browser = subprocess.Popen([browserSelection, 'http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=5'])
     #time.sleep(1)
     #browser.terminate()
@@ -153,7 +150,7 @@ def EntradaAlmuerzo(dec):
     frame3 = Frame(root3)
     frame3.pack()
     root3.config(background="black",cursor="none")
-    f = urllib.urlopen('http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=5')
+    f = urllib.urlopen('http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=&tipo='+tipo)
     data = f.read()
     try:
        # w2 = Label(root3, text=data, wraplength=650,  fg = "light green", bg = "black", font = "Helvetica 16 bold").pack()
@@ -165,8 +162,7 @@ def EntradaAlmuerzo(dec):
         pass
     root3.after(4000, lambda: root3.destroy())
     root3.mainloop()
-    root.destroy()
-def Salida(dec):
+def Salida(dec,tipo):
     #browser = subprocess.Popen([browserSelection, 'http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=6'])
     #time.sleep(1)
     #browser.terminate()
@@ -176,7 +172,7 @@ def Salida(dec):
     frame3 = Frame(root3)
     frame3.pack()
     root3.config(background="black",cursor="none")
-    f = urllib.urlopen('http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=6')
+    f = urllib.urlopen('http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=6&tipo'+tipo)
     data = f.read()
     try:
 #        w2 = Label(root3, text=data, wraplength=650,  fg = "light green", bg = "black", font = "Helvetica 16 bold").pack()
@@ -188,9 +184,6 @@ def Salida(dec):
         pass
     root3.after(4000, lambda: root3.destroy())
     root3.mainloop()
-    root.destroy()
-
-
 
  #Método principal de lectura para rfid.   
 def read_rfid():
@@ -214,14 +207,14 @@ def read_rfid():
   #se ejecuta un método de los implementados al principio de este script , luego de cerrar el navegador y la instancia de la aplicación gráfica de python 
   # volvería de nuevo a ejecutarse desde aquí permitiendo que se realize una y otra vez la verificacion de marcas RFID.     
         while True:   
-
                 #Cada vez que se hace la lectura se realiza un flush para evitar que el buffer almacene algún dato erroneo 
                 
+
                 #almacenamos en la variable data la lectura realizada de RFID
                 data=ser.read(15)
                
                 #print "Leyendo código :) , mantenga el identificador cerca del receptor"
-                #print "Espere..."
+                print "Espere..."
                 #flush a ser para no contener basura dentro de la variable 
                 #ser.flush()
                 #se cierra la conexión para dejar de escuchar
@@ -242,7 +235,7 @@ def read_rfid():
                 
                 #Se hace la validacion en el vector definido  por  la consulta a la base de datos al inicio de este archivo, ademas se pasa actualizando la lista de usuarios desde la base de datos de mongo
 
-		codigosExistentes=list(collection.find({},{"codTarjeta": 1,"_id":0}))
+		#codigosExistentes=list(collection.find({},{"codTarjeta": 1,"_id":0}))
                 for post in codigosExistentes:
                     if dec == post['codTarjeta']:
 			return dec
@@ -251,6 +244,95 @@ def read_rfid():
                 
     except:
        	 pass
+ 
+#Encargado de obtener el tipo de  usuario seleccionado y pasarlo a obtiene marca
+def obtieneTipoSeleccionado(dec, listBox):
+    listSeleccionado = listBox.curselection()
+    tipo = ""
+    for tem in listSeleccionado:
+        tipo = listBox.get(tem)
+    
+    
+    if tipo != "":
+        obtieneMarca(dec,tipo)
+    else:
+        root3 = Tk()
+        root3.attributes('-fullscreen', True)
+        frame3 = Frame(root3)
+        frame3.pack()
+        root3.config(background="black",cursor="none")
+        
+        w2 = Label(root3, text="debbe seleccionar un tipo de usuario", wraplength=650,  fg = "red", bg = "black", font = "Helvetica 20 bold", height=70, width=100).pack()
+        
+        root3.after(4000, lambda: root3.destroy())
+        root3.mainloop()
+
+
+#Obtiene la marca del usuario
+def obtieneMarca(dec,tipo): 
+    
+    #Se crea el entorno gráfico  para realizar las marcas
+    root = Tk()
+    root.attributes('-fullscreen', True)
+    frame = Frame(root)
+    frame.pack()
+    frame.config(background="black")
+    root.config(background="black", height=600, width=600,cursor="none")
+	
+    #en cada botón se llama el método correspondiente con el parámetro del código  obtenido por la lectura.
+
+    button = Button(frame,text="       Entrada        ", command = lambda: Entrada(dec,tipo),fg="white",activeforeground="white",activebackground="green",bg="green",width=22,height=3,bd=9,font="Helveltica 17 bold")
+    button1 = Button(frame,text="        Salida        ", command =lambda: Salida(dec,tipo),fg="white",activeforeground="white",activebackground="green",bg="green",width=22,height=3,bd=9,font="Helveltica 17 bold")
+    button2 = Button(frame,text="   Salida a Receso   ", command =lambda: SalidaReceso(dec,tipo),fg="white",activeforeground="white",activebackground="orange",bg="orange",width=22,height=3,bd=9,font="Helveltica 17 bold")
+    button3 = Button(frame,text="   Entrada de Receso  ", command =lambda: EntradaReceso(dec,tipo),fg="white",activeforeground="white",activebackground="orange",bg="orange",width=22,height=3,bd=9,font="Helveltica 17 bold")
+    button4 = Button(frame,text="  Salida al Almuerzo  ", command =lambda: SalidaAlmuerzo(dec,tipo),fg="white",activeforeground="white",activebackground="blue",bg="blue",width=22,height=3,bd=9,font="Helveltica 17 bold")
+    button5 = Button(frame,text="  Entrada del Almuerzo ", command =lambda: EntradaAlmuerzo(dec,tipo),fg="white",activeforeground="white",activebackground="blue",bg="blue",width=22,height=3,bd=9,font="Helveltica 17 bold")
+    button6 = Button(frame,text="Cancelar",command=lambda: root.destroy(),fg="white",activeforeground="white",activebackground="red",bg="red",width=47,height=3,bd=9,font="Helveltica 17 bold")
+    button.grid(row=1,column=1)
+    button1.grid(row=1,column=2)
+    button2.grid(row=2,column=1)
+    button3.grid(row=2,column=2)
+    button4.grid(row=3,column=1)
+    button5.grid(row=3,column=2)
+    button6.grid(row=4,column=1, columnspan=15)
+    #nuevo
+	#explanation = str("Hora: ")+time.strftime("%H:%M")
+	#clock = Label(frame, fg="white",activeforeground="white",activebackground="blue",bg="black",width=51,height=2,bd=9,font="Helveltica 16",text=explanation, wraplength=350)
+	#clock.grid(row=5,column=1, columnspan=15)
+    #nuevo
+    root.after(4000, lambda: root.destroy())
+    root.mainloop()
+
+
+
+
+
+
+#Se obtiene el tipo de usuario con el cual se debe hacer la marca
+def obtieneTipoUsuario(dec,listTipo):
+        #Se crea el entorno gráfico  para realizar las marcas
+        rootTipo = Tk()
+        rootTipo.attributes('-fullscreen', True)
+        rootTipo.config(height=600, width=600,cursor="none",bg="#ffffff")
+
+
+        lblTitle = Label(rootTipo,text="Seleccione un tipo de usuario",bd="2",bg= "#ffffff", fg="#55aa55", font="Helveltica 30 bold").place(x=150,y=2)
+
+        #Muestra los roles del usuario al cual le pertenece el llavin 
+        listBox = Listbox(rootTipo,bd="0",fg="#888888",font="Helveltica 30 bold",selectbackground="#00bb00",selectforeground="#ffffff",height=500,selectborderwidth=2, activestyle=NONE,highlightthickness=0,justify="center")
+        listBox.place(x=10,y=100)
+
+        listBox.insert(0,*listTipo)
+
+
+        buttonCancelar = Button(rootTipo,text="Cancelar",command=lambda: rootTipo.destroy(),fg="white",activeforeground="white",activebackground="red",bg="red",width=15,height=2,bd=6,font="Helveltica 17 bold").place(x=500,y=100)
+
+        buttonAceptar = Button(rootTipo,text="Aceptar",command= lambda: obtieneTipoSeleccionado(dec,listBox),fg="white",activeforeground="white",activebackground="#008800",bg="#00cc00",width=15,height=2,bd=6,font="Helveltica 17 bold").place(x=500,y=200)
+
+
+        rootTipo.after(5000, lambda: rootTipo.destroy())
+        rootTipo.mainloop()
+        return "Correcto";
 
 
 #En esta sección tenemos el orden de como se van a ir ejecutando los métodos dentro del sistema , esto es  lo que se ejecutará cuando se lance el script.
@@ -259,7 +341,9 @@ while True:
     os.system('clear')
     dec=read_rfid()
     dec=str(dec)
-   #se verifica que la variable no este vacía
+    tipoUsuario = "None"
+
+    #se verifica que la variable no este vacía
     if dec != "None":
         root1 = Tk()
         root1.attributes('-fullscreen', True)
@@ -276,37 +360,18 @@ while True:
         root1.after(2000, lambda: root1.destroy())
         root1.mainloop()
 
-        #Se crea el entorno gráfico  para realizar las marcas
-        root = Tk()
-        root.attributes('-fullscreen', True)
-        frame = Frame(root)
-        frame.pack()
-	frame.config(background="black")
-        root.config(background="black", height=600, width=600,cursor="none")
-	
-        #en cada botón se llama el método correspondiente con el parámetro del código  obtenido por la lectura.
+        #Si tiene mas de un rol se solicita un tipo sino de una ves la marca
+        codigosExistentes=list(collection.find({},{"tipo":  1,"codTarjeta": 1,"_id":0}))
+        for post in codigosExistentes:
+            if str(dec) == str(post['codTarjeta']):
+                listTipo =  post["tipo"]
+                if len(listTipo) == 1:
+                    obtieneMarca(dec,listTipo[0])
+                else:
+                    #Se obtiene el tipo de usuario
+                    tipoUsuario = obtieneTipoUsuario(dec,listTipo)
 
-        button = Button(frame,text="       Entrada        ", command = lambda: Entrada(dec),fg="white",activeforeground="white",activebackground="green",bg="green",width=22,height=3,bd=9,font="Helveltica 17 bold")
-        button1 = Button(frame,text="        Salida        ", command =lambda: Salida(dec),fg="white",activeforeground="white",activebackground="green",bg="green",width=22,height=3,bd=9,font="Helveltica 17 bold")
-        button2 = Button(frame,text="   Salida a Receso   ", command =lambda: SalidaReceso(dec),fg="white",activeforeground="white",activebackground="orange",bg="orange",width=22,height=3,bd=9,font="Helveltica 17 bold")
-        button3 = Button(frame,text="   Entrada de Receso  ", command =lambda: EntradaReceso(dec),fg="white",activeforeground="white",activebackground="orange",bg="orange",width=22,height=3,bd=9,font="Helveltica 17 bold")
-        button4 = Button(frame,text="  Salida al Almuerzo  ", command =lambda: SalidaAlmuerzo(dec),fg="white",activeforeground="white",activebackground="blue",bg="blue",width=22,height=3,bd=9,font="Helveltica 17 bold")
-        button5 = Button(frame,text="  Entrada del Almuerzo ", command =lambda: EntradaAlmuerzo(dec),fg="white",activeforeground="white",activebackground="blue",bg="blue",width=22,height=3,bd=9,font="Helveltica 17 bold")
-	button6 = Button(frame,text="Cancelar",command=lambda: root.destroy(),fg="white",activeforeground="white",activebackground="red",bg="red",width=47,height=3,bd=9,font="Helveltica 17 bold")
-	button.grid(row=1,column=1)
-        button1.grid(row=1,column=2)
-        button2.grid(row=2,column=1)
-        button3.grid(row=2,column=2)
-        button4.grid(row=3,column=1)
-        button5.grid(row=3,column=2)
-	button6.grid(row=4,column=1, columnspan=15)
-#nuevo
-	#explanation = str("Hora: ")+time.strftime("%H:%M")
-	#clock = Label(frame, fg="white",activeforeground="white",activebackground="blue",bg="black",width=51,height=2,bd=9,font="Helveltica 16",text=explanation, wraplength=350)
-	#clock.grid(row=5,column=1, columnspan=15)
-#nuevo
-	root.after(3000, lambda: root.destroy())
-	root.mainloop()
+        
     else:  
         os.system('clear')
         pass 
