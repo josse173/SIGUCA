@@ -1,6 +1,7 @@
 
 var crudUsuario = require('../routes/crudUsuario');
 var crudHorario = require('../routes/crudHorario');
+var Usuario = require('../models/Usuario.js');
 var async = require("async");
 module.exports = {
     create: function (req, res) {
@@ -21,6 +22,8 @@ module.exports = {
                     function(err, usuario){
                         if (err)
                             return res.json({error:err});
+                        Usuario.update({_id:req.body.usuario},{ $unset: {horario: ""}},function(error,correcto){
+                        });
                         return res.json(usuario);
                     });
                 });
@@ -37,6 +40,14 @@ module.exports = {
                         //console.log(horario);
                         if (error)
                             return res.json({error:error});
+                        Usuario.update({_id:req.body.usuario},{ $unset: {horario: ""}},function(error,correcto){
+                            if(error){
+
+                            }else{
+                                
+                            }
+                        });
+
                         return res.json(horario);
                     });
             });

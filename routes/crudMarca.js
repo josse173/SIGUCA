@@ -4,6 +4,7 @@ moment 				= require('moment'),
 Usuario 			= require('../models/Usuario'),
 cierre 				= require('../actions/tareas.js'),
 Marca 				= require('../models/Marca'),
+Horario 			= require('../models/Horario'),
 util 				= require('../util/util'),
 crudHorario 		= require('./crudHorario'),
 crud 				= require('./crud'),
@@ -273,6 +274,7 @@ exports.rfidReader = function(tipoUsuario, codTarjeta, tipoMarca, cb) {
 
 function revisarMarca(tipoUsuario, _idUser, marca, cb){
 	
+
 	var epochMin = moment();
 	epochMin.hours(0);
 	epochMin.minutes(0);
@@ -287,6 +289,7 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 				crudHorario.getById(usuario.horarioEmpleado, 
 					function(error, horario){
 						if(!error && horario){
+							console.log("okk");
 							var today = moment();
 							var dia = ["domingo", "lunes", "martes", "miercoles", 
 							"jueves", "viernes", "sabado"][today.day()];
@@ -340,9 +343,10 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 									}
 									else cb("");
 								} else if(marca.tipoMarca=="Salida"){
+										
 									var mOut= moment.unix(marca.epoch);
 									var mReal = tiempoDia.salida;
-
+									
 									if(
 											(usuario.tipo.length > 1 && tipoUsuario != config. empleadoProfesor) ||
 											(usuario.tipo.length == 1)
@@ -351,14 +355,7 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 										}
 										else cb("");
 									
-									/*
-									if(util.determinarJustificacion(tiempoDia)==0){
-										addJustIncompleta(_idUser, "Salida antes de hora establecida", 
-											"Hora de salida: "+ util.horaStr(mReal.hora, mReal.minutos)+
-											" - Hora de marca: "+ util.horaStr(mOut.hour(), mOut.minutes()), cb);
-									}
-									else cb("");
-									*/
+								
 									
 								} 
 								else cb("");
@@ -370,9 +367,169 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
                     });
 				//
 			}
-			else cb("");
+			else if(marca.tipoMarca=="Salida") {
+				Usuario.findById(_idUser,{_id:1, nombre:1, horario:1, tipo:1}).exec(
+					function(err, usuario){
+					if(!err && usuario.horario && usuario.horario!=""){
+						Horario.findById(usuario.horario,function(error,horarioEmpleado){
+							if(!error && horarioEmpleado!="" && horarioEmpleado && horarioEmpleado.tipo=="Libre"){
+								var mOut= moment.unix(marca.epoch);
+								workedHourSchedule(_idUser,horarioEmpleado,mOut,cb);
+							}
+							else {
+								cb("");
+							}
+						
+							
+						});
+					
+					}
+				});
+				
+			}else{
+				cb("");
+			}//fin else
 		});
 	//
+}
+
+
+function workedHourSchedule(_idUser,horarioEmpleado,mOut,cb){
+
+	var date =  moment().format('L').split("/");
+	var epochGte = moment();
+	epochGte.year(date[2]).month(date[0]-1).date(date[1]);
+	epochGte.hour(0).minutes(0).seconds(0);
+	var epochLte = moment();
+	epochLte.year(date[2]).month(date[0]-1).date(date[1]);
+	epochLte.hour(23).minutes(59).seconds(59);
+
+
+	Marca.find({
+		usuario:_idUser,
+		epoch:{
+		"$gte":epochGte.unix(),
+		"$lte":epochLte.unix()
+	}}, function (err, marcas) {
+		
+
+	var m2 ="ok";
+	if(err) m2 = err;
+	varepoch: mcs = [];
+	var ml = util.unixTimeToRegularDate(marcas);
+	for(x in ml){
+		var obj = {};
+		obj.fecha = ml[x].fecha;
+		obj.tipoMarca = ml[x].tipoMarca;
+		mcs.push(obj);
+	}
+	
+
+		for(m in mcs){
+			if(mcs[m].tipoMarca=='Entrada'){
+				var tiempoEntrada = mcs[m].fecha.hora;
+			}
+			if(mcs[m].tipoMarca=='Salida'){
+				var tiempoSalida =mcs[m].fecha.hora;
+			}
+			if(mcs[m].tipoMarca=='Salida a Receso'){
+				var tiempoSalidaReceso = mcs[m].fecha.hora;
+			}
+			if(mcs[m].tipoMarca=='Entrada de Receso'){
+				var tiempoEntradaReceso =mcs[m].fecha.hora;
+			}
+			if(mcs[m].tipoMarca=='Salida al Almuerzo'){
+				var tiempoSalidaAlmuerzo = mcs[m].fecha.hora ;
+			}
+			if(mcs[m].tipoMarca=='Entrada de Almuerzo'){
+				var tiempoEntradaAlmuerzo =mcs[m].fecha.hora ;
+			}
+		}
+
+
+		finMinutos =moment().format();
+		finMinutos=parseInt(String(finMinutos).substr(14,2));
+						
+		inicioMinutos = parseInt(tiempoEntrada.substr(3,2));
+			
+		inicioHoras = parseInt(String(tiempoEntrada).substr(0,2));
+		
+		finHoras=moment().format();
+		finHoras = parseInt(String(finHoras).substr(11,2));
+
+		
+		var transcurridoMinutos = finMinutos - inicioMinutos;
+		var transcurridoHoras = finHoras - inicioHoras;  //bloque de salida y entrada
+
+		if(tiempoSalidaReceso!=null){
+		var inicioRecesoMinutos = parseInt(String(tiempoSalidaReceso).substr(3,2));
+		var inicioRecesoHoras = parseInt(String(tiempoSalidaReceso).substr(0,2));
+		var finRecesoMinutos = parseInt(String(tiempoEntradaReceso).substr(3,2));
+		var finRecesoHoras = parseInt(String(tiempoEntradaReceso).substr(0,2));
+		var transcurridoRecesoMinutos = finRecesoMinutos - inicioRecesoMinutos;
+		var transcurridoRecesoHoras = finRecesoHoras - inicioRecesoHoras;//bloque para recesos 
+		}else{
+			transcurridoRecesoHoras = 0;
+			transcurridoRecesoMinutos = 0;
+		}
+		if(tiempoSalidaAlmuerzo!=null){
+		var inicioAlmuerzoMinutos = parseInt(String(tiempoSalidaAlmuerzo).substr(3,2));
+		var inicioAlmuerzoHoras = parseInt(String(tiempoSalidaAlmuerzo).substr(0,2));
+		var finAlmuerzoMinutos = parseInt(String(tiempoEntradaAlmuerzo).substr(3,2));
+		var finAlmuerzoHoras = parseInt(String(tiempoEntradaAlmuerzo).substr(0,2));
+		var transcurridoAlmuerzoMinutos = finAlmuerzoMinutos - inicioAlmuerzoMinutos;
+		var transcurridoAlmuerzoHoras = finAlmuerzoHoras - inicioAlmuerzoHoras;//bloque para almuerzos
+		}else{
+			transcurridoAlmuerzoMinutos = 0;
+			transcurridoAlmuerzoHoras = 0;
+		}
+
+		var transcurridoHorasTotal = transcurridoHoras - transcurridoRecesoHoras - transcurridoAlmuerzoHoras;
+		var transcurridoMinutosTotal = transcurridoMinutos - transcurridoRecesoMinutos - transcurridoAlmuerzoMinutos;
+		
+
+		if (transcurridoMinutosTotal < 0) {
+			transcurridoHorasTotal--;
+			transcurridoMinutosTotal = 60 + transcurridoMinutosTotal;
+		}
+		
+
+		var horasTrabajadas = transcurridoHorasTotal;
+		var minutosTrabajados = transcurridoMinutosTotal;	
+		var vectorHorario=horarioEmpleado.rangoJornada.split(":");
+		var almuerzo=horarioEmpleado.tiempoAlmuerzo.split(":");
+		var receso=horarioEmpleado.tiempoReceso.split(":");
+		var minutoDescanso=parseInt(almuerzo[1])+parseInt(receso[1]);
+		var horaDescanso=parseInt(almuerzo[0])+parseInt(receso[0]);
+		if(minutoDescanso>59){
+			horaDescanso++;
+			minutoDescanso=minutoDescanso-60;
+		}
+
+		var horasTrabajadasFinal=parseInt(vectorHorario[0])-horaDescanso;
+		var minutosTrabajadosFinal=parseInt(vectorHorario[1])-minutoDescanso;
+	
+		
+
+		if(minutosTrabajadosFinal<0){
+			minutosTrabajadosFinal=60-minutosTrabajadosFinal;
+			horasTrabajadasFinal--;
+		}
+		
+		if(horasTrabajadas>horasTrabajadasFinal){
+			return cb("");
+		}else if(horasTrabajadas==horasTrabajadasFinal && minutosTrabajados>=minutosTrabajadosFinal){
+			return cb("");
+		}else{
+			addJustIncompleta(_idUser,"Salida antes de hora establecida", 
+											"Jornada laboral: "+ util.horaStr(horasTrabajadasFinal
+												, minutosTrabajadosFinal)+
+											" - Horas trabajadas: "+ util.horaStr(horasTrabajadas, minutosTrabajados), cb);
+		}
+
+	});
+					
+
 }
 
 
@@ -520,7 +677,7 @@ function workedHour(_idUser,horario, mOut, mReal,cb){
 
 				}else if(obj.horas==horaSalida){
 		
-					if(minutoSalida>=obj.minutos){
+					if(minutoSalida>obj.minutos){
 						addJustIncompleta(_idUser, "Salida antes de hora establecida", 
 											"Hora de salida: "+ util.horaStr(mReal.hora, mReal.minutos)+
 											" - Hora de marca: "+ util.horaStr(mOut.hour(), mOut.minutes()), cb);

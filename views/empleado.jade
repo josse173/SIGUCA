@@ -43,8 +43,12 @@ block content
                       li #{departamentos.departamento.nombre}
                     else
                       li No tiene departamento asignado
-              td #{empleado.horario.nombre} 
-              td #{empleado.estado} 
+              if(empleado.horario)
+                td #{empleado.horario.nombre} 
+                
+              else
+                td No tiene horario asignado
+               td #{empleado.estado} 
               td
                 button.btn.btn-default(data-toggle="modal" data-target="#editEmpl" value=empleado.id)
                   i.icon-pencil.icon-large.i-success
@@ -99,6 +103,7 @@ block content
                     label(for='horario') Horario:
                       br
                       select.form-control#selectHorario.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="horario") 
+                        option(value="Sin horario") Sin horario
                         each horario, i in horarios
                             option(value= horario.id) #{horario.nombre} 
 

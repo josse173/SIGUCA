@@ -29,7 +29,7 @@ module.exports = {
 
     ejecutarCierrePorUsuarioAlMarcarSalida:function(tipoUsuario,id){
     
-   
+
     var hoy = new Date();
 
     //Fechas para encontrar información del día
@@ -46,7 +46,7 @@ module.exports = {
     //Se realiza el cierre para todos los usuarios menos el tipo administrador
     Usuario.find({_id:id},{_id:1, nombre:1, horarioEmpleado:1,tipoUsuario:1}).exec(
         function(err, usuarios){
-            if(!err){
+            if(!err && usuarios[0].horarioEmpleado){
               
                 for(usuario in usuarios){
                   
@@ -58,10 +58,142 @@ module.exports = {
                             epochMin, epochMax, usuarios[usuario].horarioEmpleado); 
                     }
                 }
-            } 
+            }else{
+                 Usuario.find({_id:id},{_id:1, nombre:1, horario:1,tipoUsuario:1}).exec(
+                    function(error, usuario){
+                        if(!err && usuario[0].horario){
+                            var epochTime = moment().unix();
+                            cierreHorario(id,usuario[0].horario,epochTime,tipoUsuario);
+                           
+                        }
+                });
+
+            }
         });
     }
     
+}
+
+function cierreHorario(_idUser,horarioEmpleado,mOut,tipoUsuario){
+    var date =  moment().format('L').split("/");
+	var epochGte = moment();
+	epochGte.year(date[2]).month(date[0]-1).date(date[1]);
+	epochGte.hour(0).minutes(0).seconds(0);
+	var epochLte = moment();
+	epochLte.year(date[2]).month(date[0]-1).date(date[1]);
+	epochLte.hour(23).minutes(59).seconds(59);
+
+
+	Marca.find({
+		usuario:_idUser,
+		epoch:{
+		"$gte":epochGte.unix(),
+		"$lte":epochLte.unix()
+	}}, function (err, marcas) {
+		
+
+	var m2 ="ok";
+	if(err) m2 = err;
+	varepoch: mcs = [];
+	var ml = util.unixTimeToRegularDate(marcas);
+	for(x in ml){
+		var obj = {};
+		obj.fecha = ml[x].fecha;
+		obj.tipoMarca = ml[x].tipoMarca;
+		mcs.push(obj);
+	}
+	
+
+		for(m in mcs){
+			if(mcs[m].tipoMarca=='Entrada'){
+				var tiempoEntrada = mcs[m].fecha.hora;
+			}
+			if(mcs[m].tipoMarca=='Salida'){
+				var tiempoSalida =mcs[m].fecha.hora;
+			}
+			if(mcs[m].tipoMarca=='Salida a Receso'){
+				var tiempoSalidaReceso = mcs[m].fecha.hora;
+			}
+			if(mcs[m].tipoMarca=='Entrada de Receso'){
+				var tiempoEntradaReceso =mcs[m].fecha.hora;
+			}
+			if(mcs[m].tipoMarca=='Salida al Almuerzo'){
+				var tiempoSalidaAlmuerzo = mcs[m].fecha.hora ;
+			}
+			if(mcs[m].tipoMarca=='Entrada de Almuerzo'){
+				var tiempoEntradaAlmuerzo =mcs[m].fecha.hora ;
+			}
+		}
+
+
+		finMinutos =moment().format();
+		finMinutos=parseInt(String(finMinutos).substr(14,2));
+						
+		inicioMinutos = parseInt(tiempoEntrada.substr(3,2));
+			
+		inicioHoras = parseInt(String(tiempoEntrada).substr(0,2));
+		
+		finHoras=moment().format();
+		finHoras = parseInt(String(finHoras).substr(11,2));
+
+		
+		var transcurridoMinutos = finMinutos - inicioMinutos;
+		var transcurridoHoras = finHoras - inicioHoras;  //bloque de salida y entrada
+
+		if(tiempoSalidaReceso!=null){
+		var inicioRecesoMinutos = parseInt(String(tiempoSalidaReceso).substr(3,2));
+		var inicioRecesoHoras = parseInt(String(tiempoSalidaReceso).substr(0,2));
+		var finRecesoMinutos = parseInt(String(tiempoEntradaReceso).substr(3,2));
+		var finRecesoHoras = parseInt(String(tiempoEntradaReceso).substr(0,2));
+		var transcurridoRecesoMinutos = finRecesoMinutos - inicioRecesoMinutos;
+		var transcurridoRecesoHoras = finRecesoHoras - inicioRecesoHoras;//bloque para recesos 
+		}else{
+			transcurridoRecesoHoras = 0;
+			transcurridoRecesoMinutos = 0;
+		}
+		if(tiempoSalidaAlmuerzo!=null){
+		var inicioAlmuerzoMinutos = parseInt(String(tiempoSalidaAlmuerzo).substr(3,2));
+		var inicioAlmuerzoHoras = parseInt(String(tiempoSalidaAlmuerzo).substr(0,2));
+		var finAlmuerzoMinutos = parseInt(String(tiempoEntradaAlmuerzo).substr(3,2));
+		var finAlmuerzoHoras = parseInt(String(tiempoEntradaAlmuerzo).substr(0,2));
+		var transcurridoAlmuerzoMinutos = finAlmuerzoMinutos - inicioAlmuerzoMinutos;
+		var transcurridoAlmuerzoHoras = finAlmuerzoHoras - inicioAlmuerzoHoras;//bloque para almuerzos
+		}else{
+			transcurridoAlmuerzoMinutos = 0;
+			transcurridoAlmuerzoHoras = 0;
+		}
+
+		var transcurridoHorasTotal = transcurridoHoras - transcurridoRecesoHoras - transcurridoAlmuerzoHoras;
+		var transcurridoMinutosTotal = transcurridoMinutos - transcurridoRecesoMinutos - transcurridoAlmuerzoMinutos;
+		
+
+		if (transcurridoMinutosTotal < 0) {
+			transcurridoHorasTotal--;
+			transcurridoMinutosTotal = 60 + transcurridoMinutosTotal;
+		}
+		
+
+		var horasTrabajadas = transcurridoHorasTotal;
+        var minutosTrabajados = transcurridoMinutosTotal;	
+
+       var obj = {
+        usuario: _idUser,
+        tipoUsuario: tipoUsuario,
+        tiempo: {
+            horas:horasTrabajadas,
+            minutos:minutosTrabajados
+        },
+        epoch: moment().unix()
+        };
+        var cierre = CierrePersonal(obj);
+        cierre.save(function (err, cierreActualizado) {
+            if(err) 
+             console.log("Error al crear cierre en la fecha '"+hoy+"' => Mensaje: "+error);
+        });
+
+        
+    });
+
 }
 
 
