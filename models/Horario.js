@@ -12,29 +12,21 @@ var SchemaHorario = new Schema({
         type: String,
         default: ''
     },
-    horaEntrada: {
-        type: String,
-        default: '0:00'
-    },
-    horaSalida: {
-        type: String,
-        default: '0:00'
-    },
     rangoJornada: { 
         type: String,
         default: '9:00'
     },
     tiempoReceso: {
         type: String,
-        default: '0:45'
+        default: '0:15'
     },
     tiempoAlmuerzo: {
         type: String,
-        default: '1:00'
+        default: '0:45'
     },
     tipo: {
         type: String,
-        default: 'Fijo'
+        default: 'Libre'
     }
 });
 
