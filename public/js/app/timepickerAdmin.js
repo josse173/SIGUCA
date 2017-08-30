@@ -1,10 +1,10 @@
 
     $('#timepicker input').timepicker('setTime', '0:00');
     $('#timepicker1 input').timepicker('setTime', '0:00');
-    $('#timepicker2 input').timepicker('setTime', '0:45');
-    $('#timepicker3 input').timepicker('setTime', '1:00');
+    $('#timepicker2 input').timepicker('setTime', '0:15');
+    $('#timepicker3 input').timepicker('setTime', '0:45');
     $('#timepicker4 input').timepicker('setTime', '0:15');
-    $('#timepicker5 input').timepicker('setTime', '0:15');
+    $('#timepicker5 input').timepicker('setTime', '8:00');
 
     $('#timepicker span').timepicker('setTime', '8:00');
     $('#timepicker1 span').timepicker('setTime', '17:00');

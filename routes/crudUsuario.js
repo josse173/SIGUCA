@@ -23,7 +23,7 @@ exports.addUsuario = function(us, cb){
 			arrayTipo.push(us.tipo[t]); 
 		}
 	} else {
-		arrayTipo.push(us.tipo[t]);
+		arrayTipo.push(us.tipo);
 	}
 
 	//Inserta los departamentos como array

@@ -13,8 +13,6 @@ block content
           tr
             th Nombre
             th Tipo Jornada
-            th Hora Entrada
-            th Hora Salida
             th Rango Jornada
             th Tiempo Receso
             th Tiempo Almuerzo
@@ -26,8 +24,6 @@ block content
             tr
               td #{horario.nombre} 
               td #{horario.tipo} 
-              td #{horario.horaEntrada} 
-              td #{horario.horaSalida} 
               td #{horario.rangoJornada} 
               td #{horario.tiempoReceso} 
               td #{horario.tiempoAlmuerzo} 
@@ -53,22 +49,7 @@ block content
                   h4 Información Básica
                   label(for='nombre' style="float:left") Nombre del Horario:
                     input#nombre.form-control( type="text", name="nombre", placeholder='Nombre del horario')
-                  label(for='tipo') Tipo jornada  
-                    .checkboxAwesome.checkbox-success          
-                      input#tipoJornada(type='checkbox', name= "tipo")
-                      label(for='tipoJornada', id="tipoJornadaLabel") Libre         
-                .form-group
-                  h4 Información de jornada
-                  label(for='horaEntrada') Hora de Inicio:
-                    div#timepicker.input-group
-                      input#horaEntrada.input-small.form-control(type="text", name= 'horaEntrada')
-                      span.input-group-addon
-                        i.icon-time
-                  label(for='horaSalida') Hora de salida:
-                    div#timepicker1.input-group
-                      input#horaSalida.input-small.form-control(type="text", name= 'horaSalida')
-                      span.input-group-addon
-                        i.icon-time
+                
                   label(for='rangoJornada') Rango de horas:
                     label.form-control#rangoJornada
                     div#timepicker4.input-group
