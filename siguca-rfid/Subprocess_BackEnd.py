@@ -150,7 +150,7 @@ def EntradaAlmuerzo(dec,tipo):
     frame3 = Frame(root3)
     frame3.pack()
     root3.config(background="black",cursor="none")
-    f = urllib.urlopen('http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=&tipo='+tipo)
+    f = urllib.urlopen('http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=5&tipo='+tipo)
     data = f.read()
     try:
        # w2 = Label(root3, text=data, wraplength=650,  fg = "light green", bg = "black", font = "Helvetica 16 bold").pack()
