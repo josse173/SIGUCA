@@ -405,7 +405,7 @@ $("#extraLink").click(function(){
         var split = justificacion.split(',');
         for(var i =0;i<split.length;i++){
          
-            alert( split[1]);
+            //alert( split[1]);
         }
         alertify.dialog('confirm')
         .set({
