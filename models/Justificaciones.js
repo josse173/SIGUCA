@@ -40,7 +40,11 @@ var SchemaJustificacion = new Schema({
     comentarioSupervisor: {
         type: String,
         default: ''
-    }
+    },
+    tipoUsuario: {
+        type: String,
+        default: ''
+    },
 });
 
 module.exports = mongoose.model('Justificaciones', SchemaJustificacion);

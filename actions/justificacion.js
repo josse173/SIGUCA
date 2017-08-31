@@ -12,6 +12,7 @@ module.exports = {
 	nueva : function (req, res) {
 		var just = req.body; 
 		just.id = req.user.id;
+		just.tipoUsuario = req.session.name;
 		//console.log(just);
 		crudJustificaciones.addJust(just, function (){
 			if (req.session.name == "Empleado" || req.session.name == config.empleadoProfesor) {
