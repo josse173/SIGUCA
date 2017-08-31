@@ -85,7 +85,7 @@ module.exports = {
     epochMin.seconds(0);
     if (req.session.name != "Administrador") {
       Marca.find({usuario: req.user.id, tipoUsuario: req.session.name, epoch: {'$gte' : epochMin.unix()}}).exec(function(error, marcas) {
-        Justificaciones.find({usuario: req.user.id}).exec(function(error, justificaciones) {
+        Justificaciones.find({usuario: req.user.id, tipoUsuario: req.session.name}).exec(function(error, justificaciones) {
           Solicitudes.find({usuario: req.user.id, tipoSolicitudes:'Extras'}).exec(function(error, extras) {
             Solicitudes.find({usuario: req.user.id, tipoSolicitudes:'Permisos'}).exec(function(error, permisos) {
               CierrePersonal.find({usuario:req.user.id, epoch: {'$gte' : epochMin.unix()}}, function (err, listaCierre) {
