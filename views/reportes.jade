@@ -347,6 +347,7 @@ block content
                       tr
                         th(data-type="numeric" data-sort-initial="descending") Fecha
                         th Usuario
+                        th Tipo Usuario
                         th(data-hide="phone,small") Motivo
                         th(data-hide="phone,small" data-sort-ignore="true") Detalle
                         th(data-hide="phone,small" data-sort-ignore="true") Comentario
@@ -358,7 +359,8 @@ block content
                           td(data-value=justificacion.fechaCreada) #{justificacion.fecha.str} 
                           if(justificacion.usuario)
                             td #{justificacion.usuario.nombre} #{justificacion.usuario.apellido1}
-                          td #{justificacion.motivo} 
+                          td #{justificacion.tipoUsuario} 
+                          td #{justificacion.motivo}    
                           td #{justificacion.detalle} 
                           td #{justificacion.comentarioSupervisor} 
                           td #{justificacion.estado}  
