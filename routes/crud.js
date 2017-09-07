@@ -7,6 +7,7 @@ Marca 			= require('../models/Marca'),
 Departamento 	= require('../models/Departamento'),
 Usuario 		= require('../models/Usuario'),
 Horario 		= require('../models/Horario'),
+HorarioFijo		= require('../models/HorarioFijo'),
 Justificaciones = require('../models/Justificaciones'),
 Solicitudes 	= require('../models/Solicitudes'),
 Cierre 			= require('../models/Cierre'),
@@ -18,6 +19,13 @@ emailSIGUCA 	= 'siguca@greencore.co.cr';
 	/*--------------------------------------------------------------------
 		Métodos Horarios
 		---------------------------------------------------------------------*/
+		exports.addHorarioFIjo=function(horario,cb){
+			var horarioFijo=HorarioFijo(horario);
+			horarioFijo.save(function(err,horario){
+				return cb();
+			});
+		};
+
 		exports.addHorario = function(horario, cb) {
 			var horarioN = Horario(horario);
 			horarioN.save(function (err, horario){
@@ -37,11 +45,83 @@ emailSIGUCA 	= 'siguca@greencore.co.cr';
 			})
 		}
 
+		exports.loadHorarioFijo = function(id, cb){
+			HorarioFijo.findById(id, function (err, horarios) {
+				return cb(err, horarios);
+			})
+		}
+		
+
 		exports.updateHorario = function(data, cb){
 			Horario.findByIdAndUpdate(data.id, data.horario, function (err, horarios) {
 				return cb(err, horarios);
 			});
 		}
+
+		exports.updateHorarioFijo = function(data, cb){
+
+			if(data.horario.Lunes){
+				var Lunes="Lunes";
+			}
+			else {
+				var Lunes="";
+			}
+			if(data.horario.Martes){
+				var Martes="Martes";
+			}else{
+				var Martes="";
+			}
+
+			if(data.horario.Miercoles){
+				var Miercoles="Miercoles";
+			}else{
+				var Miercoles="";
+			}
+			if(data.horario.Jueves){
+				var Jueves="Jueves";
+			}else{
+				var Jueves="";
+			}
+			
+			if(data.horario.Viernes){
+				var Viernes="Viernes";
+			}else{
+				var Viernes="";
+			}
+			if(data.horario.Sabado){
+				var Sabado="Sabado";
+			}else{
+				var Sabado="";
+			}
+			if(data.horario.Domingo){
+            var Domingo="Domingo";
+			}else{
+				 var Domingo="";
+			}
+			
+			
+			var horario={
+				Domingo:Domingo,
+				Jueves:Jueves,
+				Lunes:Lunes,
+				Martes:Martes,
+				Miercoles:Miercoles,
+				Sabado:Sabado,
+				Viernes:Viernes,
+				horaEntrada:data.horario.horaEntrada,
+				horaSalida:data.horario.horaSalida,
+				nombre:data.horario.nombre,
+				tiempoAlmuerzo:data.horario.tiempoAlmuerzo,
+				tiempoReceso:data.horario.tiempoReceso,
+				tipo:"Fijo"
+			};
+			
+			HorarioFijo.findByIdAndUpdate(data.id,horario, function (err, horarios) {
+				return cb(err, horarios);
+			});
+		}
+
+
 
 		exports.deleteHorario = function(id, cb){
 			Usuario.find({"horario": id, "estado": "Activo"}).exec(function (err, usuario) {
@@ -54,6 +134,20 @@ emailSIGUCA 	= 'siguca@greencore.co.cr';
 				}
 			});
 		}
+
+		exports.deleteHorarioFijo = function(id, cb){
+			Usuario.find({"horarioFijo": id, "estado": "Activo"}).exec(function (err, usuario) {
+				if(usuario.length === 0){
+					HorarioFijo.findByIdAndRemove(id, function (err, horarios) {
+						return cb(err, 'Se elimino');
+					});
+				} else{
+					return cb(err, 'false');
+				}
+			});
+		}
+
+		
 
 	function cierre (id) {
 		Marca.findById(id).populate('usuario').exec(function (err, marca) {

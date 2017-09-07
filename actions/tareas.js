@@ -13,7 +13,7 @@ var crudJustificaciones = require('../routes/crudJustificaciones');
 
 module.exports = {
     cierreAutomatico : new CronJob({
-       /// cronTime: '* * * * * *',
+        //cronTime: '* * * * * *',
         cronTime: '00 50 23 * * 0-7',
         onTick: function() {
             //if(!once){

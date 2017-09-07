@@ -12,6 +12,7 @@ var util = require('../util/util');
 var crud = require('../routes/crud');
 var crudUsuario = require('../routes/crudUsuario');
 var config 			= require('../config');
+var HorarioFijo = require('../models/HorarioFijo');
 
 module.exports = {
 	escritorio : function (req, res) {
@@ -155,10 +156,13 @@ module.exports = {
 	escritorioAdmin : function (req, res) {
 		req.user.tipo = req.session.name;
 		if (req.session.name ==="Administrador") {
-			console.log("en escriAdmin2: ");
+		
 			Usuario.find().exec(function(error, usuarios) {
 				Horario.find().exec(function(error, horarios) {
 					Departamento.find().exec(function(error, departamentos) {
+						HorarioFijo.find().exec(function(error,horarioFijo){
+
+						
 						if (error) return res.json(error);
 
 						//Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
@@ -170,14 +174,14 @@ module.exports = {
 							departamentos: departamentos,
 							usuarios: usuarios,
 							tipoEmpleado: config.empleado2,
-							empleadoProfesor: config.empleadoProfesor
+							empleadoProfesor: config.empleadoProfesor,
+							arregloHorarioFijo:horarioFijo
 						});
 					});
 				});
 			});
+			});
 		} else {
-
-			console.log("en escriAdmin4: ");
 			req.logout();
 			res.redirect('/');
 		}

@@ -16,7 +16,8 @@ block content
             th(data-hide="phone,small,medium,large") Email
             th(data-hide="phone") Tipo
             th(data-hide="phone,small,medium" data-sort-ignore="true") Departamento
-            th(data-hide="phone,small,medium") Horario
+            th(data-hide="phone,small,medium") Horario libre
+            th(data-hide="phone,small,medium") Horario Fijo
             th(data-hide="phone,small") Estado
             th(data-hide="phone,small" data-sort-ignore="true") Editar
             th(data-hide="phone,small" data-sort-ignore="true") Eliminar
@@ -48,6 +49,15 @@ block content
                 
               else
                 td No tiene horario asignado
+                
+              if(empleado.horarioFijo)
+                td #{empleado.horarioFijo.nombre} 
+                
+              else
+                td No tiene horario asignado
+
+
+
                td #{empleado.estado} 
               td
                 button.btn.btn-default(data-toggle="modal" data-target="#editEmpl" value=empleado.id)
@@ -100,12 +110,18 @@ block content
                         option #{tipoEmpleado} 
                         option #{empleadoProfesor}
 
-                    label(for='horario') Horario:
+                    label(for='horario') Horario libre:
                       br
                       select.form-control#selectHorario.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="horario") 
                         option(value="Sin horario") Sin horario
                         each horario, i in horarios
                             option(value= horario.id) #{horario.nombre} 
+
+            
+                     select.form-control#selectHorarioFijo.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="horarioFijo") 
+                        option(value="Sin horario") Sin horario
+                        each horario, i in horarioFijo
+                            option(value= horario._id) #{horario.nombre}         
 
                     label(for='departamento') Departamento:
                       br
@@ -124,4 +140,5 @@ block content
 block sigucaJS
   script(src="/js/components/mailgun_validator.js")
   script(src="/js/components/generarPassword.js")
+  script(src="../js/app/empleado.js")
 

@@ -21,8 +21,19 @@
           td Horario:
           form(action= '/horarioN')    
             td
-              button#empleados.btn.btn-success(name='agregar', data-toggle="modal" data-target="#addHorario")
-                i.icon-plus.icon-large       
+              div.dropdown
+                        button.btn.btn-success.dropdown-toggle(type='button',data-toggle="dropdown") 
+                          i.icon-edit.icon-large
+                          |&nbsp;Horarios
+                          span.caret
+                        ul.dropdown-menu
+                          li
+                              button.btn.btn-success(name='agregar', data-toggle="modal" data-target="#addHorario") Horario Fijo
+                                i.icon-plus.icon-large 
+                          li
+                              button.btn.btn-success(name='agregar', data-toggle="modal" data-target="#addHorarioLibre") Horario libre
+                                i.icon-plus.icon-large 
+                  
             td
               button#areas.btn.btn-primary(type = 'submit', name='eliminar',  onclick= "/horarioN")
                 i.icon-edit.icon-large
@@ -144,11 +155,20 @@
                     option #{tipoEmpleado} 
                     option #{empleadoProfesor}
 
-                label(for='horario') Horario:
+                label Horario:
                   br
                   select.form-control#textInput.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="idHorario") 
+                    option(value="") Sin horario  
                     each horario, i in horarios
-                        option(value= horario.id) #{horario.nombre} 
+                        option(value= horario.id) #{horario.nombre}
+                     
+
+                label(for='horario Fijo') Horario Fijo:
+                  br
+                  select.form-control#textInput.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="horarioFijo") 
+                    option(value="") Sin horario 
+                    each horarioFijo, i in arregloHorarioFijo
+                        option(value= horarioFijo._id) #{horarioFijo.nombre} 
 
                 label(for='departamento') Departamento:
                   br
@@ -167,7 +187,77 @@
               button.btn.btn-success(type='submit') Ingresar
               button.btn.btn-danger#clearLabel(type='button', data-dismiss='modal') Cancelar
 
+  //            
   #addHorario.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+    .modal-dialog
+        .modal-content
+          .modal-header
+            button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+            h4#myModalLabel.modal-title Añadir nuevo horario
+          .modal-body
+            form(action='/horarioFijo', method='post')#login-form.well.span4
+              .form-group
+                h4 Información Básica
+                label(for='nombre' style="float:left") Nombre del Horario:
+                  input.form-control#textInput( type="text", name="nombre")     
+
+                label(for='dias') L
+                label(for='dias')  
+                label(for='dias')
+                label(for='dias') K
+                label(for='dias')  
+                label(for='dias')
+                label(for='dias') M
+                label(for='dias')  
+                label(for='dias')
+                label(for='dias') J
+                label(for='dias')
+                label(for='dias') 
+                label(for='dias') V
+                label(for='dias')  
+                label(for='dias')
+                label(for='dias') S
+                label(for='dias')
+                label(for='dias')  
+                label(for='dias') D
+                .from-group
+                  input(type='checkbox',name='Lunes',id='Lunes',value='Lunes') 
+                  input(type='checkbox',name='Martes',id='Martes',value='Martes') 
+                  input(type='checkbox',name='Miercoles',id='Miercoles',value='Miercoles')
+                  input(type='checkbox',name='Jueves',id='Jueves', value='Jueves')
+                  input(type='checkbox',name='Viernes',id='Viernes',value='Viernes')
+                  input(type='checkbox',name='Sabado',id='Sabado',value='Sabado')  
+                  input(type='checkbox',name='Domingo',id='Domingo',value='Domingo')  
+
+              .form-group
+                label(for='horaEntrada') Hora de entrada:
+                  div#timepicker5.input-group
+                    input.input-small.form-control(type="text", name= 'horaEntrada')
+                    span.input-group-addon
+                      i.icon-time  
+                label(for='horaSalida') Hora de salida:
+                  div#timepicker6.input-group
+                    input.input-small.form-control(type="text", name= 'horaSalida')
+                    span.input-group-addon
+                      i.icon-time
+
+              .form-group
+                label(for='tiempoReceso') Rango de receso:
+                  div#timepicker2.input-group
+                    input.input-small.form-control(type="text", name= 'tiempoReceso')
+                    span.input-group-addon
+                      i.icon-time  
+                label(for='tiempoAlmuerzo') Rango de almuerzo:
+                  div#timepicker3.input-group
+                    input.input-small.form-control(type="text", name= 'tiempoAlmuerzo')
+                    span.input-group-addon
+                      i.icon-time
+                
+              button.btn.btn-success(type='submit') Ingresar
+              button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
+
+ 
+  #addHorarioLibre.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
     .modal-dialog
         .modal-content
           .modal-header
@@ -187,7 +277,6 @@
                       i.icon-time     
 
               .form-group
-              
                 label(for='tiempoReceso') Rango de receso:
                   div#timepicker2.input-group
                     input.input-small.form-control(type="text", name= 'tiempoReceso')

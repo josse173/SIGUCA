@@ -5,6 +5,7 @@ Marca 			= require('../models/Marca'),
 Departamento 	= require('../models/Departamento'),
 Usuario 		= require('../models/Usuario'),
 Horario 		= require('../models/Horario'),
+HorarioFijo 	= require('../models/HorarioFijo'),
 Justificaciones = require('../models/Justificaciones'),
 Solicitudes 	= require('../models/Solicitudes'),
 Cierre 			= require('../models/Cierre'),
@@ -16,6 +17,7 @@ var config 			= require('../config');
 //	Métodos Usuario
 //---------------------------------------------------------------------
 exports.addUsuario = function(us, cb){
+	
 	//Inserta los tipos de usuario como array
 	var arrayTipo = [];
 	if(us.tipo instanceof Array){
@@ -38,7 +40,8 @@ exports.addUsuario = function(us, cb){
 	Usuario.findOne({ 'username' :  us.username }, function (err, user) {
 		if (err) return cb(err);
 		if (!user) {
-			var newUser = new Usuario({
+			if(us.idHorario){
+				var newUser = new Usuario({
 				username: us.username, 
 				tipo: arrayTipo,
 				estado: "Activo",
@@ -50,7 +53,37 @@ exports.addUsuario = function(us, cb){
 				codTarjeta: us.codTarjeta,
 				departamentos: array,
 				horario: us.idHorario,
-			});
+				});
+			}else if(us.horarioFijo){
+				console.log("asignado");
+				var newUser = new Usuario({
+				username: us.username, 
+				tipo: arrayTipo,
+				estado: "Activo",
+				nombre: us.nombre,
+				apellido1: us.apellido1,
+				apellido2: us.apellido2,
+				email: us.email,
+				cedula: us.cedula,
+				codTarjeta: us.codTarjeta,
+				departamentos: array,
+				horarioFijo:us.horarioFijo
+				});
+			}else{
+				var newUser = new Usuario({
+				username: us.username, 
+				tipo: arrayTipo,
+				estado: "Activo",
+				nombre: us.nombre,
+				apellido1: us.apellido1,
+				apellido2: us.apellido2,
+				email: us.email,
+				cedula: us.cedula,
+				codTarjeta: us.codTarjeta,
+				departamentos: array
+				});
+			}
+			
 			newUser.password = Usuario.generateHash(us.password);
 			newUser.save(function (err, user) {
 				if (err) console.log(err);
@@ -59,7 +92,9 @@ exports.addUsuario = function(us, cb){
 				console.log("El usuario se creo ");
             });//Crea Usuario
 		}
-    });//Busca Usuario
+	});//Busca Usuario
+	
+	
 }
 
 exports.get = function(query, cb){
@@ -69,18 +104,23 @@ exports.get = function(query, cb){
 }
 
 exports.listUsuarios = function(cb){
-	Usuario.find().populate('departamentos.departamento').populate('horario').exec(function (err, empleados){
+	Usuario.find().populate('departamentos.departamento').populate('horario').populate("horarioFijo").exec(function (err, empleados){
 		Horario.find().exec(function (err, horarios) {
 			Departamento.find().exec(function (err, departamentos) {
+				HorarioFijo.find().exec(function(error,horariosFijo){
+				
+			
 				var render = {
 					title: 'Gestionar empleados | SIGUCA',
 					empleados: empleados, 
 					horarios: horarios,
 					departamentos: departamentos,
 					tipoEmpleado: config.empleado2,
-					empleadoProfesor: config.empleadoProfesor
+					empleadoProfesor: config.empleadoProfesor,
+					horarioFijo:horariosFijo
 				};
 				return cb(err, render);
+				});//horarioFijo
             });//Departamento
         });//Horario
     });//Usuario 
@@ -98,43 +138,14 @@ exports.getById = function(id, cb){
 	}); 
 }
 
+
 exports.updateUsuario = function(data, cb){
 
-
-	if(data.empleado.horario=="Sin horario"){
+	
+	if(!data.empleado.horario && data.empleado.horarioFijo && data.empleado.horarioFijo!="Sin horario") {
+		
+		Usuario.update({_id:data.id},{ $unset: {horario: ""}},function(error,correcto){});
 		delete data.empleado.horario;
-
-		var arrayTipo = [];
-		if(data.empleado.tipo instanceof Array){
-			for( var t in data.empleado.tipo){
-				arrayTipo.push(data.empleado.tipo[t]); 
-			}
-		} else {
-			arrayTipo.push(data.empleado.tipo);
-		}
-		data.empleado.tipo = arrayTipo;
-
-		//Genera el array de departamentos
-		var array = [];
-		if(data.empleado.departamentos instanceof Array){
-			for( var i in data.empleado.departamentos){
-				array.push({departamento:data.empleado.departamentos[i]});
-			}
-			data.empleado.departamentos = array;
-		} else if (data.empleado.departamentos){
-			array.push({departamento:data.empleado.departamentos});
-			data.empleado.departamentos = array;
-		}
-		if(data.empleado.password && data.empleado.password != ""){
-			data.empleado.password = Usuario.generateHash(data.empleado.password);
-		} else {
-			delete data.empleado.password;
-		}
-		Usuario.findByIdAndUpdate(data.id, data.empleado, function (err, empleado) { 
-			return cb(err, empleado);
-		});
-	}else{
-
 		var arrayTipo = [];
 		if(data.empleado.tipo instanceof Array){
 			for( var t in data.empleado.tipo){
@@ -166,9 +177,125 @@ exports.updateUsuario = function(data, cb){
 		Usuario.findByIdAndUpdate(data.id, data.empleado, function (err, empleado) { 
 			return cb(err, empleado);
 		});
+
+	}
+	else if(!data.empleado.horarioFijo && data.empleado.horario && data.empleado.horario!="Sin horario"){
+		
+		Usuario.update({_id:data.id},{ $unset: {horarioFijo: ""}},function(error,correcto){});
+		delete data.empleado.horarioFijo;
+
+		var arrayTipo = [];
+		if(data.empleado.tipo instanceof Array){
+			for( var t in data.empleado.tipo){
+				arrayTipo.push(data.empleado.tipo[t]); 
+			}
+		} else {
+			arrayTipo.push(data.empleado.tipo);
 		}
+		data.empleado.tipo = arrayTipo;
+
+		//Genera el array de departamentos
+		var array = [];
+		if(data.empleado.departamentos instanceof Array){
+			for( var i in data.empleado.departamentos){
+				array.push({departamento:data.empleado.departamentos[i]});
+			}
+			data.empleado.departamentos = array;
+		} else if (data.empleado.departamentos){
+			array.push({departamento:data.empleado.departamentos});
+			data.empleado.departamentos = array;
+		}
+		if(data.empleado.password && data.empleado.password != ""){
+			data.empleado.password = Usuario.generateHash(data.empleado.password);
+		} else {
+			delete data.empleado.password;
+		}
+		Usuario.update({_id:data.id},{ $unset: {horarioEmpleado: ""}},function(error,correcto){});
+		Usuario.findByIdAndUpdate(data.id, data.empleado, function (err, empleado) { 
+			return cb(err, empleado);
+		});
+	}
+	else if(data.empleado.horario==="Sin horario" && data.empleado.horarioFijo==="Sin horario"){
 	
-	
+
+
+		Usuario.update({_id:data.id},{ $unset: {horario: ""}},function(error,correcto){});
+		Usuario.update({_id:data.id},{ $unset: {horarioFijo: ""}},function(error,correcto){});
+		delete data.empleado.horario;
+		delete data.empleado.horarioFijo;
+
+
+		var arrayTipo = [];
+		if(data.empleado.tipo instanceof Array){
+			for( var t in data.empleado.tipo){
+				arrayTipo.push(data.empleado.tipo[t]); 
+			}
+		} else {
+			arrayTipo.push(data.empleado.tipo);
+		}
+		data.empleado.tipo = arrayTipo;
+
+		//Genera el array de departamentos
+		var array = [];
+		if(data.empleado.departamentos instanceof Array){
+			for( var i in data.empleado.departamentos){
+				array.push({departamento:data.empleado.departamentos[i]});
+			}
+			data.empleado.departamentos = array;
+		} else if (data.empleado.departamentos){
+			array.push({departamento:data.empleado.departamentos});
+			data.empleado.departamentos = array;
+		}
+		if(data.empleado.password && data.empleado.password != ""){
+			data.empleado.password = Usuario.generateHash(data.empleado.password);
+		} else {
+			delete data.empleado.password;
+		}
+		Usuario.findByIdAndUpdate(data.id, data.empleado, function (err, empleado) { 
+			return cb(err, empleado);
+		});
+	}else{
+		if(data.empleado.horarioFijo==="Sin horario"){
+			delete data.empleado.horarioFijo;
+		}
+		if(data.empleado.horario==="Sin horario"){
+			delete data.empleado.horario;
+		}
+		
+		var arrayTipo = [];
+		if(data.empleado.tipo instanceof Array){
+			for( var t in data.empleado.tipo){
+				arrayTipo.push(data.empleado.tipo[t]); 
+			}
+		} else {
+			arrayTipo.push(data.empleado.tipo);
+		}
+		data.empleado.tipo = arrayTipo;
+
+		//Genera el array de departamentos
+		var array = [];
+		if(data.empleado.departamentos instanceof Array){
+			for( var i in data.empleado.departamentos){
+				array.push({departamento:data.empleado.departamentos[i]});
+			}
+			data.empleado.departamentos = array;
+		} else if (data.empleado.departamentos){
+			array.push({departamento:data.empleado.departamentos});
+			data.empleado.departamentos = array;
+		}
+		if(data.empleado.password && data.empleado.password != ""){
+			data.empleado.password = Usuario.generateHash(data.empleado.password);
+		} else {
+			delete data.empleado.password;
+		}
+		Usuario.update({_id:data.id},{ $unset: {horarioEmpleado: ""}},function(error,correcto){
+						});
+		console.log(data);
+		Usuario.findByIdAndUpdate(data.id, data.empleado, function (err, empleado) { 
+			return cb(err, empleado);
+		});
+	}
+		
 }
 
 exports.deleteUsuario = function(id, cb){
