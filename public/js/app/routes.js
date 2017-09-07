@@ -357,12 +357,30 @@ $("#extraLink").click(function(){
 
             //get the row we are wanting to delete
             var row = $(this).parents('tr:first');
+            try {
+            /**
+             * Se obtienen los datos necesarios
+             */
+            var valueBtn = $(this).val();
+            var id = valueBtn.split(",")[0].split(":")[1];
+            var idUsuario = valueBtn.split(",")[1].split(":")[1];
+            var numDias = valueBtn.split(",")[2].split(":")[1];
+            var disponibles = document.getElementsByClassName(idUsuario);
 
-            var id = $(this).val();
             var comentarioSupervisor = row.find('.comentarioSupervisor').val();
             var estadoreal = "#estado"+id;
             var estado = $(estadoreal).val();
-         
+
+            //Se actualizan las horas disponibles al usuario que fue aceptado
+            if(estado == "Aceptada"){
+                for(var cont = 0; cont < disponibles.length; cont ++){
+                    (disponibles[cont]).innerHTML = parseInt((disponibles[cont]).innerHTML)-parseInt(numDias);
+                }
+            }
+            
+            /**
+             * Se hace la actualización en Base de datos por medio de Ajax
+             */
             $.post('/getionarSolicitudAjax/'+id, 
                 {comentarioSupervisor: comentarioSupervisor, estado: estado}, 
                 function (data){
@@ -370,6 +388,10 @@ $("#extraLink").click(function(){
                         footable.removeRow(row);
                     }
                 });
+                }
+            catch(err) {
+                alert(err.message);
+            }
         });
 
     $('.tableJustificaciones').footable().on('click', '.row-delete', 

@@ -4,6 +4,7 @@ var Marca = require('../models/Marca');
 var Usuario = require('../models/Usuario');
 var Horario = require('../models/Horario');
 var Departamento = require('../models/Departamento');
+var Vacaciones = require('../models/Vacaciones');
 var Justificaciones = require('../models/Justificaciones');
 var Solicitudes = require('../models/Solicitudes');
 var Cierre = require('../models/Cierre');
@@ -397,13 +398,23 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
       return m.usuario;
     }), true);
 
+
+    /**
+     * Se transforma la lista para ser usada en la consulta de vacaciones
+     */
+    var listaIdUsuarios = [];
+    for(x in filtro.permisos ){
+      listaIdUsuarios.push(filtro.permisos[x].usuario.id);
+    }
+
+    Vacaciones.find({usuario: { $in: listaIdUsuarios}},function(err, listVacaciones){
+      filtro.vacaciones = listVacaciones;//Se utiliza para mostrar el numero dias disponibles en la vista
+
+        return (titulo === 'Reportes | SIGUCA') ? res.render('reportes', filtro) : res.render('gestionarEventos', filtro); 
+    });
+    
   }
-
-  return (titulo === 'Reportes | SIGUCA') ? res.render('reportes', filtro) : res.render('gestionarEventos', filtro); 
 }
-//
-
-
 
 function ordenarTardias(marcas){
  

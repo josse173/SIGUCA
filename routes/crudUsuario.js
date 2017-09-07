@@ -134,7 +134,7 @@ exports.updateUsuario = function(data, cb){
 			return cb(err, empleado);
 		});
 	}else{
-
+        console.log("llegue");
 		var arrayTipo = [];
 		if(data.empleado.tipo instanceof Array){
 			for( var t in data.empleado.tipo){
