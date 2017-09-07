@@ -61,6 +61,7 @@ block content
                   th
                   th(data-type="numeric" data-sort-initial="descending")  Fecha
                   th Usuario
+                  th Tipo Usuario
                   th Motivo
                   th(data-sort-ignore="true") Detalle
                   th(data-sort-ignore="true") Comentario
@@ -75,6 +76,7 @@ block content
                         input.justificar.justificarArray(type='checkbox',checked=false, id='check' ,value=justificacion.id )
                       td(data-value=justificacion.fechaCreada) #{justificacion.fecha.str} 
                       td #{justificacion.usuario.nombre} #{justificacion.usuario.apellido1}
+                      td #{justificacion.tipoUsuario} 
                       td #{justificacion.motivo} 
                       td #{justificacion.detalle} 
                       td

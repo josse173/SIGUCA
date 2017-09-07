@@ -32,7 +32,7 @@ socket.on('connected', function (epoch) {
 
 
 $("checkJustificacion").click(function(){
-		alert('Evento click sobre un input text con nombre="nombre1"');
+		//alert('Evento click sobre un input text con nombre="nombre1"');
 });
 
 $('#cerrarPanel').click(function(){

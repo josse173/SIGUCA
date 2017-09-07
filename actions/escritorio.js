@@ -41,7 +41,7 @@ module.exports = {
 						Justificaciones.find(queryInUsers).populate('usuario').exec(function(error, justCount) {
 							Solicitudes.find(queryInUsers).populate('usuario').exec(function(error, soliCount) {
 								Marca.find({usuario: req.user.id, tipoUsuario: req.session.name, epoch:{"$gte": epochGte.unix()}},{_id:0,tipoMarca:1,epoch:1}).exec(function(error, marcas){
-									Justificaciones.find({usuario: req.user.id, estado:'Incompleto'}).populate('usuario').exec(function(error, justificaciones) {
+									Justificaciones.find({usuario: req.user.id, estado:'Incompleto', tipoUsuario: req.session.name}).populate('usuario').exec(function(error, justificaciones) {
 										Solicitudes.find({estado:'Pendiente'}).populate('usuario').exec(function(error, solicitudes) { 
 											Usuario.find({_id:req.user.id},{_id:0,departamentos: 1}).populate('departamentos.departamento').exec(function(error, supervisor){
 												CierrePersonal.find({epoch:{"$gte": epochYesterday.unix()}}).exec(function(err, cierres) {
@@ -123,7 +123,7 @@ module.exports = {
 	        	function(error, marcas) {
 	        		if (error) return res.json(error);
 	        		Justificaciones.find(
-	        			{usuario: req.user.id, estado:'Incompleto'}
+	        			{usuario: req.user.id, estado:'Incompleto', tipoUsuario: req.session.name}
 	        			).exec(function(err, justificaciones) {
 	        				if (err) return res.json(err);
 	        				var supervisor = {departamentos: [1]};
