@@ -27,6 +27,7 @@
  var crudHorario = require('./crudHorario');
  var crudMarca = require('./crudMarca');
  var crudDepartamento = require('./crudDepartamento');
+ var crudVacaciones = require('./crudVacaciones');
  var crud = require('./crud');
  var util = require('../util/util');
  var ObjectId = mongoose.Types.ObjectId;
@@ -73,7 +74,34 @@ module.exports = function(app, io) {
     //    res.end('Imagen Cargada en el servidor');
     //});
   
+
+    //******************************************************************************
+    /*
+    *   Vacaciones
+    */
   
+    app.get('/vacaciones', autentificado,function (req, res) {
+
+        crudVacaciones.listVacaciones(
+            function(err, listaUsuarios){
+                if(err) return res.redirect("/escritorioAdmin");
+
+                //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
+                req.user.tipo = req.session.name;
+                listaUsuarios.usuario = req.user;
+
+                return res.render("vacaciones", listaUsuarios); 
+            }
+        ); 
+    });
+
+    app.post('/vacacionesUpdate',autentificado, function (req, res) {
+
+        crudVacaciones.updateVacaciones( req, function(err){
+                return res.redirect("/vacaciones");
+            }
+        ); 
+    });
 
     //******************************************************************************
     /*
