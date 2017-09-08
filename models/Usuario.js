@@ -65,6 +65,10 @@ var SchemaUsuario = new Schema({
    type: Schema.ObjectId,
    ref: 'Horario'
  },
+  horarioFijo: {
+   type: Schema.ObjectId,
+   ref: 'horarioFijo'
+ },
  departamentos: [
     {//
       departamento: {

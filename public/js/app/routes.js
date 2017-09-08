@@ -214,6 +214,71 @@ $(document).ready(function()
     });
 });
 
+
+
+$("button[data-target=#editHorarioFijo]").click( function() {
+    var id = $(this).val();
+    $('.formUpdateFijo').attr('action', '/horarioFijoN/'+id);
+
+    $.get('/horarioFijo/editHorario/'+id, function( data ) {
+        $('#nombreFijo').val(data.nombre);            
+        $('#horaEntradaFijo').val(data.horaEntrada);  
+        $('#horaSalidaFijo').val(data.horaSalida);   
+        $('#tiempoRecesoFijo').val(data.tiempoReceso);  
+        $('#tiempoAlmuerzoFijo').val(data.tiempoAlmuerzo); 
+        if(data.Lunes=="Lunes"){
+            $('#Lunes').prop('checked', true);
+            $('#Lunes').val('Lunes');
+        }else{
+            $('#Lunes').prop('checked', false);
+        }
+        
+        if(data.Martes=="Martes"){
+            $('#Martes').prop('checked', true);
+            $('#Martes').val('Martes');
+        } else{
+            $('#Martes').prop('checked', false);
+        }
+
+        if(data.Miercoles=="Miercoles"){
+            $('#Miercoles').prop('checked', true);
+            $('#Miercoles').val('Miercoles');
+        } else{
+            $('#Miercoles').prop('checked', false);
+        }
+
+        if(data.Jueves=="Jueves"){
+            $('#Jueves').prop('checked', true);
+            $('#Jueves').val('Jueves');
+        } else{
+            $('#Jueves').prop('checked',false);
+        }
+        if(data.Viernes=="Viernes"){
+            $('#Viernes').prop('checked', true);
+            $('#Viernes').val('Viernes');
+        } else{
+             $('#Viernes').prop('checked', false);
+        }
+        if(data.Sabado=="Sabado"){
+            $('#Sabado').prop('checked', true);
+            $('#Sabado').val('Sabado');
+        } else{
+             $('#Sabado').prop('checked', false);
+        }
+        if(data.Domingo=="Domingo"){
+            $('#Domingo').prop('checked', true);
+            $('#Domingo').val('Domingo');
+        }else{
+             $('#Domingo').prop('checked', false);
+        }
+        
+
+       
+    });
+});
+
+
+
  $("button[data-target=#editEmpl]").click( function() {
     var id = $(this).val();
     $('.formUpdate').attr('action', '/empleado/'+id);
@@ -227,7 +292,8 @@ $(document).ready(function()
         $('#codTarjeta').val(data.codTarjeta);            
         $('#username').val(data.username);     
         $('#selectTipo').selectpicker('val', data.tipo);       
-        $('#selectHorario').selectpicker('val', data.horario);       
+        $('#selectHorario').selectpicker('val', data.horario);  
+        $('#selectHorarioFijo').selectpicker('val', data.horarioFijo);       
         $('#selectDepartamentos').selectpicker('val', data.horario);    
 
         var val = [];
@@ -237,7 +303,10 @@ $(document).ready(function()
         $('#selectDepartamentos').selectpicker('val', val);
         $('#selectDepartamentos').selectpicker('refresh');    
         $('#selectHorario').selectpicker('refresh');    
+        $('#selectHorarioFijo').selectpicker('refresh'); 
         $('#selectTipo').selectpicker('refresh');    
+
+         
 
     });
 });
@@ -545,6 +614,34 @@ $("#extraLink").click(function(){
         }
     }).show();    
 });
+
+
+$('.tableHorarioEliminar').footable().on('click','.eliminarFijo',function(e) {  
+    var footable = $('.tableHorarioEliminar').data('footable');
+    var row = $(this).parents('tr:first');
+    var horario = $(this).val();
+    var split = horario.split(',');
+    alertify.dialog('confirm')
+    .set({
+        'labels':{ok:'Eliminar', cancel:'Cancelar'},
+        'transition': 'slide',
+        'message': '¿Está seguro de eliminar el horario <strong>' +  split[0] + '</strong>?' ,
+        'onok': function(){ 
+            $.get('/horarioFijo/delete/'+split[1], function (data){
+                if(data == 'Se elimino'){
+                    footable.removeRow(row);
+                    alertify.message('Se eliminó el horario ' +  split[0] + ' con éxito');
+                } else {
+                    alertify.error('No se puede eliminar el horario <strong>' +  split[0] + '</strong>, ya que un empleado lo tiene asignado');
+                }
+            });
+        }
+    }).show(); 
+    
+});
+
+
+
 
  $('.tableEmpleado').footable().on('click', '.empleadoDelete', function(e) {
     var footable = $('.tableEmpleado').data('footable');

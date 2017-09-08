@@ -4,7 +4,9 @@ var crudHorario = require('../routes/crudHorario');
 var Usuario = require('../models/Usuario.js');
 var async = require("async");
 module.exports = {
+    
     create: function (req, res) {
+        
         deserializeHorario(req.body, 
             function(err,nuevoHorario){
                 if (err)
@@ -23,6 +25,8 @@ module.exports = {
                         if (err)
                             return res.json({error:err});
                         Usuario.update({_id:req.body.usuario},{ $unset: {horario: ""}},function(error,correcto){
+                        });
+                         Usuario.update({_id:req.body.usuario},{ $unset: {horarioFijo: ""}},function(error,correcto){
                         });
                         return res.json(usuario);
                     });

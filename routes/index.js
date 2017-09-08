@@ -37,6 +37,7 @@
 var Marca = require('../models/Marca');
 var Usuario = require('../models/Usuario');
 var Horario = require('../models/Horario');
+var HorarioFijo = require('../models/HorarioFijo');
 var Departamento = require('../models/Departamento');
 var Justificaciones = require('../models/Justificaciones');
 var Solicitudes = require('../models/Solicitudes');
@@ -440,6 +441,7 @@ module.exports = function(app, io) {
     /*
     *  Lista todos los usuarios creados
     */
+    
     app.get('/empleado', autentificado, function (req, res) {
         crudUsuario.listUsuarios(function (err, listaUsuarios){
             if (err) return res.json(err);
@@ -449,20 +451,24 @@ module.exports = function(app, io) {
             return res.render('empleado', listaUsuarios);
         });       
     });
+    
 
     /*
     *  Carga los datos de un usuario en específico, además los horarios y departamentos creados
     */
+    
     app.get('/empleado/edit/:id', autentificado, function (req, res) {
         Usuario.findById(req.params.id, function (err, empleado) { 
             if (err) return res.json(err);
             else res.json(empleado);
         });        
     });
+    
 
     /*
     *  Actualiza los datos de un usuario en específico
     */
+    
     app.post('/empleado/:id', function (req, res) {
         var data = {
             id: req.params.id,
@@ -473,6 +479,9 @@ module.exports = function(app, io) {
         });
     });
 
+    
+    
+    
     /*
     *  Modifica el estado de Activo a Inactivo de un usuario en específico
     */
@@ -764,6 +773,16 @@ module.exports = function(app, io) {
         });
     });
 
+    app.post('/horarioFijo', autentificado, function (req, res) {
+       crud.addHorarioFIjo(req.body,function(){
+           if (req.session.name == "Administrador") {
+                res.redirect('/escritorioAdmin');
+            }  
+       });
+     
+       
+    });
+
     /*
     *  Lista todos los horarios creados
     */
@@ -772,16 +791,21 @@ module.exports = function(app, io) {
             if (err) return res.json(err);
             //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
             req.user.tipo = req.session.name;
+
+            HorarioFijo.find(function(error,horarioFijo){
+ 
             return res.render('horarioN', {
                 title: 'Nuevo Horario | SIGUCA',
                 horarios: horarios,
-                usuario: req.user
+                usuario: req.user,
+                horarioFijo:horarioFijo
+            });
             });
         });
     });
 
     /*
-    *  Carga los datos de un horario en específico
+    *  Carga los datos de un horarioLibre en específico
     */
     app.get('/horarioN/editHorario/:id', autentificado, function (req, res) { 
         crud.loadHorario(req.params.id, function (err, horario) {
@@ -790,8 +814,17 @@ module.exports = function(app, io) {
         });
     }); 
 
+    //Carga los datos de un horarioFijo en especiifico 
+
+    app.get('/horarioFijo/editHorario/:id', autentificado, function (req, res) { 
+        crud.loadHorarioFijo(req.params.id, function (err, horario) {
+            if (err) return res.json(err);
+            else res.json(horario);
+        });
+    }); 
+
     /*
-    *  Actualiza los datos de un horario en específico
+    *  Actualiza los datos de un horario libre en específico
     */
     app.post('/horarioN/:id',autentificado, function (req, res) { 
         var data = { horario: req.body, id: req.params.id };
@@ -801,8 +834,17 @@ module.exports = function(app, io) {
         });
     });
 
+    //Actualiza los datos de un horario fijo en especifico 
+     app.post('/horarioFijoN/:id',autentificado, function (req, res) { 
+        var data = { horario: req.body, id: req.params.id };
+        crud.updateHorarioFijo(data, function (err, horarios) {
+            if (err) return res.json(err);
+            res.redirect('/horarioN');
+        });
+    });
+
     /*
-    *  Elimina un horario en específico
+    *  Elimina un horario libre
     */
     app.get('/horarioN/delete/:id', autentificado, function (req, res) { 
         crud.deleteHorario(req.params.id, function (err, msj) {
@@ -810,6 +852,15 @@ module.exports = function(app, io) {
             else res.send(msj);
         });
     });
+    //Elimina un horario fijo
+    app.get('/horarioFijo/delete/:id', autentificado, function (req, res) {
+        crud.deleteHorarioFijo(req.params.id, function (err, msj) {
+            if (err) return res.json(err);
+            else res.send(msj);
+        });
+    });
+
+
     
     
 

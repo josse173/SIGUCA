@@ -13,7 +13,7 @@ var crudJustificaciones = require('../routes/crudJustificaciones');
 
 module.exports = {
     cierreAutomatico : new CronJob({
-       /// cronTime: '* * * * * *',
+        //cronTime: '* * * * * *',
         cronTime: '00 50 23 * * 0-7',
         onTick: function() {
             //if(!once){
@@ -58,7 +58,8 @@ module.exports = {
                             epochMin, epochMax, usuarios[usuario].horarioEmpleado); 
                     }
                 }
-            }else{
+            }
+            else{
                  Usuario.find({_id:id},{_id:1, nombre:1, horario:1,tipoUsuario:1}).exec(
                     function(error, usuario){
                         if(!err && usuario[0].horario){
@@ -66,9 +67,22 @@ module.exports = {
                             cierreHorario(id,usuario[0].horario,epochTime,tipoUsuario);
                            
                         }
+                        else{
+                            Usuario.find({_id:id},{_id:1, nombre:1, horarioFijo:1,tipoUsuario:1}).exec(
+                             function(error, usuario){
+                                 if(!err && usuario[0].horarioFijo){
+                                     var epochTime = moment().unix();
+                                    cierreHorario(id,usuario[0].horarioFijo,epochTime,tipoUsuario); 
+                                 }
+                             }); 
+                        
+                        }
+                        
+                           
+                        
                 });
-
-            }
+    
+        }
         });
     }
     
