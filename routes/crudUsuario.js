@@ -262,6 +262,7 @@ exports.updateUsuario = function(data, cb){
 			delete data.empleado.horario;
 		}
 		
+
 		var arrayTipo = [];
 		if(data.empleado.tipo instanceof Array){
 			for( var t in data.empleado.tipo){
