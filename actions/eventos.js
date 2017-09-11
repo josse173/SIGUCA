@@ -397,7 +397,7 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
     filtro.permisos = util.unixTimeToRegularDate(permisos.filter(function(m){
       return m.usuario;
     }), true);
-
+  }
 
     /**
      * Se transforma la lista para ser usada en la consulta de vacaciones
@@ -412,8 +412,6 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
 
         return (titulo === 'Reportes | SIGUCA') ? res.render('reportes', filtro) : res.render('gestionarEventos', filtro); 
     });
-    
-  }
 }
 
 function ordenarTardias(marcas){
