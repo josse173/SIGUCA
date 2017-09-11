@@ -96,9 +96,23 @@ module.exports = function(app, io) {
         ); 
     });
 
+    /**
+     * Actualiza un registro de vacaciones
+     */
     app.post('/vacacionesUpdate',autentificado, function (req, res) {
 
         crudVacaciones.updateVacaciones( req, function(err){
+                return res.redirect("/vacaciones");
+            }
+        ); 
+    });
+
+    /**
+     * Inserta vacaciones para un usuario que no contaba con un registro de las mismas
+     */
+    app.post('/vacacionesInsert',autentificado, function (req, res) {
+
+        crudVacaciones.insertVacaciones( req, function(err){
                 return res.redirect("/vacaciones");
             }
         ); 

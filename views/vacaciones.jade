@@ -33,6 +33,23 @@ block content
                   td
                     button.btn.btn-default(type="submit" value=elemento.usuario.id)
                       i.icon-pencil.icon-large.i-success
+
+            //-Se muestran los usuarios sin vacaciones asignadas
+            each elemento2, i in listaUsuariosSinVacaciones
+              form(method="POST", action="/vacacionesInsert")
+                tr
+                  td #{elemento2.nombre}
+                  td #{elemento2.apellido1} #{elemento2.apellido2} 
+                  td #{elemento2.cedula} 
+                  td #{elemento2.email} 
+                  td #{elemento2.estado}
+                  td
+                    input.fondoTransparente.text-center(type="text", value=elemento2.id, name="idUsuario", hidden)
+                    input.fondoTransparente.text-center(type="number", value=0,required, name="disponibles") 
+                  //-td #{elemento2.disponibles}
+                  td
+                    button.btn.btn-default(type="submit" value=elemento2.id)
+                      i.icon-plus.icon-large.i-success
         tfoot
           tr
             td(colspan='11')
