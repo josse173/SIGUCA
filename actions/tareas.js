@@ -9,7 +9,7 @@ var crud = require('../routes/crud');
 var crudHorario = require('../routes/crudHorario');
 var crudSolicitud = require('../routes/crudSolicitud');
 var crudJustificaciones = require('../routes/crudJustificaciones');
-
+var crudVacaciones = require('../routes/crudVacaciones');
 
 module.exports = {
     cierreAutomatico : new CronJob({
@@ -27,13 +27,10 @@ module.exports = {
         timeZone: "America/Costa_Rica"
     }),
     aumentoVacacionesAutomatico : new CronJob({
-        //cronTime: '* * * * * *',
-        cronTime: '0 0 9 * * 0-7',
+        cronTime: '00 00 00 01 * *', //Cada primero de cada mes
         onTick: function() {
-                var hoy = new Date();
-                console.log("Realizando cierre en la fecha '"+hoy+"' y notificando a usuarios");
-
-                console.log("{======= Realizando aumento de vacaciones =======}");
+            console.log("{======= Realizando aumento de vacaciones =======}");
+            crudVacaciones.updateVacacionesAutomatico();
         },
         start: false,
         timeZone: "America/Costa_Rica"

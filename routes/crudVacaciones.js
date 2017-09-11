@@ -8,14 +8,14 @@ Usuarios 		= require('../models/Usuario');
 
 exports.listVacaciones = function(cb){
 	Vacaciones.find().populate('usuario').exec(function(err, listaVacaciones){
-
 		var listaIdUsuarios = [];
 	    for(x in listaVacaciones){
- 	       listaIdUsuarios.push(listaVacaciones[x].usuario.id);
+ 	       	listaIdUsuarios.push(listaVacaciones[x].usuario.id);
 		}
-		Usuarios.find({id: { $nin: listaIdUsuarios}},function(err, listVacaciones){
+		
+		Usuarios.find({_id: { $nin: listaIdUsuarios}},function(err, listaUsuarios){
 			var info = {
-				listaUsuariosSinVacaciones: listVacaciones,
+				listaUsuariosSinVacaciones: listaUsuarios,
 				listaVacaciones:listaVacaciones
 			};
 			return cb(err,info);
@@ -36,5 +36,35 @@ exports.insertVacaciones = function(req, cb){
 	});
 	elemento.save(function(err){
 		return cb();
+	});
+}
+
+
+exports.updateVacacionesAutomatico = function(){
+	//Se obtienen todas las vacaciones
+	Vacaciones.find().populate('usuario').exec(function(err, listaVacaciones){
+
+		//Se obtienen los usuarios que no tienen vacaciones asignadas
+		var listaIdUsuarios = [];
+	    for(x in listaVacaciones){
+ 	       listaIdUsuarios.push(listaVacaciones[x].usuario.id);
+		}
+		Usuarios.find({_id: { $nin: listaIdUsuarios}},function(err, listaUsuarios){
+			
+			//Se les amenta en uno los días disponibles a todas las vacaciones
+			Vacaciones.update({}, {$inc:{disponibles:1}},{multi:true}, function(err){
+				
+				//Se insertan registros de vacaciones para los usuarios que no tienen vacaciones
+				for(y in listaUsuarios){
+					//Se crean las vacaciones a insertar
+					var vacacionesTem = new Vacaciones({
+						usuario: listaUsuarios[y].id,
+						disponibles: 1
+					});
+					vacacionesTem.save();//Se insertan las vacaciones
+				}
+
+			});
+		});
 	});
 }
