@@ -28,6 +28,7 @@
  var crudMarca = require('./crudMarca');
  var crudDepartamento = require('./crudDepartamento');
  var crudVacaciones = require('./crudVacaciones');
+ var crudFeriado = require('./crudFeriado');
  var crud = require('./crud');
  var util = require('../util/util');
  var ObjectId = mongoose.Types.ObjectId;
@@ -35,6 +36,7 @@
 //**********************************************
 //Modelos para el manejo de objetos de la base de datos
 var Marca = require('../models/Marca');
+var Feriado = require('../models/Feriado');
 var Usuario = require('../models/Usuario');
 var Horario = require('../models/Horario');
 var HorarioFijo = require('../models/HorarioFijo');
@@ -619,6 +621,7 @@ module.exports = function(app, io) {
     });
 
 
+
  //  var storage = multer.diskStorage({
    //     destination: function(req, file, cb) {
     //        cb(null, './uploads/');
@@ -797,6 +800,8 @@ module.exports = function(app, io) {
        
     });
 
+    
+
     /*
     *  Lista todos los horarios creados
     */
@@ -874,9 +879,60 @@ module.exports = function(app, io) {
         });
     });
 
+    /*
+    *  Crud de feriados
+    */
+
+    app.post('/asignarFeriado',autentificado, crudFeriado.insertarFeriado);
+
+    //lista la lista de feriados creado.
+    app.get('/feriado',autentificado,function(req,res){
+        Feriado.find(function(err,feriados){
+            if(err){
+                return res.jason(err);
+            }else{
+                var feriadosArreglado = new Array();
+                for (var i=0;i<feriados.length;i++){
+                    var obj=new Object();
+                    obj._id=feriados[i]._id;
+                    obj.nombreFeriado=feriados[i].nombreFeriado;
+                    obj.epoch=moment.unix(feriados[i].epoch).format("DD/MM/Y");
+                    feriadosArreglado.push(obj);
+                }
+                req.user.tipo = req.session.name;
+               
+
+                return res.render('feriado', {
+                title: 'Nuevo Feriado | SIGUCA',
+                feriado:feriadosArreglado,
+                usuario:req.user
+            });
+            }
+        });
+    });
+
+    app.get('/feriado/delete/:id', autentificado, function (req, res) { 
+        crudFeriado.deleteFeriado(req.params.id, function (err, msj) {
+            if (err) return res.json(err);
+            else res.send(msj);
+        });
+    });
 
     
-    
+     app.get('/feriado/editFeriado/:id',function(req,res){
+        Feriado.findById(req.params.id,function(err,feriado){
+            if (err) return res.json(err);
+            else res.json(feriado);
+        });
+     });
+
+
+      app.post('/feriadoUpdate/:id',autentificado, crudFeriado.actualizarFeriado);
+
+   
+
+
+
 
     io.sockets.on('connection', function(socket){
 

@@ -413,10 +413,7 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 									)
 								)
 							{
-								console.log(minutosEntrada);
-								console.log(horaEntrada);
-								console.log(minutosSalida);
-								console.log(horaSalida);
+							
 
 									if(marca.tipoMarca=="Entrada"){
 									var mIn = moment.unix(marca.epoch);

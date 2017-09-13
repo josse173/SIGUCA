@@ -62,6 +62,8 @@ $(document).ready(function()
         timepicker: false
     });
 
+     
+
 
     $('.footable').footable();
 
@@ -614,6 +616,46 @@ $("#extraLink").click(function(){
         }
     }).show();    
 });
+
+
+
+ $('.tableFeriado').footable().on('click', '.feriadoDelete', function(e) {
+    var footable = $('.tableFeriado').data('footable');
+    var row = $(this).parents('tr:first');
+
+    var feriado = $(this).val();
+    var split = feriado.split(',');
+    alertify.dialog('confirm')
+    .set({
+        'labels':{ok:'Eliminar', cancel:'Cancelar'},
+        'transition': 'slide',
+        'message': '¿Está seguro de eliminar el horario <strong>' +  split[0] + '</strong>?' ,
+        'onok': function(){ 
+            $.get('/feriado/delete/'+split[1], function (data){
+                if(data == 'Se elimino'){
+                    footable.removeRow(row);
+                    alertify.message('Se eliminó el horario ' +  split[0] + ' con éxito');
+                } else {
+                    alertify.error('No se puede eliminar el horario <strong>' +  split[0] + '</strong>, ya que un empleado lo tiene asignado');
+                }
+            });
+        }
+    }).show();    
+});
+
+
+
+$("button[data-target=#editFeriado]").click( function() {
+    var id = $(this).val();
+    $('.formUpdateFeriado').attr('action', '/feriadoUpdate/'+id);
+    $.get('/feriado/editFeriado/'+id, function( data ) {
+       $('#nombreFeriado').val(data.nombreFeriado);
+       $('.epoch').val(moment.unix(data.epoch).format("DD/MM/YYYY"));
+    });
+});
+
+
+
 
 
 $('.tableHorarioEliminar').footable().on('click','.eliminarFijo',function(e) {  

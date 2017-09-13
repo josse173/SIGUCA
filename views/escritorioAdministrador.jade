@@ -64,6 +64,17 @@
               form(action= '/vacaciones')    
                 button.btn.btn-primary(type = 'submit')
                   i.icon-edit.icon-large
+
+        tr
+          td Feriado:  
+            td
+              button#asignarHorario.btn.btn-success(type = 'submit' data-toggle="modal" data-target="#asignarFeriado")
+                i.icon-plus.icon-large
+                    
+            td
+              form(action= '/feriado')    
+                button.btn.btn-primary(type = 'submit')
+                  i.icon-edit.icon-large
  
 .col-xs-2  
   #asignarHorario.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
@@ -303,3 +314,29 @@
                  
               button.btn.btn-success(type='submit') Ingresar
               button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
+
+  #asignarFeriado.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+    .modal-dialog
+        .modal-content
+          .modal-header
+            button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+            h4#myModalLabel.modal-title Añadir nuevo feriado
+          .modal-body
+            form(action='/asignarFeriado', method='post')#login-form.well.span4
+              .form-group
+                h4 Información Básica
+                label(for='nombre' style="float:left") Nombre del feriado:
+                  input.form-control#textInput( type="text", name="nombreFeriado")     
+
+                label.labelFiltro(for='fechaHasta') Fecha:
+                  div.input-group
+                    input#date_range_end.form-control(type='text', name='date')
+                    span.input-group-addon
+                      i.icon-calendar     
+
+                 
+              button.btn.btn-success(type='submit') Ingresar
+              button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
+
+  
+
