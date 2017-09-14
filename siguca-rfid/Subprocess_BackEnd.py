@@ -35,7 +35,7 @@ from PIL import Image
 
 #SETTINGS AND CONFIGURATIONS
 #IP OF NODE JS SERVER WHERE SIGUCA IS RUNNING
-server_IP='10.42.22.189'
+server_IP='10.42.30.13'
 #PORT OF THE MONGODB 
 port='27017'
 #PORT OF OF SIGUCA NODE JS PORT 
@@ -172,7 +172,7 @@ def Salida(dec,tipo):
     frame3 = Frame(root3)
     frame3.pack()
     root3.config(background="black",cursor="none")
-    f = urllib.urlopen('http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=6&tipo'+tipo)
+    f = urllib.urlopen('http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=6&tipo='+tipo)
     data = f.read()
     try:
 #        w2 = Label(root3, text=data, wraplength=650,  fg = "light green", bg = "black", font = "Helvetica 16 bold").pack()
@@ -364,9 +364,9 @@ while True:
         codigosExistentes=list(collection.find({},{"tipo":  1,"codTarjeta": 1,"_id":0}))
         for post in codigosExistentes:
             if str(dec) == str(post['codTarjeta']):
-                listTipo =  post["tipo"]
-                if len(listTipo) == 1:
-                    obtieneMarca(dec,listTipo[0])
+                listTipo =  post["tipo"] 
+                if isinstance(listTipo,str) or isinstance(listTipo,unicode):
+                    obtieneMarca(dec,str(listTipo))
                 else:
                     #Se obtiene el tipo de usuario
                     tipoUsuario = obtieneTipoUsuario(dec,listTipo)
