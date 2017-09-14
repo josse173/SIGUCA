@@ -11,6 +11,40 @@ var crudSolicitud = require('../routes/crudSolicitud');
 var crudJustificaciones = require('../routes/crudJustificaciones');
 var crudVacaciones = require('../routes/crudVacaciones');
 
+
+
+/*
+cierreAutomatico : new CronJob({
+        cronTime: '* * * * * *',
+       //cronTime: '00 50 23 * * 0-7',
+        onTick: function() {
+                var date =  moment().format('L').split("/");
+                var epochGte = moment();
+                epochGte.year(date[2]).month(date[0]-1).date(date[1]);
+                epochGte.hour(0).minutes(0).seconds(0);
+                var epochLte = moment();
+                epochLte.year(date[2]).month(date[0]-1).date(date[1]);
+                epochLte.hour(23).minutes(59).seconds(59);
+
+
+                Feriado.find({epoch:{"$gte":epochGte.unix(),"$lte":epochLte.unix()}}, function (err,feriado) {
+                    if(err && feriado){
+                        console.log(feriado[0].nombreFeriado);
+                    }else{
+                          var hoy = new Date();
+                          console.log("Realizando cierre en la fecha '"+hoy+"' y notificando a usuarios");
+                          ejecutarCierre();
+                    }
+                });       
+        },
+        start: false,
+        timeZone: "America/Costa_Rica"
+    }),
+
+*/
+
+
+
 module.exports = {
     cierreAutomatico : new CronJob({
         //cronTime: '* * * * * *',
@@ -221,6 +255,7 @@ function cierreHorario(_idUser,horarioEmpleado,mOut,tipoUsuario){
 
 
 function ejecutarCierre(){
+
     var hoy = new Date();
 
     //Fechas para encontrar información del día
