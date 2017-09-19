@@ -97,8 +97,8 @@ module.exports = {
                     //Solo se hacen los cierres para quien tenga el horario personalizado hecho
                     if(usuarios[usuario].horarioEmpleado && usuarios[usuario].horarioEmpleado!=""){
                         //console.log(usuarios[usuario].horarioEmpleado);
-                        buscarHorario(usuarios[usuario]._id, tipoUsuario,
-                            epochMin, epochMax, usuarios[usuario].horarioEmpleado); 
+                        buscarHorario(usuarios[usuario]._id, tipoUsuario, epochMin, epochMax,
+                             usuarios[usuario].horarioEmpleado, usuarios[usuario].tipo.length); 
                     }
                 }
             }
@@ -271,7 +271,7 @@ function ejecutarCierre(){
     var contador=0;
     //Se realiza el cierre para todos los usuarios menos el tipo administrador
     var entro =false;
-    Usuario.find({tipo:{"$ne":"Administrador"}},{_id:1, nombre:1, horarioEmpleado:1,tipo:1}).exec(
+    Usuario.find({},{_id:1, nombre:1,horarioFijo:1,horarios:1,horarioEmpleado:1,tipo:1}).exec(
         function(err, usuarios){
             if(!err){
                 CierrePersonal.find({epoch: { "$gte": epochMin.unix(),"$lte":epochMax.unix()}}).exec(function(error,cierre){
@@ -282,32 +282,32 @@ function ejecutarCierre(){
 
                             var arrayTipo = new Array();
                             if(usuarios[i].tipo.length>1){
-                                for( var s in usuarios[i].tipo){
+                                for(var s=0;s<usuarios[i].tipo.length;s++){
                                     arrayTipo.push(usuarios[i].tipo[s]); 
                                 }
                             } else {
                                 arrayTipo.push(usuarios[i].tipo);
                             }
 
-                            for( var t in arrayTipo){
-                                
+                            for(var t=0;t < arrayTipo.length;t++){
                                 entro=false;
                                 var valor= arrayTipo[t];
                                 //Recorre los cierres buscando coincidencia con el tipo t
                                 for(var j=0;j<cierre.length;j++){
-
                                     //Valida si cada tipo del usuario tiene cierre sino lo genera
                                     if(usuarios[i]._id.equals(cierre[j].usuario) && valor==cierre[j].tipoUsuario){
                                         entro= true;
                                         j=cierre.length;
-                                    } 
+                                    }
                                 }
 
                                 //Si no tiene cierres este usuario con este rol se genera el cierre
-                                if(!entro && usuarios[i].horarioEmpleado && usuarios[i].horarioEmpleado!=""){
-                                   
-                                    buscarHorario(usuarios[i]._id,valor,epochMin, epochMax, usuarios[i].horarioEmpleado); 
+                                if(entro == false && usuarios[i].horarioEmpleado && usuarios[i].horarioEmpleado!="" &&
+                                     valor != "Administrador"){
+                                    buscarHorario(usuarios[i]._id,valor,epochMin, epochMax,
+                                         usuarios[i].horarioEmpleado, usuarios[i].tipo.length); 
                                 }
+                               
                             }
                             
                         }
@@ -342,20 +342,20 @@ function crearCierre(epoch, ejecutar){
 
 
 
-function buscarHorario(_idUser, tipoUsuario, epochMin, epochMax, horarioEmpleado){
+function buscarHorario(_idUser, tipoUsuario, epochMin, epochMax, horarioEmpleado, numTipos){
 
     crudHorario.getById(horarioEmpleado, 
         function(error, horario){
             if(!error && horario){
                 buscarInformacionUsuarioCierre(
-                 tipoUsuario,_idUser,epochMin, epochMax, horario);
+                 tipoUsuario,_idUser,epochMin, epochMax, horario, numTipos);
             }
         });
 }
 
 
 
-function buscarInformacionUsuarioCierre( tipoUsuario,_idUser, epochMin, epochMax, horario){
+function buscarInformacionUsuarioCierre( tipoUsuario,_idUser, epochMin, epochMax, horario, numTipos){
   
     Marca.find(
     {
@@ -384,21 +384,22 @@ function buscarInformacionUsuarioCierre( tipoUsuario,_idUser, epochMin, epochMax
                     )
                 ){
                     //
-               
+                global.globalTipoUsuario = tipoUsuario;
                 registroHorasRegulares(tipoUsuario, _idUser, marcas, tiempoDia, horario);
-                console.log("horas regulares");
-                if(!marcas.entrada){
-                    addJustIncompleta(_idUser, "Omisión de marca de entrada", "");
-                    //agregarUsuarioACierre(tipoUsuario,_idUser, {h:0,m:0});
-                } 
-                //Solo se genera una notificación de omisión de marca de salida si
-                //el usuario incumplió las horas de trabajo
-                else if(!marcas.salida){
-                  
+                if(tipoUsuario != "Profesor" || numTipos == 1){
+                    if(!marcas.entrada){
+                        addJustIncompleta(_idUser, "Omisión de marca de entrada", "");
+                        //agregarUsuarioACierre(tipoUsuario,_idUser, {h:0,m:0});
+                    } 
+                    //Solo se genera una notificación de omisión de marca de salida si
+                    //el usuario incumplió las horas de trabajo
+                    else if(!marcas.salida){
+                    
 
-                    //console.log("Omisión de marca de salida");
-                    addJustIncompleta(_idUser, "Omisión de marca de salida", "");
-                   // agregarUsuarioACierre(tipoUsuario,_idUser, {h:0,m:0});
+                        //console.log("Omisión de marca de salida");
+                        addJustIncompleta(_idUser, "Omisión de marca de salida", "");
+                    // agregarUsuarioACierre(tipoUsuario,_idUser, {h:0,m:0});
+                    }
                 }
             }
         }
