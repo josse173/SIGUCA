@@ -57,8 +57,13 @@
         tr
           td Vacaciones:  
             td
-              button.btn.btn-success(type = 'submit', disabled)
-                i.icon-plus.icon-large
+              form(action= '/vacaciones')
+                -if(numUsuariosSinVacaciones > 0)
+                  button.btn.btn-success(type = 'submit')
+                    i.icon-plus.icon-large
+                -else
+                  button.btn.btn-success(type = 'submit', disabled)
+                    i.icon-plus.icon-large
                     
             td
               form(action= '/vacaciones')    

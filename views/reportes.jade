@@ -10,12 +10,11 @@ block content
       div.text-center
         .milky Reportes de #{tipoReporte}
 
-
       div.filter
         table
           form(role='form', method="POST", action="/reportes/"+filtradoReporte)
-            td
-              select.form-control.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro") 
+            td.redond-border
+              select.form-control.selectpicker.redond-border(data-style="fondoTransparente", data-width="auto", type="text", name="filtro") 
                 option(value= "todos|reportes") Todos los usuarios
                 each user in usuarios
                   //-Se verifica si la informacion esta siendo filtrada por usuario
@@ -25,7 +24,7 @@ block content
                     option(value= user._id + "|reportes") #{user.apellido1} #{user.apellido2}, #{user.nombre}
 
             td
-              select.form-control#selectFiltro.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro_departamento") 
+              select.form-control#selectFiltro.selectpicker.redond-border(data-style="fondoTransparente", data-width="auto", type="text", name="filtro_departamento") 
                 option(value= "todos") Todos los departamentos
                 each dep in departamentos
                   //-Se verifica si la informacion esta siendo filtrada por departamento
@@ -33,20 +32,26 @@ block content
                     option(value=dep._id, selected) #{dep.nombre}
                   else
                     option(value=dep._id ) #{dep.nombre}
+            -if(reporteVacaciones)
+              td.hide
+            -else
+              td
+                label.labelFiltro.labFilLeft(for='fechaDesde') Desde:
+                  div.input-group
+                    input#date_range_start.form-control.fondoTransparente(type='text', name='fechaDesde', value=rangoFecha.fechaDesde)
+                    span.input-group-addon.fondoTransparente-derecha
+                      i.icon-calendar
+            -if(reporteVacaciones)
+              td.hide
+            -else
+              td
+                label.labelFiltro(for='fechaHasta') Hasta:
+                  div.input-group
+                    input#date_range_end.form-control.fondoTransparente(type='text', name='fechaHasta', value=rangoFecha.fechaHasta)
+                    span.input-group-addon.fondoTransparente-derecha
+                      i.icon-calendar
             td
-              label.labelFiltro.labFilLeft(for='fechaDesde') Desde:
-                div.input-group
-                  input#date_range_start.form-control(type='text', name='fechaDesde', value=rangoFecha.fechaDesde)
-                  span.input-group-addon
-                    i.icon-calendar
-            td
-              label.labelFiltro(for='fechaHasta') Hasta:
-                div.input-group
-                  input#date_range_end.form-control(type='text', name='fechaHasta', value=rangoFecha.fechaHasta)
-                  span.input-group-addon
-                    i.icon-calendar
-            td
-              button.filtro.form-control.btn.btn-success(type='submit', name='gestionar') Buscar
+              button.filtro.form-control.btn.btn-success.fondoTransparente(type='submit', name='gestionar') Buscar
             //
               td
                 button#toPDF.form-control.btn.btn-primary(name='toPDF') PDF
@@ -54,7 +59,7 @@ block content
       .col-xs-12
         div.eventosCierre
           h3 Detalle de la búsqueda
-          table.footable
+          table.footable.zoom-element
             thead
               tr
                 th(data-sort-ignore="true") Acciones
@@ -96,6 +101,12 @@ block content
                     else
                       td 0
                 
+                //-Vacaciones
+                if(reporteVacaciones)
+                  tr
+                    td Total empleados
+                    td #{reporteVacaciones.listaVacaciones.length + reporteVacaciones.listaUsuariosSinVacaciones.length}
+
                 //-Horas laboradas
                 if(horasEmpleado)
                   tr
@@ -451,6 +462,48 @@ block content
             else
               h3 Solicitudes Permisos
               p No se han encontrado registros 
+
+
+          //-Solicitudes Vacaciones
+          if(reporteVacaciones)
+            if(reporteVacaciones.listaVacaciones.length > 0 || reporteVacaciones.listaUsuariosSinVacaciones.length > 0)
+              br
+              h3 Vacaciones
+              .tableSolicitudes.footable
+                table#permisoPDF
+                    thead
+                      tr
+
+                        th Nombre
+                        th Apellidos
+                        th(data-hide="phone") Cédula
+                        th(data-hide="phone,small,medium,large") Email
+                        th(data-hide="phone,small") Estado
+                        th(data-hide="phone,small") Días disponibles
+                    tbody
+                      form(method="POST", action="/vacacionesUpdate")
+                        each elemento, i in reporteVacaciones.listaVacaciones
+                            tr
+                              td #{elemento.usuario.nombre}
+                              td #{elemento.usuario.apellido1} #{elemento.usuario.apellido2} 
+                              td #{elemento.usuario.cedula} 
+                              td #{elemento.usuario.email} 
+                              td #{elemento.usuario.estado}
+                              td.text-center #{elemento.disponibles}
+
+                        each elemento, i in reporteVacaciones.listaUsuariosSinVacaciones
+                          tr
+                            td #{elemento.nombre}
+                            td #{elemento.apellido1} #{elemento.apellido2} 
+                            td #{elemento.cedula} 
+                            td #{elemento.email} 
+                            td #{elemento.estado}
+                            td.text-center 0
+                          
+            else
+              h3 Solicitudes Permisos
+              p No se han encontrado registros 
+
 
 block sigucaJS  
   script(src="/js/app/reportes.js")
