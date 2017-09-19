@@ -87,7 +87,7 @@ module.exports = {
     epochMax.seconds(59);
 
     //Se realiza el cierre para todos los usuarios menos el tipo administrador
-    Usuario.find({_id:id},{_id:1, nombre:1, horarioEmpleado:1,tipoUsuario:1}).exec(
+    Usuario.find({_id:id},{_id:1, nombre:1, horarioEmpleado:1,tipo:1}).exec(
         function(err, usuarios){
             if(!err && usuarios[0].horarioEmpleado){
               
