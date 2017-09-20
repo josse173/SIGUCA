@@ -19,7 +19,7 @@ exports.deleteJustificationExit = function(usuarioId,epoch1,epochMax){
 }
 
 exports.deleteJustificationEntrance = function(usuarioId,epochMin,epochMax){
-	Justificaciones.remove({'usuario':usuarioId,fechaCreada: { "$gte": epochMin,"$lte":epochMax}},function(err,marcaE){});
+	Justificaciones.remove({'usuario':usuarioId,tipoUsuario: globalTipoUsuario, fechaCreada: { "$gte": epochMin,"$lte":epochMax}},function(err,marcaE){});
 
 }
 
@@ -31,7 +31,8 @@ exports.addJust = function(justificacion, cb){
 		fechaCreada: epochTime,
 		detalle: justificacion.detalle,
 		informacion: justificacion.informacion,
-		comentarioSupervisor: ""
+		comentarioSupervisor: "",
+		tipoUsuario: globalTipoUsuario
 	});
 	
 	if(justificacion.motivoJust == 'otro')

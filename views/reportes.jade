@@ -10,7 +10,6 @@ block content
       div.text-center
         .milky Reportes de #{tipoReporte}
 
-
       div.filter
         table
           form(role='form', method="POST", action="/reportes/"+filtradoReporte)
@@ -33,20 +32,26 @@ block content
                     option(value=dep._id, selected) #{dep.nombre}
                   else
                     option(value=dep._id ) #{dep.nombre}
+            -if(reporteVacaciones)
+              td.hide
+            -else
+              td
+                label.labelFiltro.labFilLeft(for='fechaDesde') Desde:
+                  div.input-group
+                    input#date_range_start.form-control.fondoTransparente(type='text', name='fechaDesde', value=rangoFecha.fechaDesde)
+                    span.input-group-addon.fondoTransparente-derecha
+                      i.icon-calendar
+            -if(reporteVacaciones)
+              td.hide
+            -else
+              td
+                label.labelFiltro(for='fechaHasta') Hasta:
+                  div.input-group
+                    input#date_range_end.form-control.fondoTransparente(type='text', name='fechaHasta', value=rangoFecha.fechaHasta)
+                    span.input-group-addon.fondoTransparente-derecha
+                      i.icon-calendar
             td
-              label.labelFiltro.labFilLeft(for='fechaDesde') Desde:
-                div.input-group
-                  input#date_range_start.form-control(type='text', name='fechaDesde', value=rangoFecha.fechaDesde)
-                  span.input-group-addon
-                    i.icon-calendar
-            td
-              label.labelFiltro(for='fechaHasta') Hasta:
-                div.input-group
-                  input#date_range_end.form-control(type='text', name='fechaHasta', value=rangoFecha.fechaHasta)
-                  span.input-group-addon
-                    i.icon-calendar
-            td
-              button.filtro.form-control.btn.btn-success(type='submit', name='gestionar') Buscar
+              button.filtro.form-control.btn.btn-success.fondoTransparente(type='submit', name='gestionar') Buscar
             //
               td
                 button#toPDF.form-control.btn.btn-primary(name='toPDF') PDF
@@ -54,7 +59,7 @@ block content
       .col-xs-12
         div.eventosCierre
           h3 Detalle de la búsqueda
-          table.footable
+          table.footable.zoom-element
             thead
               tr
                 th(data-sort-ignore="true") Acciones
@@ -96,6 +101,12 @@ block content
                     else
                       td 0
                 
+                //-Vacaciones
+                if(reporteVacaciones)
+                  tr
+                    td Total empleados
+                    td #{reporteVacaciones.listaVacaciones.length + reporteVacaciones.listaUsuariosSinVacaciones.length}
+
                 //-Horas laboradas
                 if(horasEmpleado)
                   tr
@@ -191,7 +202,7 @@ block content
                         - if(cierre.tiempo.minutos<10) m = "0"+m;
                         - tiempo = h+":"+m;
                         - if(cierre.tiempo.horas<=0 && cierre.tiempo.minutos<=0) 
-                        -tiempo = "El usuario se ausentó o no marcó salida."
+                          -tiempo = "El usuario se ausentó o no marcó salida."
                         tr
                           td(data-value=cierre.epoch) #{cierre.fecha.str} 
                           td #{cierre.usuario.nombre} #{cierre.usuario.apellido1} 
@@ -347,6 +358,7 @@ block content
                       tr
                         th(data-type="numeric" data-sort-initial="descending") Fecha
                         th Usuario
+                        th Tipo Usuario
                         th(data-hide="phone,small") Motivo
                         th(data-hide="phone,small" data-sort-ignore="true") Detalle
                         th(data-hide="phone,small" data-sort-ignore="true") Comentario
@@ -358,14 +370,15 @@ block content
                           td(data-value=justificacion.fechaCreada) #{justificacion.fecha.str} 
                           if(justificacion.usuario)
                             td #{justificacion.usuario.nombre} #{justificacion.usuario.apellido1}
-                          td #{justificacion.motivo} 
+                          td #{justificacion.tipoUsuario} 
+                          td #{justificacion.motivo}    
                           td #{justificacion.detalle} 
                           td #{justificacion.comentarioSupervisor} 
                           td #{justificacion.estado}  
                           td
                             if(justificacion.usuario)
                               button.btn.btn-default.justificacionDelete(value=justificacion.usuario.nombre+' '+justificacion.usuario.apellido1+' '+justificacion.usuario.apellido2+','+justificacion.id+','+justificacion.fecha.str, name='eliminar') 
-                             i.icon-trash.icon-large.i-danger 
+                                i.icon-trash.icon-large.i-danger 
             else
               h3 Justificaciones
               p No se han encontrado registros        
@@ -445,10 +458,52 @@ block content
                           td
                             if(permiso.usuario)
                               button.btn.btn-default.solicitudDelete(value=permiso.usuario.nombre+' '+permiso.usuario.apellido1+' '+permiso.usuario.apellido2+','+permiso.id+','+permiso.fecha.str, name='eliminar') 
-                              i.icon-trash.icon-large.i-danger 
+                                i.icon-trash.icon-large.i-danger 
             else
               h3 Solicitudes Permisos
               p No se han encontrado registros 
+
+
+          //-Solicitudes Vacaciones
+          if(reporteVacaciones)
+            if(reporteVacaciones.listaVacaciones.length > 0 || reporteVacaciones.listaUsuariosSinVacaciones.length > 0)
+              br
+              h3 Vacaciones
+              .tableSolicitudes.footable
+                table#permisoPDF
+                    thead
+                      tr
+
+                        th Nombre
+                        th Apellidos
+                        th(data-hide="phone") Cédula
+                        th(data-hide="phone,small,medium,large") Email
+                        th(data-hide="phone,small") Estado
+                        th(data-hide="phone,small") Días disponibles
+                    tbody
+                      form(method="POST", action="/vacacionesUpdate")
+                        each elemento, i in reporteVacaciones.listaVacaciones
+                            tr
+                              td #{elemento.usuario.nombre}
+                              td #{elemento.usuario.apellido1} #{elemento.usuario.apellido2} 
+                              td #{elemento.usuario.cedula} 
+                              td #{elemento.usuario.email} 
+                              td #{elemento.usuario.estado}
+                              td.text-center #{elemento.disponibles}
+
+                        each elemento, i in reporteVacaciones.listaUsuariosSinVacaciones
+                          tr
+                            td #{elemento.nombre}
+                            td #{elemento.apellido1} #{elemento.apellido2} 
+                            td #{elemento.cedula} 
+                            td #{elemento.email} 
+                            td #{elemento.estado}
+                            td.text-center 0
+                          
+            else
+              h3 Solicitudes Permisos
+              p No se han encontrado registros 
+
 
 block sigucaJS  
   script(src="/js/app/reportes.js")

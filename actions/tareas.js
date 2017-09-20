@@ -9,11 +9,45 @@ var crud = require('../routes/crud');
 var crudHorario = require('../routes/crudHorario');
 var crudSolicitud = require('../routes/crudSolicitud');
 var crudJustificaciones = require('../routes/crudJustificaciones');
+var crudVacaciones = require('../routes/crudVacaciones');
+
+
+
+/*
+cierreAutomatico : new CronJob({
+        cronTime: '* * * * * *',
+       //cronTime: '00 50 23 * * 0-7',
+        onTick: function() {
+                var date =  moment().format('L').split("/");
+                var epochGte = moment();
+                epochGte.year(date[2]).month(date[0]-1).date(date[1]);
+                epochGte.hour(0).minutes(0).seconds(0);
+                var epochLte = moment();
+                epochLte.year(date[2]).month(date[0]-1).date(date[1]);
+                epochLte.hour(23).minutes(59).seconds(59);
+
+
+                Feriado.find({epoch:{"$gte":epochGte.unix(),"$lte":epochLte.unix()}}, function (err,feriado) {
+                    if(err && feriado){
+                        console.log(feriado[0].nombreFeriado);
+                    }else{
+                          var hoy = new Date();
+                          console.log("Realizando cierre en la fecha '"+hoy+"' y notificando a usuarios");
+                          ejecutarCierre();
+                    }
+                });       
+        },
+        start: false,
+        timeZone: "America/Costa_Rica"
+    }),
+
+*/
+
 
 
 module.exports = {
     cierreAutomatico : new CronJob({
-       /// cronTime: '* * * * * *',
+        //cronTime: '* * * * * *',
         cronTime: '00 50 23 * * 0-7',
         onTick: function() {
             //if(!once){
@@ -22,6 +56,15 @@ module.exports = {
                 ejecutarCierre();
             //}
             //once = true;
+        },
+        start: false,
+        timeZone: "America/Costa_Rica"
+    }),
+    aumentoVacacionesAutomatico : new CronJob({
+        cronTime: '00 00 00 01 * *', //Cada primero de cada mes
+        onTick: function() {
+            console.log("{======= Realizando aumento de vacaciones =======}");
+            crudVacaciones.updateVacacionesAutomatico();
         },
         start: false,
         timeZone: "America/Costa_Rica"
@@ -44,7 +87,7 @@ module.exports = {
     epochMax.seconds(59);
 
     //Se realiza el cierre para todos los usuarios menos el tipo administrador
-    Usuario.find({_id:id},{_id:1, nombre:1, horarioEmpleado:1,tipoUsuario:1}).exec(
+    Usuario.find({_id:id},{_id:1, nombre:1, horarioEmpleado:1,tipo:1}).exec(
         function(err, usuarios){
             if(!err && usuarios[0].horarioEmpleado){
               
@@ -54,11 +97,12 @@ module.exports = {
                     //Solo se hacen los cierres para quien tenga el horario personalizado hecho
                     if(usuarios[usuario].horarioEmpleado && usuarios[usuario].horarioEmpleado!=""){
                         //console.log(usuarios[usuario].horarioEmpleado);
-                        buscarHorario(usuarios[usuario]._id, tipoUsuario,
-                            epochMin, epochMax, usuarios[usuario].horarioEmpleado); 
+                        buscarHorario(usuarios[usuario]._id, tipoUsuario, epochMin, epochMax,
+                             usuarios[usuario].horarioEmpleado, usuarios[usuario].tipo.length); 
                     }
                 }
-            }else{
+            }
+            else{
                  Usuario.find({_id:id},{_id:1, nombre:1, horario:1,tipoUsuario:1}).exec(
                     function(error, usuario){
                         if(!err && usuario[0].horario){
@@ -66,9 +110,22 @@ module.exports = {
                             cierreHorario(id,usuario[0].horario,epochTime,tipoUsuario);
                            
                         }
+                        else{
+                            Usuario.find({_id:id},{_id:1, nombre:1, horarioFijo:1,tipoUsuario:1}).exec(
+                             function(error, usuario){
+                                 if(!err && usuario[0].horarioFijo){
+                                     var epochTime = moment().unix();
+                                    cierreHorario(id,usuario[0].horarioFijo,epochTime,tipoUsuario); 
+                                 }
+                             }); 
+                        
+                        }
+                        
+                           
+                        
                 });
-
-            }
+    
+        }
         });
     }
     
@@ -123,74 +180,88 @@ function cierreHorario(_idUser,horarioEmpleado,mOut,tipoUsuario){
 			if(mcs[m].tipoMarca=='Entrada de Almuerzo'){
 				var tiempoEntradaAlmuerzo =mcs[m].fecha.hora ;
 			}
-		}
-
-
+        }
+        
 		finMinutos =moment().format();
 		finMinutos=parseInt(String(finMinutos).substr(14,2));
-						
-		inicioMinutos = parseInt(tiempoEntrada.substr(3,2));
+        
+        if(tiempoEntrada){
+            inicioMinutos = parseInt(tiempoEntrada.substr(3,2));
 			
-		inicioHoras = parseInt(String(tiempoEntrada).substr(0,2));
+            inicioHoras = parseInt(String(tiempoEntrada).substr(0,2));
+            
+            finHoras=moment().format();
+            finHoras = parseInt(String(finHoras).substr(11,2));
+
+            
+            var transcurridoMinutos = finMinutos - inicioMinutos;
+            var transcurridoHoras = finHoras - inicioHoras;  //bloque de salida y entrada
+
+            if(tiempoSalidaReceso!=null){
+            var inicioRecesoMinutos = parseInt(String(tiempoSalidaReceso).substr(3,2));
+            var inicioRecesoHoras = parseInt(String(tiempoSalidaReceso).substr(0,2));
+            var finRecesoMinutos = parseInt(String(tiempoEntradaReceso).substr(3,2));
+            var finRecesoHoras = parseInt(String(tiempoEntradaReceso).substr(0,2));
+            var transcurridoRecesoMinutos = finRecesoMinutos - inicioRecesoMinutos;
+            var transcurridoRecesoHoras = finRecesoHoras - inicioRecesoHoras;//bloque para recesos 
+            }else{
+                transcurridoRecesoHoras = 0;
+                transcurridoRecesoMinutos = 0;
+            }
+            if(tiempoSalidaAlmuerzo!=null){
+            var inicioAlmuerzoMinutos = parseInt(String(tiempoSalidaAlmuerzo).substr(3,2));
+            var inicioAlmuerzoHoras = parseInt(String(tiempoSalidaAlmuerzo).substr(0,2));
+            var finAlmuerzoMinutos = parseInt(String(tiempoEntradaAlmuerzo).substr(3,2));
+            var finAlmuerzoHoras = parseInt(String(tiempoEntradaAlmuerzo).substr(0,2));
+            var transcurridoAlmuerzoMinutos = finAlmuerzoMinutos - inicioAlmuerzoMinutos;
+            var transcurridoAlmuerzoHoras = finAlmuerzoHoras - inicioAlmuerzoHoras;//bloque para almuerzos
+            }else{
+                transcurridoAlmuerzoMinutos = 0;
+                transcurridoAlmuerzoHoras = 0;
+            }
+
+            var transcurridoHorasTotal = transcurridoHoras - transcurridoRecesoHoras - transcurridoAlmuerzoHoras;
+            var transcurridoMinutosTotal = transcurridoMinutos - transcurridoRecesoMinutos - transcurridoAlmuerzoMinutos;
+            
+
+            if (transcurridoMinutosTotal < 0) {
+                transcurridoHorasTotal--;
+                transcurridoMinutosTotal = 60 + transcurridoMinutosTotal;
+            }
+            var horasTrabajadas = transcurridoHorasTotal;
+            var minutosTrabajados = transcurridoMinutosTotal;	
+            var obj = {
+            usuario: _idUser,
+            tipoUsuario: tipoUsuario,
+            tiempo: {
+                horas:horasTrabajadas,
+                minutos:minutosTrabajados
+            },
+            epoch: moment().unix()
+            };
+            var cierre = CierrePersonal(obj);
+            cierre.save(function (err, cierreActualizado) {
+                if(err) 
+                console.log("Error al crear cierre en la fecha '"+hoy+"' => Mensaje: "+error);
+            });
 		
-		finHoras=moment().format();
-		finHoras = parseInt(String(finHoras).substr(11,2));
-
-		
-		var transcurridoMinutos = finMinutos - inicioMinutos;
-		var transcurridoHoras = finHoras - inicioHoras;  //bloque de salida y entrada
-
-		if(tiempoSalidaReceso!=null){
-		var inicioRecesoMinutos = parseInt(String(tiempoSalidaReceso).substr(3,2));
-		var inicioRecesoHoras = parseInt(String(tiempoSalidaReceso).substr(0,2));
-		var finRecesoMinutos = parseInt(String(tiempoEntradaReceso).substr(3,2));
-		var finRecesoHoras = parseInt(String(tiempoEntradaReceso).substr(0,2));
-		var transcurridoRecesoMinutos = finRecesoMinutos - inicioRecesoMinutos;
-		var transcurridoRecesoHoras = finRecesoHoras - inicioRecesoHoras;//bloque para recesos 
-		}else{
-			transcurridoRecesoHoras = 0;
-			transcurridoRecesoMinutos = 0;
-		}
-		if(tiempoSalidaAlmuerzo!=null){
-		var inicioAlmuerzoMinutos = parseInt(String(tiempoSalidaAlmuerzo).substr(3,2));
-		var inicioAlmuerzoHoras = parseInt(String(tiempoSalidaAlmuerzo).substr(0,2));
-		var finAlmuerzoMinutos = parseInt(String(tiempoEntradaAlmuerzo).substr(3,2));
-		var finAlmuerzoHoras = parseInt(String(tiempoEntradaAlmuerzo).substr(0,2));
-		var transcurridoAlmuerzoMinutos = finAlmuerzoMinutos - inicioAlmuerzoMinutos;
-		var transcurridoAlmuerzoHoras = finAlmuerzoHoras - inicioAlmuerzoHoras;//bloque para almuerzos
-		}else{
-			transcurridoAlmuerzoMinutos = 0;
-			transcurridoAlmuerzoHoras = 0;
-		}
-
-		var transcurridoHorasTotal = transcurridoHoras - transcurridoRecesoHoras - transcurridoAlmuerzoHoras;
-		var transcurridoMinutosTotal = transcurridoMinutos - transcurridoRecesoMinutos - transcurridoAlmuerzoMinutos;
-		
-
-		if (transcurridoMinutosTotal < 0) {
-			transcurridoHorasTotal--;
-			transcurridoMinutosTotal = 60 + transcurridoMinutosTotal;
-		}
-		
-
-		var horasTrabajadas = transcurridoHorasTotal;
-        var minutosTrabajados = transcurridoMinutosTotal;	
-
-       var obj = {
-        usuario: _idUser,
-        tipoUsuario: tipoUsuario,
-        tiempo: {
-            horas:horasTrabajadas,
-            minutos:minutosTrabajados
-        },
-        epoch: moment().unix()
-        };
-        var cierre = CierrePersonal(obj);
-        cierre.save(function (err, cierreActualizado) {
-            if(err) 
-             console.log("Error al crear cierre en la fecha '"+hoy+"' => Mensaje: "+error);
-        });
-
+        }else{
+            var obj = {
+            usuario: _idUser,
+            tipoUsuario: tipoUsuario,
+            tiempo: {
+                horas:0,
+                minutos:0
+            },
+            epoch: moment().unix()
+            };
+            var cierre = CierrePersonal(obj);
+            cierre.save(function (err, cierreActualizado) {
+                if(err) 
+                console.log("Error al crear cierre en la fecha '"+hoy+"' => Mensaje: "+error);
+            });
+        }
+			
         
     });
 
@@ -198,6 +269,7 @@ function cierreHorario(_idUser,horarioEmpleado,mOut,tipoUsuario){
 
 
 function ejecutarCierre(){
+
     var hoy = new Date();
 
     //Fechas para encontrar información del día
@@ -213,7 +285,7 @@ function ejecutarCierre(){
     var contador=0;
     //Se realiza el cierre para todos los usuarios menos el tipo administrador
     var entro =false;
-    Usuario.find({tipo:{"$ne":"Administrador"}},{_id:1, nombre:1, horarioEmpleado:1,tipo:1}).exec(
+    Usuario.find({},{_id:1, nombre:1,horarioFijo:1,horario:1,horarioEmpleado:1,tipo:1}).exec(
         function(err, usuarios){
             if(!err){
                 CierrePersonal.find({epoch: { "$gte": epochMin.unix(),"$lte":epochMax.unix()}}).exec(function(error,cierre){
@@ -224,32 +296,41 @@ function ejecutarCierre(){
 
                             var arrayTipo = new Array();
                             if(usuarios[i].tipo.length>1){
-                                for( var s in usuarios[i].tipo){
+                                for(var s=0;s<usuarios[i].tipo.length;s++){
                                     arrayTipo.push(usuarios[i].tipo[s]); 
                                 }
                             } else {
                                 arrayTipo.push(usuarios[i].tipo);
                             }
 
-                            for( var t in arrayTipo){
-                                
+                            for(var t=0;t < arrayTipo.length;t++){
                                 entro=false;
                                 var valor= arrayTipo[t];
                                 //Recorre los cierres buscando coincidencia con el tipo t
                                 for(var j=0;j<cierre.length;j++){
-
                                     //Valida si cada tipo del usuario tiene cierre sino lo genera
                                     if(usuarios[i]._id.equals(cierre[j].usuario) && valor==cierre[j].tipoUsuario){
                                         entro= true;
                                         j=cierre.length;
-                                    } 
+                                    }
                                 }
 
                                 //Si no tiene cierres este usuario con este rol se genera el cierre
-                                if(!entro && usuarios[i].horarioEmpleado && usuarios[i].horarioEmpleado!=""){
-                                   
-                                    buscarHorario(usuarios[i]._id,valor,epochMin, epochMax, usuarios[i].horarioEmpleado); 
+                                if(entro == false && usuarios[i].horarioEmpleado && usuarios[i].horarioEmpleado!="" &&
+                                     valor != "Administrador"){
+                                    buscarHorario(usuarios[i]._id,valor,epochMin, epochMax,
+                                         usuarios[i].horarioEmpleado, usuarios[i].tipo.length); 
+                                }else if(entro == false && usuarios[i].horarioFijo && usuarios[i].horarioFijo!="" &&
+                                    valor != "Administrador"){
+                                    cierreHorario(usuarios[i]._id,"","",valor);
+                                    
+                                }else if(entro == false && usuarios[i].horario && usuarios[i].horario!="" &&
+                                valor != "Administrador"){
+                                 
+                                   cierreHorario(usuarios[i]._id,"","",valor);
+                                
                                 }
+                               
                             }
                             
                         }
@@ -284,20 +365,20 @@ function crearCierre(epoch, ejecutar){
 
 
 
-function buscarHorario(_idUser, tipoUsuario, epochMin, epochMax, horarioEmpleado){
+function buscarHorario(_idUser, tipoUsuario, epochMin, epochMax, horarioEmpleado, numTipos){
 
     crudHorario.getById(horarioEmpleado, 
         function(error, horario){
             if(!error && horario){
                 buscarInformacionUsuarioCierre(
-                 tipoUsuario,_idUser,epochMin, epochMax, horario);
+                 tipoUsuario,_idUser,epochMin, epochMax, horario, numTipos);
             }
         });
 }
 
 
 
-function buscarInformacionUsuarioCierre( tipoUsuario,_idUser, epochMin, epochMax, horario){
+function buscarInformacionUsuarioCierre( tipoUsuario,_idUser, epochMin, epochMax, horario, numTipos){
   
     Marca.find(
     {
@@ -326,21 +407,22 @@ function buscarInformacionUsuarioCierre( tipoUsuario,_idUser, epochMin, epochMax
                     )
                 ){
                     //
-               
+                global.globalTipoUsuario = tipoUsuario;
                 registroHorasRegulares(tipoUsuario, _idUser, marcas, tiempoDia, horario);
-                console.log("horas regulares");
-                if(!marcas.entrada){
-                    addJustIncompleta(_idUser, "Omisión de marca de entrada", "");
-                    //agregarUsuarioACierre(tipoUsuario,_idUser, {h:0,m:0});
-                } 
-                //Solo se genera una notificación de omisión de marca de salida si
-                //el usuario incumplió las horas de trabajo
-                else if(!marcas.salida){
-                  
+                if(tipoUsuario != "Profesor" || numTipos == 1){
+                    if(!marcas.entrada){
+                        addJustIncompleta(_idUser, "Omisión de marca de entrada", "");
+                        //agregarUsuarioACierre(tipoUsuario,_idUser, {h:0,m:0});
+                    } 
+                    //Solo se genera una notificación de omisión de marca de salida si
+                    //el usuario incumplió las horas de trabajo
+                    else if(!marcas.salida){
+                    
 
-                    //console.log("Omisión de marca de salida");
-                    addJustIncompleta(_idUser, "Omisión de marca de salida", "");
-                   // agregarUsuarioACierre(tipoUsuario,_idUser, {h:0,m:0});
+                        //console.log("Omisión de marca de salida");
+                        addJustIncompleta(_idUser, "Omisión de marca de salida", "");
+                    // agregarUsuarioACierre(tipoUsuario,_idUser, {h:0,m:0});
+                    }
                 }
             }
         }

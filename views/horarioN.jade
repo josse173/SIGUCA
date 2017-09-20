@@ -7,14 +7,12 @@ block content
   .container
     
     br
-    h3 Lista de Horarios
+    h3 Lista de horarios libre
     table.footable.tableHorario
         thead
           tr
             th Nombre
             th Tipo Jornada
-            th Hora Entrada
-            th Hora Salida
             th Rango Jornada
             th Tiempo Receso
             th Tiempo Almuerzo
@@ -26,8 +24,6 @@ block content
             tr
               td #{horario.nombre} 
               td #{horario.tipo} 
-              td #{horario.horaEntrada} 
-              td #{horario.horaSalida} 
               td #{horario.rangoJornada} 
               td #{horario.tiempoReceso} 
               td #{horario.tiempoAlmuerzo} 
@@ -38,6 +34,37 @@ block content
               td
                 button.horarioDelete.btn.btn-default(value=horario.nombre+','+horario.id)
                   i.icon-trash.icon-large.i-danger
+
+    br
+    h3 Lista de horarios fijo
+    table.footable.tableHorarioEliminar
+        thead
+          tr
+            th Nombre
+            th Tipo Jornada
+            th Tiempo Receso
+            th Tiempo Almuerzo
+            th Hora de entrada 
+            th Hora de Salida
+            th Editar
+            th Eliminar
+
+        tbody 
+          each horario, i in horarioFijo
+            tr
+              td #{horario.nombre} 
+              td #{horario.tipo} 
+              td #{horario.tiempoReceso} 
+              td #{horario.tiempoAlmuerzo} 
+              td #{horario.horaEntrada} 
+              td #{horario.horaSalida} 
+              td
+                button.btn.btn-default(data-toggle="modal" data-target="#editHorarioFijo" value=horario._id)
+                  i.icon-pencil.icon-large.i-success
+
+              td
+                button.eliminarFijo.btn.btn-default(value=horario.nombre+','+horario._id)
+                  i.icon-trash.icon-large.i-danger    
 
 
     //actualizar horario
@@ -52,23 +79,8 @@ block content
                 .form-group
                   h4 Información Básica
                   label(for='nombre' style="float:left") Nombre del Horario:
-                    input#nombre.form-control( type="text", name="nombre", placeholder='Nombre del horario')
-                  label(for='tipo') Tipo jornada  
-                    .checkboxAwesome.checkbox-success          
-                      input#tipoJornada(type='checkbox', name= "tipo")
-                      label(for='tipoJornada', id="tipoJornadaLabel") Libre         
-                .form-group
-                  h4 Información de jornada
-                  label(for='horaEntrada') Hora de Inicio:
-                    div#timepicker.input-group
-                      input#horaEntrada.input-small.form-control(type="text", name= 'horaEntrada')
-                      span.input-group-addon
-                        i.icon-time
-                  label(for='horaSalida') Hora de salida:
-                    div#timepicker1.input-group
-                      input#horaSalida.input-small.form-control(type="text", name= 'horaSalida')
-                      span.input-group-addon
-                        i.icon-time
+                    input#nombre.form-control( type="text", placeholder='Nombre del horario')
+                
                   label(for='rangoJornada') Rango de horas:
                     label.form-control#rangoJornada
                     div#timepicker4.input-group
@@ -91,6 +103,76 @@ block content
                 button.btn.btn-success(type='submit') Actualizar
                 alertify.myAlert("Browser dialogs made easy!")
                 button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
+
+
+
+    #editHorarioFijo.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+      .modal-dialog
+          .modal-content
+            .modal-header
+              button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+              h4#myModalLabel.modal-title Actualizar horario
+            .modal-body
+              form.formUpdateFijo(action='/horarioFijoN', method='post')#login-form.well.span4
+                .form-group
+                  h4 Información Básica
+                  label(for='nombre' style="float:left") Nombre del Horario:
+                  input#nombreFijo.form-control( type="text", name="nombre")     
+                  
+                  label(for='dias') L
+                  label(for='dias')  
+                  label(for='dias')
+                  label(for='dias') K
+                  label(for='dias')  
+                  label(for='dias')
+                  label(for='dias') M
+                  label(for='dias')  
+                  label(for='dias')
+                  label(for='dias') J
+                  label(for='dias')
+                  label(for='dias') 
+                  label(for='dias') V
+                  label(for='dias')  
+                  label(for='dias')
+                  label(for='dias') S
+                  label(for='dias')
+                  label(for='dias')  
+                  label(for='dias') D
+                  .from-group
+                    input#Lunes(type='checkbox',name='Lunes') 
+                    input#Martes(type='checkbox',name='Martes') 
+                    input#Miercoles(type='checkbox',name='Miercoles')
+                    input#Jueves(type='checkbox',name='Jueves')
+                    input#Viernes(type='checkbox',name='Viernes')
+                    input#Sabado(type='checkbox',name='Sabado')  
+                    input#Domingo(type='checkbox',name='Domingo')  
+
+                .form-group
+                  label(for='horaEntrada') Hora de entrada:
+                    div#timepicker5.input-group
+                      input#horaEntradaFijo.input-small.form-control(type="text", name= 'horaEntrada')
+                      span.input-group-addon
+                        i.icon-time  
+                  label(for='horaSalida') Hora de salida:
+                    div#timepicker6.input-group
+                      input#horaSalidaFijo.input-small.form-control(type="text", name= 'horaSalida')
+                      span.input-group-addon
+                        i.icon-time
+
+                .form-group
+                  label(for='tiempoReceso') Rango de receso:
+                    div#timepicker2.input-group
+                      input#tiempoRecesoFijo.input-small.form-control(type="text", name= 'tiempoReceso')
+                      span.input-group-addon
+                        i.icon-time  
+                  label(for='tiempoAlmuerzo') Rango de almuerzo:
+                    div#timepicker3.input-group
+                      input#tiempoAlmuerzoFijo.input-small.form-control(type="text", name= 'tiempoAlmuerzo')
+                      span.input-group-addon
+                        i.icon-time  
+                button.btn.btn-success(type='submit') Actualizar
+                alertify.myAlert("Browser dialogs made easy!")
+                button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar    
 
 block sigucaJS
   script( src='/js/app/timepickerAdminEdit.js')

@@ -61,6 +61,7 @@ block content
                   th
                   th(data-type="numeric" data-sort-initial="descending")  Fecha
                   th Usuario
+                  th Tipo Usuario
                   th Motivo
                   th(data-sort-ignore="true") Detalle
                   th(data-sort-ignore="true") Comentario
@@ -75,6 +76,7 @@ block content
                         input.justificar.justificarArray(type='checkbox',checked=false, id='check' ,value=justificacion.id )
                       td(data-value=justificacion.fechaCreada) #{justificacion.fecha.str} 
                       td #{justificacion.usuario.nombre} #{justificacion.usuario.apellido1}
+                      td #{justificacion.tipoUsuario} 
                       td #{justificacion.motivo} 
                       td #{justificacion.detalle} 
                       td
@@ -160,6 +162,7 @@ block content
                   th Motivo
                   th(data-sort-ignore="true") Detalle
                   th(data-sort-ignore="true") Comentario
+                  th(data-sort-ignore="true") Días Disponibles
                   th(data-sort-ignore="true") Acción
                   th(data-sort-ignore="true") Aceptar
                   th(data-sort-ignore="true") Eliminar
@@ -176,13 +179,22 @@ block content
                       td #{permiso.detalle} 
                       td
                         textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
+                      td(class=permiso.usuario.id)
+                        -var disponibles = false
+                        each item, i in vacaciones
+                          if(item.usuario == permiso.usuario.id)
+                            -disponibles = true
+                            |#{item.disponibles}
+                            
+                        if(disponibles == false)
+                          |0
                       td
                         select.select_picker(name='estado'+permiso.id, id="estado"+permiso.id, data-width="auto"  data-style="btn-inverse")
                           option(value='Pendiente') Pendiente
                           option(value='Aceptada') Aprobar
                           option(value='Rechazada') Rechazar
                       td
-                        button.row-delete.btn.btn-default(value=permiso.id, name='gestionar') 
+                        button.row-delete.btn.btn-default(value="idPermiso:"+permiso.id+",idUsuario:"+permiso.usuario.id+",horasSolicitadas:"+permiso.cantidadDias, name='gestionar') 
                           i.icon-ok.icon-large  
                       td
                         button.btn.btn-default.solicitudDelete(value=permiso.usuario.nombre+' '+permiso.usuario.apellido1+' '+permiso.usuario.apellido2+','+permiso.id+','+permiso.fecha, name='eliminar') 

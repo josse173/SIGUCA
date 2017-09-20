@@ -60,3 +60,11 @@
             $('#tipoJornada').val('Fijo');
         }
     });
+
+
+$(".eliminarFijo").submit(function(e) {  
+   alert();
+    
+});
+
+

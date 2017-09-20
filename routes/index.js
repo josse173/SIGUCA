@@ -27,6 +27,8 @@
  var crudHorario = require('./crudHorario');
  var crudMarca = require('./crudMarca');
  var crudDepartamento = require('./crudDepartamento');
+ var crudVacaciones = require('./crudVacaciones');
+ var crudFeriado = require('./crudFeriado');
  var crud = require('./crud');
  var util = require('../util/util');
  var ObjectId = mongoose.Types.ObjectId;
@@ -34,8 +36,10 @@
 //**********************************************
 //Modelos para el manejo de objetos de la base de datos
 var Marca = require('../models/Marca');
+var Feriado = require('../models/Feriado');
 var Usuario = require('../models/Usuario');
 var Horario = require('../models/Horario');
+var HorarioFijo = require('../models/HorarioFijo');
 var Departamento = require('../models/Departamento');
 var Justificaciones = require('../models/Justificaciones');
 var Solicitudes = require('../models/Solicitudes');
@@ -73,7 +77,48 @@ module.exports = function(app, io) {
     //    res.end('Imagen Cargada en el servidor');
     //});
   
+
+    //******************************************************************************
+    /*
+    *   Vacaciones
+    */
   
+    app.get('/vacaciones', autentificado,function (req, res) {
+
+        crudVacaciones.listVacaciones(
+            function(err, listaUsuarios){
+                if(err) return res.redirect("/escritorioAdmin");
+
+                //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
+                req.user.tipo = req.session.name;
+                listaUsuarios.usuario = req.user;
+
+                return res.render("vacaciones", listaUsuarios); 
+            }
+        ); 
+    });
+
+    /**
+     * Actualiza un registro de vacaciones
+     */
+    app.post('/vacacionesUpdate',autentificado, function (req, res) {
+
+        crudVacaciones.updateVacaciones( req, function(err){
+                return res.redirect("/vacaciones");
+            }
+        ); 
+    });
+
+    /**
+     * Inserta vacaciones para un usuario que no contaba con un registro de las mismas
+     */
+    app.post('/vacacionesInsert',autentificado, function (req, res) {
+
+        crudVacaciones.insertVacaciones( req, function(err){
+                return res.redirect("/vacaciones");
+            }
+        ); 
+    });
 
     //******************************************************************************
     /*
@@ -412,6 +457,7 @@ module.exports = function(app, io) {
     /*
     *  Lista todos los usuarios creados
     */
+    
     app.get('/empleado', autentificado, function (req, res) {
         crudUsuario.listUsuarios(function (err, listaUsuarios){
             if (err) return res.json(err);
@@ -421,20 +467,24 @@ module.exports = function(app, io) {
             return res.render('empleado', listaUsuarios);
         });       
     });
+    
 
     /*
     *  Carga los datos de un usuario en específico, además los horarios y departamentos creados
     */
+    
     app.get('/empleado/edit/:id', autentificado, function (req, res) {
         Usuario.findById(req.params.id, function (err, empleado) { 
             if (err) return res.json(err);
             else res.json(empleado);
         });        
     });
+    
 
     /*
     *  Actualiza los datos de un usuario en específico
     */
+    
     app.post('/empleado/:id', function (req, res) {
         var data = {
             id: req.params.id,
@@ -445,6 +495,9 @@ module.exports = function(app, io) {
         });
     });
 
+    
+    
+    
     /*
     *  Modifica el estado de Activo a Inactivo de un usuario en específico
     */
@@ -566,6 +619,7 @@ module.exports = function(app, io) {
             });
         }
     });
+
 
 
  //  var storage = multer.diskStorage({
@@ -736,6 +790,18 @@ module.exports = function(app, io) {
         });
     });
 
+    app.post('/horarioFijo', autentificado, function (req, res) {
+       crud.addHorarioFIjo(req.body,function(){
+           if (req.session.name == "Administrador") {
+                res.redirect('/escritorioAdmin');
+            }  
+       });
+     
+       
+    });
+
+    
+
     /*
     *  Lista todos los horarios creados
     */
@@ -744,16 +810,21 @@ module.exports = function(app, io) {
             if (err) return res.json(err);
             //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
             req.user.tipo = req.session.name;
+
+            HorarioFijo.find(function(error,horarioFijo){
+ 
             return res.render('horarioN', {
                 title: 'Nuevo Horario | SIGUCA',
                 horarios: horarios,
-                usuario: req.user
+                usuario: req.user,
+                horarioFijo:horarioFijo
+            });
             });
         });
     });
 
     /*
-    *  Carga los datos de un horario en específico
+    *  Carga los datos de un horarioLibre en específico
     */
     app.get('/horarioN/editHorario/:id', autentificado, function (req, res) { 
         crud.loadHorario(req.params.id, function (err, horario) {
@@ -762,8 +833,17 @@ module.exports = function(app, io) {
         });
     }); 
 
+    //Carga los datos de un horarioFijo en especiifico 
+
+    app.get('/horarioFijo/editHorario/:id', autentificado, function (req, res) { 
+        crud.loadHorarioFijo(req.params.id, function (err, horario) {
+            if (err) return res.json(err);
+            else res.json(horario);
+        });
+    }); 
+
     /*
-    *  Actualiza los datos de un horario en específico
+    *  Actualiza los datos de un horario libre en específico
     */
     app.post('/horarioN/:id',autentificado, function (req, res) { 
         var data = { horario: req.body, id: req.params.id };
@@ -773,8 +853,17 @@ module.exports = function(app, io) {
         });
     });
 
+    //Actualiza los datos de un horario fijo en especifico 
+     app.post('/horarioFijoN/:id',autentificado, function (req, res) { 
+        var data = { horario: req.body, id: req.params.id };
+        crud.updateHorarioFijo(data, function (err, horarios) {
+            if (err) return res.json(err);
+            res.redirect('/horarioN');
+        });
+    });
+
     /*
-    *  Elimina un horario en específico
+    *  Elimina un horario libre
     */
     app.get('/horarioN/delete/:id', autentificado, function (req, res) { 
         crud.deleteHorario(req.params.id, function (err, msj) {
@@ -782,8 +871,68 @@ module.exports = function(app, io) {
             else res.send(msj);
         });
     });
+    //Elimina un horario fijo
+    app.get('/horarioFijo/delete/:id', autentificado, function (req, res) {
+        crud.deleteHorarioFijo(req.params.id, function (err, msj) {
+            if (err) return res.json(err);
+            else res.send(msj);
+        });
+    });
+
+    /*
+    *  Crud de feriados
+    */
+
+    app.post('/asignarFeriado',autentificado, crudFeriado.insertarFeriado);
+
+    //lista la lista de feriados creado.
+    app.get('/feriado',autentificado,function(req,res){
+        Feriado.find(function(err,feriados){
+            if(err){
+                return res.jason(err);
+            }else{
+                var feriadosArreglado = new Array();
+                for (var i=0;i<feriados.length;i++){
+                    var obj=new Object();
+                    obj._id=feriados[i]._id;
+                    obj.nombreFeriado=feriados[i].nombreFeriado;
+                    obj.epoch=moment.unix(feriados[i].epoch).format("DD/MM/Y");
+                    feriadosArreglado.push(obj);
+                }
+                req.user.tipo = req.session.name;
+               
+
+                return res.render('feriado', {
+                title: 'Nuevo Feriado | SIGUCA',
+                feriado:feriadosArreglado,
+                usuario:req.user
+            });
+            }
+        });
+    });
+
+    app.get('/feriado/delete/:id', autentificado, function (req, res) { 
+        crudFeriado.deleteFeriado(req.params.id, function (err, msj) {
+            if (err) return res.json(err);
+            else res.send(msj);
+        });
+    });
+
     
-    
+     app.get('/feriado/editFeriado/:id',function(req,res){
+        Feriado.findById(req.params.id,function(err,feriado){
+            if (err) return res.json(err);
+            else res.json(feriado);
+        });
+     });
+
+
+      app.post('/feriadoUpdate/:id',autentificado, crudFeriado.actualizarFeriado);
+
+   
+
+
+
 
     io.sockets.on('connection', function(socket){
 
@@ -866,3 +1015,4 @@ module.exports = function(app, io) {
 };
 
 tareas_actions.cierreAutomatico.start();
+tareas_actions.aumentoVacacionesAutomatico.start(); //Aumenta automaticamente por mes las vacaciones de todos los usuarios
