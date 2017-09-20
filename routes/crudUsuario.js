@@ -291,7 +291,7 @@ exports.updateUsuario = function(data, cb){
 		}
 		Usuario.update({_id:data.id},{ $unset: {horarioEmpleado: ""}},function(error,correcto){
 						});
-		console.log(data);
+	
 		Usuario.findByIdAndUpdate(data.id, data.empleado, function (err, empleado) { 
 			return cb(err, empleado);
 		});

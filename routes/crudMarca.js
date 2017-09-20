@@ -292,7 +292,10 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 							var dia = ["domingo", "lunes", "martes", "miercoles", 
 							"jueves", "viernes", "sabado"][today.day()];
 							var tiempoDia = horario[dia];
-
+							var horarioOriginal={minutos:tiempoDia.entrada.minutos,
+												hora:tiempoDia.entrada.hora};
+							
+							
 							/**
 							 * Se agrega el tiempo de grancia para la marca de entrada y de salida
 							 */
@@ -326,15 +329,18 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 							{
 								//console.log(marca);
 								if(marca.tipoMarca=="Entrada"){
+							
 									var mIn = moment.unix(marca.epoch);
 									var mReal = tiempoDia.entrada;
+							
 									if(util.compararHoras(mIn.hour(), mIn.minutes(),mReal.hora,mReal.minutos)==1){
 										if(
 											(usuario.tipo.length > 1 && tipoUsuario != config. empleadoProfesor) ||
 											(usuario.tipo.length == 1)
 										){
+										
 											addJustIncompleta(_idUser, "Entrada tardía", 
-												"Hora de entrada: "+ util.horaStr(mReal.hora, mReal.minutos)+
+												"Hora de entrada: "+ util.horaStr(horarioOriginal.hora, horarioOriginal.minutos)+
 												" - Hora de marca: "+ util.horaStr(mIn.hour(), mIn.minutes()),cb);
 
 										}else cb("");
@@ -374,6 +380,11 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 							var dia = ["Domingo", "Lunes", "Martes", "Miercoles", 
 							"Jueves", "Viernes", "Sabado"][today.day()];
 							var tiempoDia = horarioFijo[dia];
+							
+
+							var horarioOriginal={minutos:parseInt(String(horarioFijo.horaEntrada).substr(3,2)),
+								hora:parseInt(String(horarioFijo.horaEntrada).substr(0,2))};
+
 							if(tiempoDia){
 								var minutosEntrada,minutosSalida,horaEntrada,horaSalida;
 								minutosEntrada=parseInt(String(horarioFijo.horaEntrada).substr(3,2));
@@ -413,32 +424,31 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 									)
 								)
 							{
-							
-
-									if(marca.tipoMarca=="Entrada"){
-									var mIn = moment.unix(marca.epoch);
+	
+								if(marca.tipoMarca=="Entrada"){
+								var mIn = moment.unix(marca.epoch);
+								
+								if(usuario.tipo.length>1 && tipoUsuario==="Profesor"){
+									return cb("");
+								}else{
 									if(util.compararHoras(mIn.hour(), mIn.minutes(),horaEntrada,minutosEntrada)==1){
 										if(
 											(usuario.tipo.length > 1 && tipoUsuario != config. empleadoProfesor) ||
 											(usuario.tipo.length == 1)
 										){
 											addJustIncompleta(_idUser, "Entrada tardía", 
-												"Hora de entrada: "+ util.horaStr(horaEntrada,minutosEntrada)+
+												"Hora de entrada: "+ util.horaStr(horarioOriginal.hora, horarioOriginal.minutos)+
 												" - Hora de marca: "+ util.horaStr(mIn.hour(), mIn.minutes()),cb);
-
+	
 										}else cb("");
-									}else{
-										return cb("");
-									}
-									}else if(marca.tipoMarca=="Salida"){
-										var mOut= moment.unix(marca.epoch);
-										workedHourFix(_idUser,horaEntrada,minutosEntrada,horaSalida,minutosSalida, mOut,cb);
-									}
-
-								
+								}
+									
+								}
+								}else if(marca.tipoMarca=="Salida"){
+									var mOut= moment.unix(marca.epoch);
+									workedHourFix(_idUser,horaEntrada,minutosEntrada,horaSalida,minutosSalida, mOut,cb,usuario.tipo.length,tipoUsuario);
+								}
 							}
-
-
 								
 							}
 							else{
@@ -456,8 +466,14 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 					if(!err && usuario.horario && usuario.horario!=""){
 						Horario.findById(usuario.horario,function(error,horarioEmpleado){
 							if(!error && horarioEmpleado!="" && horarioEmpleado && horarioEmpleado.tipo=="Libre"){
-								var mOut= moment.unix(marca.epoch);
-								workedHourSchedule(_idUser,horarioEmpleado,mOut,cb,usuario.tipo,usuario.tipo.length);
+								if(tipoUsuario==="Profesor" && usuario.tipo.length>1){
+									cb("");
+								}else{
+									var mOut= moment.unix(marca.epoch);
+									workedHourSchedule(_idUser,horarioEmpleado,mOut,cb,usuario.tipo,usuario.tipo.length);
+								}
+								
+								
 							}
 							else {
 								cb("");
@@ -625,7 +641,7 @@ function workedHourSchedule(_idUser,horarioEmpleado,mOut,cb,tipoUsuario,cantidad
 
 }
 
-function workedHourFix(_idUser,horaEntradaP,minutosEntradaP,horaSalidaP,minutosSalidaP,mOut,cb){
+function workedHourFix(_idUser,horaEntradaP,minutosEntradaP,horaSalidaP,minutosSalidaP,mOut,cb,cantidadUsuario,tipoUsuario){
 
 		var date =  moment().format('L').split("/");
 		var epochGte = moment();
@@ -768,28 +784,32 @@ function workedHourFix(_idUser,horaEntradaP,minutosEntradaP,horaSalidaP,minutosS
 				}
 				
 				
-			
-				if(horaSalida>obj.horas){
-					addJustIncompleta(_idUser, "Salida antes de hora establecida", 
-											"Hora de salida: "+ util.horaStr(horaSalidaP,minutosSalidaP)+
-											" - Hora de marca: "+ util.horaStr(mOut.hour(), mOut.minutes()), cb);
-
-				}else if(obj.horas==horaSalida){
-		
-					if(minutoSalida>obj.minutos){
+				if(cantidadUsuario>1 && tipoUsuario==="Profesor"){
+					cb("");
+				}else{
+					if(horaSalida>obj.horas){
 						addJustIncompleta(_idUser, "Salida antes de hora establecida", 
-											"Hora de salida: "+ util.horaStr(horaSalidaP, minutosSalidaP)+
-											" - Hora de marca: "+ util.horaStr(mOut.hour(), mOut.minutes()), cb);
-
+												"Hora de salida: "+ util.horaStr(horaSalidaP,minutosSalidaP)+
+												" - Hora de marca: "+ util.horaStr(mOut.hour(), mOut.minutes()), cb);
+	
+					}else if(obj.horas==horaSalida){
+			
+						if(minutoSalida>obj.minutos){
+							addJustIncompleta(_idUser, "Salida antes de hora establecida", 
+												"Hora de salida: "+ util.horaStr(horaSalidaP, minutosSalidaP)+
+												" - Hora de marca: "+ util.horaStr(mOut.hour(), mOut.minutes()), cb);
+	
+						}
+						else{
+							
+							cb("");					
+						}
 					}
 					else{
-						
-						cb("");					
+						cb("");
 					}
 				}
-				else{
-					cb("");
-				}
+				
 
 		});
 
