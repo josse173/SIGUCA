@@ -12,6 +12,8 @@ var util = require('../util/util');
 var crud = require('../routes/crud');
 var crudUsuario = require('../routes/crudUsuario');
 var config 			= require('../config');
+var HorarioFijo = require('../models/HorarioFijo');
+var Vacaciones = require('../models/Vacaciones');
 
 module.exports = {
 	escritorio : function (req, res) {
@@ -155,29 +157,39 @@ module.exports = {
 	escritorioAdmin : function (req, res) {
 		req.user.tipo = req.session.name;
 		if (req.session.name ==="Administrador") {
-			console.log("en escriAdmin2: ");
+		
 			Usuario.find().exec(function(error, usuarios) {
 				Horario.find().exec(function(error, horarios) {
 					Departamento.find().exec(function(error, departamentos) {
-						if (error) return res.json(error);
+						HorarioFijo.find().exec(function(error,horarioFijo){
+							Vacaciones.find({},{usuario:1}).exec(function(err,vacacionesTem){
+								var vacaciones = [];
+								for(x in vacacionesTem){
+									vacaciones.push(vacacionesTem[x].usuario);
+								}
 
-						//Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
-						req.user.tipo = req.session.name;
-						return res.render('escritorio', {
-							title: 'Escritorio Administrador | SIGUCA',
-							usuario: req.user,
-							horarios: horarios,
-							departamentos: departamentos,
-							usuarios: usuarios,
-							tipoEmpleado: config.empleado2,
-							empleadoProfesor: config.empleadoProfesor
+								Usuario.find({_id:{$nin: vacaciones}}).count().exec(function(err, numUsuariosSinVacaciones){
+									if (error) return res.json(error);
+									//Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
+									req.user.tipo = req.session.name;
+									return res.render('escritorio', {
+										title: 'Escritorio Administrador | SIGUCA',
+										usuario: req.user,
+										horarios: horarios,
+										departamentos: departamentos,
+										usuarios: usuarios,
+										tipoEmpleado: config.empleado2,
+										empleadoProfesor: config.empleadoProfesor,
+										arregloHorarioFijo:horarioFijo,
+										numUsuariosSinVacaciones: numUsuariosSinVacaciones
+									});
+								});
+							});
 						});
 					});
 				});
 			});
 		} else {
-
-			console.log("en escriAdmin4: ");
 			req.logout();
 			res.redirect('/');
 		}

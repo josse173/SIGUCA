@@ -10,6 +10,7 @@ function selectValue(){
     socket.emit('listar', value);
 }
 
+
 function clock(epoch){
     setInterval(function(){
         var currentTime = new Date(0);        

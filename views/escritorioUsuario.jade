@@ -282,8 +282,8 @@
                     input#diaFinal.form-control(type= 'text', placeholder='Fecha Final', name= 'diaFinal' required)
                     span.input-group-addon
                       i.icon-calendar
-                label(for='cantidadDias')  Días:
-                  input#cantidadDias.form-control(type= 'text', placeholder='3', name= 'cantidadDias' required)
+                label#lblnumDias(for='cantidadDias')  Días: 0
+                input#cantidadDias.form-control(type= 'hidden', placeholder='3', name= 'cantidadDias' required)
               .form-group
                 label(for='motivo') Motivo:
                   select#selectMotivo.form-control(type= 'text', name= 'motivo' style='float:left' required)
