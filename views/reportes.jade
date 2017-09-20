@@ -13,8 +13,8 @@ block content
       div.filter
         table
           form(role='form', method="POST", action="/reportes/"+filtradoReporte)
-            td.redond-border
-              select.form-control.selectpicker.redond-border(data-style="fondoTransparente", data-width="auto", type="text", name="filtro") 
+            td
+              select.form-control.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro") 
                 option(value= "todos|reportes") Todos los usuarios
                 each user in usuarios
                   //-Se verifica si la informacion esta siendo filtrada por usuario
@@ -24,7 +24,7 @@ block content
                     option(value= user._id + "|reportes") #{user.apellido1} #{user.apellido2}, #{user.nombre}
 
             td
-              select.form-control#selectFiltro.selectpicker.redond-border(data-style="fondoTransparente", data-width="auto", type="text", name="filtro_departamento") 
+              select.form-control#selectFiltro.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro_departamento") 
                 option(value= "todos") Todos los departamentos
                 each dep in departamentos
                   //-Se verifica si la informacion esta siendo filtrada por departamento
