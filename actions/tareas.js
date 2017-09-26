@@ -47,8 +47,8 @@ cierreAutomatico : new CronJob({
 
 module.exports = {
     cierreAutomatico : new CronJob({
-        //cronTime: '* * * * * *',
-        cronTime: '00 50 23 * * 0-7',
+        cronTime: '* * * * * *',
+        //cronTime: '00 50 23 * * 0-7',
         onTick: function() {
             //if(!once){
                 var hoy = new Date();
@@ -142,10 +142,11 @@ function cierreHorario(_idUser,horarioEmpleado,mOut,tipoUsuario){
 
 
 	Marca.find({
-		usuario:_idUser,
+        usuario:_idUser,
+        tipoUsuario:tipoUsuario,
 		epoch:{
 		"$gte":epochGte.unix(),
-		"$lte":epochLte.unix()
+		"$lte":epochLte.unix(),
 	}}, function (err, marcas) {
 		
 
@@ -327,12 +328,10 @@ function ejecutarCierre(){
                                         cierreHorario(usuarios[i]._id,"","",valor);
                                     }else{
                                         cierreHorario(usuarios[i]._id,"","",valor);
-                                        console.log("estoy entrando ");
                                         addJustIncompleta(usuarios[i]._id, "Marca de salida omitida", "Marca de salida omitiada");
                                     
                                     }  
-                                    
-                                    
+                                     
                                 }else if(entro == false && usuarios[i].horario && usuarios[i].horario!="" &&
                                 valor != "Administrador"){
                                  
