@@ -223,12 +223,13 @@ module.exports = function(app, io) {
     app.post('/justificacion/:id', autentificado, justificacion_actions.actualiza);
 
     app.post('/jeje', autentificado, function(req,res){
-       
+       console.log(req.body.motivoOtroJust);
         var just={
             id:req.body.identificador,
             usuario:req.user.id,
             detalle:req.body.detalle,
             motivoOtroJust:req.body.motivoOtroJust,
+            motivoJust:"otro"
 
         }; 
 		crudJustificaciones.updateJust(just, function (err){
