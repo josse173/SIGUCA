@@ -222,6 +222,20 @@ module.exports = function(app, io) {
     */
     app.post('/justificacion/:id', autentificado, justificacion_actions.actualiza);
 
+    app.post('/jeje', autentificado, function(req,res){
+       
+        var just={
+            id:req.body.identificador,
+            usuario:req.user.id,
+            detalle:req.body.detalle,
+            motivoOtroJust:req.body.motivoOtroJust,
+
+        }; 
+		crudJustificaciones.updateJust(just, function (err){
+			res.redirect('/escritorioEmpl');
+		});
+    });
+
     /*
     *  El supervisor elimina una justificación y se le envia un correo al dueño de la justificación
     */

@@ -116,24 +116,29 @@ $(document).ready(function()
             $("#updateJustificacion #detalles").text(data.detalle);
             $("#updateJustificacion #comentSupervisor").prop("readonly", true);
             $("#updateJustificacion #comentSupervisor").text(data.comentarioSupervisor);
+            $("#updateJustificacion #identificador").val(id);
+
+            $("#updateJustificacion #motivoOtroJust").val(data.motivo);
             //$("#updateJustificacion #idJust").text(id);
+
+            /*
             $("#updateJustificacion #btn-just" ).click( function() {
                 var updJust = {
                     motivoJust: "otro",
                     motivoOtroJust: $("#updateJustificacion #motivoOtroJust").text(),
                     detalle: $("#updateJustificacion #detalles").val()
                 };
-                $.ajax({
-                    type: "POST",
-                    url: '/justificacion/'+id,
-                    processData: false,
-                    contentType: 'application/json',
-                    data: JSON.stringify(updJust),
-                    success: function(r) {
-                        console.log(r);
-                    }
+
+                alert(updJust.motivoJust+" "+updJust.motivoOtroJust);
+                $.post('/jeje', 
+                {hola:"dsadasd"}, 
+                function (data){
+                    alert();
                 });
+
+                
             });
+            */
             //alert($("#updateJustificacion > #motivoOtroJust").text());
             //alert(data);
         });

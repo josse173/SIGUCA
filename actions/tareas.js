@@ -322,7 +322,16 @@ function ejecutarCierre(){
                                          usuarios[i].horarioEmpleado, usuarios[i].tipo.length); 
                                 }else if(entro == false && usuarios[i].horarioFijo && usuarios[i].horarioFijo!="" &&
                                     valor != "Administrador"){
-                                    cierreHorario(usuarios[i]._id,"","",valor);
+                                    global.globalTipoUsuario = valor;
+                                    if(usuarios[i].tipo.length>1 && valor=="Profesor"){
+                                        cierreHorario(usuarios[i]._id,"","",valor);
+                                    }else{
+                                        cierreHorario(usuarios[i]._id,"","",valor);
+                                        console.log("estoy entrando ");
+                                        addJustIncompleta(usuarios[i]._id, "Marca de salida omitida", "Marca de salida omitiada");
+                                    
+                                    }  
+                                    
                                     
                                 }else if(entro == false && usuarios[i].horario && usuarios[i].horario!="" &&
                                 valor != "Administrador"){
