@@ -180,74 +180,88 @@ function cierreHorario(_idUser,horarioEmpleado,mOut,tipoUsuario){
 			if(mcs[m].tipoMarca=='Entrada de Almuerzo'){
 				var tiempoEntradaAlmuerzo =mcs[m].fecha.hora ;
 			}
-		}
-
-
+        }
+        
 		finMinutos =moment().format();
 		finMinutos=parseInt(String(finMinutos).substr(14,2));
-						
-		inicioMinutos = parseInt(tiempoEntrada.substr(3,2));
+        
+        if(tiempoEntrada){
+            inicioMinutos = parseInt(tiempoEntrada.substr(3,2));
 			
-		inicioHoras = parseInt(String(tiempoEntrada).substr(0,2));
+            inicioHoras = parseInt(String(tiempoEntrada).substr(0,2));
+            
+            finHoras=moment().format();
+            finHoras = parseInt(String(finHoras).substr(11,2));
+
+            
+            var transcurridoMinutos = finMinutos - inicioMinutos;
+            var transcurridoHoras = finHoras - inicioHoras;  //bloque de salida y entrada
+
+            if(tiempoSalidaReceso!=null){
+            var inicioRecesoMinutos = parseInt(String(tiempoSalidaReceso).substr(3,2));
+            var inicioRecesoHoras = parseInt(String(tiempoSalidaReceso).substr(0,2));
+            var finRecesoMinutos = parseInt(String(tiempoEntradaReceso).substr(3,2));
+            var finRecesoHoras = parseInt(String(tiempoEntradaReceso).substr(0,2));
+            var transcurridoRecesoMinutos = finRecesoMinutos - inicioRecesoMinutos;
+            var transcurridoRecesoHoras = finRecesoHoras - inicioRecesoHoras;//bloque para recesos 
+            }else{
+                transcurridoRecesoHoras = 0;
+                transcurridoRecesoMinutos = 0;
+            }
+            if(tiempoSalidaAlmuerzo!=null){
+            var inicioAlmuerzoMinutos = parseInt(String(tiempoSalidaAlmuerzo).substr(3,2));
+            var inicioAlmuerzoHoras = parseInt(String(tiempoSalidaAlmuerzo).substr(0,2));
+            var finAlmuerzoMinutos = parseInt(String(tiempoEntradaAlmuerzo).substr(3,2));
+            var finAlmuerzoHoras = parseInt(String(tiempoEntradaAlmuerzo).substr(0,2));
+            var transcurridoAlmuerzoMinutos = finAlmuerzoMinutos - inicioAlmuerzoMinutos;
+            var transcurridoAlmuerzoHoras = finAlmuerzoHoras - inicioAlmuerzoHoras;//bloque para almuerzos
+            }else{
+                transcurridoAlmuerzoMinutos = 0;
+                transcurridoAlmuerzoHoras = 0;
+            }
+
+            var transcurridoHorasTotal = transcurridoHoras - transcurridoRecesoHoras - transcurridoAlmuerzoHoras;
+            var transcurridoMinutosTotal = transcurridoMinutos - transcurridoRecesoMinutos - transcurridoAlmuerzoMinutos;
+            
+
+            if (transcurridoMinutosTotal < 0) {
+                transcurridoHorasTotal--;
+                transcurridoMinutosTotal = 60 + transcurridoMinutosTotal;
+            }
+            var horasTrabajadas = transcurridoHorasTotal;
+            var minutosTrabajados = transcurridoMinutosTotal;	
+            var obj = {
+            usuario: _idUser,
+            tipoUsuario: tipoUsuario,
+            tiempo: {
+                horas:horasTrabajadas,
+                minutos:minutosTrabajados
+            },
+            epoch: moment().unix()
+            };
+            var cierre = CierrePersonal(obj);
+            cierre.save(function (err, cierreActualizado) {
+                if(err) 
+                console.log("Error al crear cierre en la fecha '"+hoy+"' => Mensaje: "+error);
+            });
 		
-		finHoras=moment().format();
-		finHoras = parseInt(String(finHoras).substr(11,2));
-
-		
-		var transcurridoMinutos = finMinutos - inicioMinutos;
-		var transcurridoHoras = finHoras - inicioHoras;  //bloque de salida y entrada
-
-		if(tiempoSalidaReceso!=null){
-		var inicioRecesoMinutos = parseInt(String(tiempoSalidaReceso).substr(3,2));
-		var inicioRecesoHoras = parseInt(String(tiempoSalidaReceso).substr(0,2));
-		var finRecesoMinutos = parseInt(String(tiempoEntradaReceso).substr(3,2));
-		var finRecesoHoras = parseInt(String(tiempoEntradaReceso).substr(0,2));
-		var transcurridoRecesoMinutos = finRecesoMinutos - inicioRecesoMinutos;
-		var transcurridoRecesoHoras = finRecesoHoras - inicioRecesoHoras;//bloque para recesos 
-		}else{
-			transcurridoRecesoHoras = 0;
-			transcurridoRecesoMinutos = 0;
-		}
-		if(tiempoSalidaAlmuerzo!=null){
-		var inicioAlmuerzoMinutos = parseInt(String(tiempoSalidaAlmuerzo).substr(3,2));
-		var inicioAlmuerzoHoras = parseInt(String(tiempoSalidaAlmuerzo).substr(0,2));
-		var finAlmuerzoMinutos = parseInt(String(tiempoEntradaAlmuerzo).substr(3,2));
-		var finAlmuerzoHoras = parseInt(String(tiempoEntradaAlmuerzo).substr(0,2));
-		var transcurridoAlmuerzoMinutos = finAlmuerzoMinutos - inicioAlmuerzoMinutos;
-		var transcurridoAlmuerzoHoras = finAlmuerzoHoras - inicioAlmuerzoHoras;//bloque para almuerzos
-		}else{
-			transcurridoAlmuerzoMinutos = 0;
-			transcurridoAlmuerzoHoras = 0;
-		}
-
-		var transcurridoHorasTotal = transcurridoHoras - transcurridoRecesoHoras - transcurridoAlmuerzoHoras;
-		var transcurridoMinutosTotal = transcurridoMinutos - transcurridoRecesoMinutos - transcurridoAlmuerzoMinutos;
-		
-
-		if (transcurridoMinutosTotal < 0) {
-			transcurridoHorasTotal--;
-			transcurridoMinutosTotal = 60 + transcurridoMinutosTotal;
-		}
-		
-
-		var horasTrabajadas = transcurridoHorasTotal;
-        var minutosTrabajados = transcurridoMinutosTotal;	
-
-       var obj = {
-        usuario: _idUser,
-        tipoUsuario: tipoUsuario,
-        tiempo: {
-            horas:horasTrabajadas,
-            minutos:minutosTrabajados
-        },
-        epoch: moment().unix()
-        };
-        var cierre = CierrePersonal(obj);
-        cierre.save(function (err, cierreActualizado) {
-            if(err) 
-             console.log("Error al crear cierre en la fecha '"+hoy+"' => Mensaje: "+error);
-        });
-
+        }else{
+            var obj = {
+            usuario: _idUser,
+            tipoUsuario: tipoUsuario,
+            tiempo: {
+                horas:0,
+                minutos:0
+            },
+            epoch: moment().unix()
+            };
+            var cierre = CierrePersonal(obj);
+            cierre.save(function (err, cierreActualizado) {
+                if(err) 
+                console.log("Error al crear cierre en la fecha '"+hoy+"' => Mensaje: "+error);
+            });
+        }
+			
         
     });
 
@@ -271,7 +285,7 @@ function ejecutarCierre(){
     var contador=0;
     //Se realiza el cierre para todos los usuarios menos el tipo administrador
     var entro =false;
-    Usuario.find({},{_id:1, nombre:1,horarioFijo:1,horarios:1,horarioEmpleado:1,tipo:1}).exec(
+    Usuario.find({},{_id:1, nombre:1,horarioFijo:1,horario:1,horarioEmpleado:1,tipo:1}).exec(
         function(err, usuarios){
             if(!err){
                 CierrePersonal.find({epoch: { "$gte": epochMin.unix(),"$lte":epochMax.unix()}}).exec(function(error,cierre){
@@ -306,6 +320,24 @@ function ejecutarCierre(){
                                      valor != "Administrador"){
                                     buscarHorario(usuarios[i]._id,valor,epochMin, epochMax,
                                          usuarios[i].horarioEmpleado, usuarios[i].tipo.length); 
+                                }else if(entro == false && usuarios[i].horarioFijo && usuarios[i].horarioFijo!="" &&
+                                    valor != "Administrador"){
+                                    global.globalTipoUsuario = valor;
+                                    if(usuarios[i].tipo.length>1 && valor=="Profesor"){
+                                        cierreHorario(usuarios[i]._id,"","",valor);
+                                    }else{
+                                        cierreHorario(usuarios[i]._id,"","",valor);
+                                        console.log("estoy entrando ");
+                                        addJustIncompleta(usuarios[i]._id, "Marca de salida omitida", "Marca de salida omitiada");
+                                    
+                                    }  
+                                    
+                                    
+                                }else if(entro == false && usuarios[i].horario && usuarios[i].horario!="" &&
+                                valor != "Administrador"){
+                                 
+                                   cierreHorario(usuarios[i]._id,"","",valor);
+                                
                                 }
                                
                             }
