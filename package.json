@@ -24,6 +24,6 @@
     "passport-local-mongoose": "4.0.0",
     "serialport": "latest",
     "formidable": "1.0.11",
-    "socket.io": "*"
+    "socket.io": "1.5.1"
   }
 }

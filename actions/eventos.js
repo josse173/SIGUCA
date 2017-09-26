@@ -542,6 +542,7 @@ function filtrarPorFecha(req){
   
   
    //Si corresponde a las justificaciones envia todos los registros
+
   if(req.route.path.substring(0, 9) !=='/reportes'){
     return {};
   }

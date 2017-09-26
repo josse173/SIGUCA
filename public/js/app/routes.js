@@ -425,7 +425,33 @@ $("#extraLink").click(function(){
     Notificaciones y gestión de eventos
     ---------------------------------------------------------------------*/
 
+
     $('.tableSolicitudes').footable().on('click', '.row-delete', 
+        function(e) {
+            e.preventDefault();
+            //get the footable object
+            var footable = $('.tableSolicitudes').data('footable');
+
+            //get the row we are wanting to delete
+            var row = $(this).parents('tr:first');
+
+            var id = $(this).val();
+            var comentarioSupervisor = row.find('.comentarioSupervisor').val();
+            var estadoreal = "#estado"+id;
+            var estado = $(estadoreal).val();
+         
+            $.post('/getionarSolicitudAjax/'+id, 
+                {comentarioSupervisor: comentarioSupervisor, estado: estado}, 
+                function (data){
+                    if(data == 'Se elimino'){
+                        footable.removeRow(row);
+                    }
+                });
+        });
+
+
+
+    $('.tableVacaciones').footable().on('click', '.row-delete', 
         function(e) {
             e.preventDefault();
             //get the footable object
