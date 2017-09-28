@@ -33,6 +33,16 @@ from Tkinter import *
 from pymongo import MongoClient
 from PIL import Image
 
+#Import para imagenes
+import io
+import base64
+try:
+    # Python2
+    from urllib2 import urlope
+except ImportError:
+    # Python3
+    from urllib.request import urlopen
+
 #SETTINGS AND CONFIGURATIONS
 #IP OF NODE JS SERVER WHERE SIGUCA IS RUNNING
 server_IP='10.42.30.13'
