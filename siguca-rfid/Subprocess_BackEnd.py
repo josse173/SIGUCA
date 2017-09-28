@@ -44,7 +44,7 @@ app_Port='3000'
 browserSelection='curl'
 #ROUTE ON RASPBERRY PI WHERE IMAGE'S PATH  OF THE SERVER WAS MOUNTED, THROUGHT  NFS.
 #Ruta en la RaspberryPI donde esta montado el path de imagenes  del servidor a través de nfs.
-rutaImagenesPi= "/mnt/imgs/"
+rutaImagenesPi= "http://siguca.greencore.int/uploads/"
 #----------------------------------------------------------------------------------------------------------------------------------
 connection = MongoClient('mongodb://'+server_IP+':'+port)
 
@@ -351,9 +351,19 @@ while True:
         frame1.pack()
         root1.config(background="black",cursor="none")
        
-        try:      
-		logo1 = PhotoImage(file=rutaImagenesPi+dec+".png")
-        	w2 = Label(root1, image=logo1).pack(side="top")
+        try:    
+                w = 520
+                h = 320
+                x = 80
+                y = 100
+                # use width x height + x_offset + y_offset (no spaces!)
+                root2.geometry("%dx%d+%d+%d" % (w, h, x, y))
+                # this GIF picture previously downloaded to tinypic.com
+                image_url = rutaImagenesPi+dec+".png"
+                image_byt = urlopen(image_url).read()
+                image_b64 = base64.encodestring(image_byt)
+                photo = PhotoImage(data=image_b64)
+                w1 = Label(root1,image=photo).pack(side="top")
         except: 
             pass
 
