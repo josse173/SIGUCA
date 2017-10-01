@@ -42,17 +42,21 @@ exports.insertVacaciones = function(req, cb){
 
 exports.updateVacacionesAutomatico = function(){
 	//Se obtienen todas las vacaciones
-	Vacaciones.find().populate('usuario').exec(function(err, listaVacaciones){
+	Vacaciones.find().populate('usuario').exec(function(err, listaVacacionesTem){
 
 		//Se obtienen los usuarios que no tienen vacaciones asignadas
 		var listaIdUsuarios = [];
-	    for(x in listaVacaciones){
- 	       listaIdUsuarios.push(listaVacaciones[x].usuario.id);
+		var listaVacaciones = [];
+	    for(x in listaVacacionesTem){
+			if(listaVacacionesTem[x].usuario.estado == "Activo"){
+				listaVacaciones.push(listaVacacionesTem[x].id);
+				listaIdUsuarios.push(listaVacacionesTem[x].usuario.id);
+			}
 		}
-		Usuarios.find({_id: { $nin: listaIdUsuarios}},function(err, listaUsuarios){
+		Usuarios.find({_id: { $nin: listaIdUsuarios},estado: "Activo"},function(err, listaUsuarios){
 			
 			//Se les amenta en uno los días disponibles a todas las vacaciones
-			Vacaciones.update({}, {$inc:{disponibles:1}},{multi:true}, function(err){
+			Vacaciones.update({_id:{$in: listaVacaciones}}, {$inc:{disponibles:1}},{multi:true}, function(err){
 				
 				//Se insertan registros de vacaciones para los usuarios que no tienen vacaciones
 				for(y in listaUsuarios){
