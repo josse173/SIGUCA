@@ -26,6 +26,18 @@ module.exports = {
         start: false,
         timeZone: "America/Costa_Rica"
     }),
+    aumentoVacacionesAutomatico : new CronJob({
+        //cronTime: '* * * * * *',
+        cronTime: '0 0 9 * * 0-7',
+        onTick: function() {
+                var hoy = new Date();
+                console.log("Realizando cierre en la fecha '"+hoy+"' y notificando a usuarios");
+
+                console.log("{======= Realizando aumento de vacaciones =======}");
+        },
+        start: false,
+        timeZone: "America/Costa_Rica"
+    }),
 
     ejecutarCierrePorUsuarioAlMarcarSalida:function(tipoUsuario,id){
     
