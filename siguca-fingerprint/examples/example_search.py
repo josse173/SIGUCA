@@ -63,6 +63,12 @@ try:
     ## Downloads the characteristics of template loaded in charbuffer 1
     characterics = str(f.downloadCharacteristics(0x01)).encode('utf-8')
 
+    if(hashlib.sha256(characterics).hexdigest() == "0eff012f344875834a7fe838ab79ba60a9f30999eb586d39d34bde07aca55414"):
+        print("Es igual")
+    else:
+        print("No es igual")
+
+
     ## Hashes characteristics of template
     print('SHA-2 hash of template: ' + hashlib.sha256(characterics).hexdigest())
 
