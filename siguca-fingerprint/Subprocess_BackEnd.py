@@ -200,7 +200,7 @@ def read_rfid():
     #Excepcion para que no deje de escuchar si no encuentra  lectura .
     try:    
         #Se inicializan las variables sin ningún contenido
-	os.system('clear')        
+	#os.system('clear')        
         print "Escuchando entradas..."
         data = None
         ser = None   
@@ -348,7 +348,7 @@ def obtieneTipoUsuario(dec,listTipo):
 #En esta sección tenemos el orden de como se van a ir ejecutando los métodos dentro del sistema , esto es  lo que se ejecutará cuando se lance el script.
 
 while True:
-    os.system('clear')
+#    os.system('clear')
     dec=read_rfid()
     dec=str(dec)
     tipoUsuario = "None"
@@ -393,5 +393,5 @@ while True:
 
         
     else:  
-        os.system('clear')
+        #os.system('clear')
         pass 
