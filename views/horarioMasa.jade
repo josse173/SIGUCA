@@ -1,0 +1,89 @@
+extends layout
+
+block content
+  .container
+
+    br
+    h3 Configuración de horarios de empleado
+
+    h5(id='titulo',style='display:none') Agregar usuarios en masa
+    .form-group
+        label(style='display:none',id='lbLibre') Horario libre:
+                  br
+                  select.hLibre(data-style="btn-inverse", data-width="140px", type="text", id="hLibre",style='display:none') 
+                    option(value="") Sin horario  
+                    each horario, i in horarios
+                        option(value= horario.id) #{horario.nombre}
+
+        label(style='display:none',id='lbFijo') Horario fijo:
+                  br
+                  select.hFijo(data-style="btn-inverse", data-width="140px", type="text",id="hFijo" ,style='display:none') 
+                    option(value="") Sin horario  
+                    each horario, i in horarioFijo
+                        option(value= horario._id) #{horario.nombre}
+
+         button(type='button',id='horarioMasa' ,style='display:none;float:left') 
+          i.icon-ok.icon-large.i-success       
+   
+    table.footable.tableEmpleado(data-page-navigation=".pagination" data-page-size="20")
+        thead
+          tr
+            th 
+            th Código Tarjeta
+            th Nombre
+            th Apellidos
+            th(data-hide="phone") Cédula
+            th(data-hide="phone,small,medium,large") Email
+            th(data-hide="phone") Tipo
+            th(data-hide="phone,small,medium" data-sort-ignore="true") Departamento
+            th(data-hide="phone,small,medium") Horario libre
+            th(data-hide="phone,small,medium") Horario Fijo
+            th(data-hide="phone,small") Estado
+      
+
+        tbody 
+          each empleado, i in empleados
+            tr
+              td
+                input.horario.horarioId(type='checkbox',checked=false, id='check' ,value=empleado._id)
+              td #{empleado.codTarjeta}
+              td #{empleado.nombre}
+              td #{empleado.apellido1} #{empleado.apellido2} 
+              td #{empleado.cedula} 
+              td #{empleado.email} 
+              td
+                each tipo, t in empleado.tipo
+                  ul
+                    if(tipo)
+                      li #{tipo}
+                    else
+                      li No tiene tipos de usuario asignados
+              td 
+                each departamentos, i in empleado.departamentos
+                  ul
+                    if(departamentos.departamento)
+                      li #{departamentos.departamento.nombre}
+                    else
+                      li No tiene departamento asignado
+              if(empleado.horario)
+                td #{empleado.horario.nombre} 
+                
+              else
+                td No tiene horario asignado
+                
+              if(empleado.horarioFijo)
+                td #{empleado.horarioFijo.nombre} 
+                
+              else
+                td No tiene horario asignado
+
+
+
+               td #{empleado.estado} 
+              
+        tfoot
+          tr
+            td(colspan='11')
+              .pagination.pagination-centered.hide-if-no-paging
+block sigucaJS  
+  script(src="/js/app/gestionarEventos.js")

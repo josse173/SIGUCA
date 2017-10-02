@@ -1,4 +1,110 @@
 
+$(".horario").click(function(){
+    var cantidadCheck=document.getElementsByClassName("horario");
+    var contador=0;
+    for(var i=0;i<cantidadCheck.length;i++){
+        if( cantidadCheck[i].checked) {
+            contador++;
+        }
+    }
+    if(contador>0){
+        $("#hLibre").css('display','block');
+        $("#titulo").css('display','block');
+        $("#lbFijo").css('display','block');
+        $("#hFijo").css('display','block');
+        $("#lbLibre").css('display','block');
+        $("#horarioMasa").css('display','block');
+
+    }else{
+        $("#titulo").css('display','none');
+        $("#hFijo").css('display','none');
+        $("#hLibre").css('display','none');
+        $("#lbFijo").css('display','none');
+        $("#lbLibre").css('display','none');
+        $("#horarioMasa").css('display','none');
+    }
+});
+
+$("#horarioMasa").click(function() {
+    
+    var usuariosId=document.getElementsByClassName("horarioId");
+    var hLibre= document.getElementsByClassName("hLibre");
+    var hFijo= document.getElementsByClassName("hFijo");
+    var arrayHorarios=new Array();
+   
+    if(hLibre[0].value!=""){
+        for(var i=0;i<usuariosId.length;i++){
+            if( usuariosId[i].checked) {
+                var obj=new Object();
+                obj.id=usuariosId[i].value;
+                obj.idHorario=hLibre[0].value;
+                arrayHorarios.push(obj);
+         
+            }
+        }
+
+        $.ajax({
+            url: '/horarioMasaLibre',
+            type: 'POST',
+            dataType : "json",
+            data:{vector:arrayHorarios},
+            success: function(data) {
+                location.href="/horarioMasa";
+            },
+            error: function(){
+                alert("Error al agregar el horario.");
+            }
+        });
+       
+    }else if(hFijo[0].value!=""){
+       
+        for(var i=0;i<usuariosId.length;i++){
+            if(usuariosId[i].checked) {
+                var obj=new Object();
+                obj.id=usuariosId[i].value;
+                obj.idHorario=hFijo[0].value;
+                arrayHorarios.push(obj);
+         
+            }
+        }
+        $.ajax({
+            url: '/horarioMasaFijo',
+            type: 'POST',
+            dataType : "json",
+            data:{vector:arrayHorarios},
+            success: function(data) {
+                location.href="/horarioMasa";
+            },
+            error: function(){
+                alert("Error al agregar el horario.");
+            }
+        });
+    }else if(hLibre[0].value=="" && hFijo[0].value==""){
+        for(var i=0;i<usuariosId.length;i++){
+            if(usuariosId[i].checked) {
+                var obj=new Object();
+                obj.id=usuariosId[i].value;
+                obj.idHorario=hFijo[0].value;
+                arrayHorarios.push(obj);
+         
+            }
+        }
+        $.ajax({
+            url: '/horarioMasaSinHorario',
+            type: 'POST',
+            dataType : "json",
+            data:{vector:arrayHorarios},
+            success: function(data) {
+                location.href="/horarioMasa";
+            },
+            error: function(){
+                alert("Error al agregar el horario.");
+            }
+        });
+    }     
+
+});
+
 $(".justificar").click(function(){
  
     var cantidadCheck=document.getElementsByClassName("justificar");

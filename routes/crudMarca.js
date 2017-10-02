@@ -431,6 +431,7 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 								if(usuario.tipo.length>1 && tipoUsuario==="Profesor"){
 									return cb("");
 								}else{
+								
 									if(util.compararHoras(mIn.hour(), mIn.minutes(),horaEntrada,minutosEntrada)==1){
 										if(
 											(usuario.tipo.length > 1 && tipoUsuario != config. empleadoProfesor) ||
@@ -440,7 +441,12 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 												"Hora de entrada: "+ util.horaStr(horarioOriginal.hora, horarioOriginal.minutos)+
 												" - Hora de marca: "+ util.horaStr(mIn.hour(), mIn.minutes()),cb);
 	
-										}else cb("");
+										}else{
+										
+											return cb("");
+										} 
+								}else{
+									return cb("");
 								}
 									
 								}
@@ -482,6 +488,8 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 							
 						});
 					
+					}else{
+						return cb("");
 					}
 				});
 				

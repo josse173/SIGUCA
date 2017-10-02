@@ -119,28 +119,7 @@ $(document).ready(function()
             $("#updateJustificacion #identificador").val(id);
 
             $("#updateJustificacion #motivoOtroJust").val(data.motivo);
-            //$("#updateJustificacion #idJust").text(id);
-
-            /*
-            $("#updateJustificacion #btn-just" ).click( function() {
-                var updJust = {
-                    motivoJust: "otro",
-                    motivoOtroJust: $("#updateJustificacion #motivoOtroJust").text(),
-                    detalle: $("#updateJustificacion #detalles").val()
-                };
-
-                alert(updJust.motivoJust+" "+updJust.motivoOtroJust);
-                $.post('/jeje', 
-                {hola:"dsadasd"}, 
-                function (data){
-                    alert();
-                });
-
-                
-            });
-            */
-            //alert($("#updateJustificacion > #motivoOtroJust").text());
-            //alert(data);
+          
         });
 });
 

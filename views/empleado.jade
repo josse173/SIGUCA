@@ -109,19 +109,19 @@ block content
                         option Administrador
                         option #{tipoEmpleado} 
                         option #{empleadoProfesor}
-
+                  .form-group    
                     label(for='horario') Horario libre:
                       br
                       select.form-control#selectHorario.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="horario") 
                         option(value="Sin horario") Sin horario
                         each horario, i in horarios
                             option(value= horario.id) #{horario.nombre} 
-
-            
-                     select.form-control#selectHorarioFijo.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="horarioFijo") 
-                        option(value="Sin horario") Sin horario
-                        each horario, i in horarioFijo
-                            option(value= horario._id) #{horario.nombre}         
+                    label(for='horario') Horario fijo:
+                      br
+                      select.form-control#selectHorarioFijo.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="horarioFijo") 
+                          option(value="Sin horario") Sin horario
+                          each horario, i in horarioFijo
+                              option(value= horario._id) #{horario.nombre}         
 
                     label(for='departamento') Departamento:
                       br
