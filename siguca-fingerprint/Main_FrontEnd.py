@@ -32,7 +32,6 @@ import RPi.GPIO as GPIO
 from Tkinter import *
 from PIL import Image
 
-#Import para imagenes
 import UtilImg
 
 #reloj metodo
@@ -46,7 +45,7 @@ def update_timeText():
 #reloj
 
 #Here you have to set the path of the BackEnd FIle
-#rutaImagenesPi= "/home/pi/Desktop/imgs/"
+rutaImagenesPi= "/home/pi/Desktop/imgs/"
 path='/usr/local/bin/scripts-python-siguca/Subprocess_BackEnd.py'
 subprocess.Popen(['python', path])
 root2 = Tk()
@@ -67,4 +66,4 @@ instUtilImg = UtilImg.UtilImg()
 photo = instUtilImg.getImageURL("siguca.gif")
 w1 = Label(root2,image=photo).pack()
 
-root2.mainloop()
+root2.mainloop(

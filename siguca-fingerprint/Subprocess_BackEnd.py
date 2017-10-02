@@ -34,8 +34,14 @@ from pymongo import MongoClient
 from PIL import Image
 
 #Import para imagenes
-import UtilImg
-
+import io
+import base64
+try:
+    # Python2
+    from urllib2 import urlope
+except ImportError:
+    # Python3
+    from urllib.request import urlopen
 
 #SETTINGS AND CONFIGURATIONS
 #IP OF NODE JS SERVER WHERE SIGUCA IS RUNNING
@@ -48,7 +54,7 @@ app_Port='3000'
 browserSelection='curl'
 #ROUTE ON RASPBERRY PI WHERE IMAGE'S PATH  OF THE SERVER WAS MOUNTED, THROUGHT  NFS.
 #Ruta en la RaspberryPI donde esta montado el path de imagenes  del servidor a través de nfs.
-#rutaImagenesPi= "http://siguca.greencore.int/uploads/"
+rutaImagenesPi= "http://siguca.greencore.int/uploads/"
 #----------------------------------------------------------------------------------------------------------------------------------
 connection = MongoClient('mongodb://'+server_IP+':'+port)
 
@@ -194,7 +200,7 @@ def read_rfid():
     #Excepcion para que no deje de escuchar si no encuentra  lectura .
     try:    
         #Se inicializan las variables sin ningún contenido
-	os.system('clear')        
+	#os.system('clear')        
         print "Escuchando entradas..."
         data = None
         ser = None   
@@ -342,7 +348,7 @@ def obtieneTipoUsuario(dec,listTipo):
 #En esta sección tenemos el orden de como se van a ir ejecutando los métodos dentro del sistema , esto es  lo que se ejecutará cuando se lance el script.
 
 while True:
-    os.system('clear')
+#    os.system('clear')
     dec=read_rfid()
     dec=str(dec)
     tipoUsuario = "None"
@@ -356,8 +362,17 @@ while True:
         root1.config(background="black",cursor="none")
        
         try:    
-		instUtilImg = UtilImg.UtilImg()
-                photo=instUtilImg.getImageURL(dec+".png")
+                w = 520
+                h = 320
+                x = 80
+                y = 100
+                # use width x height + x_offset + y_offset (no spaces!)
+                root2.geometry("%dx%d+%d+%d" % (w, h, x, y))
+                # this GIF picture previously downloaded to tinypic.com
+                image_url = rutaImagenesPi+dec+".png"
+                image_byt = urlopen(image_url).read()
+                image_b64 = base64.encodestring(image_byt)
+                photo = PhotoImage(data=image_b64)
                 w1 = Label(root1,image=photo).pack(side="top")
         except: 
             pass
@@ -378,5 +393,5 @@ while True:
 
         
     else:  
-        os.system('clear')
+        #os.system('clear')
         pass 
