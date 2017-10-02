@@ -33,14 +33,7 @@ from Tkinter import *
 from PIL import Image
 
 #Import para imagenes
-import io
-import base64
-try:
-    # Python2
-    from urllib2 import urlopen
-except ImportError:
-    # Python3
-    from urllib.request import urlopen
+import UtilImg
 
 #reloj metodo
 def update_timeText():
@@ -68,17 +61,10 @@ timeText.config(background="black", fg="white")
 timeText.pack()
 update_timeText()
 
-w = 520
-h = 320
-x = 80
-y = 100
-# use width x height + x_offset + y_offset (no spaces!)
-root2.geometry("%dx%d+%d+%d" % (w, h, x, y))
-# this GIF picture previously downloaded to tinypic.com
-image_url = "http://siguca.greencore.int/uploads/siguca.gif"
-image_byt = urlopen(image_url).read()
-image_b64 = base64.encodestring(image_byt)
-photo = PhotoImage(data=image_b64)
+#Se hace una instacia al archivo que maneja las imagenes de forma remota,
+#Se obtiene la imagen deseada por URL y se muestra en un label
+instUtilImg = UtilImg.UtilImg()
+photo = instUtilImg.getImageURL("siguca.gif")
 w1 = Label(root2,image=photo).pack()
 
 root2.mainloop()
