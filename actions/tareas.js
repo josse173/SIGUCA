@@ -10,27 +10,25 @@ var crudHorario = require('../routes/crudHorario');
 var crudSolicitud = require('../routes/crudSolicitud');
 var crudJustificaciones = require('../routes/crudJustificaciones');
 var crudVacaciones = require('../routes/crudVacaciones');
+var Feriado = require('../models/Feriado');
 
 
 
-/*
-cierreAutomatico : new CronJob({
-        cronTime: '* * * * * *',
-       //cronTime: '00 50 23 * * 0-7',
+module.exports = {
+    cierreAutomatico : new CronJob({
+       //cronTime: '* * * * * *',
+        cronTime: '00 50 23 * * 0-7',
         onTick: function() {
-                var date =  moment().format('L').split("/");
-                var epochGte = moment();
-                epochGte.year(date[2]).month(date[0]-1).date(date[1]);
-                epochGte.hour(0).minutes(0).seconds(0);
-                var epochLte = moment();
-                epochLte.year(date[2]).month(date[0]-1).date(date[1]);
-                epochLte.hour(23).minutes(59).seconds(59);
+                var date = moment(),
+                epochTime = date.unix(),
+                epochGte = date.hours(0).minutes(0).seconds(0).unix(),
+                epochLte = date.hours(23).minutes(59).seconds(59).unix();
 
-
-                Feriado.find({epoch:{"$gte":epochGte.unix(),"$lte":epochLte.unix()}}, function (err,feriado) {
-                    if(err && feriado){
-                        console.log(feriado[0].nombreFeriado);
+                Feriado.find({epoch:{"$gte":epochGte,"$lte":epochLte}}, function (err,feriado) {
+                    if(feriado.length>0){
+                        console.log("No se generan cierres ni justificaciones, dia feriado");
                     }else{
+                          
                           var hoy = new Date();
                           console.log("Realizando cierre en la fecha '"+hoy+"' y notificando a usuarios");
                           ejecutarCierre();
@@ -40,27 +38,7 @@ cierreAutomatico : new CronJob({
         start: false,
         timeZone: "America/Costa_Rica"
     }),
-
-*/
-
-
-
-module.exports = {
-    cierreAutomatico : new CronJob({
-        //cronTime: '* * * * * *',
-        cronTime: '00 50 23 * * 0-7',
-        onTick: function() {
-            //if(!once){
-                var hoy = new Date();
-                console.log("Realizando cierre en la fecha '"+hoy+"' y notificando a usuarios");
-                ejecutarCierre();
-            //}
-            //once = true;
-        },
-        start: false,
-        timeZone: "America/Costa_Rica"
-    }),
-    aumentoVacacionesAutomatico : new CronJob({
+     aumentoVacacionesAutomatico : new CronJob({
         cronTime: '00 00 00 01 * *', //Cada primero de cada mes
         onTick: function() {
             console.log("{======= Realizando aumento de vacaciones =======}");
@@ -142,10 +120,11 @@ function cierreHorario(_idUser,horarioEmpleado,mOut,tipoUsuario){
 
 
 	Marca.find({
-		usuario:_idUser,
+        usuario:_idUser,
+        tipoUsuario:tipoUsuario,
 		epoch:{
 		"$gte":epochGte.unix(),
-		"$lte":epochLte.unix()
+		"$lte":epochLte.unix(),
 	}}, function (err, marcas) {
 		
 
@@ -269,7 +248,9 @@ function cierreHorario(_idUser,horarioEmpleado,mOut,tipoUsuario){
 
 
 function ejecutarCierre(){
-
+    var today = moment();
+    var dia = ["Domingo", "Lunes", "Martes", "Miercoles", 
+    "Jueves", "Viernes", "Sabado"][today.day()];
     var hoy = new Date();
 
     //Fechas para encontrar información del día
@@ -285,7 +266,8 @@ function ejecutarCierre(){
     var contador=0;
     //Se realiza el cierre para todos los usuarios menos el tipo administrador
     var entro =false;
-    Usuario.find({},{_id:1, nombre:1,horarioFijo:1,horario:1,horarioEmpleado:1,tipo:1}).exec(
+    Usuario.find({},{_id:1, nombre:1,horarioFijo:1,horario:1,horarioEmpleado:1,tipo:1}).
+    populate("horarioFijo").exec(
         function(err, usuarios){
             if(!err){
                 CierrePersonal.find({epoch: { "$gte": epochMin.unix(),"$lte":epochMax.unix()}}).exec(function(error,cierre){
@@ -322,13 +304,38 @@ function ejecutarCierre(){
                                          usuarios[i].horarioEmpleado, usuarios[i].tipo.length); 
                                 }else if(entro == false && usuarios[i].horarioFijo && usuarios[i].horarioFijo!="" &&
                                     valor != "Administrador"){
-                                    cierreHorario(usuarios[i]._id,"","",valor);
-                                    
+                                        
+                                       if(dia==usuarios[i].horarioFijo.Domingo
+                                        ||dia==usuarios[i].horarioFijo.Lunes
+                                        ||dia==usuarios[i].horarioFijo.Martes
+                                        ||dia==usuarios[i].horarioFijo.Miercoles
+                                        ||dia==usuarios[i].horarioFijo.Jueves
+                                        ||dia==usuarios[i].horarioFijo.Viernes
+                                        ||dia==usuarios[i].horarioFijo.Sabado){
+                                        global.globalTipoUsuario = valor;
+                                        if(usuarios[i].tipo.length>1 && valor=="Profesor"){
+                                            cierreHorario(usuarios[i]._id,"","",valor);
+                                        }else{
+                                            cierreHorario(usuarios[i]._id,"","",valor);
+                                            addJustIncompleta(usuarios[i]._id, "Marca de salida omitida", "Marca de salida omitiada");
+                                        
+                                        }  
+                                    }
+                                     
                                 }else if(entro == false && usuarios[i].horario && usuarios[i].horario!="" &&
                                 valor != "Administrador"){
-                                 
-                                   cierreHorario(usuarios[i]._id,"","",valor);
-                                
+                                   global.globalTipoUsuario = valor;
+                                   if(dia!="Domingo" && dia!="Sabado"){
+                                    if(usuarios[i].tipo.length>1 && valor=="Profesor"){
+                                        cierreHorario(usuarios[i]._id,"","",valor);
+                                    }else{
+                                        cierreHorario(usuarios[i]._id,"","",valor);
+                                        addJustIncompleta(usuarios[i]._id, "Marca de salida omitida", "Marca de salida omitiada");
+                                    
+                                    }  
+                                   
+                                   }
+                                   
                                 }
                                
                             }

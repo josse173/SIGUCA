@@ -116,26 +116,10 @@ $(document).ready(function()
             $("#updateJustificacion #detalles").text(data.detalle);
             $("#updateJustificacion #comentSupervisor").prop("readonly", true);
             $("#updateJustificacion #comentSupervisor").text(data.comentarioSupervisor);
-            //$("#updateJustificacion #idJust").text(id);
-            $("#updateJustificacion #btn-just" ).click( function() {
-                var updJust = {
-                    motivoJust: "otro",
-                    motivoOtroJust: $("#updateJustificacion #motivoOtroJust").text(),
-                    detalle: $("#updateJustificacion #detalles").val()
-                };
-                $.ajax({
-                    type: "POST",
-                    url: '/justificacion/'+id,
-                    processData: false,
-                    contentType: 'application/json',
-                    data: JSON.stringify(updJust),
-                    success: function(r) {
-                        console.log(r);
-                    }
-                });
-            });
-            //alert($("#updateJustificacion > #motivoOtroJust").text());
-            //alert(data);
+            $("#updateJustificacion #identificador").val(id);
+
+            $("#updateJustificacion #motivoOtroJust").val(data.motivo);
+          
         });
 });
 
@@ -420,7 +404,33 @@ $("#extraLink").click(function(){
     Notificaciones y gestión de eventos
     ---------------------------------------------------------------------*/
 
+
     $('.tableSolicitudes').footable().on('click', '.row-delete', 
+        function(e) {
+            e.preventDefault();
+            //get the footable object
+            var footable = $('.tableSolicitudes').data('footable');
+
+            //get the row we are wanting to delete
+            var row = $(this).parents('tr:first');
+
+            var id = $(this).val();
+            var comentarioSupervisor = row.find('.comentarioSupervisor').val();
+            var estadoreal = "#estado"+id;
+            var estado = $(estadoreal).val();
+         
+            $.post('/getionarSolicitudAjax/'+id, 
+                {comentarioSupervisor: comentarioSupervisor, estado: estado}, 
+                function (data){
+                    if(data == 'Se elimino'){
+                        footable.removeRow(row);
+                    }
+                });
+        });
+
+
+
+    $('.tableVacaciones').footable().on('click', '.row-delete', 
         function(e) {
             e.preventDefault();
             //get the footable object

@@ -222,6 +222,21 @@ module.exports = function(app, io) {
     */
     app.post('/justificacion/:id', autentificado, justificacion_actions.actualiza);
 
+    app.post('/jeje', autentificado, function(req,res){
+       console.log(req.body.motivoOtroJust);
+        var just={
+            id:req.body.identificador,
+            usuario:req.user.id,
+            detalle:req.body.detalle,
+            motivoOtroJust:req.body.motivoOtroJust,
+            motivoJust:"otro"
+
+        }; 
+		crudJustificaciones.updateJust(just, function (err){
+			res.redirect('/escritorioEmpl');
+		});
+    });
+
     /*
     *  El supervisor elimina una justificación y se le envia un correo al dueño de la justificación
     */
@@ -878,6 +893,55 @@ module.exports = function(app, io) {
             else res.send(msj);
         });
     });
+
+
+    //horarioMasa
+    app.get('/horarioMasa',autentificado,function(req,res){
+        crudUsuario.listUsuarios(function (err, listaUsuarios){
+            if (err) return res.json(err);
+            //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
+            req.user.tipo = req.session.name;
+            listaUsuarios.usuario = req.user;
+            return res.render('horarioMasa', listaUsuarios);
+        });     
+        
+    });
+
+    app.post('/horarioMasaLibre',autentificado,function(req,res){
+    
+        for(var i=0;i<req.body.vector.length;i++){
+         
+            Usuario.update({_id:req.body.vector[i].id},{ $set:{"horario":req.body.vector[i].idHorario}},function(err,horario){});
+            Usuario.update({_id:req.body.vector[i].id},{ $unset:{horarioFijo:""}},function(error,correcto){});
+            Usuario.update({_id:req.body.vector[i].id},{ $unset:{horarioEmpleado:""}},function(error,correcto){});
+        }
+        res.json({});
+       
+    });
+
+    app.post('/horarioMasaFijo',autentificado,function(req,res){
+        
+            for(var i=0;i<req.body.vector.length;i++){
+             
+                Usuario.update({_id:req.body.vector[i].id},{ $set:{"horarioFijo":req.body.vector[i].idHorario}},function(err,horario){});
+                Usuario.update({_id:req.body.vector[i].id},{ $unset:{horario:""}},function(error,correcto){});
+                Usuario.update({_id:req.body.vector[i].id},{ $unset:{horarioEmpleado:""}},function(error,correcto){});
+            }
+            res.json({});
+           
+    });
+
+    app.post('/horarioMasaSinHorario',autentificado,function(req,res){
+        
+            for(var i=0;i<req.body.vector.length;i++){
+                Usuario.update({_id:req.body.vector[i].id},{ $unset:{horario:""}},function(error,correcto){});
+                Usuario.update({_id:req.body.vector[i].id},{ $unset:{horarioFijo:""}},function(error,correcto){});
+            }
+            res.json({});
+           
+    });
+    
+    
 
     /*
     *  Crud de feriados

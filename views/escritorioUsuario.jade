@@ -335,7 +335,7 @@
         button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
         h4#myModalLabel.modal-title Justificación
       .modal-body
-        form.formJust#login-form.well.span4
+        form#solicitud-extra-form(role='form', method="POST", action="/jeje").well.span4
           .form-group
             label(for='motivoOtroJust') Motivo:
               label#motivoOtroJust.form-control(style='float:left')
@@ -347,9 +347,10 @@
               label#comentSupervisor.form-control(style='float:left')
           .form-group
               label(for='detalles') Detalle:
-              textarea#detalles.form-control(rows="4" cols="50" required)
-                 
-          button#btn-just.btn.btn-success(type='submit') Enviar
+              textarea#detalles.form-control(rows="4" cols="50" required name="detalle")
+              input#identificador.input-small(type="text", name='identificador', required ,  hidden='true') 
+              input#motivoOtroJust.input-small(type="text", name='motivoOtroJust' ,required  , hidden='true')  
+          button.btn.btn-success(type='submit') Enviar
           button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
 
 
@@ -365,7 +366,6 @@
         button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
         h3#myModalLabel.modal-title Justificaciones pendientes
       .modal-body
-        form.formJust#login-form.well.span4
           .form-group
               .col-xs-4
               div.justTable.table-responsive

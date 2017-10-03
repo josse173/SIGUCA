@@ -18,7 +18,7 @@
               button#areas.btn.btn-primary(type = 'submit', name='eliminar',  onclick= "/departamento")
                 i.icon-edit.icon-large
         tr
-          td Horario:
+          td Horario libre y fijo:
           form(action= '/horarioN')    
             td
               div.dropdown
@@ -32,6 +32,10 @@
                                 i.icon-plus.icon-large 
                           li
                               button.btn.btn-success(name='agregar', data-toggle="modal" data-target="#addHorarioLibre") Horario libre
+                                i.icon-plus.icon-large 
+
+                          li
+                              a.btn.btn-success(href='/horarioMasa' style='color:white') Horario en masa
                                 i.icon-plus.icon-large 
                   
             td
@@ -47,7 +51,7 @@
               button#areas.btn.btn-primary(type = 'submit', name='eliminar',  onclick= "/empleado")
                 i.icon-edit.icon-large
         tr
-          td Asignar horario:  
+          td Asignar horario personalizado:  
             td
               button#horarioEmpleado.btn.btn-success(data-toggle="modal" data-target="#asignarHorario")
                 i.icon-plus.icon-large
@@ -184,7 +188,7 @@
                     option #{tipoEmpleado} 
                     option #{empleadoProfesor}
 
-                label Horario:
+                label Horario libre:
                   br
                   select.form-control#textInput.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="idHorario") 
                     option(value="") Sin horario  
