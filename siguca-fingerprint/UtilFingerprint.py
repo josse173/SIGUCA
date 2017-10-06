@@ -58,7 +58,7 @@ class UtilFingerprint:
             #Sesion
             idUser = hashlib.sha256(characterics).hexdigest()
             if(idUser == "0eff012f344875834a7fe838ab79ba60a9f30999eb586d39d34bde07aca55414"):
-                print "Bienvenido Gustavo"
+                print "El usuario es: " + idUser
                 self.instIndex.idUser = idUser
                 self.instIndex.semaforo = True
                 return idUser

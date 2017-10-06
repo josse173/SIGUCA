@@ -21,11 +21,11 @@ class UtilImg:
         url = "http://siguca.greencore.int/uploads/"
 
         #Funcion que recibe la imagen deseada y la obtiene de la url planteada inicialmente
-        def getImageURL(self, img):
+        def getImageURL(self, img, root):
 
             image_url = self.url+img
             
             image_byt = urlopen(image_url).read()
             image_b64 = base64.encodestring(image_byt)
-            photo = PhotoImage(data=image_b64)
+            photo = PhotoImage(master= root, data=image_b64)
             return photo

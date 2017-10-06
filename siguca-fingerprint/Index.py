@@ -20,27 +20,16 @@ class Index:
         fp = Thread(target=self.instUtilFingerprint.search, args=(self,)) 
         fp.start()
         
-        self.instUtilViews.viewPrincipal()
-
-        #Pone en escucha al fingerprint
-        #userTem = self.instUtilFingerprint.search()
-        
-        #Se proccesa el usuario UNA VES QUE SE HA LEIDO UNA HUELLA  
-        if(self.idUser != 0):
-            print "El usuario es: " + str(self.idUser)
-        else:
-            print "No se encuentran coincidencias"
-            #self.instUtilViews.destroyRoot()
-            #Muestra la vista de forma paralela
-
-            #Muestra la vista de forma paralela
-            #viewTem = Thread(target=self.instUtilViews.viewPrincipal)
-            #viewTem.start()
-
-        #viewTem.join()            
-        print "luego"
-            
+        self.instUtilViews.viewPrincipal() 
 
 #Llamado a la clase principal
-Index().home()
-Index().home()
+
+print "Vista Principal"
+instIndex = Index()
+instIndex.home()
+#print "idUser: " + str(instIndex.idUser)
+
+#Llamado a la clase principal
+instIndex = Index()
+instIndex.home()
+#print "idUser: " + str(instIndex.idUser)
