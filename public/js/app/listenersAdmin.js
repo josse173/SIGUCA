@@ -72,3 +72,58 @@ $("button[data-target=#asignarHorario]").click( function() {
 $("#asignar-horario-form #selectFiltro").change( function() {
     actualizarHorarioModal();
 });
+
+
+
+//Valida alfanumerico
+/*
+$.validator.addMethod("alfanum", function(value, element) {
+    return /^[ a-z0-9áéíóúüñ]*$/i.test(value);
+}, "Ingrese sólo letras, números o espacios.");
+
+--solo numeros
+$.validator.addMethod("numero", function(value, element) {
+    return /^[0-9]*$/i.test(value);
+}, "Acepta solo valores numéricos.");
+
+
+
+*/
+$.validator.addMethod("letras", function(value, element) {
+    return /^[a-zA-ZáéíóúàèìòùÀÈÌÒÙÁÉÍÓÚñÑüÜ_\s]+$/i.test(value);
+}, "Ingrese únicamente letras.");
+
+$.validator.addMethod("numeros", function(value, element) {
+    return /^[0-9]*$/i.test(value);
+}, "Ingrese valores numéricos.");
+
+
+$('#agregarEmpleado').click(function(){
+    
+    
+    $('#agregarEmpleadoFormulario').validate({
+        
+        rules:{
+            nombre:{required:true,letras:true},
+            cedula:{required:true,numeros:true},
+            apellido1:{required:true,letras:true},
+            apellido2:{required:true,letras:true},
+            email:{required:true,email:true},
+            codTarjeta:{required:true,numeros:true},
+            username:{required:true},
+            password:{required:true}
+        },
+        messages:{
+            nombre:{required:'El campo es requerido'},
+            cedula:{required:'El campo es requerido'},
+            apellido1:{required:'El campo es requerido'},
+            apellido2:{required:'El campo es requerido'},
+            email:{required:'El campo es requerido',email:'Formato inválido'},
+            codTarjeta:{required:'El campo es requerido'},
+            username:{required:'El campo es requerido'},
+            username:{required:'El campo es requerido'},
+            password:{required:'El campo es requerido'}
+        }
+    });
+});
+
