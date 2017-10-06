@@ -49,7 +49,7 @@ class UtilViews:
        Se construyen las vistas a utilizar
     '''
     
-    #Vista principal
+    #---------- Vista principal -----------
     def viewPrincipal(self):
         #Se inicializa la vistaupdateTimeText(self):   
         self.initRoot()
@@ -76,3 +76,16 @@ class UtilViews:
  
         #Muestra vista
         self.showRoot()
+
+    #------- Vista MostrarMensaje ---------
+    def viewMessage(self, message, color):
+        #Se inicializa la vistaupdateTimeText(self):   
+        self.initRoot()
+                
+        Label(self.root, text=message, wraplength=650,  fg = color, bg = "black", font = "Helvetica 20 bold", height=70, width=100).pack()
+
+        self.root.after(4000, lambda: self.destroyRoot())   
+
+        #Muestra vista
+        self.showRoot()
+
