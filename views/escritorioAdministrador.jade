@@ -156,11 +156,11 @@
         .modal-body
           button.close(type='button', data-dismiss='modal', aria-hidden='true') × 
           h3#myModalLabel.modal-title Añadir nuevo Empleado
-          form(role='form', method="POST", action="/empleado")#login-form.well.span4
+          form#agregarEmpleadoFormulario(role='form', method="POST", action="/empleado")
               .form-group
                 h3 Información Básica
                 label(for='nombre') Nombre:
-                  input#group.form-control(type= 'text', placeholder='Carlos', name= 'nombre')
+                  input#nombre.form-control(type= 'text', placeholder='Carlos', name= 'nombre')
                 label(for='cedula') Cédula:
                  input#cedula.form-control(type= 'text', placeholder='110459625', name='cedula') 
               .form-group
@@ -217,7 +217,7 @@
                   br
                   button.btn.btn-default(type='button', onclick='generatepass(8)') Generar Contraseña
                        
-              button.btn.btn-success(type='submit') Ingresar
+              button.btn.btn-success#agregarEmpleado(type='submit') Ingresar
               button.btn.btn-danger#clearLabel(type='button', data-dismiss='modal') Cancelar
 
   //            
