@@ -9,7 +9,12 @@ from pyfingerprint.pyfingerprint import PyFingerprint
 class UtilFingerprint:
 
     #Realiza la coneccion con el fingerprint
-    def __init__(self):
+    def __init__(self,instIndex):
+       self.initFP(instIndex)
+
+    #Realiza la coneccion con el fingerprint
+    def initFP(self,instIndex):
+        self.instIndex = instIndex
         try:
             self.f = PyFingerprint('/dev/ttyS0', 57600, 0xFFFFFFFF, 0x00000000)
             if ( self.f.verifyPassword() == False ):
@@ -21,11 +26,10 @@ class UtilFingerprint:
 
 
     #Busca una huella en especifico
-    def search(self,selfUtilView):
+    def search(self,instIndex):
+        self.initFP(instIndex)
 
         try:
-            selfUtilView.lblIndication.configure(text="Coloque el dedo en el dispositivo.")
-
             #Esperando a que sea leido el dedo
             while ( self.f.readImage() == False ):
                 pass
@@ -38,8 +42,12 @@ class UtilFingerprint:
             positionNumber = result[0]
             accuracyScore = result[1]
             if ( positionNumber == -1 ):
-                selfUtilView.lblIndication.configure(text="No se encontraron coincidencias.")
-                exit(0)
+                print "No se encontraron coincidencias."
+                self.instIndex.idUser = 0
+                self.instIndex.semaforo = True
+
+                return 0
+                #exit(0)
                         
             #Carga la plantilla encontrada en charbuffer 1
             self.f.loadTemplate(positionNumber, 0x01)
@@ -48,10 +56,17 @@ class UtilFingerprint:
             characterics = str(self.f.downloadCharacteristics(0x01)).encode('utf-8')
             
             #Sesion
-            if(hashlib.sha256(characterics).hexdigest() == "0eff012f344875834a7fe838ab79ba60a9f30999eb586d39d34bde07aca55414"):
-                selfUtilView.lblIndication.configure(text="Bienvenido Gustavo")
+            idUser = hashlib.sha256(characterics).hexdigest()
+            if(idUser == "0eff012f344875834a7fe838ab79ba60a9f30999eb586d39d34bde07aca55414"):
+                print "Bienvenido Gustavo"
+                self.instIndex.idUser = idUser
+                self.instIndex.semaforo = True
+                return idUser
             else:
-                selfUtilView.lblIndication.configure(text="El usuario NO existe")
+                self.instIndex.idUser = 0
+                self.instIndex.semaforo = True
+                print "El usuario NO existe"
+                return 0
 
         except Exception as e:
             print('Mensaje de Excepcion: ' + str(e))

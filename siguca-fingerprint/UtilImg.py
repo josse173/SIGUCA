@@ -4,11 +4,11 @@ import base64
 
 try:
     # Python2
-    import Tkinter as tk
+    from Tkinter import PhotoImage
     from urllib2 import urlopen
 except ImportError:
     # Python3
-    import tkinter as tk
+    from Tkinter import PhotoImage
     from urllib.request import urlopen
 
 #Declaracion de la clase que maneja las imagenes por URL
@@ -27,5 +27,5 @@ class UtilImg:
             
             image_byt = urlopen(image_url).read()
             image_b64 = base64.encodestring(image_byt)
-            photo = tk.PhotoImage(data=image_b64)
+            photo = PhotoImage(data=image_b64)
             return photo
