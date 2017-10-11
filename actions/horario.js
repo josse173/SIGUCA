@@ -5,32 +5,31 @@ var Usuario = require('../models/Usuario.js');
 var async = require("async");
 module.exports = {
     
+
     create: function (req, res) {
         
         deserializeHorario(req.body, 
             function(err,nuevoHorario){
                 if (err)
-                    return res.json({error:err});
-                crudHorario.create(nuevoHorario, function(error, horario){
-                    if (error)
-                        return res.json({error:error});
-                    crudUsuario.updateUsuario(
-                    {
-                        id: req.body.usuario,
-                        empleado:{
-                            horarioEmpleado : horario._id
-                        }
-                    },
-                    function(err, usuario){
-                        if (err)
-                            return res.json({error:err});
-                        Usuario.update({_id:req.body.usuario},{ $unset: {horario: ""}},function(error,correcto){
-                        });
-                         Usuario.update({_id:req.body.usuario},{ $unset: {horarioFijo: ""}},function(error,correcto){
-                        });
-                        return res.json(usuario);
+                      res.redirect('/escritorioAdmin');
+                else{
+                    nuevoHorario.nombreHorarioPersonalizado=req.body.nombreHorarioPersonalizado;
+                    crudHorario.create(nuevoHorario, function(error, horario){
+                        if (error){
+                            res.redirect('/escritorioAdmin');
+                        }else{
+                            Usuario.update({_id:req.body.usuario},{ $unset: {horario: ""}},function(error,correcto){
+                            });
+                             Usuario.update({_id:req.body.usuario},{ $unset: {horarioFijo: ""}},function(error,correcto){
+                            });
+                            res.redirect('/escritorioAdmin');
+                        }    
+                       
                     });
-                });
+
+                    
+                }
+                
             });
     },
     //

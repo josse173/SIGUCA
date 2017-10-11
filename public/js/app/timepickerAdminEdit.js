@@ -62,9 +62,4 @@
     });
 
 
-$(".eliminarFijo").submit(function(e) {  
-   alert();
-    
-});
-
 

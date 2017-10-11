@@ -8,6 +8,7 @@ Departamento 	= require('../models/Departamento'),
 Usuario 		= require('../models/Usuario'),
 Horario 		= require('../models/Horario'),
 HorarioFijo		= require('../models/HorarioFijo'),
+HorarioEmpleado	= require('../models/HorarioEmpleado'),
 Justificaciones = require('../models/Justificaciones'),
 Solicitudes 	= require('../models/Solicitudes'),
 Cierre 			= require('../models/Cierre'),
@@ -47,6 +48,12 @@ emailSIGUCA 	= 'siguca@greencore.co.cr';
 
 		exports.loadHorarioFijo = function(id, cb){
 			HorarioFijo.findById(id, function (err, horarios) {
+				return cb(err, horarios);
+			})
+		}
+
+		exports.loadHorarioEmpleado = function(id, cb){
+			HorarioEmpleado.findById(id, function (err, horarios) {
 				return cb(err, horarios);
 			})
 		}
@@ -121,6 +128,159 @@ emailSIGUCA 	= 'siguca@greencore.co.cr';
 			});
 		}
 
+		exports.updateHorarioPersonalizado = function(data, cb){
+			var hora,minutos;
+			var personalizado={
+				tiempoAlmuerzo:{
+					hora:hora=parseInt(data.horario.tiempoAlmuerzo.split(":")[0]),
+					minutos:parseInt(data.horario.tiempoAlmuerzo.split(":")[1])
+				},
+				tiempoReceso:{
+					hora:parseInt(data.horario.tiempoReceso.split(":")[0]),
+					minutos:parseInt(data.horario.tiempoReceso.split(":")[1])
+				},
+				domingo:{
+					salida:{
+						hora:parseInt(data.horario.domingoSalida.split(":")[0]),
+						minutos:parseInt(data.horario.domingoSalida.split(":")[1])
+					},
+					entrada:{
+						hora:parseInt(data.horario.domingoEntrada.split(":")[0]),
+						minutos:parseInt(data.horario.domingoEntrada.split(":")[1])
+					}
+				},
+				sabado:{
+					salida:{
+						hora:parseInt(data.horario.sabadoSalida.split(":")[0]),
+						minutos: parseInt(data.horario.sabadoSalida.split(":")[1])
+					},
+					entrada:{
+						hora:parseInt(data.horario.sabadoEntrada.split(":")[0]),
+						minutos: parseInt(data.horario.sabadoEntrada.split(":")[1])
+					}
+				},
+				viernes:{
+					salida:{
+						hora:parseInt(data.horario.viernesSalida.split(":")[0]),
+						minutos:parseInt(data.horario.viernesSalida.split(":")[1])
+					},
+					entrada:{
+						hora:parseInt(data.horario.viernesEntrada.split(":")[0]),
+						minutos:parseInt(data.horario.viernesEntrada.split(":")[1])
+					}	
+				},
+				jueves:{
+					salida:{
+						hora:parseInt(data.horario.juevesSalida.split(":")[0]),
+						minutos: parseInt(data.horario.juevesSalida.split(":")[1])
+					},
+					entrada:{
+						hora:parseInt(data.horario.juevesEntrada.split(":")[0]),
+						minutos:parseInt(data.horario.juevesEntrada.split(":")[1])
+					}
+				},
+				miercoles:{
+					salida:{
+						hora:parseInt(data.horario.miercolesSalida.split(":")[0]),
+						minutos:parseInt(data.horario.miercolesSalida.split(":")[1])
+					},
+					entrada:{
+						hora:parseInt(data.horario.miercolesEntrada.split(":")[0]),
+						minutos:parseInt(data.horario.miercolesEntrada.split(":")[1])
+					}
+					
+				},
+				martes:{
+					salida:{
+						hora:parseInt(data.horario.martesSalida.split(":")[0]),
+						minutos:parseInt(data.horario.martesSalida.split(":")[1])
+					},
+					entrada:{
+						hora:parseInt(data.horario.martesEntrada.split(":")[0]),
+						minutos:parseInt(data.horario.martesEntrada.split(":")[1])
+					}
+				},
+				lunes:{
+					salida:{
+						hora:parseInt(data.horario.lunesSalida.split(":")[0]),
+						minutos:parseInt(data.horario.lunesSalida.split(":")[1])
+					},
+					entrada:{
+						hora:parseInt(data.horario.lunesEntrada.split(":")[0]),
+						minutos:parseInt(data.horario.lunesEntrada.split(":")[1])
+					}
+				},
+				nombreHorarioPersonalizado:data.horario.nombreHorarioPersonalizado
+			};
+
+			/*
+			personalizado.tiempoAlmuerzo.hora=parseInt(data.horario.tiempoAlmuerzo.split(":")[0]);
+			personalizado.tiempoAlmuerzo.minutos=parseInt(data.horario.tiempoAlmuerzo.split(":")[1]);
+
+			personalizado.tiempoReceso.hora=parseInt(data.horario.tiempoReceso.split(":")[0]);
+			personalizado.tiempoReceso.minutos=parseInt(data.horario.tiempoReceso.split(":")[1]);
+
+			//domingo
+			personalizado.domingo.salida.hora=parseInt(data.horario.domingoSalida.split(":")[0]);
+			personalizado.domingo.salida.minutos=parseInt(data.horario.domingoSalida.split(":")[1]);
+
+			personalizado.domingo.entrada.hora=parseInt(data.horario.domingoEntrada.split(":")[0]);
+			personalizado.domingo.entrada.minutos=parseInt(data.horario.domingoEntrada.split(":")[1]);
+
+			//sabado
+			personalizado.sabado.salida.hora=parseInt(data.horario.sabadoSalida.split(":")[0]);
+			personalizado.sabado.salida.minutos=parseInt(data.horario.sabadoSalida.split(":")[1]);
+
+			personalizado.sabado.entrada.hora=parseInt(data.horario.sabadoEntrada.split(":")[0]);
+			personalizado.sabado.entrada.minutos=parseInt(data.horario.sabadoEntrada.split(":")[1]);
+
+			//viernes
+			personalizado.viernes.salida.hora=parseInt(data.horario.viernesSalida.split(":")[0]);
+			personalizado.viernes.salida.minutos=parseInt(data.horario.viernesSalida.split(":")[1]);
+
+			personalizado.viernes.entrada.hora=parseInt(data.horario.viernesEntrada.split(":")[0]);
+			personalizado.viernes.entrada.minutos=parseInt(data.horario.viernesEntrada.split(":")[1]);
+
+			//jueves
+			personalizado.jueves.salida.hora=parseInt(data.horario.juevesSalida.split(":")[0]);
+			personalizado.jueves.salida.minutos=parseInt(data.horario.juevesSalida.split(":")[1]);
+
+			personalizado.jueves.entrada.hora=parseInt(data.horario.juevesEntrada.split(":")[0]);
+			personalizado.jueves.entrada.minutos=parseInt(data.horario.juevesEntrada.split(":")[1]);
+
+
+			//miercoles
+			personalizado.miercoles.salida.hora=parseInt(data.horario.miercolesSalida.split(":")[0]);
+			personalizado.miercoles.salida.minutos=parseInt(data.horario.miercolesSalida.split(":")[1]);
+
+			personalizado.miercoles.entrada.hora=parseInt(data.horario.miercolesEntrada.split(":")[0]);
+			personalizado.miercoles.entrada.minutos=parseInt(data.horario.miercolesEntrada.split(":")[1]);
+
+			//martes
+			personalizado.martes.salida.hora=parseInt(data.horario.martesSalida.split(":")[0]);
+			personalizado.martes.salida.minutos=parseInt(data.horario.martesSalida.split(":")[1]);
+
+			personalizado.martes.entrada.hora=parseInt(data.horario.martesEntrada.split(":")[0]);
+			personalizado.martes.entrada.minutos=parseInt(data.horario.martesEntrada.split(":")[1]);
+
+			//lunes
+			personalizado.lunes.salida.hora=parseInt(data.horario.lunesSalida.split(":")[0]);
+			personalizado.lunes.salida.minutos=parseInt(data.horario.lunesSalida.split(":")[1]);
+
+			personalizado.lunes.entrada.hora=parseInt(data.horario.lunesEntrada.split(":")[0]);
+			personalizado.lunes.entrada.minutos=parseInt(data.horario.lunesEntrada.split(":")[1]);
+
+			//nombre
+			personalizado.nombreHorarioPersonalizado=data.horario.nombreHorarioPersonalizado;
+			*/
+			console.log(personalizado);
+
+			HorarioEmpleado.findByIdAndUpdate(data.id,personalizado, function (err, horarios) {
+				return cb(err, horarios);
+			});
+
+		}
+
 
 
 		exports.deleteHorario = function(id, cb){
@@ -146,6 +306,19 @@ emailSIGUCA 	= 'siguca@greencore.co.cr';
 				}
 			});
 		}
+
+		exports.deleteHorarioPersonalizado = function(id, cb){
+			Usuario.find({"horarioEmpleado": id, "estado": "Activo"}).exec(function (err, usuario) {
+				if(usuario.length === 0){
+					HorarioEmpleado.findByIdAndRemove(id, function (err, horarios) {
+						return cb(err, 'Se elimino');
+					});
+				} else{
+					return cb(err, 'false');
+				}
+			});
+		}
+
 
 		
 

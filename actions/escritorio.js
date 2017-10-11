@@ -13,6 +13,7 @@ var crud = require('../routes/crud');
 var crudUsuario = require('../routes/crudUsuario');
 var config 			= require('../config');
 var HorarioFijo = require('../models/HorarioFijo');
+var HorarioPersonalizado = require('../models/HorarioEmpleado');
 var Vacaciones = require('../models/Vacaciones');
 
 module.exports = {
@@ -157,7 +158,7 @@ module.exports = {
 	escritorioAdmin : function (req, res) {
 		req.user.tipo = req.session.name;
 		if (req.session.name ==="Administrador") {
-		
+			
 			Usuario.find().exec(function(error, usuarios) {
 				Horario.find().exec(function(error, horarios) {
 					Departamento.find().exec(function(error, departamentos) {
@@ -172,22 +173,26 @@ module.exports = {
 									if (error) return res.json(error);
 									//Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
 									req.user.tipo = req.session.name;
-									return res.render('escritorio', {
-										title: 'Escritorio Administrador | SIGUCA',
-										usuario: req.user,
-										horarios: horarios,
-										departamentos: departamentos,
-										usuarios: usuarios,
-										tipoEmpleado: config.empleado2,
-										empleadoProfesor: config.empleadoProfesor,
-										arregloHorarioFijo:horarioFijo,
-										numUsuariosSinVacaciones: numUsuariosSinVacaciones
+									HorarioPersonalizado.find().exec(function(error,personalizado){
+										return res.render('escritorio', {
+											title: 'Escritorio Administrador | SIGUCA',
+											usuario: req.user,
+											horarios: horarios,
+											departamentos: departamentos,
+											usuarios: usuarios,
+											tipoEmpleado: config.empleado2,
+											empleadoProfesor: config.empleadoProfesor,
+											arregloHorarioFijo:horarioFijo,
+											numUsuariosSinVacaciones: numUsuariosSinVacaciones,
+											horarioPersonalizado:personalizado
+										});
 									});
 								});
 							});
 						});
 					});
 				});
+				
 			});
 		} else {
 			req.logout();

@@ -3,8 +3,7 @@ extends layout
 block content
   .container
     
-    br
-
+   
     h3 Lista de Empleados
     table.footable.tableEmpleado(data-page-navigation=".pagination" data-page-size="20")
         thead
@@ -18,6 +17,7 @@ block content
             th(data-hide="phone,small,medium" data-sort-ignore="true") Departamento
             th(data-hide="phone,small,medium") Horario libre
             th(data-hide="phone,small,medium") Horario Fijo
+            th(data-hide="phone,small,medium") Horario personalizado
             th(data-hide="phone,small") Estado
             th(data-hide="phone,small" data-sort-ignore="true") Editar
             th(data-hide="phone,small" data-sort-ignore="true") Eliminar
@@ -56,11 +56,16 @@ block content
               else
                 td No tiene horario asignado
 
+              if(empleado.horarioEmpleado)
+                td #{empleado.horarioEmpleado.nombreHorarioPersonalizado} 
+                
+              else
+                td No tiene horario asignado
 
 
                td #{empleado.estado} 
               td
-                button.btn.btn-default(data-toggle="modal" data-target="#editEmpl" value=empleado.id)
+                button.btn.btn-default(data-toggle="modal", data-target="#editEmpl", value=empleado.id)
                   i.icon-pencil.icon-large.i-success
               td
                 button.empleadoDelete.btn.btn-default(value=empleado.nombre+' '+empleado.apellido1+''+empleado.apellido2+','+empleado.id)
@@ -100,6 +105,30 @@ block content
                        input.form-control#username(type="text", name="username", placeholder="Usuario")
                     label(for='codTarjeta') Código de Empleado:
                       input#codTarjeta.form-control(type= 'text', placeholder='Código de Empleado', name='codTarjeta')
+                    
+                  .form-group    
+                    label(for='horario') Horario libre:
+                      br
+                      select.form-control#selectHorario.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="horario") 
+                        option(value="Sin horario") Sin horario
+                        each horario, i in horarios
+                            option(value= horario.id) #{horario.nombre} 
+
+                    label(for='horario') Horario fijo:
+                      br
+                      select.form-control#selectHorarioFijo.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="horarioFijo") 
+                          option(value="Sin horario") Sin horario
+                          each horario, i in horarioFijo
+                              option(value= horario._id) #{horario.nombre}         
+                    
+                    label(for='horario') Horario personalizado:
+                      br
+                      select.form-control#HorarioEmpleado.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="horarioEmpleado") 
+                          option(value="Sin horario") Sin horario
+                          each horario, i in horarioPersonalizado
+                              option(value= horario._id) #{horario.nombreHorarioPersonalizado} 
+
+
                     br   
                     label(for="tipoInput") Tipo de Usuario:
                       br
@@ -109,19 +138,6 @@ block content
                         option Administrador
                         option #{tipoEmpleado} 
                         option #{empleadoProfesor}
-                  .form-group    
-                    label(for='horario') Horario libre:
-                      br
-                      select.form-control#selectHorario.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="horario") 
-                        option(value="Sin horario") Sin horario
-                        each horario, i in horarios
-                            option(value= horario.id) #{horario.nombre} 
-                    label(for='horario') Horario fijo:
-                      br
-                      select.form-control#selectHorarioFijo.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="horarioFijo") 
-                          option(value="Sin horario") Sin horario
-                          each horario, i in horarioFijo
-                              option(value= horario._id) #{horario.nombre}         
 
                     label(for='departamento') Departamento:
                       br

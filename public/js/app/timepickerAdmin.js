@@ -29,9 +29,11 @@
      $('[name="idHorario"]').change(function () {
         if($('[name="idHorario"]').val()!=""){
             document.getElementsByName("horarioFijo")[0].disabled = true;
+            document.getElementsByName("personalizado")[0].disabled = true;
         }
         else {
             document.getElementsByName("horarioFijo")[0].disabled = false;
+            document.getElementsByName("personalizado")[0].disabled = false;
         }
 
      });
@@ -39,9 +41,23 @@
        $('[name="horarioFijo"]').change(function () {
         if($('[name="horarioFijo"]').val()!=""){
             document.getElementsByName("idHorario")[0].disabled = true;
+            document.getElementsByName("personalizado")[0].disabled = true;
         }
         else {
             document.getElementsByName("idHorario")[0].disabled = false;
+            document.getElementsByName("personalizado")[0].disabled = false;
+        }
+
+     });
+
+     $('[name="personalizado"]').change(function () {
+        if($('[name="horarioFijo"]').val()!=""){
+            document.getElementsByName("idHorario")[0].disabled = true;
+            document.getElementsByName("horarioFijo")[0].disabled = true;
+        }
+        else {
+            document.getElementsByName("idHorario")[0].disabled = false;
+            document.getElementsByName("horarioFijo")[0].disabled = false;
         }
 
      });
