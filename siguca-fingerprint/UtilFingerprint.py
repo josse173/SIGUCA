@@ -42,7 +42,6 @@ class UtilFingerprint:
             positionNumber = result[0]
             accuracyScore = result[1]
             if ( positionNumber == -1 ):
-                print "No se encontraron coincidencias."
                 self.instIndex.idUser = 0
                 self.instIndex.semaforo = True
 
@@ -58,14 +57,12 @@ class UtilFingerprint:
             #Sesion
             idUser = hashlib.sha256(characterics).hexdigest()
             if(idUser == "0eff012f344875834a7fe838ab79ba60a9f30999eb586d39d34bde07aca55414"):
-                print "Bienvenido Gustavo"
                 self.instIndex.idUser = idUser
                 self.instIndex.semaforo = True
                 return idUser
             else:
                 self.instIndex.idUser = 0
                 self.instIndex.semaforo = True
-                print "El usuario NO existe"
                 return 0
 
         except Exception as e:
