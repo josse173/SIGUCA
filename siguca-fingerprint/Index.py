@@ -65,19 +65,8 @@ class Index:
         self.message("Se ha realizado con exito", "light green") 
         
 
-#---------------- Flujo pincipal -----------
-instUtilBD = UtilBD()
-user = ""
-tipoUsuario = ""
-
-#Se muestra la vista de fondo
-fp = Thread(target=Index().viewFondo)
-fp.start()
-
-while 1:
-    #Llamado a la clase principal
-    instIndex = Index()
-    instIndex.home()
+#---------------- Flujo en caso de marcar -----------
+def runMark():
     
     #Al seleccionar una opcion se solicita la huella
     instIndex = Index()
@@ -109,8 +98,28 @@ while 1:
             
             #Una ves seleccionado el tipo se marca
             markTem = instIndex.mark()
-            instIndex.markAction(markTem, tipoUsuario, user["codTarjeta"])
+            if markTem:    
+                instIndex.markAction(markTem, tipoUsuario, user["codTarjeta"])
             #print "La marca seleccionada es: " + str(markTem)
 
         else:
             instIndex.message("No se encontraron coincidencias", "red") 
+
+
+
+
+# ========== Ejecucion del sistema ==========
+instUtilBD = UtilBD()
+user = ""
+tipoUsuario = ""
+
+#Se muestra la vista de fondo
+fp = Thread(target=Index().viewFondo)
+fp.start()
+
+while 1:
+    #Llamado a la clase principal
+    instIndex = Index()
+    instIndex.home()
+
+    runMark() #Llama al metodo que tiene el flujo para marcar

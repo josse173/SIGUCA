@@ -121,8 +121,8 @@ class UtilViews:
         self.initRoot()
  
         #Label
-        self.lblMessage = Label(self.root, text="00:00:00", font=("Helvetica",33)) 
-        self.lblMessage.config(background="black", fg="white")
+        self.lblMessage = Label(self.root, text="00:00:00", font=("Helvetica",25)) 
+        self.lblMessage.config(background="black", fg="#bbbbbb")
         self.lblMessage.pack()
 
         #Muestra la imagen
@@ -134,7 +134,11 @@ class UtilViews:
         subproceso.start()
         
         #Boton para continuar
-        btnIngresar = Button(self.root, text="Ingresar", command=lambda: self.ingresar(), fg="white", activeforeground="white", activebackground="green", bg="#888888",width=20, height=2, bd=2, font="Helveltica 17 bold").place(x=480, y=500)
+        btnIngresar = Button(self.root, text="Ingresar", command=lambda: self.ingresar(), fg="white", activeforeground="white", activebackground="green", bg="#555555",width=20, height=2, bd=2, font="Helveltica 15 bold").place(x=500, y=500)
+        
+        
+        btnConf = Button(self.root, text="Administrar", command=lambda: self.ingresar(), fg="#bbbbbb", activeforeground="white", activebackground="green", bg="#222222",width=20, height=2, bd=1, font="Helveltica 10 bold").place(x=730, y=540)
+
 
         #Muestra vista
         self.showRoot()
@@ -189,25 +193,25 @@ class UtilViews:
         self.root.after(5000, lambda: self.root.destroy())
         self.showRoot() 
 
-#Obtiene la marca del usuario
+#------- Optiene la marca del usuario ---------
     def viewMark(self): 
         #Se crea el entorno grafico  para realizar las marcas
         self.initRoot()
     
         #en cada boton se llama el metodo correspondiente con el parametro del codigo  obtenido por la lectura.
-        button = Button(self.frame,text="       Entrada        ", command = lambda: self.actionMark(1),fg="white",activeforeground="white",activebackground="green",bg="green",width=22,height=3,bd=9,font="Helveltica 17 bold")
+        button = Button(self.frame,text="       Entrada        ", command = lambda: self.actionMark(1),fg="white",activeforeground="white",activebackground="#446644",bg="green",width=22,height=3,bd=3,font="Helveltica 17 bold")
     
-        button1 = Button(self.frame,text="        Salida        ", command =lambda:  self.actionMark(6),fg="white",activeforeground="white",activebackground="green",bg="green",width=22,height=3,bd=9,font="Helveltica 17 bold")
+        button1 = Button(self.frame,text="        Salida        ", command =lambda:  self.actionMark(6),fg="white",activeforeground="white",activebackground="#446644",bg="green",width=22,height=3,bd=3,font="Helveltica 17 bold")
     
-        button2 = Button(self.frame,text="   Salida a Receso   ", command =lambda:  self.actionMark(2),fg="white",activeforeground="white",activebackground="orange",bg="orange",width=22,height=3,bd=9,font="Helveltica 17 bold")
+        button2 = Button(self.frame,text="   Salida a Receso   ", command =lambda:  self.actionMark(2),fg="white",activeforeground="white",activebackground="#cac251",bg="orange",width=22,height=3,bd=3,font="Helveltica 17 bold")
         
-        button3 = Button(self.frame,text="   Entrada de Receso  ", command =lambda:  self.actionMark(3),fg="white",activeforeground="white",activebackground="orange",bg="orange",width=22,height=3,bd=9,font="Helveltica 17 bold")
+        button3 = Button(self.frame,text="   Entrada de Receso  ", command =lambda:  self.actionMark(3),fg="white",activeforeground="white",activebackground="#cac251",bg="orange",width=22,height=3,bd=3,font="Helveltica 17 bold")
         
-        button4 = Button(self.frame,text="  Salida al Almuerzo  ", command =lambda:  self.actionMark(4),fg="white",activeforeground="white",activebackground="blue",bg="blue",width=22,height=3,bd=9,font="Helveltica 17 bold")
+        button4 = Button(self.frame,text="  Salida al Almuerzo  ", command =lambda:  self.actionMark(4),fg="white",activeforeground="white",activebackground="#4444ff",bg="blue",width=22,height=3,bd=3,font="Helveltica 17 bold")
         
-        button5 = Button(self.frame,text="  Entrada del Almuerzo ", command =lambda: self.actionMark(5), fg="white",activeforeground="white",activebackground="blue",bg="blue",width=22,height=3,bd=9,font="Helveltica 17 bold")
+        button5 = Button(self.frame,text="  Entrada del Almuerzo ", command =lambda: self.actionMark(5), fg="white",activeforeground="white",activebackground="#4444ff",bg="blue",width=22,height=3,bd=3,font="Helveltica 17 bold")
 
-        button6 = Button(self.frame,text="Cancelar",command=lambda: self.root.destroy(),fg="white",activeforeground="white",activebackground="red",bg="red",width=47,height=3,bd=9,font="Helveltica 17 bold")
+        button6 = Button(self.frame,text="Cancelar",command=lambda: self.root.destroy(),fg="white",activeforeground="white",activebackground="red",bg="#ff4444",width=47,height=3,bd=3,font="Helveltica 17 bold")
     
         button.grid(row=1,column=1)
         button1.grid(row=1,column=2)
