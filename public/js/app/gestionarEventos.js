@@ -8,6 +8,8 @@ $(".horario").click(function(){
         }
     }
     if(contador>0){
+        $("#hPersonalizado").css('display','block');
+        $("#lbPersonalizado").css('display','block');
         $("#hLibre").css('display','block');
         $("#titulo").css('display','block');
         $("#lbFijo").css('display','block');
@@ -30,8 +32,10 @@ $("#horarioMasa").click(function() {
     var usuariosId=document.getElementsByClassName("horarioId");
     var hLibre= document.getElementsByClassName("hLibre");
     var hFijo= document.getElementsByClassName("hFijo");
+    var hPersonalizado= document.getElementsByClassName("hPersonalizado");
     var arrayHorarios=new Array();
    
+
     if(hLibre[0].value!=""){
         for(var i=0;i<usuariosId.length;i++){
             if( usuariosId[i].checked) {
@@ -79,7 +83,34 @@ $("#horarioMasa").click(function() {
                 alert("Error al agregar el horario.");
             }
         });
-    }else if(hLibre[0].value=="" && hFijo[0].value==""){
+    }
+    else if(hPersonalizado[0].value!=""){
+      
+         for(var i=0;i<usuariosId.length;i++){
+             if(usuariosId[i].checked) {
+                 var obj=new Object();
+                 obj.id=usuariosId[i].value;
+                 obj.idHorario=hPersonalizado[0].value;
+                 arrayHorarios.push(obj);
+          
+             }
+         }
+         $.ajax({
+             url: '/horarioMasaPersonalizado',
+             type: 'POST',
+             dataType : "json",
+             data:{vector:arrayHorarios},
+             success: function(data) {
+                 location.href="/horarioMasa";
+             },
+             error: function(){
+                 alert("Error al agregar el horario.");
+             }
+         });
+     } 
+    
+    
+    else if(hLibre[0].value=="" && hFijo[0].value=="" && hPersonalizado[0].value==""){
         for(var i=0;i<usuariosId.length;i++){
             if(usuariosId[i].checked) {
                 var obj=new Object();
@@ -101,7 +132,7 @@ $("#horarioMasa").click(function() {
                 alert("Error al agregar el horario.");
             }
         });
-    }     
+    }
 
 });
 

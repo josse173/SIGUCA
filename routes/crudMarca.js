@@ -623,7 +623,7 @@ function workedHourSchedule(_idUser,horarioEmpleado,mOut,cb,tipoUsuario,cantidad
 			horasTrabajadasFinal--;
 		}
 
-		if(minutosTrabajados>60){
+		if(minutosTrabajados>59){
 			horasTrabajadas++;
 			minutosTrabajados=minutosTrabajados-60;
 		}

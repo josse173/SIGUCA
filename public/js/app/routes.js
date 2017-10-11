@@ -201,6 +201,127 @@ $(document).ready(function()
 });
 
 
+$("button[data-target=#editHorarioPersonalizado]").click( function() {
+    var id = $(this).val();
+    $('.formUpdatePersonalizado').attr('action', '/formUpdatePersonalizado/'+id);
+
+    $.get('/horarioN/buscarPersonalizado/'+id, function( data ) {
+        $('#nombreHorarioPersonalizado').val(data.nombreHorarioPersonalizado);
+       
+
+
+        if(data.lunes.entrada.minutos<10){
+            $('#lunesEntrada').val(data.lunes.entrada.hora+":"+0+data.lunes.entrada.minutos);
+        }else{
+            $('#lunesEntrada').val(data.lunes.entrada.hora+":"+data.lunes.entrada.minutos)
+        }
+        
+        if(data.lunes.salida.minutos<10){
+            $('#lunesSalida').val(data.lunes.salida.hora+":"+0+data.lunes.salida.minutos);
+        }else{
+            $('#lunesSalida').val(data.lunes.salida.hora+":"+data.lunes.salida.minutos)
+        }
+
+        if(data.martes.entrada.minutos<10){
+            $('#martesEntrada').val(data.martes.entrada.hora+":"+0+data.martes.entrada.minutos);
+        }else{
+            $('#martesEntrada').val(data.martes.entrada.hora+":"+data.martes.entrada.minutos)
+        }
+    
+        if(data.martes.salida.minutos<10){
+            $('#martesSalida').val(data.martes.salida.hora+":"+0+data.martes.salida.minutos);
+        }else{
+            $('#martesSalida').val(data.martes.salida.hora+":"+data.martes.salida.minutos)
+        }
+
+        if(data.miercoles.entrada.minutos<10){
+            $('#miercolesEntrada').val(data.miercoles.entrada.hora+":"+0+data.miercoles.entrada.minutos);
+        }else{
+            $('#miercolesEntrada').val(data.miercoles.entrada.hora+":"+data.miercoles.entrada.minutos)
+        }
+    
+        if(data.miercoles.salida.minutos<10){
+            $('#miercolesSalida').val(data.miercoles.salida.hora+":"+0+data.miercoles.salida.minutos);
+        }else{
+            $('#miercolesSalida').val(data.miercoles.salida.hora+":"+data.miercoles.salida.minutos)
+        }
+
+        if(data.jueves.entrada.minutos<10){
+            $('#juevesEntrada').val(data.jueves.entrada.hora+":"+0+data.jueves.entrada.minutos);
+        }else{
+            $('#juevesEntrada').val(data.jueves.entrada.hora+":"+data.jueves.entrada.minutos)
+        }
+    
+        if(data.jueves.salida.minutos<10){
+            $('#juevesSalida').val(data.jueves.salida.hora+":"+0+data.jueves.salida.minutos);
+        }else{
+            $('#juevesSalida').val(data.jueves.salida.hora+":"+data.jueves.salida.minutos)
+        }
+
+
+        if(data.viernes.entrada.minutos<10){
+            $('#viernesEntrada').val(data.viernes.entrada.hora+":"+0+data.viernes.entrada.minutos);
+        }else{
+            $('#viernesEntrada').val(data.viernes.entrada.hora+":"+data.viernes.entrada.minutos)
+        }
+
+        if(data.viernes.salida.minutos<10){
+            $('#viernesSalida').val(data.viernes.salida.hora+":"+0+data.viernes.salida.minutos);
+        }else{
+            $('#viernesSalida').val(data.viernes.salida.hora+":"+data.viernes.salida.minutos)
+        }
+
+
+        if(data.sabado.entrada.minutos<10){
+            $('#sabadoEntrada').val(data.sabado.entrada.hora+":"+0+data.sabado.entrada.minutos);
+        }else{
+            $('#sabadoEntrada').val(data.sabado.entrada.hora+":"+data.sabado.entrada.minutos)
+        }
+
+        if(data.sabado.salida.minutos<10){
+            $('#sabadoSalida').val(data.sabado.salida.hora+":"+0+data.sabado.salida.minutos);
+        }else{
+            $('#sabadoSalida').val(data.sabado.salida.hora+":"+data.sabado.salida.minutos)
+        }
+
+        if(data.domingo.entrada.minutos<10){
+            $('#domingoEntrada').val(data.domingo.entrada.hora+":"+0+data.domingo.entrada.minutos);
+        }else{
+            $('#domingoEntrada').val(data.domingo.entrada.hora+":"+data.domingo.entrada.minutos)
+        }
+
+        if(data.domingo.salida.minutos<10){
+            $('#domingoSalida').val(data.domingo.salida.hora+":"+0+data.domingo.salida.minutos);
+        }else{
+            $('#domingoSalida').val(data.domingo.salida.hora+":"+data.domingo.salida.minutos)
+        }
+
+
+        if(data.tiempoAlmuerzo.minutos<10){
+            $('#tiempoAlmuerzoo').val(data.tiempoAlmuerzo.hora+":"+0+data.tiempoAlmuerzo.minutos);
+        }else{
+            $('#tiempoAlmuerzoo').val(data.tiempoAlmuerzo.hora+":"+data.tiempoAlmuerzo.minutos)
+        }
+
+        alert(data.tiempoAlmuerzo.hora);
+        alert(data.tiempoAlmuerzo.minutos);
+
+        if(data.tiempoReceso.minutos<10){
+            $('#tiempoRecesoo').val(data.tiempoReceso.hora+":"+0+data.tiempoReceso.minutos);
+        }else{
+            $('#tiempoRecesoo').val(data.tiempoReceso.hora+":"+data.tiempoReceso.minutos)
+        }
+
+        
+
+
+        
+       
+        
+    });
+});
+
+
 
 $("button[data-target=#editHorarioFijo]").click( function() {
     var id = $(this).val();
@@ -279,7 +400,8 @@ $("button[data-target=#editHorarioFijo]").click( function() {
         $('#username').val(data.username);     
         $('#selectTipo').selectpicker('val', data.tipo);       
         $('#selectHorario').selectpicker('val', data.horario);  
-        $('#selectHorarioFijo').selectpicker('val', data.horarioFijo);       
+        $('#selectHorarioFijo').selectpicker('val', data.horarioFijo);   
+        $('#HorarioEmpleado').selectpicker('val', data.horarioEmpleado);     
         $('#selectDepartamentos').selectpicker('val', data.horario);    
 
         var val = [];
@@ -290,6 +412,7 @@ $("button[data-target=#editHorarioFijo]").click( function() {
         $('#selectDepartamentos').selectpicker('refresh');    
         $('#selectHorario').selectpicker('refresh');    
         $('#selectHorarioFijo').selectpicker('refresh'); 
+        $('#HorarioEmpleado').selectpicker('refresh'); 
         $('#selectTipo').selectpicker('refresh');    
 
          
@@ -680,6 +803,32 @@ $('.tableHorarioEliminar').footable().on('click','.eliminarFijo',function(e) {
         'message': '¿Está seguro de eliminar el horario <strong>' +  split[0] + '</strong>?' ,
         'onok': function(){ 
             $.get('/horarioFijo/delete/'+split[1], function (data){
+                if(data == 'Se elimino'){
+                    footable.removeRow(row);
+                    alertify.message('Se eliminó el horario ' +  split[0] + ' con éxito');
+                } else {
+                    alertify.error('No se puede eliminar el horario <strong>' +  split[0] + '</strong>, ya que un empleado lo tiene asignado');
+                }
+            });
+        }
+    }).show(); 
+    
+});
+
+
+
+$('.tableHorarioPersonalizado').footable().on('click','.eliminarPersonalizado',function(e) {  
+    var footable = $('.tableHorarioPersonalizado').data('footable');
+    var row = $(this).parents('tr:first');
+    var horario = $(this).val();
+    var split = horario.split(',');
+    alertify.dialog('confirm')
+    .set({
+        'labels':{ok:'Eliminar', cancel:'Cancelar'},
+        'transition': 'slide',
+        'message': '¿Está seguro de eliminar el horario <strong>' +  split[0] + '</strong>?' ,
+        'onok': function(){ 
+            $.get('/horarioPersonalizado/delete/'+split[1], function (data){
                 if(data == 'Se elimino'){
                     footable.removeRow(row);
                     alertify.message('Se eliminó el horario ' +  split[0] + ' con éxito');

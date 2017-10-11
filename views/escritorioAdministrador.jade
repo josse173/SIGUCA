@@ -18,13 +18,12 @@
               button#areas.btn.btn-primary(type = 'submit', name='eliminar',  onclick= "/departamento")
                 i.icon-edit.icon-large
         tr
-          td Horario libre y fijo:
+          td Horarios:
           form(action= '/horarioN')    
             td
               div.dropdown
                         button.btn.btn-success.dropdown-toggle(type='button',data-toggle="dropdown") 
-                          i.icon-edit.icon-large
-                          |&nbsp;Horarios
+                          i.icon-plus.icon-large
                           span.caret
                         ul.dropdown-menu
                           li
@@ -32,6 +31,9 @@
                                 i.icon-plus.icon-large 
                           li
                               button.btn.btn-success(name='agregar', data-toggle="modal" data-target="#addHorarioLibre") Horario libre
+                                i.icon-plus.icon-large 
+
+                              button.btn.btn-success(name='agregar', data-toggle="modal" data-target="#addHorarioPersonalizado") Horario personalizado
                                 i.icon-plus.icon-large 
 
                           li
@@ -50,14 +52,6 @@
             td
               button#areas.btn.btn-primary(type = 'submit', name='eliminar',  onclick= "/empleado")
                 i.icon-edit.icon-large
-        tr
-          td Asignar horario personalizado:  
-            td
-              button#horarioEmpleado.btn.btn-success(data-toggle="modal" data-target="#asignarHorario")
-                i.icon-plus.icon-large
-            td
-               button.btn.btn-primary(type = 'submit', disabled)
-                  i.icon-edit.icon-large
         tr
           td Vacaciones:  
             td
@@ -84,6 +78,53 @@
               form(action= '/feriado')    
                 button.btn.btn-primary(type = 'submit')
                   i.icon-edit.icon-large
+
+
+.col-xs-2  
+  #addHorarioPersonalizado.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+    .modal-dialog
+        .modal-content
+          .modal-header
+            button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+            h4#myModalLabel.modal-title Asignar horario a empleado
+          .modal-body
+            form(role='form', method="POST", action="/agregarHorarioPersonalizado")#login-form.well.span4
+              .form-group
+                label(for='nombre' style="float:left") Nombre del feriado:
+                input.form-control( type="text", name="nombreHorarioPersonalizado",id="nombreHorarioPersonalizado")     
+              .form-group
+                h4 Información de jornada
+                - var dias = ["lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo"];
+                each dia in dias    
+                  - var strEntrada =  dia+"HoraEntrada";
+                  - var strSalida =  dia+"HoraSalida";
+                  - var strDia =  dia.charAt(0).toUpperCase() + dia.slice(1);
+                  label #{strDia}:
+                  br
+                  label(for = strEntrada) Hora de Inicio:
+                    div#timepicker.input-group
+                      input.input-small.form-control(type="text", name= strEntrada, id=strEntrada)
+                      span.input-group-addon
+                        i.icon-time
+                  label(for = strSalida) Hora de salida:
+                    div#timepicker1.input-group
+                      input.input-small.form-control(type="text", name= strSalida, id=strSalida)
+                      span.input-group-addon
+                        i.icon-time
+                label(for = "tiempoAlmuerzo") Tiempo de almuerzo:
+                  div#timepicker3.input-group
+                    input.input-small.form-control(type="text", name= "tiempoAlmuerzo", id= "tiempoAlmuerzo")
+                    span.input-group-addon
+                      i.icon-time
+                label(for = "tiempoReceso") Tiempo de receso:
+                  div#timepicker5.input-group
+                    input.input-small.form-control(type="text", name= "tiempoReceso", id= "tiempoReceso")
+                    span.input-group-addon
+                      i.icon-time
+                 
+              button.btn.btn-success(type='submit') Asignar
+              button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
+    
  
 .col-xs-2  
   #asignarHorario.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
@@ -171,7 +212,6 @@
                 label(for='email') Correo Eléctronico:
                   input#email.form-control(type= 'email', placeholder='alguien@ejemplo.com', name='email')
                  
-
               .form-group 
                 h3 Información Laboral
                 label(for='codTarjeta') Código de Empleado:
@@ -179,14 +219,7 @@
                 label(for="usernameInput")
                   |Usuario:
                   input.form-control#textInput(type="text", name="username", placeholder="Usuario")
-                label(for="tipoInput") Tipo de Usuario:
-                  br
-                  select.form-control#selectTipo.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="tipo", multiple="multiple") 
-                    option Empleado
-                    option Supervisor
-                    option Administrador
-                    option #{tipoEmpleado} 
-                    option #{empleadoProfesor}
+                
 
                 label Horario libre:
                   br
@@ -202,6 +235,23 @@
                     option(value="") Sin horario 
                     each horarioFijo, i in arregloHorarioFijo
                         option(value= horarioFijo._id) #{horarioFijo.nombre} 
+
+                label(for='horario Fijo') Horario personalizado:
+                  br
+                  select.form-control#textInput.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="personalizado") 
+                    option(value="") Sin horario 
+                    each personalizado, i in horarioPersonalizado
+                        option(value=personalizado._id) #{personalizado.nombreHorarioPersonalizado} 
+
+
+                label(for="tipoInput") Tipo de Usuario:
+                  br
+                  select.form-control#selectTipo.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="tipo", multiple="multiple") 
+                    option Empleado
+                    option Supervisor
+                    option Administrador
+                    option #{tipoEmpleado} 
+                    option #{empleadoProfesor}
 
                 label(for='departamento') Departamento:
                   br
