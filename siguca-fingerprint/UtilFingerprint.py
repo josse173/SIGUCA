@@ -31,8 +31,11 @@ class UtilFingerprint:
 
         try:
             #Esperando a que sea leido el dedo
-            while ( self.f.readImage() == False ):
+            while (self.instIndex.semaforo == False and self.f.readImage() == False ):
                 pass
+
+            if self.instIndex.semaforo == True:
+                return 0
             
             #Convierte la imagen en caracteristicas 
             self.f.convertImage(0x01)
