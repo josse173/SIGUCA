@@ -305,9 +305,7 @@ $("button[data-target=#editHorarioPersonalizado]").click( function() {
             $('#tiempoAlmuerzoo').val(data.tiempoAlmuerzo.hora+":"+data.tiempoAlmuerzo.minutos)
         }
 
-        alert(data.tiempoAlmuerzo.hora);
-        alert(data.tiempoAlmuerzo.minutos);
-
+        
         if(data.tiempoReceso.minutos<10){
             $('#tiempoRecesoo').val(data.tiempoReceso.hora+":"+0+data.tiempoReceso.minutos);
         }else{
