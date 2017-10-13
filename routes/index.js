@@ -351,7 +351,8 @@ module.exports = function(app, io) {
     *  Crea una nueva marca vía página web
     */
     app.post('/marca', autentificado, function (req, res) {
-        crudMarca.addMarca(req.session.name,
+        
+        crudMarca.addMarca(req.body.ipOrigen,req.session.name,
             {tipoMarca: req.body.marca, usuario: req.user.id,tipoUsuario: req.session.name}, 
             function(msj, msjJust){
                 res.json({result:msj, justificacion:msjJust});

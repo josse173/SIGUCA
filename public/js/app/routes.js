@@ -13,8 +13,10 @@
     // $('#timepicker input').timepicker();
 
 //Muestra el modal "justificaciones" al cargar la pagina, validando que haya más de una justificación.
+
 $(document).ready(function()
    {
+
      var elementos = $('.miClase');
      var size = elementos.size();
       if(size>0){

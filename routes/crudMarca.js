@@ -16,8 +16,9 @@ cierrePersonal 		= require ('../models/CierrePersonal.js');
 //--------------------------------------------------------------------
 //		Métodos Marcas
 //---------------------------------------------------------------------
-exports.addMarca = function(tipoUsuario,m, cb){
-	marca(tipoUsuario, m, cb);
+exports.addMarca = function(ipOrigen,tipoUsuario,m, cb){
+	
+	marca(ipOrigen,tipoUsuario, m, cb);
 }
 
 function saveMarca(m, cb, msg){
@@ -30,8 +31,8 @@ function saveMarca(m, cb, msg){
 	});
 }
 
-function marca (tipoUsuario, marca, cb) {
-	
+function marca (ipOrigen,tipoUsuario, marca, cb) {
+
 
 	if(marca.tipoMarca != 'error') {
 		var date = moment(),
@@ -39,6 +40,8 @@ function marca (tipoUsuario, marca, cb) {
 		epochTimeGte = date.hours(0).minutes(0).seconds(0).unix(),
 		epochTimeLte = date.hours(23).minutes(59).seconds(59).unix();
 		marca.epoch = epochTime;
+		marca.ipOrigen=ipOrigen;
+		console.log(marca);
 		var newMarca = Marca(marca);
 		
 		Marca.find(
