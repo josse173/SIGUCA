@@ -14,6 +14,8 @@ class Index:
     semaforo = False
     idUser = ""
     tipoUsuario = ""
+    flujo = "mark"#Lleva el control de cual flujo se ejecuta admin o marca
+    result = "" #Utilizado para obtener datos desde subprocesos (Thread)
 
     #Credenciales
     server_ip='10.42.22.176'
@@ -57,6 +59,44 @@ class Index:
         print "Vista Marcar"
         markTem = self.instUtilViews.viewMark()
         return markTem
+    
+    #Se ejecuta la vista referente a sesion
+    def session(self):
+        self.instUtilViews.viewSession()
+
+    #Se ejecuta la vista administrativa
+    def admin(self):
+        self.instUtilViews.viewAdmin()
+
+    #Obtiene el usuario a administrar
+    def getUser(self,listUser):
+        self.instUtilViews.viewGetUser(listUser)
+
+    #Elimina una huella dactilar en especifico
+    def deleteFingerprint(self, codUser):
+       self.instUtilFingerprint.delete(codUser, self) 
+
+    #Actualiza la huella dactilar de un usuario especifico
+    def updateFingerPrint(self):
+
+        #Se verifica que no exista la huella dactilar
+        self.semaforo = False
+        fp = Thread(target=self.instUtilFingerprint.exist, args=(self,))
+        fp.start()
+        self.instUtilViews.viewGetFingerprint()
+        time.sleep(3)
+        self.semaforo = False
+        if self.result == "timeout":
+            self.message("ERROR! No se ha colocado el dedo en el dispositivo", "red")
+        
+        else:
+            if self.result != "-1":
+                self.deleteFingerprint(int(self.result))
+
+            #Se verifica que se obtenga correctamente la huella y se almacena
+            fp = Thread(target=self.instUtilFingerprint.save, args=(self,))
+            fp.start()
+            self.instUtilViews.viewGetFingerprint()
 
     #Realiza la marca
     def markAction(self, markNum, typeUser, cod):
@@ -64,7 +104,6 @@ class Index:
         data = f.read()
         self.message("Se ha realizado con exito", "light green") 
         
-
 #---------------- Flujo en caso de marcar -----------
 def runMark():
     
@@ -73,9 +112,10 @@ def runMark():
     instIndex.getFingerprint()
     
     time.sleep(1)
-
+    
+    #print "El usuario es: " + str(instIndex.idUser)
     #Se muestra mensaje de error
-    if str(instIndex.idUser) == "0":  
+    if instIndex.idUser == -1:  
         instIndex = Index()
         instIndex.message("No se han encontrado coincidencias.", "red")
     
@@ -86,7 +126,7 @@ def runMark():
         if user != None:
             #Mensaje de bienvenida
             instIndex.message("Bienvenido " + user["nombre"] + " " + user["apellido1"], "light green")
-
+            
             #Solo tiene un rol
             if(len(user["tipo"]) == 1):
                 tipoUsuario = (user["tipo"])[0]
@@ -105,7 +145,44 @@ def runMark():
         else:
             instIndex.message("No se encontraron coincidencias", "red") 
 
+#--------- Flujo administrativo del sistema -----------
+def runAdmin():
+    instIndex = Index()
+    instIndex.session()
+    
+    ''' Falta validar sesion, tomar en cuenta encriptacion de sesion '''
+    instIndex.message("Bienvenido al modulo administrativo","orange")
 
+    #Controla si seguir en el flujo administrativo o volver al flujo principal
+    tem = True
+    while tem == True:
+        #Muestra el menu administrativo
+        instIndex.admin()
+
+        #Muestra el listado de empleados para aplicarles la accion
+        if instIndex.actionAdmin == "delete" or instIndex.actionAdmin == "update":
+            listUserTem = instUtilBD.listUser()
+
+            #Se crea array solo con los valores que se desean mostrar
+            listNameUser = list()
+            for userTem in listUserTem:
+                listNameUser.append(userTem["nombre"] + " " + userTem["apellido1"])
+            instIndex.getUser(listNameUser)
+            userSelectedTem = (listUserTem[instIndex.posUser])["codTarjeta"]
+            
+            #Elimina la huella del usuario seleccionado
+            if instIndex.actionAdmin == "delete":
+                instIndex.deleteFingerprint(userSelectedTem)
+                #print "El codigo del usuario es: " + (listUserTem[instIndex.posUser])["codTarjeta"]
+
+            #Actualiza o inserta la huella de un usuario en especifico
+            elif instIndex.actionAdmin == "update":
+                instIndex.semaforo = True
+                instIndex.updateFingerPrint()
+
+        #El usuario decide volvr al flujo principal del sistema
+        else:
+            tem = False
 
 
 # ========== Ejecucion del sistema ==========
@@ -122,4 +199,10 @@ while 1:
     instIndex = Index()
     instIndex.home()
 
-    runMark() #Llama al metodo que tiene el flujo para marcar
+    #Si el usuario decide realizar marcas
+    if instIndex.flujo == "mark":
+        runMark() #Llama al metodo que tiene el flujo para marcar
+    
+    #Si el usuario decide ingresar al modulo de configuracion
+    else:
+        runAdmin()

@@ -3,6 +3,7 @@
 
 #Importaciones
 import hashlib
+import time
 from pyfingerprint.pyfingerprint import PyFingerprint
 
 #Clase encargada de controlar el fingerprint
@@ -44,31 +45,91 @@ class UtilFingerprint:
             result = self.f.searchTemplate()
             positionNumber = result[0]
             accuracyScore = result[1]
-            if ( positionNumber == -1 ):
-                self.instIndex.idUser = 0
-                self.instIndex.semaforo = True
-
-                return 0
-                #exit(0)
-                        
-            #Carga la plantilla encontrada en charbuffer 1
-            self.f.loadTemplate(positionNumber, 0x01)
-
-            #Descarga las caracteristicas
-            characterics = str(self.f.downloadCharacteristics(0x01)).encode('utf-8')
             
-            #Sesion
-            idUser = hashlib.sha256(characterics).hexdigest()
-            if(idUser == "0eff012f344875834a7fe838ab79ba60a9f30999eb586d39d34bde07aca55414"):
-                self.instIndex.idUser = idUser
-                self.instIndex.semaforo = True
-                return idUser
-            else:
-                self.instIndex.idUser = 0
-                self.instIndex.semaforo = True
-                return 0
+            self.instIndex.idUser = positionNumber
+            self.instIndex.semaforo = True
+            return positionNumber                     
 
         except Exception as e:
             print('Mensaje de Excepcion: ' + str(e))
+            exit(1)
+
+    #-------- Elimina una huella en el dispositivo --------
+    def delete(self, positionNumber, instIndex):
+        self.initFP(instIndex)
+    
+        try:
+            if ( self.f.deleteTemplate(positionNumber) == True ):
+                print('Template deleted!')
+        except Exception as e:
+            print('Operation failed!')
+            print('Exception message: ' + str(e))
+            exit(1)
+
+    
+    #---------- Verifica existencia de huella -----------
+    def exist(self, instIndex):
+        self.initFP(instIndex)
+    
+        try:
+            print("Waiting for finger")
+
+            #Escucha el fingerprint
+            while self.instIndex.semaforo == False and self.f.readImage() == False:
+                pass
+
+            #Si se acaba el tiempo se elimina la ejecucion
+            if self.instIndex.semaforo == True:
+                self.instIndex.result = "timeout"
+                return "timeout"
+
+            #En caso de que se ingresara una huella se analiza
+            self.f.convertImage(0x01)
+
+            result = self.f.searchTemplate()
+            positionNumber = result[0]
+            self.instIndex.result = str(positionNumber)
+
+            return str(positionNumber)+""# -1 quiere = No existe
+
+        except Exception as e:
+            print('Operation failed!')
+            print('Exception message: ' + str(e))
+            exit(1)
+
+
+    #-------- Guarda una huella en el dispositivo --------
+    def save(self, instIndex):
+        self.initFP(instIndex)
+    
+        try:            
+            #Se valida que la huella se registrara correctamente
+            while (self.instIndex.semaforo == False and self.f.readImage() == False):
+                pass
+            
+            #En caso de ser eliminado desde otra clase se termina el flujo
+            if self.instIndex.semaforo == True:
+                return 0
+
+
+            self.f.convertImage(0x02)
+
+            if(self.f.compareCharacteristics() == 0):
+                raise Exception("Fingers do not match")
+
+            self.f.createTemplate()
+
+            positionNumber = self.f.storeTemplate()
+            print ("La posicion de la huella es " + str(positionNumber))
+
+            print ("Remove Finger...")
+            time.sleep(2)
+
+            self.instIndex.idUser = positionNumber
+            self.instIndex.semaforo = True
+
+        except Exception as e:
+            print('Operation failed!')
+            print('Exception message: ' + str(e))
             exit(1)
 
