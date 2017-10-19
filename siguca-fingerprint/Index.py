@@ -5,6 +5,7 @@ from UtilFingerprint import UtilFingerprint
 from UtilBD import UtilBD
 import time
 import urllib
+import socket
 
 #La presente clase es el nucleo del sistema y toda accion 
 #debe pasar por al menos una de estas funciones.
@@ -100,9 +101,18 @@ class Index:
             fp.start()
             self.instUtilViews.viewGetFingerprint()
 
+    #Obtiene ipv4
+    def getIpv4(self):
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        s.connect(('<broadcast>', 0))
+        return s.getsockname()[0]
+
     #Realiza la marca
     def markAction(self, markNum, typeUser, cod):
-        f = urllib.urlopen('http://'+self.server_ip+':'+self.app_port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of20obai&codTarjeta='+str(cod)+'&tipoMarca='+str(markNum)+'&tipo='+str(typeUser))
+        ip = self.getIpv4()
+        
+        f = urllib.urlopen('http://'+self.server_ip+':'+self.app_port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of20obai&codTarjeta='+str(cod)+'&tipoMarca='+str(markNum)+'&tipo='+str(typeUser)+"&ipv4="+ip)
         data = f.read()
         self.message("Se ha realizado con exito", "light green") 
         
