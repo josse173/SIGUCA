@@ -4,7 +4,7 @@
     $('#timepicker2 input').timepicker('setTime', '0:15');
     $('#timepicker3 input').timepicker('setTime', '0:45');
     $('#timepicker4 input').timepicker('setTime', '0:15');
-    $('#timepicker5 input').timepicker('setTime', '8:00');
+    $('#timepicker5 input').timepicker('setTime', '0:15');
     $('#timepicker6 input').timepicker('setTime', '17:00');
 
     $('#timepicker span').timepicker('setTime', '8:00');

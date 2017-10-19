@@ -82,8 +82,10 @@ block content
             tr
               td #{horario.nombreHorarioPersonalizado} 
               td #{horario.tiempoAlmuerzo.hora+":"} #{horario.tiempoAlmuerzo.minutos} 
-              td #{horario.tiempoReceso.hora+":"} #{horario.tiempoReceso.minutos} 
-             
+              -if(horario.tiempoReceso.minutos < 10)
+                td #{horario.tiempoReceso.hora+":"} #{horario.tiempoReceso.minutos+""+0} 
+              -else
+                 td #{horario.tiempoReceso.hora+":"} #{horario.tiempoReceso.minutos} 
  
               td
                 button.btn.btn-default(data-toggle="modal" data-target="#editHorarioPersonalizado" value=horario._id)

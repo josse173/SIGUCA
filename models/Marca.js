@@ -24,6 +24,10 @@ var SchemaMarca = new Schema({
         type: String,
         default: ""
     },
+    ipOrigen: { // En el caso de que el usuario tenga varios roles, aquí se va a especificar el tipo al cual pertenece esta marca
+        type: String,
+        default: "Ip desconocida"
+    },
 });
 
 module.exports = mongoose.model('Marca', SchemaMarca);

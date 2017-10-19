@@ -13,8 +13,10 @@
     // $('#timepicker input').timepicker();
 
 //Muestra el modal "justificaciones" al cargar la pagina, validando que haya más de una justificación.
+
 $(document).ready(function()
    {
+
      var elementos = $('.miClase');
      var size = elementos.size();
       if(size>0){
@@ -303,9 +305,7 @@ $("button[data-target=#editHorarioPersonalizado]").click( function() {
             $('#tiempoAlmuerzoo').val(data.tiempoAlmuerzo.hora+":"+data.tiempoAlmuerzo.minutos)
         }
 
-        alert(data.tiempoAlmuerzo.hora);
-        alert(data.tiempoAlmuerzo.minutos);
-
+        
         if(data.tiempoReceso.minutos<10){
             $('#tiempoRecesoo').val(data.tiempoReceso.hora+":"+0+data.tiempoReceso.minutos);
         }else{
