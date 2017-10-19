@@ -250,7 +250,7 @@ exports.find = function(query, cb){
 }
 
 
-exports.rfidReader = function(tipoUsuario, codTarjeta, tipoMarca, cb) {
+exports.rfidReader = function(tipoUsuario, codTarjeta, tipoMarca, ip, cb) {
 	Usuario.findOne({codTarjeta: codTarjeta}, function (err, usuario) {
 		var tipo;
 		if(tipoMarca == 1) {
@@ -267,7 +267,7 @@ exports.rfidReader = function(tipoUsuario, codTarjeta, tipoMarca, cb) {
 			tipo = 'Salida';
 		} else tipo = 'error';
 
-		marca(tipoUsuario, {usuario: usuario.id, tipoMarca: tipo,tipoUsuario: tipoUsuario}, 
+		marca(ip, tipoUsuario, {usuario: usuario.id, tipoMarca: tipo,tipoUsuario: tipoUsuario}, 
 			function(msj){					
 				return cb(msj);
 			});
