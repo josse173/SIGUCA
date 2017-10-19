@@ -16,6 +16,8 @@ class Index:
     tipoUsuario = ""
     flujo = "mark"#Lleva el control de cual flujo se ejecuta admin o marca
     result = "" #Utilizado para obtener datos desde subprocesos (Thread)
+    sessionUser = ""
+    sessionPassword = ""
 
     #Credenciales
     server_ip='10.42.22.176'
@@ -149,8 +151,21 @@ def runMark():
 def runAdmin():
     instIndex = Index()
     instIndex.session()
-    
-    ''' Falta validar sesion, tomar en cuenta encriptacion de sesion '''
+   
+    resultSession = instUtilBD.verifySession(instIndex.sessionUser, instIndex.sessionPassword)
+
+    if resultSession == "faildUser":
+        instIndex.message("El usuario es incorrecto","orange")
+        return 0
+    elif resultSession == "faildPassword":
+        instIndex.message("La contrasena es incorrecta","orange")
+        return 0
+    elif resultSession == "faildPermission":
+        instIndex.message("ERROR, no cuenta con permisos para acceder","red")
+        return 0
+
+   
+    #Si inicia sesion con exito
     instIndex.message("Bienvenido al modulo administrativo","orange")
     
     #Controla si seguir en el flujo administrativo o volver al flujo principal

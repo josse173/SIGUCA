@@ -88,7 +88,9 @@ class UtilViews:
 
     #Realiza la accion del logueo
     def actionSession(self, user, password):
-        print "Bienvenido usuario " + user + " password " + password
+        self.instIndex.sessionUser = user
+        self.instIndex.sessionPassword = password
+
         self.root.destroy()
 
     #Realiza las acciones de la seccion administrativa
@@ -168,7 +170,7 @@ class UtilViews:
                 
         Label(self.root, text=message, wraplength=650,  fg = color, bg = "black", font = "Helvetica 20 bold", height=70, width=100).pack()
 
-        self.root.after(3000, lambda: self.root.destroy())   
+        self.root.after(2000, lambda: self.root.destroy())   
 
         self.showRoot()
 
@@ -292,7 +294,7 @@ class UtilViews:
         buttonDelete = Button(self.root,text="Eliminar Huella",command= lambda: self.actionAdmin("delete"),fg="white",activeforeground="white",activebackground="#333333",bg="#444444",width=15,height=1,bd=1,font="Helveltica 15 bold").place(x=280,y=100)
         
         #Cancelar        
-        buttonCancel = Button(self.root,text="Cancelar",command= lambda: self.actionAdmin("cancel"),fg="white",activeforeground="white",activebackground="#880000",bg="#773333",width=15,height=1,bd=1,font="Helveltica 15 bold").place(x=480,y=100)
+        buttonCancel = Button(self.root,text="Salir",command= lambda: self.actionAdmin("cancel"),fg="white",activeforeground="white",activebackground="#880000",bg="#773333",width=15,height=1,bd=1,font="Helveltica 15 bold").place(x=480,y=100)
 
         #self.root.after(8000, lambda: self.root.destroy())
         self.showRoot()

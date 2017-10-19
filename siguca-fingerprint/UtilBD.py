@@ -1,5 +1,6 @@
 #Importaciones
 from pymongo import MongoClient
+import bcrypt
 
 #Clase dedicada a gestionar la coneccion a la Base de Datos
 class UtilBD:
@@ -22,7 +23,7 @@ class UtilBD:
     #Obtener lista Usuarios
     def listUser(self):
         self.connectBD()
-        return list(self.db.usuarios.find({},{"tipo":1,"codTarjeta":1,"_id":1, "nombre":1, "apellido1":1}))
+        return list(self.db.usuarios.find({},{"tipo":1,"codtarjeta":1,"_id":1, "nombre":1, "apellido1":1}))
 
     #Obtener lista de codigos de las tarjetas o llaveros de los usuarios
     def listCodUser(self):
@@ -34,7 +35,6 @@ class UtilBD:
         self.connectBD()
         return self.db.usuarios.find_one({"codTarjeta": cod},{"_id":1, "nombre":1, "cedula":1, "apellido1": 1, "apellido2": 1, "email":1, "username": 1, "codTarjeta": 1, "tipo": 1, "password": 1})
 
-
     #Obtener los usuarios que tengan huella dactilar definida
     def listUserFinger(self):
         self.connectBD()
@@ -45,9 +45,36 @@ class UtilBD:
         self.connectBD()
         self.db.usuarios.update({"_id":idUser},{"$set":{"codTarjeta":code}})
 
+    def verifySession(self, user, password):
+        self.connectBD()
 
+        #Password Encriptada
+        hashed = bcrypt.hashpw(password, bcrypt.gensalt())
+        
+        print "My password: " + hashed + " user: " +user+ " pass: " + password
+        #Verifica contra la Base de datos
+        listTem = list(self.db.usuarios.find({"username":user, "estado":"Activo"},{"tipo":1,"codtarjeta":1,"_id":1, "nombre":1, "apellido1":1, "password":1}))
+        
+        #Verifica el username
+        if len(listTem) <= 0:
+            return "faildUser"
+        else:
+            resultBD = listTem[0]    
+            
+            #Verifica el password
+            if bcrypt.checkpw(password, str(resultBD["password"])):
+                
+                # La contrasena es corrrecta por lo que
+                # verifica si tiene rol de administrador
+                admin = False
+                for tem in list(resultBD["tipo"]):
+                    if tem == "Administrador":
+                        admin =  True
+            
+                if admin == False:
+                    return "faildPermission"
+                else:
+                    return "success"
 
-    
-
-
-
+            else:
+                return "faildPassword"
