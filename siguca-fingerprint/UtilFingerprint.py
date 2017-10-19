@@ -109,20 +109,23 @@ class UtilFingerprint:
             
             #En caso de ser eliminado desde otra clase se termina el flujo
             if self.instIndex.semaforo == True:
+                self.instIndex.result = "ERROR!, debe colocar el dedo en el dispositivo"
                 return 0
 
 
             self.f.convertImage(0x02)
 
             if(self.f.compareCharacteristics() == 0):
-                raise Exception("Fingers do not match")
+                self.instIndex.result = "Las huellas no coinciden"
+                return 0
 
             self.f.createTemplate()
 
             positionNumber = self.f.storeTemplate()
-            print ("La posicion de la huella es " + str(positionNumber))
+            #print ("La posicion de la huella es " + str(positionNumber))
 
             self.instIndex.idUser = positionNumber
+            self.instIndex.result = "Realizado con exito."
             self.instIndex.semaforo = True
 
         except Exception as e:

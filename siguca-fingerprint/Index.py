@@ -77,7 +77,8 @@ class Index:
 
     #Elimina una huella dactilar en especifico
     def deleteFingerprint(self, codUser):
-       self.instUtilFingerprint.delete(codUser, self) 
+       self.instUtilFingerprint.delete(codUser, self)
+       self.message("Realizado con exito","light green")
 
     #Actualiza la huella dactilar de un usuario especifico
     def updateFingerPrint(self):
@@ -100,6 +101,9 @@ class Index:
             fp = Thread(target=self.instUtilFingerprint.save, args=(self,))
             fp.start()
             self.instUtilViews.viewGetFingerprint()
+            time.sleep(2)#Da tiempo a que termine de ejecutarse el Thread
+
+            self.message(self.result, "light green")
 
     #Obtiene ipv4
     def getIpv4(self):
@@ -114,7 +118,7 @@ class Index:
         
         f = urllib.urlopen('http://'+self.server_ip+':'+self.app_port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of20obai&codTarjeta='+str(cod)+'&tipoMarca='+str(markNum)+'&tipo='+str(typeUser)+"&ipv4="+ip)
         data = f.read()
-        self.message("Se ha realizado con exito", "light green") 
+        self.message(data, "light green") 
         
 #---------------- Flujo en caso de marcar -----------
 def runMark():
@@ -215,8 +219,10 @@ def runAdmin():
                 elif instIndex.actionAdmin == "update":
                     instIndex.semaforo = True
                     instIndex.updateFingerPrint()
-                    time.sleep(2)#Da tiempo a que termine de ejecutarse el Thread
-                    print "El id es " + str(instIndex.idUser)
+                    #ime.sleep(2)#Da tiempo a que termine de ejecutarse el Thread
+                    
+                    if instIndex.idUser == "":
+                        instIndex.idUser = -1
                     instUtilBD.updateCode(userSelectedTem["_id"], instIndex.idUser)
 
 
