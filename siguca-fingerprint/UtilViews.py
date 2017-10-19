@@ -168,7 +168,7 @@ class UtilViews:
                 
         Label(self.root, text=message, wraplength=650,  fg = color, bg = "black", font = "Helvetica 20 bold", height=70, width=100).pack()
 
-        self.root.after(4000, lambda: self.root.destroy())   
+        self.root.after(3000, lambda: self.root.destroy())   
 
         self.showRoot()
 
@@ -209,6 +209,10 @@ class UtilViews:
         buttonAceptar = Button(self.root,text="Aceptar",command= lambda: self.obtieneTipoSeleccionado(listBox),fg="white",activeforeground="white",activebackground="#008800",bg="#55aa55",width=15,height=2,bd=3,font="Helveltica 17 bold").place(x=500,y=200)
 
         self.root.after(5000, lambda: self.root.destroy())
+
+        #Selecciona el primer usuario
+        listBox.selection_set(0)
+
         self.showRoot() 
 
     #------- Optiene la marca del usuario ---------
@@ -313,8 +317,11 @@ class UtilViews:
         buttonAceptar = Button(self.root,text="Next",command= lambda: self.getUserSelect(listBox),fg="white",activeforeground="white",activebackground="#008800",bg="#55aa55",width=15,height=2,bd=3,font="Helveltica 17 bold").place(x=500,y=100)
 
         #Boton para cancelar
-        buttonCancel = Button(self.root,text="Cancel",command= lambda: self.root.destroy(),fg="white",activeforeground="white",activebackground="#880000",bg="#773333",width=15,height=2,bd=3,font="Helveltica 17 bold").place(x=500,y=200)
-        
+        buttonCancel = Button(self.root,text="Cancel",command= lambda: self.actionAdmin("Cancelar"),fg="white",activeforeground="white",activebackground="#880000",bg="#773333",width=15,height=2,bd=3,font="Helveltica 17 bold").place(x=500,y=200)
+       
+        #Selecciona el primer usuario
+        listBox.selection_set(0)
+
         self.showRoot() 
 
      

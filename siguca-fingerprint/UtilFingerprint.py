@@ -122,9 +122,6 @@ class UtilFingerprint:
             positionNumber = self.f.storeTemplate()
             print ("La posicion de la huella es " + str(positionNumber))
 
-            print ("Remove Finger...")
-            time.sleep(2)
-
             self.instIndex.idUser = positionNumber
             self.instIndex.semaforo = True
 

@@ -152,7 +152,7 @@ def runAdmin():
     
     ''' Falta validar sesion, tomar en cuenta encriptacion de sesion '''
     instIndex.message("Bienvenido al modulo administrativo","orange")
-
+    
     #Controla si seguir en el flujo administrativo o volver al flujo principal
     tem = True
     while tem == True:
@@ -161,24 +161,39 @@ def runAdmin():
 
         #Muestra el listado de empleados para aplicarles la accion
         if instIndex.actionAdmin == "delete" or instIndex.actionAdmin == "update":
-            listUserTem = instUtilBD.listUser()
+
+            # En caso de elegir eliminar solo obtiene los usuarios
+            # que tengan guardadas huellas en el sistema
+            if instIndex.actionAdmin == "delete":
+                listUserTem = instUtilBD.listUserFinger()
+            elif instIndex.actionAdmin == "update":
+                listUserTem = instUtilBD.listUser()
 
             #Se crea array solo con los valores que se desean mostrar
             listNameUser = list()
             for userTem in listUserTem:
                 listNameUser.append(userTem["nombre"] + " " + userTem["apellido1"])
+           
+            #Muestra vista
             instIndex.getUser(listNameUser)
-            userSelectedTem = (listUserTem[instIndex.posUser])["codTarjeta"]
+  
+            if instIndex.actionAdmin != "Cancelar":
+                userSelectedTem = listUserTem[instIndex.posUser]
             
-            #Elimina la huella del usuario seleccionado
-            if instIndex.actionAdmin == "delete":
-                instIndex.deleteFingerprint(userSelectedTem)
-                #print "El codigo del usuario es: " + (listUserTem[instIndex.posUser])["codTarjeta"]
+                #Elimina la huella del usuario seleccionado
+                if instIndex.actionAdmin == "delete":
+                    instIndex.deleteFingerprint(userSelectedTem["codTarjeta"])
+                    instUtilBD.updateCode(userSelectedTem["_id"], -1)
+                    #print "El codigo del usuario es: " + (listUserTem[instIndex.posUser])["codTarjeta"]
 
-            #Actualiza o inserta la huella de un usuario en especifico
-            elif instIndex.actionAdmin == "update":
-                instIndex.semaforo = True
-                instIndex.updateFingerPrint()
+                #Actualiza o inserta la huella de un usuario en especifico
+                elif instIndex.actionAdmin == "update":
+                    instIndex.semaforo = True
+                    instIndex.updateFingerPrint()
+                    time.sleep(2)#Da tiempo a que termine de ejecutarse el Thread
+                    print "El id es " + str(instIndex.idUser)
+                    instUtilBD.updateCode(userSelectedTem["_id"], instIndex.idUser)
+
 
         #El usuario decide volvr al flujo principal del sistema
         else:

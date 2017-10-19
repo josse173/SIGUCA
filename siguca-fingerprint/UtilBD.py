@@ -35,6 +35,17 @@ class UtilBD:
         return self.db.usuarios.find_one({"codTarjeta": cod},{"_id":1, "nombre":1, "cedula":1, "apellido1": 1, "apellido2": 1, "email":1, "username": 1, "codTarjeta": 1, "tipo": 1, "password": 1})
 
 
+    #Obtener los usuarios que tengan huella dactilar definida
+    def listUserFinger(self):
+        self.connectBD()
+        return list(self.db.usuarios.find({"codTarjeta": {"$ne":-1}},{"tipo":1,"codTarjeta":1,"_id":1, "nombre":1, "apellido1":1}))
+
+    #Actualiza el codTarjeta de un usuario especifico
+    def updateCode(self, idUser, code):
+        self.connectBD()
+        self.db.usuarios.update({"_id":idUser},{"$set":{"codTarjeta":code}})
+
+
 
     
 
