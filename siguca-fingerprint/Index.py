@@ -47,10 +47,18 @@ class Index:
     #Solicita una huella del fingerprint
     def getFingerprint(self):
         print "Solicita Fingerprint"
+        timeView = 4
+
+        sp = Thread(target=self.instUtilViews.chronometerText, args=(timeView,))
+        sp.start()
+
         fp = Thread(target=self.instUtilFingerprint.search, args=(self,))
         fp.start()
 
-        self.instUtilViews.viewGetFingerprint()
+
+        self.instUtilViews.viewGetFingerprint(timeView)
+        fp.join()
+        sp.join()
       
     #En caso de tener mas de un rol, debe seleccionar uno
     def obtieneTipoUsuario(self, listTipoUsuario):
@@ -87,8 +95,10 @@ class Index:
         self.semaforo = False
         fp = Thread(target=self.instUtilFingerprint.exist, args=(self,))
         fp.start()
+        
         self.instUtilViews.viewGetFingerprint()
-        time.sleep(3)
+        fp.join()
+        
         self.semaforo = False
         if self.result == "timeout":
             self.message("ERROR! No se ha colocado el dedo en el dispositivo", "red")
@@ -98,10 +108,10 @@ class Index:
                 self.deleteFingerprint(int(self.result))
 
             #Se verifica que se obtenga correctamente la huella y se almacena
-            fp = Thread(target=self.instUtilFingerprint.save, args=(self,))
-            fp.start()
+            fp2 = Thread(target=self.instUtilFingerprint.save, args=(self,))
+            fp2.start()
             self.instUtilViews.viewGetFingerprint()
-            time.sleep(2)#Da tiempo a que termine de ejecutarse el Thread
+            fp2.join()
 
             self.message(self.result, "light green")
 

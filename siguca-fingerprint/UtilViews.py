@@ -1,7 +1,7 @@
 #Importaciones
 from Tkinter import *
 from UtilImg import UtilImg
-from threading import Thread
+#from threading import Thread
 import time
 
 #Clase dedicada a administrar las distintas vistas del sistema
@@ -37,28 +37,21 @@ class UtilViews:
     '''
     #Actualiza la hora en tiempo real
     def updateTimeText(self):
-        tem = 1
-        while(tem):
+        while(self.instIndex.semaforo ==  False):
             time.sleep(1)
-           
-#            current = time.strftime("%I:%M:%S %p")
             try:
-                if(self.instIndex.semaforo ==  False):
-                    current = time.strftime("%I:%M:%S %p")
-                    self.lblMessage.configure(text=current)  
- 
+                current = time.strftime("%I:%M:%S %p")
+                #self.lblMessage.configure(text=current)  
             except NameError:
-                    tem = 0
+                return 0
 
     #Muestra un cronometro hacia atras
     def chronometerText(self,timeTem):
         while(timeTem >= 1):
             time.sleep(1) 
-            self.lblMessage.configure(text=str(timeTem)) 
-            #ime.sleep(1) 
+            #self.lblMessage.configure(text=str(timeTem))  
             timeTem -= 1
-
-        self.instIndex.semaforo = True
+        self.instIndex.semaforo=True
 
     '''
         Acciones de los botones
@@ -79,12 +72,13 @@ class UtilViews:
                 self.instIndex.tipoUsuario = tipo
             else:
                 self.instIndex.tipoUsuario = tipo
-        self.root.iconify()
+        print "1234"
+        self.root.destroy()
 
     #Realiza la marca seleccionada por el usuario
     def actionMark(self, markAction):
         self.markS = markAction
-        self.root.iconify()
+        self.root.destroy()
 
     #Realiza la accion del logueo
     def actionSession(self, user, password):
@@ -175,22 +169,13 @@ class UtilViews:
         self.showRoot()
 
     #------- Vista Solicitar Fingerprint ---------
-    def viewGetFingerprint(self):
-        
-        #Tiempo que se visualiza la vista
-        timeView = 4
-        
+    def viewGetFingerprint(self, timeView):    
         self.initRoot()
 
         #Label
         self.lblMessage = Label(self.root, text="0", font=("Helvetica",33)) 
         self.lblMessage.config(background="black", fg="white")
-        self.lblMessage.pack()
-
-        #Ejecuta Hilo para actualizar la hora en tiempo real
-        subproceso = Thread(target=self.chronometerText, args=(timeView,))
-        subproceso.start()
-
+        self.lblMessage.pack() 
                 
         Label(self.root, text="Coloque su dedo en el dispositivo.", wraplength=650,  fg = "#228B22", bg = "black", font = "Helvetica 20 bold", height=70, width=100).pack()
 
@@ -204,17 +189,11 @@ class UtilViews:
         self.initRoot()
         lblTitle = Label(self.root,text="Seleccione un tipo de usuario",bd="2",bg= "#000000", fg="#55aa55", font="Helveltica 30 bold").place(x=150,y=2)
         #Muestra los roles del usuario al cual le pertenece el llavin 
-        listBox = Listbox(self.root,bd="1",fg="#888888", bg="#000000", font="Helveltica 30 bold",selectbackground="#999999",selectforeground="#ffffff",height=300,selectborderwidth=1, activestyle=NONE, justify="center")
+        listBox = Listbox(self.root,bd="1",fg="#888888", bg="#000000", font="Helveltica 30 bold",selectbackground="#999999",selectforeground="#ffffff",height=10,selectborderwidth=1, activestyle=NONE, justify="center")
         listBox.place(x=10,y=100)
         listBox.insert(0,*listTipo)
-                
-        buttonAceptar = Button(self.root,text="Aceptar",command= lambda: self.obtieneTipoSeleccionado(listBox),fg="white",activeforeground="white",activebackground="#008800",bg="#55aa55",width=15,height=2,bd=3,font="Helveltica 17 bold").place(x=500,y=200)
-
-        self.root.after(5000, lambda: self.root.destroy())
-
-        #Selecciona el primer usuario
-        listBox.selection_set(0)
-
+        listBox.bind("<<ListboxSelect>>", lambda event: self.obtieneTipoSeleccionado(listBox))
+ 
         self.showRoot() 
 
     #------- Optiene la marca del usuario ---------
@@ -245,11 +224,6 @@ class UtilViews:
         button5.grid(row=3,column=2)
         button6.grid(row=4,column=1, columnspan=15)
         
-        try:
-            self.root.after(4000, lambda: self.root.destroy())
-        except NameError:
-            pass
-
         self.root.mainloop()
 
         #Retorna la opcion seleccionada
