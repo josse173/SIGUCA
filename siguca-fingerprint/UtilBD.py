@@ -51,7 +51,7 @@ class UtilBD:
         #Password Encriptada
         hashed = bcrypt.hashpw(password, bcrypt.gensalt())
         
-        print "My password: " + hashed + " user: " +user+ " pass: " + password
+        #print "My password: " + hashed + " user: " +user+ " pass: " + password
         #Verifica contra la Base de datos
         listTem = list(self.db.usuarios.find({"username":user, "estado":"Activo"},{"tipo":1,"codtarjeta":1,"_id":1, "nombre":1, "apellido1":1, "password":1}))
         

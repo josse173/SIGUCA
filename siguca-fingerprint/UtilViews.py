@@ -71,8 +71,7 @@ class UtilViews:
             if tipo != "":
                 self.instIndex.tipoUsuario = tipo
             else:
-                self.instIndex.tipoUsuario = tipo
-        print "1234"
+                self.instIndex.tipoUsuario = tipo 
         self.root.destroy()
 
     #Realiza la marca seleccionada por el usuario
@@ -288,6 +287,8 @@ class UtilViews:
         scroll.config(command=listBox.yview)
         listBox.place(x=10,y=100)
         listBox.insert(0,*listUser)
+        listBox.bind("<<ListboxSelect>>", lambda event: self.getUserSelect(listBox))
+
         
         #Boton que obtiene el usuario seleccionado
         buttonAceptar = Button(self.root,text="Next",command= lambda: self.getUserSelect(listBox),fg="white",activeforeground="white",activebackground="#008800",bg="#55aa55",width=15,height=2,bd=3,font="Helveltica 17 bold").place(x=500,y=100)

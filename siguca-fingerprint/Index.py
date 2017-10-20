@@ -96,7 +96,7 @@ class Index:
         fp = Thread(target=self.instUtilFingerprint.exist, args=(self,))
         fp.start()
         
-        self.instUtilViews.viewGetFingerprint()
+        self.instUtilViews.viewGetFingerprint(5)
         fp.join()
         
         self.semaforo = False
@@ -110,7 +110,7 @@ class Index:
             #Se verifica que se obtenga correctamente la huella y se almacena
             fp2 = Thread(target=self.instUtilFingerprint.save, args=(self,))
             fp2.start()
-            self.instUtilViews.viewGetFingerprint()
+            self.instUtilViews.viewGetFingerprint(5)
             fp2.join()
 
             self.message(self.result, "light green")
