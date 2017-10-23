@@ -27,6 +27,11 @@ class UtilViews:
         self.frame = Frame(self.root)
         self.frame.pack()
 
+    #Elimina la vista
+    def deleteRoot(self):
+        self.instIndex.semaforo=True
+        self.root.destroy()
+
     #Muestra la vista
     def showRoot(self):
         self.root.mainloop()
@@ -141,17 +146,17 @@ class UtilViews:
 
         #Muestra la imagen
         self.photo = UtilImg().getImageURL("siguca.gif",self.root)
-        self.lblImg2 = Label(self.root,image=self.photo,bd=0).pack()
+        self.lblImg2 = Label(self.root,image=self.photo,bd=0).place(x=-150, y=50)
 
         #Ejecuta Hilo para actualizar la hora en tiempo real
         #subproceso = Thread(target=self.updateTimeText)
         #subproceso.start()
         
         #Boton para continuar
-        btnIngresar = Button(self.root, text="Ingresar", command=lambda: self.ingresar("mark"), fg="white", activeforeground="white", activebackground="green", bg="#555555",width=20, height=2, bd=2, font="Helveltica 15 bold").place(x=500, y=500)
+        btnIngresar = Button(self.root, text="Ingresar", command=lambda: self.ingresar("mark"), fg="white", activeforeground="white", activebackground="green", bg="#555555",width=17, height=2, bd=2, font="Helveltica 15 bold").place(x=470, y=200)
         
         #Boton para ingresar al modulo administrativo
-        btnConf = Button(self.root, text="Administrar", command=lambda: self.ingresar("admin"), fg="#bbbbbb", activeforeground="white", activebackground="green", bg="#222222",width=20, height=2, bd=1, font="Helveltica 10 bold").place(x=730, y=540)
+        btnConf = Button(self.root, text="Administrar", command=lambda: self.ingresar("admin"), fg="#bbbbbb", activeforeground="white", activebackground="green", bg="#222222",width=14, height=2, bd=1, font="Helveltica 12 bold").place(x=620, y=245)
 
 
         #Muestra vista
@@ -178,7 +183,7 @@ class UtilViews:
                 
         Label(self.root, text="Coloque su dedo en el dispositivo.", wraplength=650,  fg = "#228B22", bg = "black", font = "Helvetica 20 bold", height=70, width=100).pack()
 
-        self.root.after((timeView*1000), lambda: self.root.destroy())
+        self.root.after((timeView*1000), lambda: self.deleteRoot())
 
         #Muestra vista
         self.showRoot()
@@ -188,7 +193,7 @@ class UtilViews:
         self.initRoot()
         lblTitle = Label(self.root,text="Seleccione un tipo de usuario",bd="2",bg= "#000000", fg="#55aa55", font="Helveltica 30 bold").place(x=150,y=2)
         #Muestra los roles del usuario al cual le pertenece el llavin 
-        listBox = Listbox(self.root,bd="1",fg="#888888", bg="#000000", font="Helveltica 30 bold",selectbackground="#999999",selectforeground="#ffffff",height=10,selectborderwidth=1, activestyle=NONE, justify="center")
+        listBox = Listbox(self.root,bd="1",fg="#888888", bg="#000000", font="Helveltica 30 bold",selectbackground="#999999",selectforeground="#ffffff",height=13,selectborderwidth=1, activestyle=NONE, justify="center")
         listBox.place(x=10,y=100)
         listBox.insert(0,*listTipo)
         listBox.bind("<<ListboxSelect>>", lambda event: self.obtieneTipoSeleccionado(listBox))
@@ -282,7 +287,7 @@ class UtilViews:
         scroll = Scrollbar(self.root,width=25, bg="orange")
         scroll.place(x=400,y=100)
 
-        listBox = Listbox(self.root, yscrollcommand=scroll.set, bd="1",fg="#888888", bg="#000000", font="Helveltica 16 bold",selectbackground="#559955",selectforeground="#ffffff",height=15, width=30, selectborderwidth=1, activestyle=NONE)
+        listBox = Listbox(self.root, yscrollcommand=scroll.set, bd="1",fg="#888888", bg="#000000", font="Helveltica 16 bold",selectbackground="#559955",selectforeground="#ffffff",height=13, width=30, selectborderwidth=1, activestyle=NONE)
     
         scroll.config(command=listBox.yview)
         listBox.place(x=10,y=100)

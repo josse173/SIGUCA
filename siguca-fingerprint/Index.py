@@ -99,15 +99,16 @@ class Index:
         self.instUtilViews.viewGetFingerprint(5)
         fp.join()
         
-        self.semaforo = False
+        #self.semaforo = False
         if self.result == "timeout":
             self.message("ERROR! No se ha colocado el dedo en el dispositivo", "red")
         
         else:
             if self.result != "-1":
-                self.deleteFingerprint(int(self.result))
+                self.instUtilFingerprint.delete(int(self.result), self)
 
             #Se verifica que se obtenga correctamente la huella y se almacena
+            self.semaforo = False
             fp2 = Thread(target=self.instUtilFingerprint.save, args=(self,))
             fp2.start()
             self.instUtilViews.viewGetFingerprint(5)

@@ -77,7 +77,7 @@ class UtilFingerprint:
             #Escucha el fingerprint
             while self.instIndex.semaforo == False and self.f.readImage() == False:
                 pass
-
+ 
             #Si se acaba el tiempo se elimina la ejecucion
             if self.instIndex.semaforo == True:
                 self.instIndex.result = "timeout"
