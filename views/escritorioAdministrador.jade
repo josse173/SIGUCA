@@ -215,8 +215,7 @@
                  
               .form-group 
                 h3 Información Laboral
-                label(for='codTarjeta') Código de Empleado:
-                  input#codTarjeta.form-control(type= 'text', placeholder='Código de Empleado', name='codTarjeta')
+                input#codTarjeta(type= 'text', placeholder='Código de Empleado', name='codTarjeta', value=-1, hidden="hidden")
                 label(for="usernameInput")
                   |Usuario:
                   input.form-control#textInput(type="text", name="username", placeholder="Usuario")
