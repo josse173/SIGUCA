@@ -238,24 +238,24 @@ class UtilViews:
         self.initRoot()
         lblTitle = Label(self.root,text="Ingrese los datos solicitados.", bd="2",bg= "#000000", fg="#55aa55", font="Helveltica 25 bold").place(x=200,y=2)
         #Etiqueta para el input User
-        lblFromUser = Label(self.root,text="User",bd="2", bg= "#000000", fg="#55aa55", font="Helveltica 13 bold").place(x=10,y=70)
+        lblFromUser = Label(self.root,text="User",bd="2", bg= "#000000", fg="#55aa55", font="Helveltica 15 bold").place(x=10,y=70)
 
         #Campo de texto para ingresar el usuario
-        txtUser = Entry(self.root,fg="#888888", bg="#333333", font="Helveltica 16 bold",selectbackground="#999999",selectforeground="#ffffff",selectborderwidth=1, justify="center")
+        txtUser = Entry(self.root,fg="#888888", bg="#333333", font="Helveltica 20 bold",selectbackground="#999999",selectforeground="#ffffff",selectborderwidth=1, justify="center")
         txtUser.place(x=10,y=100)
 
         #Etiqueta para el input password
-        lblFromUser = Label(self.root,text="Passwoord",bd="2", bg= "#000000", fg="#55aa55", font="Helveltica 13 bold").place(x=10,y=150)
+        lblFromUser = Label(self.root,text="Passwoord",bd="2", bg= "#000000", fg="#55aa55", font="Helveltica 15 bold").place(x=10,y=150)
 
         #Campo de texto para ingresar el password
-        txtPassword = Entry(self.root, show="*", fg="#888888", bg="#333333", font="Helveltica 16 bold",selectborderwidth=1, justify="center")
+        txtPassword = Entry(self.root, show="*", fg="#888888", bg="#333333", font="Helveltica 20 bold",selectborderwidth=1, justify="center")
         txtPassword.place(x=10,y=180)
 
         #Continuar        
-        buttonAccess = Button(self.root,text="Ingresar",command= lambda: self.actionSession(txtUser.get(),txtPassword.get()),fg="white",activeforeground="white",activebackground="#008800",bg="#336633",width=15,height=1,bd=1,font="Helveltica 15 bold").place(x=380,y=100)
+        buttonAccess = Button(self.root,text="Ingresar",command= lambda: self.actionSession(txtUser.get(),txtPassword.get()),fg="white",activeforeground="white",activebackground="#008800",bg="#336633",width=15,height=2,bd=1,font="Helveltica 16 bold").place(x=380,y=100)
 
         #Cancelar        
-        buttonCancel = Button(self.root,text="Cancelar",command= lambda: self.root.destroy(),fg="white",activeforeground="white",activebackground="#880000",bg="#663333",width=15,height=1,bd=1,font="Helveltica 15 bold").place(x=380,y=150)
+        buttonCancel = Button(self.root,text="Cancelar",command= lambda: self.root.destroy(),fg="white",activeforeground="white",activebackground="#880000",bg="#663333",width=15,height=2,bd=1,font="Helveltica 16 bold").place(x=380,y=170)
 
         #self.root.after(8000, lambda: self.root.destroy())
         self.showRoot()
@@ -284,10 +284,10 @@ class UtilViews:
         lblTitle = Label(self.root,text="Seleccione un usuario",bd="2",bg= "#000000", fg="#55aa55", font="Helveltica 25 bold").place(x=150,y=30)
         
         #Muestra los roles del usuario al cual le pertenece el llavin
-        scroll = Scrollbar(self.root,width=25, bg="orange")
+        scroll = Scrollbar(self.root,width=50, bg="orange")
         scroll.place(x=400,y=100)
 
-        listBox = Listbox(self.root, yscrollcommand=scroll.set, bd="1",fg="#888888", bg="#000000", font="Helveltica 16 bold",selectbackground="#559955",selectforeground="#ffffff",height=13, width=30, selectborderwidth=1, activestyle=NONE)
+        listBox = Listbox(self.root, yscrollcommand=scroll.set, bd="1",fg="#888888", bg="#000000", font="Helveltica 25 bold",selectbackground="#559955",selectforeground="#ffffff",height=8, width=20, selectborderwidth=1, activestyle=NONE)
     
         scroll.config(command=listBox.yview)
         listBox.place(x=10,y=100)
