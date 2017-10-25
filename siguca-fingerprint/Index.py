@@ -89,7 +89,7 @@ class Index:
        self.message("Realizado con exito","light green")
 
     #Actualiza la huella dactilar de un usuario especifico
-    def updateFingerPrint(self):
+    def updateFingerPrint(self, userSelectedTem):
 
         #Se verifica que no exista la huella dactilar
         self.semaforo = False
@@ -99,22 +99,33 @@ class Index:
         self.instUtilViews.viewGetFingerprint(5)
         fp.join()
         
-        #self.semaforo = False
         if self.result == "timeout":
             self.message("ERROR! No se ha colocado el dedo en el dispositivo", "red")
         
         else:
             if self.result != "-1":
-                self.instUtilFingerprint.delete(int(self.result), self)
+                selfidUser=""
+                self.message("ERROR! La huella dactilar ha sido registrada antes.","red")
+            else:
+                #No ha registrado la huella antes, se verifica y guarda la nueva huella
+                self.semaforo = False
+                fp2 = Thread(target=self.instUtilFingerprint.save, args=(self,))
+                fp2.start()
+                self.instUtilViews.viewGetFingerprint(5)
+                fp2.join()
 
-            #Se verifica que se obtenga correctamente la huella y se almacena
-            self.semaforo = False
-            fp2 = Thread(target=self.instUtilFingerprint.save, args=(self,))
-            fp2.start()
-            self.instUtilViews.viewGetFingerprint(5)
-            fp2.join()
+                #------ Validaciones y accioones para BD -----
+                if self.result == "timeout":
+                    self.message("ERROR! No se ha colocado el dedo en el dispositivo", "red")
 
-            self.message(self.result, "light green")
+                elif self.result == "not match":
+                    self.message("ERROR! Las huellas no coinciden", "red")
+
+                else:
+                    instUtilBD.updateCode(userSelectedTem["_id"], self.idUser)
+                    if int(userSelectedTem["codTarjeta"]) != -1:
+                        instIndex.instUtilFingerprint.delete(int(userSelectedTem["codTarjeta"]), self)
+                    self.message("Realizado con exito.", "light green")
 
     #Obtiene ipv4
     def getIpv4(self):
@@ -224,18 +235,10 @@ def runAdmin():
                 if instIndex.actionAdmin == "delete":
                     instIndex.deleteFingerprint(userSelectedTem["codTarjeta"])
                     instUtilBD.updateCode(userSelectedTem["_id"], -1)
-                    #print "El codigo del usuario es: " + (listUserTem[instIndex.posUser])["codTarjeta"]
-
-                #Actualiza o inserta la huella de un usuario en especifico
-                elif instIndex.actionAdmin == "update":
-                    instIndex.semaforo = True
-                    instIndex.updateFingerPrint()
-                    #ime.sleep(2)#Da tiempo a que termine de ejecutarse el Thread
                     
-                    if instIndex.idUser == "":
-                        instIndex.idUser = -1
-                    instUtilBD.updateCode(userSelectedTem["_id"], instIndex.idUser)
-
+                #Actualiza o inserta la huella de un usuario en especifico
+                elif instIndex.actionAdmin == "update": 
+                    instIndex.updateFingerPrint(userSelectedTem) 
 
         #El usuario decide volvr al flujo principal del sistema
         else:

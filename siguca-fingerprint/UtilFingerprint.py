@@ -72,8 +72,6 @@ class UtilFingerprint:
         self.initFP(instIndex)
     
         try:
-            print("Waiting for finger")
-
             #Escucha el fingerprint
             while self.instIndex.semaforo == False and self.f.readImage() == False:
                 pass
@@ -106,27 +104,24 @@ class UtilFingerprint:
             #Se valida que la huella se registrara correctamente
             while (self.instIndex.semaforo == False and self.f.readImage() == False):
                 pass
-            
-            #En caso de ser eliminado desde otra clase se termina el flujo
+
+            #No se ha colocado el dedo en el dispositivo
             if self.instIndex.semaforo == True:
-                self.instIndex.result = "ERROR!, debe colocar el dedo en el dispositivo"
-                return 0
+                self.instIndex.result = "timeout"
 
+            else:
+                self.f.convertImage(0x02)
+                
+                #Las huellas no coinciden
+                if(self.f.compareCharacteristics() == 0):
+                    self.instIndex.result = "not match"
 
-            self.f.convertImage(0x02)
-
-            if(self.f.compareCharacteristics() == 0):
-                self.instIndex.result = "Las huellas no coinciden"
-                return 0
-
-            self.f.createTemplate()
-
-            positionNumber = self.f.storeTemplate()
-            #print ("La posicion de la huella es " + str(positionNumber))
-
-            self.instIndex.idUser = positionNumber
-            self.instIndex.result = "Realizado con exito."
-            self.instIndex.semaforo = True
+                #Se guarda la nueva huella dactilar
+                else:
+                    self.f.createTemplate()
+                    positionNumber = self.f.storeTemplate()
+                    self.instIndex.idUser = positionNumber
+                    self.instIndex.result = "success"
 
         except Exception as e:
             print('Operation failed!')

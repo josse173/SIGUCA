@@ -23,7 +23,7 @@ class UtilBD:
     #Obtener lista Usuarios
     def listUser(self):
         self.connectBD()
-        return list(self.db.usuarios.find({},{"tipo":1,"codtarjeta":1,"_id":1, "nombre":1, "apellido1":1}))
+        return list(self.db.usuarios.find({},{"tipo":1,"codTarjeta":1,"_id":1, "nombre":1, "apellido1":1}))
 
     #Obtener lista de codigos de las tarjetas o llaveros de los usuarios
     def listCodUser(self):
