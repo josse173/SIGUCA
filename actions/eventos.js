@@ -7,6 +7,7 @@ var HorarioEmpleado = require('../models/HorarioEmpleado');
 var HorarioFijo = require('../models/HorarioFijo');
 var Departamento = require('../models/Departamento');
 var Vacaciones = require('../models/Vacaciones');
+var crudFeriado=require('../routes/crudFeriado');
 var Justificaciones = require('../models/Justificaciones');
 var Solicitudes = require('../models/Solicitudes');
 var Cierre = require('../models/Cierre');
@@ -417,7 +418,6 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
   //Si el filtrado es por horas
   if(filtrado && filtrado == "horas" || req.route.path.substring(0, 9) !=='/reportes'){
     filtro.horasEmpleado = listaSumada;
-    
     filtro.cierreUsuarios = cList;
     
   }
@@ -445,6 +445,13 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
   if(filtrado && filtrado == "vacaciones" && req.route.path.substring(0, 9) =='/reportes'){
     filtro.reporteVacaciones = listVacacionesReporte;
   }
+
+  if(filtrado && filtrado == "Feriados" && req.route.path.substring(0, 9) =='/reportes'){
+      crudFeriado.listaFeriados(function (feriados){
+        filtro.feriado=feriados;
+      });
+   
+  }
     /**
      * Se transforma la lista para ser usada en la consulta de vacaciones
      */
@@ -460,11 +467,14 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
     });
 }
 
+
+
 function marcasPorDias(marcas,cb){
   var primeraVez=0;
   var entro=false;
   var ordenadas=new Array();
   var temporal = new Array();
+  console.log(marcas[0]);
   for (var i = 0; i <marcas.length; i++){
     if (primeraVez==0){
         var objMarcas = new Object();

@@ -6,55 +6,56 @@ block sigucaCSS
 
 block content
     div.container
+      if(!feriado)
+        div.text-center
+          .milky Reportes de #{tipoReporte}
 
-      div.text-center
-        .milky Reportes de #{tipoReporte}
+        div.filter
+          table
+            form(role='form', method="POST", action="/reportes/"+filtradoReporte)
+              td
+                select.form-control.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro") 
+                  option(value= "todos|reportes") Todos los usuarios
+                  each user in usuarios
+                    //-Se verifica si la informacion esta siendo filtrada por usuario
+                    if(filtroUsuario && filtroUsuario == user._id)
+                      option(value= user._id + "|reportes", selected) #{user.apellido1} #{user.apellido2}, #{user.nombre}
+                    else
+                      option(value= user._id + "|reportes") #{user.apellido1} #{user.apellido2}, #{user.nombre}
 
-      div.filter
-        table
-          form(role='form', method="POST", action="/reportes/"+filtradoReporte)
-            td
-              select.form-control.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro") 
-                option(value= "todos|reportes") Todos los usuarios
-                each user in usuarios
-                  //-Se verifica si la informacion esta siendo filtrada por usuario
-                  if(filtroUsuario && filtroUsuario == user._id)
-                    option(value= user._id + "|reportes", selected) #{user.apellido1} #{user.apellido2}, #{user.nombre}
-                  else
-                    option(value= user._id + "|reportes") #{user.apellido1} #{user.apellido2}, #{user.nombre}
-
-            td
-              select.form-control#selectFiltro.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro_departamento") 
-                option(value= "todos") Todos los departamentos
-                each dep in departamentos
-                  //-Se verifica si la informacion esta siendo filtrada por departamento
-                  if(filtroDepartamento && filtroDepartamento == dep._id)
-                    option(value=dep._id, selected) #{dep.nombre}
-                  else
-                    option(value=dep._id ) #{dep.nombre}
-            -if(reporteVacaciones)
-              td.hide
-            -else
               td
-                label.labelFiltro.labFilLeft(for='fechaDesde') Desde:
-                  div.input-group
-                    input#date_range_start.form-control.fondoTransparente(type='text', name='fechaDesde', value=rangoFecha.fechaDesde)
-                    span.input-group-addon.fondoTransparente-derecha
-                      i.icon-calendar
-            -if(reporteVacaciones)
-              td.hide
-            -else
+                select.form-control#selectFiltro.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro_departamento") 
+                  option(value= "todos") Todos los departamentos
+                  each dep in departamentos
+                    //-Se verifica si la informacion esta siendo filtrada por departamento
+                    if(filtroDepartamento && filtroDepartamento == dep._id)
+                      option(value=dep._id, selected) #{dep.nombre}
+                    else
+                      option(value=dep._id ) #{dep.nombre}
+              -if(reporteVacaciones)
+                td.hide
+              -else
+                td
+                  label.labelFiltro.labFilLeft(for='fechaDesde') Desde:
+                    div.input-group
+                      input#date_range_start.form-control.fondoTransparente(type='text', name='fechaDesde', value=rangoFecha.fechaDesde)
+                      span.input-group-addon.fondoTransparente-derecha
+                        i.icon-calendar
+              -if(reporteVacaciones)
+                td.hide
+              -else
+                td
+                  label.labelFiltro(for='fechaHasta') Hasta:
+                    div.input-group
+                      input#date_range_end.form-control.fondoTransparente(type='text', name='fechaHasta', value=rangoFecha.fechaHasta)
+                      span.input-group-addon.fondoTransparente-derecha
+                        i.icon-calendar
               td
-                label.labelFiltro(for='fechaHasta') Hasta:
-                  div.input-group
-                    input#date_range_end.form-control.fondoTransparente(type='text', name='fechaHasta', value=rangoFecha.fechaHasta)
-                    span.input-group-addon.fondoTransparente-derecha
-                      i.icon-calendar
-            td
-              button.filtro.form-control.btn.btn-success.fondoTransparente(type='submit', name='gestionar') Buscar
-            //
-              td
-                button#toPDF.form-control.btn.btn-primary(name='toPDF') PDF
+      
+                button.filtro.form-control.btn.btn-success.fondoTransparente(type='submit', name='gestionar') Buscar
+      else
+        div.text-center
+          .milky Reportes de #{tipoReporte}
 
       .col-xs-12
         div.eventosCierre
@@ -98,6 +99,14 @@ block content
                     td Solicitudes de horas extraordinarias
                     if(extras.length != 0)
                       td #{extras.length}
+                    else
+                      td 0
+                
+                 if(feriado)
+                  tr
+                    td Feriados
+                    if(feriado.length != 0)
+                      td #{feriado.length}
                     else
                       td 0
                 
@@ -414,6 +423,26 @@ block content
               h3 Solicitudes Permisos
               p No se han encontrado registros 
 
+          //-lista de feriados
+          if(feriado)
+            if(feriado.lenght!=0)
+              br
+              h3 Lista de feriados
+              table.footable.tableFeriado
+                  thead
+                    tr
+                      th Nombre
+                      th Fecha
+                      
+  
+                  tbody 
+                    each feriadoCurrent, i in feriado
+                      tr
+                        td #{feriadoCurrent.nombreFeriado} 
+                        td #{feriadoCurrent.epoch} 
+            else
+              h3 Feriados
+              p No se han encontrado registros
 
           //-Solicitudes Vacaciones
           if(reporteVacaciones)
