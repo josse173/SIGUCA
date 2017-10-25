@@ -143,19 +143,10 @@ class UtilViews:
         #Se inicializa la vistaupdateTimeText(self):   
         self.initRoot()
  
-        #Label
-        #self.lblMessage = Label(self.root, text="00:00:00", font=("Helvetica",25)) 
-        self.lblMessage.config(background="black", fg="#bbbbbb")
-        self.lblMessage.pack()
-
         #Muestra la imagen
         self.photo = UtilImg().getImageURL("siguca.gif",self.root)
         self.lblImg2 = Label(self.root,image=self.photo,bd=0).place(x=-150, y=50)
 
-        #Ejecuta Hilo para actualizar la hora en tiempo real
-        #subproceso = Thread(target=self.updateTimeText)
-        #subproceso.start()
-        
         #Boton para continuar
         btnIngresar = Button(self.root, text="Ingresar", command=lambda: self.ingresar("mark"), fg="white", activeforeground="white", activebackground="green", bg="#555555",width=17, height=2, bd=2, font="Helveltica 15 bold").place(x=470, y=200)
         
@@ -180,16 +171,10 @@ class UtilViews:
     def viewGetFingerprint(self, timeView):    
         self.initRoot()
 
-        #Label
-        #self.lblMessage = Label(self.root, text="0", font=("Helvetica",33)) 
-        self.lblMessage.config(background="black", fg="white")
-        self.lblMessage.pack() 
-                
         Label(self.root, text="Coloque su dedo en el dispositivo.", wraplength=650,  fg = "#228B22", bg = "black", font = "Helvetica 20 bold", height=70, width=100).pack()
 
         self.root.after((timeView*1000), lambda: self.deleteRoot())
 
-        #Muestra vista
         self.showRoot()
 
     #------- Vista Solicitar Tipo de usuario ---------
@@ -209,7 +194,6 @@ class UtilViews:
         #Se crea el entorno grafico  para realizar las marcas
         self.initRoot()
     
-        #en cada boton se llama el metodo correspondiente con el parametro del codigo  obtenido por la lectura.
         button = Button(self.frame,text="       Entrada        ", command = lambda: self.actionMark(1),fg="white",activeforeground="white",activebackground="#446644",bg="green",width=22,height=3,bd=3,font="Helveltica 17 bold")
     
         button1 = Button(self.frame,text="        Salida        ", command =lambda:  self.actionMark(6),fg="white",activeforeground="white",activebackground="#446644",bg="green",width=22,height=3,bd=3,font="Helveltica 17 bold")
