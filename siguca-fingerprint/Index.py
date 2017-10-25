@@ -187,7 +187,10 @@ def runMark():
 def runAdmin():
     instIndex = Index()
     instIndex.session()
-   
+    
+    if instIndex.result == "cancel":
+        return 0
+    
     resultSession = instUtilBD.verifySession(instIndex.sessionUser, instIndex.sessionPassword)
 
     if resultSession == "faildUser":

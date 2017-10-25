@@ -103,6 +103,10 @@ class UtilViews:
         #print "La posicion seleccionada es " + str(posSelected[0])
         self.root.destroy()
 
+    def cancelSession(self):
+        self.instIndex.result = "cancel"
+        self.root.destroy()
+
     '''
        Se construyen las vistas a utilizar
     '''
@@ -114,7 +118,7 @@ class UtilViews:
                
         canvas = Canvas(self.root, width= 250, height=20, bg="#000000")
         canvas.pack()
-        canvas.place(x=480, y=500)
+        canvas.place(x=280, y=200)
 
         
         ball = canvas.create_rectangle(-40, 0, 200, 20, fill='green')
@@ -140,7 +144,7 @@ class UtilViews:
         self.initRoot()
  
         #Label
-        self.lblMessage = Label(self.root, text="00:00:00", font=("Helvetica",25)) 
+        #self.lblMessage = Label(self.root, text="00:00:00", font=("Helvetica",25)) 
         self.lblMessage.config(background="black", fg="#bbbbbb")
         self.lblMessage.pack()
 
@@ -177,7 +181,7 @@ class UtilViews:
         self.initRoot()
 
         #Label
-        self.lblMessage = Label(self.root, text="0", font=("Helvetica",33)) 
+        #self.lblMessage = Label(self.root, text="0", font=("Helvetica",33)) 
         self.lblMessage.config(background="black", fg="white")
         self.lblMessage.pack() 
                 
@@ -255,7 +259,7 @@ class UtilViews:
         buttonAccess = Button(self.root,text="Ingresar",command= lambda: self.actionSession(txtUser.get(),txtPassword.get()),fg="white",activeforeground="white",activebackground="#008800",bg="#336633",width=15,height=2,bd=1,font="Helveltica 16 bold").place(x=380,y=100)
 
         #Cancelar        
-        buttonCancel = Button(self.root,text="Cancelar",command= lambda: self.root.destroy(),fg="white",activeforeground="white",activebackground="#880000",bg="#663333",width=15,height=2,bd=1,font="Helveltica 16 bold").place(x=380,y=170)
+        buttonCancel = Button(self.root,text="Cancelar",command= lambda: self.cancelSession(),fg="white",activeforeground="white",activebackground="#880000",bg="#663333",width=15,height=2,bd=1,font="Helveltica 16 bold").place(x=380,y=170)
 
         #self.root.after(8000, lambda: self.root.destroy())
         self.showRoot()
