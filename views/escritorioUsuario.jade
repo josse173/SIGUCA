@@ -381,13 +381,16 @@ input(id='ipOrigen',name='ipOrigen' ,value='', style='display:none')
                         th(data-sort-ignore="true" data-type="numeric" ) Fecha justificada
                         th(data-sort-ignore="true") Motivo
                         th(data-sort-ignore="true" data-type="numeric" ) Información
+                        th Justificar
                     tbody.justDetalle
                       each just, i in justificaciones
-                        tr(data-toggle="modal" data-target="#updateJustificacion" data-value=just._id)
+                        tr
                           td #{just.fecha.str} 
                           td #{just.fechaJust.str}
                           td #{just.motivo}
                           td #{just.informacion}
+                          td 
+                            button.btn.btn-success(type='button',data-toggle="modal", data-target="#updateJustificacion" ,data-value=just._id ) Justificar
                     tfoot
                       tr
                         td(colspan='8')
