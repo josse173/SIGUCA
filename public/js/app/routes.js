@@ -14,6 +14,81 @@
 
 //Muestra el modal "justificaciones" al cargar la pagina, validando que haya más de una justificación.
 
+
+$(".justificarMasaUsuario").click(function(){
+    
+       var cantidadCheck=document.getElementsByClassName("justificarMasaUsuario");
+       var contador=0;
+       for(var i=0;i<cantidadCheck.length;i++){
+           if( cantidadCheck[i].checked) {
+               contador++;
+           }
+       }
+   
+       if(contador>0){
+           $("#detalleJustificacionMasa").css('display','block');
+           $("#botonJustificacionMasa").css('display','block');
+         
+       }else{
+           $("#detalleJustificacionMasa").css('display','none');
+           $("#botonJustificacionMasa").css('display','none');
+       
+       }
+   
+   });
+
+$("#botonJustificacionMasa").click(function() {
+    var detalle=document.getElementsByClassName("detalleJustificacionMasa");
+    var arrayCheck=document.getElementsByClassName("justificarMasaUsuario");
+    var arrayOrdenado=new Array();
+    for(var i=0;i<arrayCheck.length;i++){
+        if( arrayCheck[i].checked) {
+            var obj=new Object();
+            var temporal=new Array();
+            temporal=arrayCheck[i].value.split(":/");
+            obj.id=temporal[0];
+            obj.motivoOtroJust=temporal[1];
+            obj.detalle=detalle[0].value;
+            arrayOrdenado.push(obj);
+        }
+    }
+    
+    var entro=false;
+    var primeraVez=arrayOrdenado[0].motivoOtroJust;
+    for(var i=0;i<arrayOrdenado.length;i++){
+        if(primeraVez!=arrayOrdenado[i].motivoOtroJust){
+            entro=true;
+            i=arrayOrdenado.length;
+        }
+    }
+    if(entro==false){
+        $.ajax({
+            url: "/justificacionMasaEmpleado",
+            type: 'POST',
+            dataType : "json",
+            data:{"ordenadas":arrayOrdenado},
+            success: function(data) {    
+                location.href="/escritorioEmpl";
+            },
+            error: function(){
+                alert("Error al justificar en masa.");
+            }
+        }); 
+    }else{
+            
+            var notification = alertify.error('Error,seleccione justificaciones con el mismo motivo', 'success', 4, function(){ 
+                location.href="/escritorioEmpl";
+             });
+             
+            
+    }
+
+});
+
+
+
+
+
 $(document).ready(function()
    {
 

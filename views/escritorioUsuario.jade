@@ -369,6 +369,8 @@ input(id='ipOrigen',name='ipOrigen' ,value='', style='display:none')
       .modal-header
         button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
         h3#myModalLabel.modal-title Justificaciones pendientes
+        textarea#detalleJustificacionMasa.detalleJustificacionMasa.form-control(rows="4" cols="50" name='motivo' required ,style='display:none')
+        button#botonJustificacionMasa.btn.btn-success(type='button',style='display:none' ) Justificaciones en masa
       .modal-body
           .form-group
               .col-xs-4
@@ -377,6 +379,7 @@ input(id='ipOrigen',name='ipOrigen' ,value='', style='display:none')
                   table#tablaJust.footable(data-page-navigation=".pagination" data-page-size="4" )
                     thead
                       tr
+                        th(data-sort-ignore="true" data-type="numeric" ) En masa
                         th(data-sort-ignore="true" data-type="numeric" ) Fecha creada
                         th(data-sort-ignore="true" data-type="numeric" ) Fecha justificada
                         th(data-sort-ignore="true") Motivo
@@ -385,6 +388,8 @@ input(id='ipOrigen',name='ipOrigen' ,value='', style='display:none')
                     tbody.justDetalle
                       each just, i in justificaciones
                         tr
+                          td 
+                            input.justificarMasaUsuario(type='checkbox',checked=false, id='justificarMasaUsuario' ,value=just._id+":/"+just.motivo)
                           td #{just.fecha.str} 
                           td #{just.fechaJust.str}
                           td #{just.motivo}

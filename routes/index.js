@@ -227,6 +227,7 @@ module.exports = function(app, io) {
 
 
     app.post('/justificacionEmpleado', autentificado, function(req,res){
+    
         var just={
             id:req.body.identificador,
             usuario:req.user.id,
@@ -246,6 +247,29 @@ module.exports = function(app, io) {
         }
 		
     });
+
+
+    //justificacion masa
+    app.post('/justificacionMasaEmpleado', autentificado, function(req,res){
+
+        for(var i=0;i<req.body.ordenadas.length;i++){
+            var just={
+                id:req.body.ordenadas[i].id,
+                usuario:req.user.id,
+                detalle:req.body.ordenadas[i].detalle,
+                motivoOtroJust:req.body.ordenadas[i].motivoOtroJust,
+                motivoJust:"otro"
+    
+            }; 
+            crudJustificaciones.updateJust(just, function (err){
+               
+            });
+        }
+        res.json({});
+           
+            
+    });
+    
 
 
    
