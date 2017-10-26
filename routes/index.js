@@ -540,9 +540,9 @@ module.exports = function(app, io) {
     /*
     *  Obtiene un usuario
     */
-    app.get('/empleado/tipo/get', function (req, res) {
-        Usuario.findOne({username:req.query.username2}, function (err, user) {
-            if (err || (user && !user.validPassword(req.query.password2))) { return res.json(err) }
+    app.post('/empleado/tipo/get', function (req, res) {
+        Usuario.findOne({username:req.body.username2}, function (err, user) {
+            if (err || (user && !user.validPassword(req.body.password2))) { return res.json(err) }
             res.json(user);
         });
     });

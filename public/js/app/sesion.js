@@ -60,7 +60,7 @@ function verificarTipos(){
     var selectTipo = $("#selectTem").empty();
     $.ajax({
         url: '/empleado/tipo/get/',
-        type: 'GET',
+        type: 'POST',
         dataType : "json",
         data: {username2:username,password2 : password},
         success: function(data) {
