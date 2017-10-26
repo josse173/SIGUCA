@@ -109,7 +109,7 @@ $(document).ready(function()
             $('#detalles').val(data.detalle);    
         });
     });
-    $("tr[data-target=#updateJustificacion]" ).click( function() {
+    $("button[data-target=#updateJustificacion]" ).click( function() {
         var id = $(this).data('value').replace(/\"/g, "");
         $.get('/justificacion/edit/'+id, function( data ) {
             $("#updateJustificacion #motivoOtroJust").prop("readonly", true);
