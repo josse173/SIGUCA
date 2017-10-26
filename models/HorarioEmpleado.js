@@ -13,6 +13,10 @@ var horarioDia = {
     salida: tiempo
 };
 var SchemaHorario = new Schema({
+    nombreHorarioPersonalizado : {
+        type: String,
+        default: ''
+    },
     lunes: horarioDia,
     martes: horarioDia,
     miercoles: horarioDia,

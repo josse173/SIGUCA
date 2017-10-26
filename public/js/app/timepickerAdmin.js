@@ -4,7 +4,7 @@
     $('#timepicker2 input').timepicker('setTime', '0:15');
     $('#timepicker3 input').timepicker('setTime', '0:45');
     $('#timepicker4 input').timepicker('setTime', '0:15');
-    $('#timepicker5 input').timepicker('setTime', '8:00');
+    $('#timepicker5 input').timepicker('setTime', '0:15');
     $('#timepicker6 input').timepicker('setTime', '17:00');
 
     $('#timepicker span').timepicker('setTime', '8:00');
@@ -29,9 +29,11 @@
      $('[name="idHorario"]').change(function () {
         if($('[name="idHorario"]').val()!=""){
             document.getElementsByName("horarioFijo")[0].disabled = true;
+            document.getElementsByName("personalizado")[0].disabled = true;
         }
         else {
             document.getElementsByName("horarioFijo")[0].disabled = false;
+            document.getElementsByName("personalizado")[0].disabled = false;
         }
 
      });
@@ -39,9 +41,23 @@
        $('[name="horarioFijo"]').change(function () {
         if($('[name="horarioFijo"]').val()!=""){
             document.getElementsByName("idHorario")[0].disabled = true;
+            document.getElementsByName("personalizado")[0].disabled = true;
         }
         else {
             document.getElementsByName("idHorario")[0].disabled = false;
+            document.getElementsByName("personalizado")[0].disabled = false;
+        }
+
+     });
+
+     $('[name="personalizado"]').change(function () {
+        if($('[name="horarioFijo"]').val()!=""){
+            document.getElementsByName("idHorario")[0].disabled = true;
+            document.getElementsByName("horarioFijo")[0].disabled = true;
+        }
+        else {
+            document.getElementsByName("idHorario")[0].disabled = false;
+            document.getElementsByName("horarioFijo")[0].disabled = false;
         }
 
      });

@@ -40,6 +40,7 @@ var Feriado = require('../models/Feriado');
 var Usuario = require('../models/Usuario');
 var Horario = require('../models/Horario');
 var HorarioFijo = require('../models/HorarioFijo');
+var HorarioPersonalizado = require('../models/HorarioEmpleado');
 var Departamento = require('../models/Departamento');
 var Justificaciones = require('../models/Justificaciones');
 var Solicitudes = require('../models/Solicitudes');
@@ -157,7 +158,9 @@ module.exports = function(app, io) {
     /*
     *  Crea un nuevo horario
     */
-    app.post('/asignarHorario', autentificado, horario_actions.create);
+    app.post('/agregarHorarioPersonalizado', autentificado,function(req,res){
+        horario_actions.create(req,res);
+     });
 
     app.post('/horario/get', autentificado, function (req, res) {
         crudHorario.getByUser(req.body.usuario, function (err, horario) {
@@ -222,8 +225,8 @@ module.exports = function(app, io) {
     */
     app.post('/justificacion/:id', autentificado, justificacion_actions.actualiza);
 
-    app.post('/jeje', autentificado, function(req,res){
-       console.log(req.body.motivoOtroJust);
+
+    app.post('/justificacionEmpleado', autentificado, function(req,res){
         var just={
             id:req.body.identificador,
             usuario:req.user.id,
@@ -232,11 +235,20 @@ module.exports = function(app, io) {
             motivoJust:"otro"
 
         }; 
-		crudJustificaciones.updateJust(just, function (err){
-			res.redirect('/escritorioEmpl');
-		});
+        if(req.session.name!="Supervisor"){
+            crudJustificaciones.updateJust(just, function (err){
+                res.redirect('/escritorioEmpl');
+            });
+        }else{
+            crudJustificaciones.updateJust(just, function (err){
+                res.redirect('/escritorio');
+            });
+        }
+		
     });
 
+
+   
     /*
     *  El supervisor elimina una justificación y se le envia un correo al dueño de la justificación
     */
@@ -349,7 +361,8 @@ module.exports = function(app, io) {
     *  Crea una nueva marca vía página web
     */
     app.post('/marca', autentificado, function (req, res) {
-        crudMarca.addMarca(req.session.name,
+        
+        crudMarca.addMarca(req.body.ipOrigen,req.session.name,
             {tipoMarca: req.body.marca, usuario: req.user.id,tipoUsuario: req.session.name}, 
             function(msj, msjJust){
                 res.json({result:msj, justificacion:msjJust});
@@ -431,9 +444,10 @@ module.exports = function(app, io) {
             var codTarjeta = req.param('codTarjeta');
             var tipoMarca = req.param('tipoMarca');
             var tipoUsuario = req.param('tipo');
+            var ip = req.param('ipv4');
             //if(pwd1 == 'ooKa6ieC' && pwd2 == 'of2Oobai' ) {
             
-            crudMarca.rfidReader(tipoUsuario,codTarjeta, tipoMarca, function (msj) {
+            crudMarca.rfidReader(tipoUsuario,codTarjeta, tipoMarca, ip, function (msj) {
             res.send(msj);
                 });
             //}
@@ -797,6 +811,9 @@ module.exports = function(app, io) {
     /*
     *  Crea un nuevo horario
     */
+
+    
+
     app.post('/horarioN', autentificado, function (req, res) {
         crud.addHorario(req.body, function() {
             if (req.session.name == "Administrador") {
@@ -827,13 +844,16 @@ module.exports = function(app, io) {
             req.user.tipo = req.session.name;
 
             HorarioFijo.find(function(error,horarioFijo){
- 
-            return res.render('horarioN', {
-                title: 'Nuevo Horario | SIGUCA',
-                horarios: horarios,
-                usuario: req.user,
-                horarioFijo:horarioFijo
-            });
+                HorarioPersonalizado.find(function(error,personalizado){
+                    return res.render('horarioN', {
+                        title: 'Nuevo Horario | SIGUCA',
+                        horarios: horarios,
+                        usuario: req.user,
+                        horarioFijo:horarioFijo,
+                        horarioPersonalizado:personalizado
+                    });
+                });
+               
             });
         });
     });
@@ -857,6 +877,16 @@ module.exports = function(app, io) {
         });
     }); 
 
+
+    //Carga los datos de un horarioFijo en especiifico 
+
+    app.get('/horarioN/buscarPersonalizado/:id', autentificado, function (req, res) { 
+        crud.loadHorarioEmpleado(req.params.id, function (err, horario) {
+            if (err) return res.json(err);
+            else res.json(horario);
+        });
+    }); 
+
     /*
     *  Actualiza los datos de un horario libre en específico
     */
@@ -867,6 +897,19 @@ module.exports = function(app, io) {
             res.redirect('/horarioN');
         });
     });
+
+    app.post('/formUpdatePersonalizado/:id',autentificado, function (req, res) {
+ 
+    
+        var data = { horario: req.body, id: req.params.id };
+        crud.updateHorarioPersonalizado(data, function (err, horarios) {
+            if (err) return res.json(err);
+            res.redirect('/horarioN');
+        });
+      
+    });
+
+    
 
     //Actualiza los datos de un horario fijo en especifico 
      app.post('/horarioFijoN/:id',autentificado, function (req, res) { 
@@ -894,6 +937,15 @@ module.exports = function(app, io) {
         });
     });
 
+    //eliminar horario personalizado
+    app.get('/horarioPersonalizado/delete/:id', autentificado, function (req, res) {
+        crud.deleteHorarioPersonalizado(req.params.id, function (err, msj) {
+            if (err) return res.json(err);
+            else res.send(msj);
+        });
+    });
+
+
 
     //horarioMasa
     app.get('/horarioMasa',autentificado,function(req,res){
@@ -919,6 +971,18 @@ module.exports = function(app, io) {
        
     });
 
+    app.post('/horarioMasaPersonalizado',autentificado,function(req,res){
+            for(var i=0;i<req.body.vector.length;i++){
+             
+                Usuario.update({_id:req.body.vector[i].id},{ $set:{"horarioEmpleado":req.body.vector[i].idHorario}},function(err,horario){});
+                Usuario.update({_id:req.body.vector[i].id},{ $unset:{horarioFijo:""}},function(error,correcto){});
+                Usuario.update({_id:req.body.vector[i].id},{ $unset:{horario:""}},function(error,correcto){});
+            }
+            res.json({});
+           
+    });
+
+
     app.post('/horarioMasaFijo',autentificado,function(req,res){
         
             for(var i=0;i<req.body.vector.length;i++){
@@ -934,6 +998,7 @@ module.exports = function(app, io) {
     app.post('/horarioMasaSinHorario',autentificado,function(req,res){
         
             for(var i=0;i<req.body.vector.length;i++){
+                Usuario.update({_id:req.body.vector[i].id},{ $unset:{horarioEmpleado:""}},function(error,correcto){});
                 Usuario.update({_id:req.body.vector[i].id},{ $unset:{horario:""}},function(error,correcto){});
                 Usuario.update({_id:req.body.vector[i].id},{ $unset:{horarioFijo:""}},function(error,correcto){});
             }

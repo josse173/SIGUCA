@@ -5,6 +5,7 @@ block content
 
     br
     h3 Configuración de horarios de empleado
+    
 
     h5(id='titulo',style='display:none') Agregar usuarios en masa
     .form-group
@@ -22,6 +23,13 @@ block content
                     each horario, i in horarioFijo
                         option(value= horario._id) #{horario.nombre}
 
+         label(style='display:none',id='lbPersonalizado') Horario personalizado:
+                  br
+                  select.hPersonalizado(data-style="btn-inverse", data-width="140px", type="text",id="hPersonalizado" ,style='display:none') 
+                    option(value="") Sin horario  
+                    each horario, i in horarioPersonalizado
+                        option(value= horario._id) #{horario.nombreHorarioPersonalizado}
+
          button(type='button',id='horarioMasa' ,style='display:none;float:left') 
           i.icon-ok.icon-large.i-success       
    
@@ -38,6 +46,7 @@ block content
             th(data-hide="phone,small,medium" data-sort-ignore="true") Departamento
             th(data-hide="phone,small,medium") Horario libre
             th(data-hide="phone,small,medium") Horario Fijo
+            th(data-hide="phone,small,medium") Horario personalizado
             th(data-hide="phone,small") Estado
       
 
@@ -73,6 +82,12 @@ block content
                 
               if(empleado.horarioFijo)
                 td #{empleado.horarioFijo.nombre} 
+                
+              else
+                td No tiene horario asignado
+
+              if(empleado.horarioEmpleado)
+                td #{empleado.horarioEmpleado.nombreHorarioPersonalizado} 
                 
               else
                 td No tiene horario asignado

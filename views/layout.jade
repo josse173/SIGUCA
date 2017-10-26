@@ -106,7 +106,8 @@ html
                             a(href="/reportes/extras") Solicitudes
                           li
                             a(href="/reportes/vacaciones") Vacaciones
-
+                          li 
+                            a(href="/reportes/Feriados") Feriados
                   if(usuario.tipo == 'Supervisor' || usuario.tipo == 'Empleado' || usuario.tipo == config.empleadoProfesor)
                     li
                       a(href="/eventos")
@@ -155,4 +156,7 @@ html
     script(src='/js/JS_Datatables/buttons.html5.min.js')
     script(src='/js/JS_Datatables/buttons.print.min.js')
     script(src='/js/JS_Datatables/jszip.min.js')
+    script(scr='http://code.jquery.com/jquery-1.11.1.js')
+    script(src="/js/components/jquery.validate.min.js")
+    
     block sigucaJS

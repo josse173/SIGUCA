@@ -143,14 +143,18 @@
               th(data-sort-ignore="true" data-type="numeric" ) Fecha justificada
               th(data-sort-ignore="true") Motivo
               th(data-sort-ignore="true" data-type="numeric" ) Información
+              th Justificar
           tbody.justDetalle
             each just, i in justificaciones
-              tr(data-toggle="modal" data-target="#updateJustificacion" data-value=just._id)
+              tr
                 //.miClase fue crerada para contar la cantidad de justificaciones creadas
                 td.miClase #{just.fecha.str} 
                 td #{just.fechaJust.str}
                 td #{just.motivo}
                 td #{just.informacion}
+                td 
+                  button.btn.btn-success(type='button',data-toggle="modal", data-target="#updateJustificacion" ,data-value=just._id ) Justificar
+
           tfoot
             tr
               td(colspan='8')
@@ -196,7 +200,7 @@
                     td
                       button.btnEntradaAlmuerzo.btn.btn-primary.btn-(style="width: 150px;", value = 'Entrada de Almuerzo') Entrada del Almuerzo
               .form-group
-                label()
+               
                   button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
 
 #addMarcaResponsive.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
@@ -335,7 +339,7 @@
         button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
         h4#myModalLabel.modal-title Justificación
       .modal-body
-        form#solicitud-extra-form(role='form', method="POST", action="/jeje").well.span4
+        form#solicitud-extra-form(role='form', method="POST", action="/justificacionEmpleado").well.span4
           .form-group
             label(for='motivoOtroJust') Motivo:
               label#motivoOtroJust.form-control(style='float:left')
@@ -356,7 +360,7 @@
 
 
 
-
+input(id='ipOrigen',name='ipOrigen' ,value='', style='display:none')
 //Ventana modal que se abre al inicio dee la pagina escritoroUsuario.jade en caso de que hayan justificaciones pendientes
 
 #mostrarSolicitudes.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')

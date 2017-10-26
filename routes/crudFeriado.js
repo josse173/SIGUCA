@@ -53,4 +53,38 @@ exports.actualizarFeriado = function(req,res){
          });
 };
 
+exports.listaFeriados=function(cb){
+    Feriados.find(function(err,feriados){
+        if(err){
+            return;
+        }else{
+            var feriadosArreglado = new Array();
+            for (var i=0;i<feriados.length;i++){
+                var obj=new Object();
+                obj._id=feriados[i]._id;
+                obj.nombreFeriado=feriados[i].nombreFeriado;
+                
+                var anTemporal=moment.unix(feriados[i].epoch).format("DD/MM/YY").split("/");
+                var obj=new Object();
+                obj._id=feriados[i]._id;
+                obj.nombreFeriado=feriados[i].nombreFeriado;
+
+                var utcSeconds = feriados[i].epoch;
+                var d = new Date(0); // The 0 there is the key, which sets the date to the epoch
+                d.setUTCSeconds(utcSeconds)
+                d.setFullYear(moment().year());
+
+                var diasSemana = new Array("Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado");
+                var meses = new Array ("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
+                obj.epoch=diasSemana[d.getDay()]+" "+anTemporal[0]+" "+"de"+meses[d.getMonth()]+" "+moment().year();
+                feriadosArreglado.push(obj);
+
+
+            }
+        
+            cb(feriadosArreglado);
+        }
+    });
+}
+
 

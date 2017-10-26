@@ -16,8 +16,9 @@ cierrePersonal 		= require ('../models/CierrePersonal.js');
 //--------------------------------------------------------------------
 //		Métodos Marcas
 //---------------------------------------------------------------------
-exports.addMarca = function(tipoUsuario,m, cb){
-	marca(tipoUsuario, m, cb);
+exports.addMarca = function(ipOrigen,tipoUsuario,m, cb){
+	
+	marca(ipOrigen,tipoUsuario, m, cb);
 }
 
 function saveMarca(m, cb, msg){
@@ -30,8 +31,8 @@ function saveMarca(m, cb, msg){
 	});
 }
 
-function marca (tipoUsuario, marca, cb) {
-	
+function marca (ipOrigen,tipoUsuario, marca, cb) {
+
 
 	if(marca.tipoMarca != 'error') {
 		var date = moment(),
@@ -39,6 +40,8 @@ function marca (tipoUsuario, marca, cb) {
 		epochTimeGte = date.hours(0).minutes(0).seconds(0).unix(),
 		epochTimeLte = date.hours(23).minutes(59).seconds(59).unix();
 		marca.epoch = epochTime;
+		marca.ipOrigen=ipOrigen;
+		
 		var newMarca = Marca(marca);
 		
 		Marca.find(
@@ -247,7 +250,7 @@ exports.find = function(query, cb){
 }
 
 
-exports.rfidReader = function(tipoUsuario, codTarjeta, tipoMarca, cb) {
+exports.rfidReader = function(tipoUsuario, codTarjeta, tipoMarca, ip, cb) {
 	Usuario.findOne({codTarjeta: codTarjeta}, function (err, usuario) {
 		var tipo;
 		if(tipoMarca == 1) {
@@ -264,7 +267,7 @@ exports.rfidReader = function(tipoUsuario, codTarjeta, tipoMarca, cb) {
 			tipo = 'Salida';
 		} else tipo = 'error';
 
-		marca(tipoUsuario, {usuario: usuario.id, tipoMarca: tipo,tipoUsuario: tipoUsuario}, 
+		marca(ip, tipoUsuario, {usuario: usuario.id, tipoMarca: tipo,tipoUsuario: tipoUsuario}, 
 			function(msj){					
 				return cb(msj);
 			});
@@ -373,6 +376,7 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 				//
 			}
 			else if(!err && usuario.horarioFijo && usuario.horarioFijo!=""){
+				
 				HorarioFijo.findById(usuario.horarioFijo,function(error,horarioFijo){
 					if(!error && horarioFijo!="" && horarioFijo){
 							var mOut= moment.unix(marca.epoch);
@@ -623,7 +627,7 @@ function workedHourSchedule(_idUser,horarioEmpleado,mOut,cb,tipoUsuario,cantidad
 			horasTrabajadasFinal--;
 		}
 
-		if(minutosTrabajados>60){
+		if(minutosTrabajados>59){
 			horasTrabajadas++;
 			minutosTrabajados=minutosTrabajados-60;
 		}
