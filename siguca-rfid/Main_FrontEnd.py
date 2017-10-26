@@ -47,7 +47,7 @@ def update_timeText():
 
 #Here you have to set the path of the BackEnd FIle
 #rutaImagenesPi= "/home/pi/Desktop/imgs/"
-path='/usr/local/bin/scripts-python-siguca/Subprocess_BackEnd.py'
+path='/usr/local/bin/siguca/siguca-rfid/Subprocess_BackEnd.py'
 subprocess.Popen(['python', path])
 root2 = Tk()
 frame2 = Frame(root2)

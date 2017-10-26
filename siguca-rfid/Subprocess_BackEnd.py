@@ -32,6 +32,7 @@ import RPi.GPIO as GPIO
 from Tkinter import *
 from pymongo import MongoClient
 from PIL import Image
+import socket
 
 #Import para imagenes
 import UtilImg
@@ -39,7 +40,7 @@ import UtilImg
 
 #SETTINGS AND CONFIGURATIONS
 #IP OF NODE JS SERVER WHERE SIGUCA IS RUNNING
-server_IP='10.42.30.13'
+server_IP='10.42.30.19'
 #PORT OF THE MONGODB 
 port='27017'
 #PORT OF OF SIGUCA NODE JS PORT 
@@ -48,7 +49,7 @@ app_Port='3000'
 browserSelection='curl'
 #ROUTE ON RASPBERRY PI WHERE IMAGE'S PATH  OF THE SERVER WAS MOUNTED, THROUGHT  NFS.
 #Ruta en la RaspberryPI donde esta montado el path de imagenes  del servidor a través de nfs.
-#rutaImagenesPi= "http://siguca.greencore.int/uploads/"
+#rutaImagenesPi= "http://10.42.30.19:3000/uploads/"
 #----------------------------------------------------------------------------------------------------------------------------------
 connection = MongoClient('mongodb://'+server_IP+':'+port)
 
