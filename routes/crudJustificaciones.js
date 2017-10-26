@@ -174,7 +174,7 @@ exports.deleteJustMasa = function(id, cb){
 
 
 exports.gestionarJust = function(justificacion, cb, idUser){
-	console.log("entre");
+	
 	Usuario.findById(idUser, function (errUser, supervisor) { 
 		Justificaciones.findByIdAndUpdate(
 			justificacion.id, 
@@ -218,7 +218,7 @@ exports.gestionarJust = function(justificacion, cb, idUser){
 }
 
 exports.gestionarJustifcacion = function(justificacion, cb, idUser){
-	console.log("entre");
+
 	Usuario.findById(idUser, function (errUser, supervisor) { 
 		Justificaciones.findByIdAndUpdate(
 			justificacion.id, 

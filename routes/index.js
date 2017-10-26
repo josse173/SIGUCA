@@ -225,7 +225,8 @@ module.exports = function(app, io) {
     */
     app.post('/justificacion/:id', autentificado, justificacion_actions.actualiza);
 
-    app.post('/jeje', autentificado, function(req,res){
+
+    app.post('/justificacionEmpleado', autentificado, function(req,res){
         var just={
             id:req.body.identificador,
             usuario:req.user.id,
@@ -234,11 +235,20 @@ module.exports = function(app, io) {
             motivoJust:"otro"
 
         }; 
-		crudJustificaciones.updateJust(just, function (err){
-			res.redirect('/escritorio');
-		});
+        if(req.session.name!="Supervisor"){
+            crudJustificaciones.updateJust(just, function (err){
+                res.redirect('/escritorioEmpl');
+            });
+        }else{
+            crudJustificaciones.updateJust(just, function (err){
+                res.redirect('/escritorio');
+            });
+        }
+		
     });
 
+
+   
     /*
     *  El supervisor elimina una justificación y se le envia un correo al dueño de la justificación
     */
