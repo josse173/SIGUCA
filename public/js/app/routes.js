@@ -68,7 +68,14 @@ $("#botonJustificacionMasa").click(function() {
             dataType : "json",
             data:{"ordenadas":arrayOrdenado},
             success: function(data) {    
-                location.href="/escritorioEmpl";
+                if(data.result=="Empleado"){
+                    location.href="/escritorioEmpl";
+                }else{
+                    location.href="/escritorio";
+                   
+                 
+                }
+              
             },
             error: function(){
                 alert("Error al justificar en masa.");
