@@ -153,11 +153,12 @@ block content
           if(horasEmpleado)
             if(horasEmpleado.length != 0)
               br
-              h3 Horas laboradas por empleado
+              h3 Horas laboradas por colaborador
               .tableSolicitudes.footable
                 table#totalHorasEmpleado
                     thead
                       tr
+                        th Tipo de usuario
                         th Usuario
                         th Tiempo trabajado
                             
@@ -172,23 +173,26 @@ block content
                         - tiempo = h+":"+m;
                         - if(empleado.tiempo.horas<=0 && empleado.tiempo.minutos<=0) tiempo = "El usuario se ausentó o no marcó salida."
                         tr
+                          td #{empleado.tipoUsuario}
                           td #{empleado.usuario.nombre} #{empleado.usuario.apellido1} 
                           td #{tiempo}
+                         
             else
               h3 Horas laboradas por empleado
               p No se han encontrado registros
 
           
-          //-Horas Semanales 
+          //-Horas por dia
           if(cierreUsuarios)
             if(cierreUsuarios.length != 0)
               br
-              h3 Horas Semanales 
+              h3 Horas trabajas por día 
               .tableCierres.footable
                 table#horaTablaPDF
                     thead
                       tr
                         th Fecha
+                        th Tipo de usuario
                         th Usuario
                         th Tiempo trabajado
                             
@@ -205,6 +209,7 @@ block content
                           -tiempo = "El usuario se ausentó o no marcó salida."
                         tr
                           td(data-value=cierre.epoch) #{cierre.fecha.str} 
+                          td #{cierre.tipoUsuario}
                           td #{cierre.usuario.nombre} #{cierre.usuario.apellido1} 
                           td #{tiempo}
             else
@@ -292,14 +297,7 @@ block content
                             td  #{marcasPorDia[s].salida}
               else
                 h3 Marcas diarias
-                p No se han encontrado registros     
-
-
-         
-
-
-         
-          
+                p No se han encontrado registros               
 
           //-Justificaciones     
           if(justificaciones)

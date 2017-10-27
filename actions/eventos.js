@@ -317,14 +317,16 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
     //for(var i = 0; i < cierre.length;i++){
 
       revisado = false;
+      
       for(var p = 0; p < listaSumada.length;p++){
-
-        if(listaSumada[p].usuario.nombre == original.usuario.nombre){//Si existe lo suma
+        if(listaSumada[p].tipoUsuario == original.tipoUsuario
+        && listaSumada[p].usuario._id==original.usuario._id){//Si existe lo suma
           //Suma el tiempo trabajado analizando que si esta en el minuto 59 debe sumar la hora
           
+          listaSumada[p].tipoUsuario = original.tipoUsuario;
           listaSumada[p].tiempo.horas += original.tiempo.horas;
           listaSumada[p].tiempo.minutos += original.tiempo.minutos;
-
+          
           if(listaSumada[p].tiempo.minutos > 59){
             listaSumada[p].tiempo.minutos = listaSumada[p].tiempo.minutos -60;
             listaSumada[p].tiempo.horas++;
@@ -340,7 +342,7 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
         cierreTem.usuario = original.usuario;
         cierreTem.tiempo = original.tiempo;
         cierreTem.epoch = original.tiempo;
-
+        cierreTem.tipoUsuario=original.tipoUsuario;
         listaSumada.push(cierreTem);
       }
     });//Se han analizado todos los elementos
@@ -415,7 +417,9 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
   //Si el filtrado es por horas
   if(filtrado && filtrado == "horas" || req.route.path.substring(0, 9) !=='/reportes'){
     filtro.horasEmpleado = listaSumada;
+    
     filtro.cierreUsuarios = cList;
+    
   }
 
   //Si el filtrado es por justificaciones
@@ -461,9 +465,6 @@ function marcasPorDias(marcas,cb){
   var entro=false;
   var ordenadas=new Array();
   var temporal = new Array();
-  
-  console.log(marcas[0]);
-
   for (var i = 0; i <marcas.length; i++){
     if (primeraVez==0){
         var objMarcas = new Object();
