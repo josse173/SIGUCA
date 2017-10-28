@@ -149,8 +149,6 @@ def runMark():
     instIndex = Index()
     instIndex.getFingerprint()
     
-    time.sleep(1)
-    
     #print "El usuario es: " + str(instIndex.idUser)
     #Se muestra mensaje de error
     if instIndex.idUser == -1:  
@@ -176,7 +174,7 @@ def runMark():
             
             #Una ves seleccionado el tipo se marca
             markTem = instIndex.mark()
-            if markTem:    
+            if markTem: 
                 instIndex.markAction(markTem, tipoUsuario, user["codTarjeta"])
             #print "La marca seleccionada es: " + str(markTem)
 
@@ -185,7 +183,7 @@ def runMark():
 
 #--------- Flujo administrativo del sistema -----------
 def runAdmin():
-    instIndex = Index()
+    #instIndex = Index()
     instIndex.session()
     
     if instIndex.result == "cancel":
