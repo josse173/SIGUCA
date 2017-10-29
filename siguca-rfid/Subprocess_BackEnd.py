@@ -56,21 +56,23 @@ connection = MongoClient('mongodb://'+server_IP+':'+port)
 db = connection.sigucadb
 collection = db.usuarios
 codigosExistentes=list(collection.find({},{"codTarjeta": 1,"_id":0}))
+
+#Obtiene ipv4
+def getIpv4():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+    s.connect(('<broadcast>', 0))
+    return s.getsockname()[0]
+
+
 #Methods to define the timestamps thought the web browser
 def Entrada(dec,tipo):
-    #These methods request a subprocess to execute a query to the ip and also the kind of timestamp
-    #browser = subprocess.Popen([browserSelection, 'http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=1'])
-    #These sleeps are important and necessary to call the browser and execute the post.
-    #time.sleep(1)
-    #The the browser quits by itself and kill the frame. 
-    #browser.terminate() 
-    #root.destroy()
     root3 = Tk()
     root3.attributes('-fullscreen', True)
     frame3 = Frame(root3)
     frame3.pack()
     root3.config(background="black",cursor="none")
-    f = urllib.urlopen('http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=1&tipo='+tipo)
+    f = urllib.urlopen('http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=1&tipo='+tipo+"&ipv4="+getIpv4())
     data = f.read()
     try:
 	if (data == "La marca de entrada fue registrada anteriormente."):
@@ -80,7 +82,7 @@ def Entrada(dec,tipo):
     except:
         pass
     root3.after(4000, lambda: root3.destroy())
-    root3.mainloop()
+    root3.mainloop()  
     
 def SalidaReceso(dec,tipo):
     root3 = Tk()
@@ -88,7 +90,7 @@ def SalidaReceso(dec,tipo):
     frame3 = Frame(root3)
     frame3.pack()
     root3.config(background="black",cursor="none")
-    f = urllib.urlopen('http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=2&tipo='+tipo)
+    f = urllib.urlopen('http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=2&tipo='+tipo+"&ipv4="+getIpv4())
     data = f.read()
    
     try:
@@ -110,7 +112,7 @@ def EntradaReceso(dec,tipo):
     frame3 = Frame(root3)
     frame3.pack()
     root3.config(background="black",cursor="none")
-    f = urllib.urlopen('http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=3&tipo='+tipo)
+    f = urllib.urlopen('http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=3&tipo='+tipo+"&ipv4="+getIpv4())
     data = f.read()
     try:
         #w2 = Label(root3, text=data, wraplength=650,  fg = "light green", bg = "black", font = "Helvetica 16 bold").pack()
@@ -132,7 +134,7 @@ def SalidaAlmuerzo(dec,tipo):
     frame3 = Frame(root3)
     frame3.pack()
     root3.config(background="black",cursor="none")
-    f = urllib.urlopen('http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=4&tipo='+tipo)
+    f = urllib.urlopen('http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=4&tipo='+tipo+"&ipv4="+getIpv4())
     data = f.read()
     try:
        # w2 = Label(root3, text=data, wraplength=650,  fg = "light green", bg = "black", font = "Helvetica 16 bold").pack()
@@ -154,7 +156,7 @@ def EntradaAlmuerzo(dec,tipo):
     frame3 = Frame(root3)
     frame3.pack()
     root3.config(background="black",cursor="none")
-    f = urllib.urlopen('http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=5&tipo='+tipo)
+    f = urllib.urlopen('http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=5&tipo='+tipo+"&ipv4="+getIpv4())
     data = f.read()
     try:
        # w2 = Label(root3, text=data, wraplength=650,  fg = "light green", bg = "black", font = "Helvetica 16 bold").pack()
@@ -176,7 +178,7 @@ def Salida(dec,tipo):
     frame3 = Frame(root3)
     frame3.pack()
     root3.config(background="black",cursor="none")
-    f = urllib.urlopen('http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=6&tipo='+tipo)
+    f = urllib.urlopen('http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=6&tipo='+tipo+"&ipv4="+getIpv4())
     data = f.read()
     try:
 #        w2 = Label(root3, text=data, wraplength=650,  fg = "light green", bg = "black", font = "Helvetica 16 bold").pack()
