@@ -222,32 +222,44 @@ block content
                         th(data-type="numeric" data-sort-initial="descending") Fecha
                         th Usuario
                         th Tipo
+                        th Tipo de usuario
                     tbody
                       each marca, i in marcas
                         tr
                           td(data-value=marca.epoch) #{marca.fecha.str} 
                           td #{marca.usuario.nombre} #{marca.usuario.apellido1}
                           td #{marca.tipoMarca} 
+                          td #{marca.tipoUsuario}
             else
               h3 Marcas 
               p No se han encontrado registros 
                            
            //-Tardias  
-          if(tarde)
-            if(marcas.length != 0)
+        
+          if(arregloTardias)
+            if(arregloTardias.length != 0)
               h3 Reporte tardias
               .footable
                 table#tardiasPDF
                     thead
                       tr
+                        th Tipo de usuario
                         th Usuario
-                        th Hora
-                    tbody
-                      each tardee, i in tarde
-                        tr
-                          td #{tardee.nombre} #{tardee.apellido}
-                          td #{tardee.fecha} 
+                        th Hora de entrada
+                        th Fecha y hora de marca
+                        
                       
+                    tbody
+                      -for (var g = 0; g <arregloTardias.length; g++)
+                        tr
+                          th #{arregloTardias[g].tipoUsuario}
+                          td #{arregloTardias[g].nombre} #{arregloTardias[g].apellido}
+                         
+                          if(arregloTardias[g].horarioMinutos < 10)
+                            td #{arregloTardias[g].horarioHora+":"+arregloTardias[g].horarioMinutos+""+0}
+                          else
+                            td #{arregloTardias[g].horarioHora+":"+arregloTardias[g].horarioMinutos}
+                          td #{arregloTardias[g].fecha}
             else
               h3 Reporte tardias 
               p No se han encontrado registros   

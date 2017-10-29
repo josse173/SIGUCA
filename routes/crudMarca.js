@@ -41,7 +41,7 @@ function marca (ipOrigen,tipoUsuario, marca, cb) {
 		epochTimeLte = date.hours(23).minutes(59).seconds(59).unix();
 		marca.epoch = epochTime;
 		marca.ipOrigen=ipOrigen;
-		console.log(marca);
+		
 		var newMarca = Marca(marca);
 		
 		Marca.find(
@@ -376,6 +376,7 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 				//
 			}
 			else if(!err && usuario.horarioFijo && usuario.horarioFijo!=""){
+				
 				HorarioFijo.findById(usuario.horarioFijo,function(error,horarioFijo){
 					if(!error && horarioFijo!="" && horarioFijo){
 							var mOut= moment.unix(marca.epoch);
