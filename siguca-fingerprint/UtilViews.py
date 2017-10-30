@@ -51,7 +51,7 @@ class UtilViews:
             self.frame.destroy()
             self.viewGetFingerprint()
 
-    #Escucha fingerprint
+    #Escucha fingerprint para marcar
     def accionBuscaFinger(self):
         result = self.instUtilFingerprint.search()
         self.frame.destroy()
@@ -80,7 +80,8 @@ class UtilViews:
             self.viewAdmin()
         else:
            self.viewSaveFingerprint()
-        
+    
+    #Compara las huellas, si coinciden actualiza en dispositivo y en la BD
     def accionActualizaHuella(self):
         print "accion actualizar"
         result = self.instUtilFingerprint.save()
@@ -169,6 +170,7 @@ class UtilViews:
         elif action ==  "update":
             self.viewGetFingerprintUpdate()    
 
+    #Vuelve al menú principal de la sección adminsitrativa
     def cancelAdmin(self):
         self.frame.destroy()
         self.viewAdmin()
@@ -221,7 +223,7 @@ class UtilViews:
         Label(root2, text=message, wraplength=650,  fg = color, bg = "black", font = "Helvetica 20 bold", height=70, width=100).pack()
         root2.after(3000, lambda: root2.destroy())
 
-    #------- Vista Solicitar Fingerprint ---------
+    #------- Vista Solicitar Fingerprint para marcar ---------
     def viewGetFingerprint(self):
         print "Vista obtiene finger print"
         self.initFrame()
@@ -229,7 +231,7 @@ class UtilViews:
         self.root.update()
         self.root.after(0, lambda: self.accionBuscaFinger())
 
-    #------- Vista Solicitar Fingerprint pero para update ---------
+    #------- Vista Solicitar Fingerprint para actualizar ---------
     def viewGetFingerprintUpdate(self):
         print "Vista obtiene finger print para actualizar"
         self.initFrame()
@@ -245,8 +247,6 @@ class UtilViews:
         lblTitle = Label(self.frame,text="Vuelva a colocar el dedo en el dispositivo",bd="2",bg= "#000000", fg="#55aa55", font="Helveltica 20 bold").place(x=125,y=200)
         self.root.update()
         self.root.after(0, lambda: self.accionActualizaHuella())
-
-
 
     #------- Vista Solicitar Tipo de usuario ---------
     def viewObtieneTipoUsuario(self, listTipo):
@@ -289,24 +289,18 @@ class UtilViews:
     def viewSession(self):
         self.initFrame()
         lblTitle = Label(self.frame,text="Ingrese los datos solicitados.", bd="2",bg= "#000000", fg="#55aa55", font="Helveltica 25 bold").place(x=200,y=2)
-        #Etiqueta para el input User
         lblFromUser = Label(self.frame,text="User",bd="2", bg= "#000000", fg="#55aa55", font="Helveltica 15 bold").place(x=10,y=70)
 
-        #Campo de texto para ingresar el usuario
         txtUser = Entry(self.frame,fg="#888888", bg="#333333", font="Helveltica 20 bold",selectbackground="#999999",selectforeground="#ffffff",selectborderwidth=1, justify="center")
         txtUser.place(x=10,y=100)
 
-        #Etiqueta para el input password
         lblFromUser = Label(self.frame,text="Passwoord",bd="2", bg= "#000000", fg="#55aa55", font="Helveltica 15 bold").place(x=10,y=150)
 
-        #Campo de texto para ingresar el password
         txtPassword = Entry(self.frame, show="*", fg="#888888", bg="#333333", font="Helveltica 20 bold",selectborderwidth=1, justify="center")
         txtPassword.place(x=10,y=180)
 
-        #Continuar        
         buttonAccess = Button(self.frame,text="Ingresar",command= lambda: self.actionSession(txtUser.get(),txtPassword.get()),fg="white",activeforeground="white",activebackground="#008800",bg="#336633",width=15,height=2,bd=1,font="Helveltica 16 bold").place(x=380,y=100)
-
-        #Cancelar        
+    
         buttonCancel = Button(self.frame,text="Cancelar",command= lambda: self.actionAdmin("cancel"),fg="white",activeforeground="white",activebackground="#880000",bg="#663333",width=15,height=2,bd=1,font="Helveltica 16 bold").place(x=380,y=170)
 
     #------- Vista para administrar el fingerprint ---------
