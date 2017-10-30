@@ -47,7 +47,7 @@ class UtilFingerprint:
                 pass
 
             if self.semaforo == False:
-                return 0
+                return "timeout"
             
             #Convierte la imagen en caracteristicas 
             self.f.convertImage(0x01)
@@ -112,7 +112,7 @@ class UtilFingerprint:
                 pass
 
             #No se ha colocado el dedo en el dispositivo
-            if self.instIndex.semaforo == False:
+            if self.semaforo == False:
                 return  "timeout"
 
             else:

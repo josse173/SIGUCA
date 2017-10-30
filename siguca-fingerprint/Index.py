@@ -200,7 +200,6 @@ def runAdmin():
     elif resultSession == "faildPermission":
         instIndex.message("ERROR, no cuenta con permisos para acceder","red")
         return 0
-
    
     #Si inicia sesion con exito
     instIndex.message("Bienvenido al modulo administrativo","orange")

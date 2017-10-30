@@ -1,3 +1,5 @@
+#!/usr/bin/env python 
+# -*- coding: utf-8 -*- 
 
 #Importaciones
 from Tkinter import *
@@ -32,37 +34,18 @@ class UtilViews:
 
     #Inicializa un nuevo frae
     def initFrame(self):
-        self.frame = Frame(self.root, background = "green", width=900, height=500)
+        self.frame = Frame(self.root, background = "black", width=900, height=500)
         self.frame.place(x=0,y=0)
  
-    '''
-        Procesos paralelos
-    '''
-    #Actualiza la hora en tiempo real
-    def updateTimeText(self):
-        while(self.instIndex.semaforo ==  False):
-            time.sleep(1)
-            try:
-                current = time.strftime("%I:%M:%S %p")
-                #self.lblMessage.configure(text=current)  
-            except NameError:
-                return 0
-
-    #Muestra un cronometro hacia atras
-    def chronometerText(self,timeTem):
-        while(timeTem >= 1):
-            time.sleep(1) 
-            #self.lblMessage.configure(text=str(timeTem))  
-            timeTem -= 1
-        self.instIndex.semaforo=True
-
+    
     '''
         Acciones de los botones
     '''
     #Ingresa al sistema para realizar marcas o a la parte administrativa
     def ingresar(self, action):
         if action == "admin":
-            print "Admin"
+            self.frame.destroy()
+            self.viewSession()
         else:
             #Obtiene una huella
             self.frame.destroy()
@@ -88,6 +71,34 @@ class UtilViews:
                 else:
                     self.viewObtieneTipoUsuario(self.user["tipo"])
 
+    #Escucha fingerprint para actualizar
+    def accionBuscaFingerActualizar(self):
+        result = self.instUtilFingerprint.search()
+        self.frame.destroy()
+        if result >= 0:
+            self.viewMessage("ERROR! La huella ha sido registrada previamente", "red")
+            self.viewAdmin()
+        else:
+           self.viewSaveFingerprint()
+        
+    def accionActualizaHuella(self):
+        print "accion actualizar"
+        result = self.instUtilFingerprint.save()
+        
+        if result == "not match":
+            self.viewMessage("ERROR! Las huellas no coinciden", "red")
+        else:
+            #Actualiza en la BD la nueva pos de la huella
+            self.instUtilBD.updateCode(self.userTem["_id"], result)
+            
+            #Si el usuario tenía una huella registrada, se elimina
+            if int(self.userTem["codTarjeta"]) != -1:
+                self.instUtilFingerprint.delete(int(self.userTem["codTarjeta"]))
+            self.viewMessage("Realizado con éxito", "green")
+
+        self.frame.destroy()
+        self.viewAdmin()
+
     #Obtiene el rol seleccionado en la lista de roles del usuario
     def obtieneTipoSeleccionado(self, listBox):
         listSeleccionado = listBox.curselection()
@@ -109,31 +120,59 @@ class UtilViews:
             self.markAction(markAction, self.tipoUsuario, self.user["codTarjeta"])
         self.viewPrincipal()
 
-        print "Termino y volvio a principal"
-
     #Realiza la accion del logueo
     def actionSession(self, user, password):
-        self.instIndex.sessionUser = user
-        self.instIndex.sessionPassword = password
-
-        self.root.destroy()
+        result = self.instUtilBD.verifySession(user, password)
+        
+        self.frame.destroy()
+        if result == "faildUser":
+            self.viewMessage("El usuario es incorrecto", "orange")
+            self.viewSession()
+        elif result == "faildPassword":
+            self.viewMessage("La contraseña es incoorrecta.", "orange")
+            self.viewSession()
+        elif result == "faildPermission":
+            self.viewMessage("Error, no cuenta con permisos para acceder", "red")
+            self.viewSession()
+        else:
+            self.viewAdmin()
 
     #Realiza las acciones de la seccion administrativa
     def actionAdmin(self, actionAdmin):
-        self.instIndex.actionAdmin = actionAdmin
-        self.root.destroy()
+        self.frame.destroy()
+        if actionAdmin == "cancel":
+            self.viewPrincipal()
+        elif actionAdmin == "delete":
+            self.listUserTem = self.instUtilBD.listUserFinger()
+        elif actionAdmin == "update":
+            self.listUserTem = self.instUtilBD.listUser()
 
-    #Identifica el usuario seleccionado
-    def getUserSelect(self, listBox):
+        #Se crea array solo con los valores que se desean mostrar
+        listNameUser = list()
+        for userTem in self.listUserTem:
+            listNameUser.append(userTem["nombre"] + " " + userTem["apellido1"])
+        self.viewGetUser(listNameUser, actionAdmin)
+
+    #Obtiene el usuario seleccionado
+    def getUserSelect(self, listBox, action):
         posSelected = listBox.curselection()
-        self.instIndex.posUser = posSelected[0]
-        #print "La posicion seleccionada es " + str(posSelected[0])
-        self.root.destroy()
+        posUser = posSelected[0] 
+        self.userTem = self.listUserTem[posUser]
 
-    def cancelSession(self):
-        self.instIndex.result = "cancel"
-        self.root.destroy()
+        self.frame.destroy()
+        if action == "delete":
+            self.instUtilFingerprint.delete(self.userTem["codTarjeta"])
+            self.viewMessage("Realizado con éxito", "green")
+            self.instUtilBD.updateCode(self.userTem["_id"], -1)
+            self.viewAdmin()
 
+        elif action ==  "update":
+            self.viewGetFingerprintUpdate()    
+
+    def cancelAdmin(self):
+        self.frame.destroy()
+        self.viewAdmin()
+ 
     '''
         Funciones logicas
     '''
@@ -189,6 +228,24 @@ class UtilViews:
         lblTitle = Label(self.frame,text="Coloque el dedo en el dispositivo",bd="2",bg= "#000000", fg="#55aa55", font="Helveltica 20 bold").place(x=200,y=200)
         self.root.update()
         self.root.after(0, lambda: self.accionBuscaFinger())
+
+    #------- Vista Solicitar Fingerprint pero para update ---------
+    def viewGetFingerprintUpdate(self):
+        print "Vista obtiene finger print para actualizar"
+        self.initFrame()
+        lblTitle = Label(self.frame,text="Coloque el dedo en el dispositivo",bd="2",bg= "#000000", fg="#55aa55", font="Helveltica 20 bold").place(x=175,y=200)
+        self.root.update()
+        self.root.after(0, lambda: self.accionBuscaFingerActualizar())
+
+    # Obtiene una nueva huella, la compara con la anterior,
+    # en caso de coincidir la almacena
+    def viewSaveFingerprint(self):
+        print "Vista, verifica huella y la actualiza"
+        self.initFrame()
+        lblTitle = Label(self.frame,text="Vuelva a colocar el dedo en el dispositivo",bd="2",bg= "#000000", fg="#55aa55", font="Helveltica 20 bold").place(x=125,y=200)
+        self.root.update()
+        self.root.after(0, lambda: self.accionActualizaHuella())
+
 
 
     #------- Vista Solicitar Tipo de usuario ---------
@@ -250,7 +307,7 @@ class UtilViews:
         buttonAccess = Button(self.frame,text="Ingresar",command= lambda: self.actionSession(txtUser.get(),txtPassword.get()),fg="white",activeforeground="white",activebackground="#008800",bg="#336633",width=15,height=2,bd=1,font="Helveltica 16 bold").place(x=380,y=100)
 
         #Cancelar        
-        buttonCancel = Button(self.frame,text="Cancelar",command= lambda: self.cancelSession(),fg="white",activeforeground="white",activebackground="#880000",bg="#663333",width=15,height=2,bd=1,font="Helveltica 16 bold").place(x=380,y=170)
+        buttonCancel = Button(self.frame,text="Cancelar",command= lambda: self.actionAdmin("cancel"),fg="white",activeforeground="white",activebackground="#880000",bg="#663333",width=15,height=2,bd=1,font="Helveltica 16 bold").place(x=380,y=170)
 
     #------- Vista para administrar el fingerprint ---------
     def viewAdmin(self):
@@ -267,7 +324,7 @@ class UtilViews:
         buttonCancel = Button(self.frame,text="Salir",command= lambda: self.actionAdmin("cancel"),fg="white",activeforeground="white",activebackground="#880000",bg="#773333",width=15,height=1,bd=1,font="Helveltica 15 bold").place(x=480,y=100)
 
     #------- Vista Solicitar el usuario a modificar ---------
-    def viewGetUser(self, listUser):
+    def viewGetUser(self, listUser, action):
         self.initFrame()
         
         lblTitle = Label(self.frame,text="Seleccione un usuario",bd="2",bg= "#000000", fg="#55aa55", font="Helveltica 25 bold").place(x=150,y=30)
@@ -281,7 +338,7 @@ class UtilViews:
         scroll.config(command=listBox.yview)
         listBox.place(x=10,y=100)
         listBox.insert(0,*listUser)
-        listBox.bind("<<ListboxSelect>>", lambda event: self.getUserSelect(listBox))
+        listBox.bind("<<ListboxSelect>>", lambda event: self.getUserSelect(listBox, action))
 
         #Boton para cancelar
-        buttonCancel = Button(self.frame,text="Cancel",command= lambda: self.actionAdmin("Cancelar"),fg="white",activeforeground="white",activebackground="#880000",bg="#773333",width=15,height=2,bd=3,font="Helveltica 17 bold").place(x=500,y=200)
+        buttonCancel = Button(self.frame,text="Cancel",command= lambda: self.cancelAdmin(),fg="white",activeforeground="white",activebackground="#880000",bg="#773333",width=15,height=2,bd=3,font="Helveltica 17 bold").place(x=500,y=200)
