@@ -9,7 +9,7 @@ class UtilBD:
     def __init__ (self):
 
 #        self.server_IP = "10.42.30.13" #ip del servidor
-        self.server_IP = "192.168.1.8" #ip del servidor
+        self.server_IP = "10.42.22.176" #ip del servidor
 
         self.port = "27017" #Puerto de mongoDB
         self.app_Port = "3000" #Puerto del servidor SIGUCA

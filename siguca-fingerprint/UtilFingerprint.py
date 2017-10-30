@@ -30,6 +30,7 @@ class UtilFingerprint:
 
     #Actualiza el valor de semaforo
     def updateSem(self):
+        print "Cambio semaforo"
         if self.semaforo == True:
             self.semaforo = False
         else:

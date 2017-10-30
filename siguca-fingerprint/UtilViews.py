@@ -10,6 +10,9 @@ import socket
 
 #Clase dedicada a administrar las distintas vistas del sistema
 class UtilViews:
+    
+    server_ip="10.42.22.176"
+    app_port="3000"
 
     '''
         Se inicializan metodos generales para administrar las vistas
@@ -64,25 +67,26 @@ class UtilViews:
             #Obtiene una huella
             self.frame.destroy()
             self.viewGetFingerprint()
-            self.root.after(5000, lambda: self.instUtilFingerprint.updateSem())
-            result = self.instUtilFingerprint.search()
-            self.frame.destroy()
 
-            if result == -1:
-                self.message("No se han encontrado coincidencias.", "red")
-                self.viewPrincipal()
-            else:
-                #Valida con BD
-                self.user = self.instUtilBD.findCodUser(result)
-                if self.user != None:
-                    self.message("Bienvenido " + self.user["nombre"] + " " + self.user["apellido1"], "light green")
+    #Escucha fingerprint
+    def accionBuscaFinger(self):
+        result = self.instUtilFingerprint.search()
+        self.frame.destroy()
+        if result == -1:
+            self.viewMessage("No se han encontrado coincidencias.", "red")
+            self.viewPrincipal()
+        else:
+            #Valida con BD
+            self.user = self.instUtilBD.findCodUser(result)
+            if self.user != None:
+                self.viewMessage("Bienvenido " + self.user["nombre"] + " " + self.user["apellido1"], "light green")
                     
-                    #Valida si tiene mas de un rol
-                    if (len(self.user["tipo"]) == 1):
-                        self.tipoUsuario = (self.user["tipo"])[0]
-                        self.viewMark()
-                    else:
-                        self.instUtilViews.viewObtieneTipoUsuario(self.user["tipo"])
+                #Valida si tiene mas de un rol
+                if (len(self.user["tipo"]) == 1):
+                    self.tipoUsuario = (self.user["tipo"])[0]
+                    self.viewMark()
+                else:
+                    self.viewObtieneTipoUsuario(self.user["tipo"])
 
     #Obtiene el rol seleccionado en la lista de roles del usuario
     def obtieneTipoSeleccionado(self, listBox):
@@ -145,7 +149,7 @@ class UtilViews:
         ip = self.getIpv4()
         f = urllib.urlopen('http://'+self.server_ip+':'+self.app_port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of20obai&codTarjeta='+str(cod)+'&tipoMarca='+str(markNum)+'&tipo='+str(typeUser)+"&ipv4="+ip)
         data = f.read()
-        self.message(data, "light green") 
+        self.viewMessage(data, "light green") 
 
     '''
        Se construyen las vistas a utilizar
@@ -158,8 +162,8 @@ class UtilViews:
         self.initFrame()
  
         #Muestra la imagen
-        #self.photo = UtilImg().getImageURL("siguca.gif",self.frame)
-        #self.lblImg2 = Label(self.frame,image=self.photo,bd=0).place(x=-150, y=50)
+        self.photo = UtilImg().getImageURL("siguca.gif",self.frame)
+        self.lblImg2 = Label(self.frame,image=self.photo,bd=0).place(x=-150, y=50)
 
         #Boton para continuar
         btnIngresar = Button(self.frame, text="Ingresar", command=lambda: self.ingresar("mark"), fg="white", activeforeground="white", activebackground="green", bg="#555555",width=17, height=2, bd=2, font="Helveltica 15 bold").place(x=470, y=200)
@@ -170,19 +174,22 @@ class UtilViews:
         self.root.mainloop()#Muestra la ventana
 
     #------- Vista MostrarMensaje ---------
-    def viewMessage(self, message, color):   
-        self.initFrame()
-        Label(self.frame, text=message, wraplength=650,  fg = color, bg = "black", font = "Helvetica 20 bold", height=70, width=100).pack()
-        
-        time.sleep(5000)
-        self.frame.destroy()
-
+    def viewMessage(self, message, color):  
+        root2 = Tk()
+        root2.attributes("-fullscreen", True)
+#        root2.config(background = "black", cursor="none", width=300, height=300)
+        root2.config(background = "black", width=300, height=300)
+        Label(root2, text=message, wraplength=650,  fg = color, bg = "black", font = "Helvetica 20 bold", height=70, width=100).pack()
+        root2.after(3000, lambda: root2.destroy())
 
     #------- Vista Solicitar Fingerprint ---------
     def viewGetFingerprint(self):
         print "Vista obtiene finger print"
         self.initFrame()
-        Label(self.frame, text="Coloque su dedo en el dispositivo.", wraplength=650,  fg = "#228B22", bg = "black", font = "Helvetica 20 bold", height=70, width=100).pack()
+        lblTitle = Label(self.frame,text="Coloque el dedo en el dispositivo",bd="2",bg= "#000000", fg="#55aa55", font="Helveltica 20 bold").place(x=200,y=200)
+        self.root.update()
+        self.root.after(0, lambda: self.accionBuscaFinger())
+
 
     #------- Vista Solicitar Tipo de usuario ---------
     def viewObtieneTipoUsuario(self, listTipo):
