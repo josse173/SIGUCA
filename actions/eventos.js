@@ -405,6 +405,11 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
         ordenarTardias(filtro.marcas, function (arregloTardias){
           filtro.arregloTardias=arregloTardias;
         });
+
+        marcasPorDias(filtro.marcas, function (marcasPorDia){
+          filtro.marcasPorDia=marcasPorDia;
+        });
+        
   }
 
   //Si el filtrado es por horas
@@ -449,6 +454,106 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
 
         return (titulo === 'Reportes | SIGUCA') ? res.render('reportes', filtro) : res.render('gestionarEventos', filtro); 
     });
+}
+
+function marcasPorDias(marcas,cb){
+  var primeraVez=0;
+  var entro=false;
+  var ordenadas=new Array();
+  var temporal = new Array();
+  
+  console.log(marcas[0]);
+
+  for (var i = 0; i <marcas.length; i++){
+    if (primeraVez==0){
+        var objMarcas = new Object();
+        objMarcas.nombre=marcas[i].usuario.nombre;
+        objMarcas.dia=marcas[i].fecha.dia;
+        objMarcas.mes=marcas[i].fecha.mes;
+        objMarcas.año=marcas[i].fecha.año;
+        objMarcas.apellido1=marcas[i].usuario.apellido1;
+        objMarcas.tipoUsuario=marcas[i].tipoUsuario;
+        temporal.push(objMarcas);
+        primeraVez++ ;
+    }else{
+
+      
+      for (var j = 0; j <temporal.length; j++){
+        entro=false;;
+        if (temporal[j].nombre==marcas[i].usuario.nombre && 
+          temporal[j].apellido1==marcas[i].usuario.apellido1 && temporal[j].dia==marcas[i].fecha.dia 
+          && temporal[j].mes==marcas[i].fecha.mes  && temporal[j].año==marcas[i].fecha.año
+        &&temporal[j].tipoUsuario==marcas[i].tipoUsuario){
+          entro=true;
+          j=temporal.length;
+        }
+      }
+            
+      if(entro==false){
+        var objMarcas = new Object();
+        objMarcas.nombre=marcas[i].usuario.nombre;
+        objMarcas.dia=marcas[i].fecha.dia;
+        objMarcas.mes=marcas[i].fecha.mes;
+        objMarcas.año=marcas[i].fecha.año;
+        objMarcas.apellido1=marcas[i].usuario.apellido1;
+        objMarcas.tipoUsuario=marcas[i].tipoUsuario;
+        temporal.push(objMarcas);    
+      }
+    }
+  }
+
+
+  for(var r=0; r<temporal.length;r++){
+    var marcasOrdenadas = new Object();
+    for(var m=0;m<marcas.length;m++){
+      if (temporal[r].nombre==marcas[m].usuario.nombre &&
+         temporal[r].apellido1==marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia 
+         && temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año 
+         && marcas[m].tipoMarca=="Entrada" && temporal[r].tipoUsuario==marcas[m].tipoUsuario){
+
+        marcasOrdenadas.nombre=marcas[m].usuario.nombre;
+        marcasOrdenadas.tipoUsuario=marcas[m].tipoUsuario;
+        marcasOrdenadas.apellido1=marcas[m].usuario.apellido1;
+        marcasOrdenadas.entrada=marcas[m].fecha.str;
+
+      }else if (temporal[r].nombre==marcas[m].usuario.nombre && 
+        temporal[r].apellido1==marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia
+         && temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año 
+         && marcas[m].tipoMarca=="Salida" && temporal[r].tipoUsuario==marcas[m].tipoUsuario){
+        marcasOrdenadas.salida=marcas[m].fecha.str;
+      }
+      else if (temporal[r].nombre==marcas[m].usuario.nombre && temporal[r].apellido1==
+        marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia && 
+        temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año 
+        && marcas[m].tipoMarca=="Salida a Receso" && temporal[r].tipoUsuario==marcas[m].tipoUsuario){
+
+        marcasOrdenadas.salidaReceso=marcas[m].fecha.str;
+
+      }else if (temporal[r].nombre==marcas[m].usuario.nombre && 
+        temporal[r].apellido1==marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia 
+        && temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año 
+        && marcas[m].tipoMarca=="Entrada de Receso" && temporal[r].tipoUsuario==marcas[m].tipoUsuario){
+        marcasOrdenadas.entradaReceso=marcas[m].fecha.str;
+
+      }else if (temporal[r].nombre==marcas[m].usuario.nombre && 
+        temporal[r].apellido1==marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia 
+        && temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año 
+        && marcas[m].tipoMarca=="Salida al Almuerzo" && temporal[r].tipoUsuario==marcas[m].tipoUsuario){
+        marcasOrdenadas.salidaAlmuerzo=marcas[m].fecha.str;
+      }
+      else if (temporal[r].nombre==marcas[m].usuario.nombre && temporal[r].apellido1==marcas[m].usuario.apellido1
+         && temporal[r].dia==marcas[m].fecha.dia && temporal[r].mes==marcas[m].fecha.mes && 
+         temporal[r].año==marcas[m].fecha.año && marcas[m].tipoMarca=="Entrada de Almuerzo"
+         && temporal[r].tipoUsuario==marcas[m].tipoUsuario){
+        marcasOrdenadas.entradaAlmuerzo=marcas[m].fecha.str;
+      }
+    }
+    ordenadas.push(marcasOrdenadas) ;
+  }
+  cb(ordenadas);
+
+
+
 }
 
 function ordenarTardias(marcas, cb){
@@ -719,101 +824,6 @@ function ordenarTardias(marcas, cb){
   
   
   }
-
-
-  
-  
-
-
-
-
-       //Semaforo
-      
-       
-     
-        /*var mEntrada = new Object();
-        mEntrada.fecha=marcas[h].fecha.str;
-        mEntrada._id=marcas[h].usuario._id;
-        mEntrada.ipOrigen=marcas[h].ipOrigen;
-        mEntrada.tipoMarca=marcas[h].tipoMarca
-        mEntrada.nombre=marcas[h].usuario.nombre;
-        mEntrada.apellido1=marcas[h].usuario.apellido1;
-        mEntrada.horario=marcas[h].usuario.horarioEmpleado;
-        marcasEntrada.push(mEntrada);
-     }else if (marcas[h].usuario.horarioFijo && marcas[h].tipoMarca=="Entrada"){
-        var mEntrada = new Object();
-        mEntrada.fecha=marcas[h].fecha.str;
-        mEntrada._id=marcas[h].usuario._id;
-        mEntrada.ipOrigen=marcas[h].ipOrigen;
-        mEntrada.tipoMarca=marcas[h].tipoMarca
-        mEntrada.nombre=marcas[h].usuario.nombre;
-        mEntrada.apellido1=marcas[h].usuario.apellido1;
-        mEntrada.horario=marcas[h].usuario.horarioFijo;
-        marcasEntrada.push(mEntrada);
-     }else if(marcas[h].usuario.horario && marcas[h].tipoMarca=="Entrada"){
-        var mEntrada = new Object();
-        mEntrada.fecha=marcas[h].fecha.str;
-        mEntrada._id=marcas[h].usuario._id;
-        mEntrada.ipOrigen=marcas[h].ipOrigen;
-        mEntrada.tipoMarca=marcas[h].tipoMarca
-        mEntrada.nombre=marcas[h].usuario.nombre;
-        mEntrada.apellido1=marcas[h].usuario.apellido1;
-        mEntrada.horario=marcas[h].usuario.horarioFijo;
-        marcasEntrada.push(mEntrada);
-     }
-   }
-
-  
-  for (var i = 0; i <marcas.length; i++){ 
-    if (primeraCorrida==0){
-      var objTardias = new Object();
-      objTardias.nombre=marcas[i].usuario.nombre;
-      objTardias.dia=marcas[i].fecha.dia;
-      objTardias.mes=marcas[i].fecha.mes;
-      objTardias.año=marcas[i].fecha.año;
-      objTardias.apellido1=marcas[i].usuario.apellido1;
-      temporalUsuario.push(objTardias);
-      primeraCorrida++;
-      }
-    else{
-      for (var j = 0; j <temporalUsuario.length; j++){
-
-        entrando=false;
-        if (temporalUsuario[j].nombre==marcas[i].usuario.nombre && temporalUsuario[j].apellido1==marcas[i].usuario.apellido1 && temporalUsuario[j].dia==marcas[i].fecha.dia && temporalUsuario[j].mes==marcas[i].fecha.mes && temporalUsuario[j].año==marcas[i].fecha.año){
-           entrando=true;
-           j=temporalUsuario.length;
-        }
-         
-    }
-    if(entrando==false){
-      var objTardias = new Object();
-      objTardias.nombre=marcas[i].usuario.nombre;
-      objTardias.dia=marcas[i].fecha.dia;
-      objTardias.mes=marcas[i].fecha.mes;
-      objTardias.año=marcas[i].fecha.año;
-      objTardias.apellido1=marcas[i].usuario.apellido1;
-      temporalUsuario.push(objTardias);
-    }
-    }
-
-  }
-
-  for(var i = 0; i <temporalUsuario.length; i++){
-    for(var j = 0; j <marcas.length; j++){
-      if (temporalUsuario[i].nombre==marcas[j].usuario.nombre && temporalUsuario[i].apellido1==marcas[j].usuario.apellido1 && temporalUsuario[i].dia==marcas[j].fecha.dia && temporalUsuario[i].mes==marcas[j].fecha.mes && temporalUsuario[i].año==marcas[j].fecha.año && marcas[j].tipoMarca=="Entrada"){
-        var horax=parseInt(String(marcas[j].fecha.hora).substr(0,2));
-        var minutox=parseInt(String(marcas[j].fecha.hora).substr(3,2));
-        if (horax >6 && minutox >10) {
-        var objTardiaFinal = new Object();
-        objTardiaFinal.nombre=marcas[j].usuario.nombre;
-        objTardiaFinal.apellido=marcas[j].usuario.apellido1;
-        objTardiaFinal.fecha=marcas[j].fecha.str;
-        arregloTardias.push(objTardiaFinal);
-        }
-      }*/
-  
-
-//return arregloTardias;
 
 }
 
