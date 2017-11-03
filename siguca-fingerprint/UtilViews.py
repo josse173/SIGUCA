@@ -130,7 +130,7 @@ class UtilViews:
             self.viewMessage("El usuario es incorrecto", "orange")
             self.viewSession()
         elif result == "faildPassword":
-            self.viewMessage("La contraseña es incoorrecta.", "orange")
+            self.viewMessage("La contraseña es incorrecta.", "orange")
             self.viewSession()
         elif result == "faildPermission":
             self.viewMessage("Error, no cuenta con permisos para acceder", "red")
@@ -207,10 +207,10 @@ class UtilViews:
         self.lblImg2 = Label(self.frame,image=self.photo,bd=0).place(x=-150, y=50)
 
         #Boton para continuar
-        btnIngresar = Button(self.frame, text="Ingresar", command=lambda: self.ingresar("mark"), fg="white", activeforeground="white", activebackground="green", bg="#555555",width=17, height=2, bd=2, font="Helveltica 15 bold").place(x=470, y=200)
+        btnIngresar = Button(self.frame, text="Ingresar", command=lambda: self.ingresar("mark"), fg="white", activeforeground="white", bg="green",width=17, height=2, bd=2, font="Helveltica 15 bold").place(x=470, y=200)
         
         #Boton para ingresar al modulo administrativo
-        btnConf = Button(self.frame, text="Administrar", command=lambda: self.ingresar("admin"), fg="#bbbbbb", activeforeground="white", activebackground="green", bg="#222222",width=14, height=2, bd=1, font="Helveltica 12 bold").place(x=620, y=245)
+        btnConf = Button(self.frame, text="Administrar", command=lambda: self.ingresar("admin"), fg="#bbbbbb", activeforeground="white", activebackground="green", bg="#222222",width=14, height=2, bd=1, font="Helveltica 12 bold").place(x=505, y=270)
 
         self.root.mainloop()#Muestra la ventana
 
