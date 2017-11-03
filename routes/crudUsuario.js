@@ -162,7 +162,9 @@ exports.getById = function(id, cb){
 
 exports.updateUsuario = function(data, cb){
 
-	
+	data.empleado.estado=data.empleado.estadoEmpleado;
+	delete data.empleado.estadoEmpleado;
+
 	if(data.empleado.horarioFijo && data.empleado.horarioFijo!="Sin horario" &&
 	data.empleado.horarioEmpleado && data.empleado.horarioEmpleado!="Sin horario" ){
 		delete data.empleado.horarioFijo;

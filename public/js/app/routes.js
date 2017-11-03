@@ -473,6 +473,25 @@ $("button[data-target=#editHorarioFijo]").click( function() {
     $('.formUpdate').attr('action', '/empleado/'+id);
 
     $.get('/empleado/edit/'+id, function( data ) {
+
+        var x = document.getElementById("estadoEmpleado");
+        var option = document.createElement("option");
+        option.text = data.estado;
+        x.add(option);
+
+        if(data.estado=="Activo"){
+            var x = document.getElementById("estadoEmpleado");
+            var option = document.createElement("option");
+            option.text = "Inactivo";
+            x.add(option);
+    
+        }else{
+            var x = document.getElementById("estadoEmpleado");
+            var option = document.createElement("option");
+            option.text = "Activo";
+            x.add(option);
+        }
+
         $('#nombre').val(data.nombre);            
         $('#cedula').val(data.cedula);            
         $('#apellido1').val(data.apellido1);            
@@ -496,7 +515,8 @@ $("button[data-target=#editHorarioFijo]").click( function() {
         $('#selectHorarioFijo').selectpicker('refresh'); 
         $('#HorarioEmpleado').selectpicker('refresh'); 
         $('#selectTipo').selectpicker('refresh');    
-
+        $('#estadoEmpleado')('refresh');    
+        
          
 
     });
