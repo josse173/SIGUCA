@@ -585,7 +585,7 @@ module.exports = function(app, io) {
     *  Obtiene un usuario
     */
     app.post('/empleado/tipo/get', function (req, res) {
-        Usuario.findOne({username:req.body.username2}, function (err, user) {
+        Usuario.findOne({username:req.body.username2,estado:"Activo"}, function (err, user) {
             if (err || (user && !user.validPassword(req.body.password2))) { return res.json(err) }
             res.json(user);
         });
