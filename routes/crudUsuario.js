@@ -9,6 +9,10 @@ HorarioFijo 	= require('../models/HorarioFijo'),
 HorarioPersonalizado = require('../models/HorarioEmpleado'),
 Justificaciones = require('../models/Justificaciones'),
 Solicitudes 	= require('../models/Solicitudes'),
+Justificaciones 	= require('../models/Justificaciones'),
+Marcas 	= require('../models/Marca'),
+HorasTrabajadas 	= require('../models/CierrePersonal'),
+Vacaciones 	= require('../models/Vacaciones'),
 Cierre 			= require('../models/Cierre'),
 util 			= require('../util/util'),
 emailSIGUCA 	= 'siguca@greencore.co.cr';
@@ -391,6 +395,20 @@ exports.updateUsuario = function(data, cb){
 }
 
 exports.deleteUsuario = function(id, cb){
+	
+	HorasTrabajadas.remove({usuario:id}, function (err, horas) { 
+	});
+
+	Justificaciones.remove({usuario:id}, function (err, justificaciones) { 
+	});
+
+	Marcas.remove({usuario:id}, function (err, marcas) { 
+	});
+	
+	Solicitudes.remove({usuario:id}, function (err, marcas) { 
+	});
+	
+
 	Usuario.remove({_id:id}, function (err, empleados) { 
 		if (err) return cb(err, '');
 		return cb(err, 'Se elimino');
