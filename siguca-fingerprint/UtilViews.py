@@ -70,6 +70,9 @@ class UtilViews:
                     self.viewMark()
                 else:
                     self.viewObtieneTipoUsuario(self.user["tipo"])
+            else:
+                self.viewMessage("No se han encontrado coincidencias.", "red")
+                self.viewPrincipal()
 
     #Escucha fingerprint para actualizar
     def accionBuscaFingerActualizar(self):
@@ -207,7 +210,7 @@ class UtilViews:
         self.lblImg2 = Label(self.frame,image=self.photo,bd=0).place(x=-150, y=50)
 
         #Boton para continuar
-        btnIngresar = Button(self.frame, text="Ingresar", command=lambda: self.ingresar("mark"), fg="white", activeforeground="white", bg="green",width=17, height=2, bd=2, font="Helveltica 15 bold").place(x=470, y=200)
+        btnIngresar = Button(self.frame, text="Ingresar", command=lambda: self.ingresar("mark"), fg="white", activeforeground="#ffffff", activebackground="#00aa00", bg="green",width=17, height=2, bd=2, font="Helveltica 15 bold").place(x=470, y=200)
         
         #Boton para ingresar al modulo administrativo
         btnConf = Button(self.frame, text="Administrar", command=lambda: self.ingresar("admin"), fg="#bbbbbb", activeforeground="white", activebackground="green", bg="#222222",width=14, height=2, bd=1, font="Helveltica 12 bold").place(x=505, y=270)
