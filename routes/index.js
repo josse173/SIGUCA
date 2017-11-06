@@ -225,7 +225,9 @@ module.exports = function(app, io) {
     */
     app.post('/justificacion/:id', autentificado, justificacion_actions.actualiza);
 
-    app.post('/jeje', autentificado, function(req,res){
+
+    app.post('/justificacionEmpleado', autentificado, function(req,res){
+    
         var just={
             id:req.body.identificador,
             usuario:req.user.id,
@@ -234,11 +236,63 @@ module.exports = function(app, io) {
             motivoJust:"otro"
 
         }; 
-		crudJustificaciones.updateJust(just, function (err){
-			res.redirect('/escritorio');
-		});
+        if(req.session.name!="Supervisor"){
+            crudJustificaciones.updateJust(just, function (err){
+                res.redirect('/escritorioEmpl');
+            });
+        }else{
+            crudJustificaciones.updateJust(just, function (err){
+                res.redirect('/escritorio');
+            });
+        }
+		
     });
 
+
+    //justificacion masa
+    app.post('/justificacionMasaEmpleado', autentificado, function(req,res){
+       
+        if(req.session.name=="Supervisor"){
+            for(var i=0;i<req.body.ordenadas.length;i++){
+                var just={
+                    id:req.body.ordenadas[i].id,
+                    usuario:req.user.id,
+                    detalle:req.body.ordenadas[i].detalle,
+                    motivoOtroJust:req.body.ordenadas[i].motivoOtroJust,
+                    motivoJust:"otro"
+        
+                }; 
+                crudJustificaciones.updateJust(just, function (err){
+                   
+                });
+            }
+            res.json({result:"Supervisor"});
+            
+        }else{
+            for(var i=0;i<req.body.ordenadas.length;i++){
+                var just={
+                    id:req.body.ordenadas[i].id,
+                    usuario:req.user.id,
+                    detalle:req.body.ordenadas[i].detalle,
+                    motivoOtroJust:req.body.ordenadas[i].motivoOtroJust,
+                    motivoJust:"otro"
+        
+                }; 
+                crudJustificaciones.updateJust(just, function (err){
+                   
+                });
+            }
+            res.json({result:"Empleado"});
+        }
+        
+
+           
+            
+    });
+    
+
+
+   
     /*
     *  El supervisor elimina una justificación y se le envia un correo al dueño de la justificación
     */
@@ -530,9 +584,9 @@ module.exports = function(app, io) {
     /*
     *  Obtiene un usuario
     */
-    app.get('/empleado/tipo/get', function (req, res) {
-        Usuario.findOne({username:req.query.username2}, function (err, user) {
-            if (err || (user && !user.validPassword(req.query.password2))) { return res.json(err) }
+    app.post('/empleado/tipo/get', function (req, res) {
+        Usuario.findOne({username:req.body.username2,estado:"Activo"}, function (err, user) {
+            if (err || (user && !user.validPassword(req.body.password2))) { return res.json(err) }
             res.json(user);
         });
     });

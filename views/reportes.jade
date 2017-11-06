@@ -6,55 +6,56 @@ block sigucaCSS
 
 block content
     div.container
+      if(!feriado)
+        div.text-center
+          .milky Reportes de #{tipoReporte}
 
-      div.text-center
-        .milky Reportes de #{tipoReporte}
+        div.filter
+          table
+            form(role='form', method="POST", action="/reportes/"+filtradoReporte)
+              td
+                select.form-control.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro") 
+                  option(value= "todos|reportes") Todos los usuarios
+                  each user in usuarios
+                    //-Se verifica si la informacion esta siendo filtrada por usuario
+                    if(filtroUsuario && filtroUsuario == user._id)
+                      option(value= user._id + "|reportes", selected) #{user.apellido1} #{user.apellido2}, #{user.nombre}
+                    else
+                      option(value= user._id + "|reportes") #{user.apellido1} #{user.apellido2}, #{user.nombre}
 
-      div.filter
-        table
-          form(role='form', method="POST", action="/reportes/"+filtradoReporte)
-            td
-              select.form-control.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro") 
-                option(value= "todos|reportes") Todos los usuarios
-                each user in usuarios
-                  //-Se verifica si la informacion esta siendo filtrada por usuario
-                  if(filtroUsuario && filtroUsuario == user._id)
-                    option(value= user._id + "|reportes", selected) #{user.apellido1} #{user.apellido2}, #{user.nombre}
-                  else
-                    option(value= user._id + "|reportes") #{user.apellido1} #{user.apellido2}, #{user.nombre}
-
-            td
-              select.form-control#selectFiltro.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro_departamento") 
-                option(value= "todos") Todos los departamentos
-                each dep in departamentos
-                  //-Se verifica si la informacion esta siendo filtrada por departamento
-                  if(filtroDepartamento && filtroDepartamento == dep._id)
-                    option(value=dep._id, selected) #{dep.nombre}
-                  else
-                    option(value=dep._id ) #{dep.nombre}
-            -if(reporteVacaciones)
-              td.hide
-            -else
               td
-                label.labelFiltro.labFilLeft(for='fechaDesde') Desde:
-                  div.input-group
-                    input#date_range_start.form-control.fondoTransparente(type='text', name='fechaDesde', value=rangoFecha.fechaDesde)
-                    span.input-group-addon.fondoTransparente-derecha
-                      i.icon-calendar
-            -if(reporteVacaciones)
-              td.hide
-            -else
+                select.form-control#selectFiltro.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro_departamento") 
+                  option(value= "todos") Todos los departamentos
+                  each dep in departamentos
+                    //-Se verifica si la informacion esta siendo filtrada por departamento
+                    if(filtroDepartamento && filtroDepartamento == dep._id)
+                      option(value=dep._id, selected) #{dep.nombre}
+                    else
+                      option(value=dep._id ) #{dep.nombre}
+              -if(reporteVacaciones)
+                td.hide
+              -else
+                td
+                  label.labelFiltro.labFilLeft(for='fechaDesde') Desde:
+                    div.input-group
+                      input#date_range_start.form-control.fondoTransparente(type='text', name='fechaDesde', value=rangoFecha.fechaDesde)
+                      span.input-group-addon.fondoTransparente-derecha
+                        i.icon-calendar
+              -if(reporteVacaciones)
+                td.hide
+              -else
+                td
+                  label.labelFiltro(for='fechaHasta') Hasta:
+                    div.input-group
+                      input#date_range_end.form-control.fondoTransparente(type='text', name='fechaHasta', value=rangoFecha.fechaHasta)
+                      span.input-group-addon.fondoTransparente-derecha
+                        i.icon-calendar
               td
-                label.labelFiltro(for='fechaHasta') Hasta:
-                  div.input-group
-                    input#date_range_end.form-control.fondoTransparente(type='text', name='fechaHasta', value=rangoFecha.fechaHasta)
-                    span.input-group-addon.fondoTransparente-derecha
-                      i.icon-calendar
-            td
-              button.filtro.form-control.btn.btn-success.fondoTransparente(type='submit', name='gestionar') Buscar
-            //
-              td
-                button#toPDF.form-control.btn.btn-primary(name='toPDF') PDF
+      
+                button.filtro.form-control.btn.btn-success.fondoTransparente(type='submit', name='gestionar') Buscar
+      else
+        div.text-center
+          .milky Reportes de #{tipoReporte}
 
       .col-xs-12
         div.eventosCierre
@@ -98,6 +99,14 @@ block content
                     td Solicitudes de horas extraordinarias
                     if(extras.length != 0)
                       td #{extras.length}
+                    else
+                      td 0
+                
+                 if(feriado)
+                  tr
+                    td Feriados
+                    if(feriado.length != 0)
+                      td #{feriado.length}
                     else
                       td 0
                 
@@ -153,11 +162,12 @@ block content
           if(horasEmpleado)
             if(horasEmpleado.length != 0)
               br
-              h3 Horas laboradas por empleado
+              h3 Horas laboradas por colaborador
               .tableSolicitudes.footable
                 table#totalHorasEmpleado
                     thead
                       tr
+                        th Tipo de usuario
                         th Usuario
                         th Tiempo trabajado
                             
@@ -172,23 +182,26 @@ block content
                         - tiempo = h+":"+m;
                         - if(empleado.tiempo.horas<=0 && empleado.tiempo.minutos<=0) tiempo = "El usuario se ausentó o no marcó salida."
                         tr
+                          td #{empleado.tipoUsuario}
                           td #{empleado.usuario.nombre} #{empleado.usuario.apellido1} 
                           td #{tiempo}
+                         
             else
               h3 Horas laboradas por empleado
               p No se han encontrado registros
 
           
-          //-Horas Semanales 
+          //-Horas por dia
           if(cierreUsuarios)
             if(cierreUsuarios.length != 0)
               br
-              h3 Horas Semanales 
+              h3 Horas trabajas por día 
               .tableCierres.footable
                 table#horaTablaPDF
                     thead
                       tr
                         th Fecha
+                        th Tipo de usuario
                         th Usuario
                         th Tiempo trabajado
                             
@@ -205,6 +218,7 @@ block content
                           -tiempo = "El usuario se ausentó o no marcó salida."
                         tr
                           td(data-value=cierre.epoch) #{cierre.fecha.str} 
+                          td #{cierre.tipoUsuario}
                           td #{cierre.usuario.nombre} #{cierre.usuario.apellido1} 
                           td #{tiempo}
             else
@@ -222,49 +236,56 @@ block content
                         th(data-type="numeric" data-sort-initial="descending") Fecha
                         th Usuario
                         th Tipo
+                        th Tipo de usuario
                     tbody
                       each marca, i in marcas
                         tr
                           td(data-value=marca.epoch) #{marca.fecha.str} 
                           td #{marca.usuario.nombre} #{marca.usuario.apellido1}
                           td #{marca.tipoMarca} 
+                          td #{marca.tipoUsuario}
             else
               h3 Marcas 
               p No se han encontrado registros 
                            
            //-Tardias  
-          if(tarde)
-            if(marcas.length != 0)
+        
+          if(arregloTardias)
+            if(arregloTardias.length != 0)
               h3 Reporte tardias
               .footable
                 table#tardiasPDF
                     thead
                       tr
+                        th Tipo de usuario
                         th Usuario
-                        th Hora
-                    tbody
-                      each tardee, i in tarde
-                        tr
-                          td #{tardee.nombre} #{tardee.apellido}
-                          td #{tardee.fecha} 
+                        th Hora de entrada
+                        th Fecha y hora de marca
+                        
                       
+                    tbody
+                      -for (var g = 0; g <arregloTardias.length; g++)
+                        tr
+                          th #{arregloTardias[g].tipoUsuario}
+                          td #{arregloTardias[g].nombre} #{arregloTardias[g].apellido}
+                         
+                          if(arregloTardias[g].horarioMinutos < 10)
+                            td #{arregloTardias[g].horarioHora+":"+arregloTardias[g].horarioMinutos+""+0}
+                          else
+                            td #{arregloTardias[g].horarioHora+":"+arregloTardias[g].horarioMinutos}
+                          td #{arregloTardias[g].fecha}
             else
               h3 Reporte tardias 
               p No se han encontrado registros   
-              
-          if(marcas)
-            if(marcas.length != 0)
-                -var primeraVez=0
-                - var entro=false
-                -var ordenadas=new Array()
-                - var temporal = new Array() 
-
+             
+          if(marcasPorDia)
+            if(marcasPorDia.length != 0)
                 h3 Marcas diarias
-
                 .footable
                   table#marcassPDF
                       thead
                         tr
+                          th Tipo usuario
                           th Usuario
                           th Entrada
                           th Salida Almuerzo
@@ -273,80 +294,19 @@ block content
                           th Entrada a Receso
                           th Salida
                       tbody
-                        -for (var i = 0; i <marcas.length; i++)
-                          if (primeraVez==0)
-                              -var objMarcas = new Object();
-                              -objMarcas.nombre=marcas[i].usuario.nombre
-                              -objMarcas.dia=marcas[i].fecha.dia
-                              -objMarcas.mes=marcas[i].fecha.mes
-                              -objMarcas.año=marcas[i].fecha.año
-                              -objMarcas.apellido1=marcas[i].usuario.apellido1
-                              -temporal.push(objMarcas)
-                              -primeraVez++ 
-                          else
-                            -for (var j = 0; j <temporal.length; j++)
-                              -entro=false;
-                              if (temporal[j].nombre==marcas[i].usuario.nombre && temporal[j].apellido1==marcas[i].usuario.apellido1 && temporal[j].dia==marcas[i].fecha.dia && temporal[j].mes==marcas[i].fecha.mes  && temporal[j].año==marcas[i].fecha.año)
-                                -entro=true;
-                                -j=temporal.length
-                                  
-                            if(entro==false)
-                              -var objMarcas = new Object()
-                              -objMarcas.nombre=marcas[i].usuario.nombre
-                              -objMarcas.dia=marcas[i].fecha.dia
-                              -objMarcas.mes=marcas[i].fecha.mes
-                              -objMarcas.año=marcas[i].fecha.año
-                              -objMarcas.apellido1=marcas[i].usuario.apellido1
-                              -temporal.push(objMarcas)    
-                        
-                      
-                        -for(var r=0; r<temporal.length;r++)
-                          -var marcasOrdenadas = new Object()
-                          -for(var m=0;m<marcas.length;m++)
-                            if (temporal[r].nombre==marcas[m].usuario.nombre && temporal[r].apellido1==marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia && temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año && marcas[m].tipoMarca=="Entrada")
-
-                              -marcasOrdenadas.nombre=marcas[m].usuario.nombre
-                              -marcasOrdenadas.apellido1=marcas[m].usuario.apellido1
-                              -marcasOrdenadas.entrada=marcas[m].fecha.str
-
-                            else if (temporal[r].nombre==marcas[m].usuario.nombre && temporal[r].apellido1==marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia && temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año && marcas[m].tipoMarca=="Salida")
-                              -marcasOrdenadas.salida=marcas[m].fecha.str
-
-                            else if (temporal[r].nombre==marcas[m].usuario.nombre && temporal[r].apellido1==marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia && temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año && marcas[m].tipoMarca=="Salida a Receso")
-                              -marcasOrdenadas.salidaReceso=marcas[m].fecha.str
-
-                            else if (temporal[r].nombre==marcas[m].usuario.nombre && temporal[r].apellido1==marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia && temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año && marcas[m].tipoMarca=="Entrada de Receso")
-                              -marcasOrdenadas.entradaReceso=marcas[m].fecha.str
-
-                            else if (temporal[r].nombre==marcas[m].usuario.nombre && temporal[r].apellido1==marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia && temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año && marcas[m].tipoMarca=="Salida al Almuerzo")
-                              -marcasOrdenadas.salidaAlmuerzo=marcas[m].fecha.str
-
-                            else if (temporal[r].nombre==marcas[m].usuario.nombre && temporal[r].apellido1==marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia && temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año && marcas[m].tipoMarca=="Entrada de Almuerzo")
-                              -marcasOrdenadas.entradaAlmuerzo=marcas[m].fecha.str
-
-                          -ordenadas.push(marcasOrdenadas)    
-
-
-                    
-                        -for(var s=0;s<ordenadas.length;s++)  
+                        -for(var s=0;s<marcasPorDia.length;s++)  
                           tr
-                            td  #{ordenadas[s].nombre} #{ordenadas[s].apellido1}
-                            td  #{ordenadas[s].entrada}
-                            td  #{ordenadas[s].salidaAlmuerzo}
-                            td  #{ordenadas[s].entradaAlmuerzo}
-                            td  #{ordenadas[s].salidaReceso}
-                            td  #{ordenadas[s].entradaReceso}
-                            td  #{ordenadas[s].salida}
+                            td  #{marcasPorDia[s].tipoUsuario}
+                            td  #{marcasPorDia[s].nombre} #{marcasPorDia[s].apellido1}
+                            td  #{marcasPorDia[s].entrada}
+                            td  #{marcasPorDia[s].salidaAlmuerzo}
+                            td  #{marcasPorDia[s].entradaAlmuerzo}
+                            td  #{marcasPorDia[s].salidaReceso}
+                            td  #{marcasPorDia[s].entradaReceso}
+                            td  #{marcasPorDia[s].salida}
               else
                 h3 Marcas diarias
-                p No se han encontrado registros     
-
-
-         
-
-
-         
-          
+                p No se han encontrado registros               
 
           //-Justificaciones     
           if(justificaciones)
@@ -463,6 +423,26 @@ block content
               h3 Solicitudes Permisos
               p No se han encontrado registros 
 
+          //-lista de feriados
+          if(feriado)
+            if(feriado.lenght!=0)
+              br
+              h3 Lista de feriados
+              table.footable.tableFeriado
+                  thead
+                    tr
+                      th Nombre
+                      th Fecha
+                      
+  
+                  tbody 
+                    each feriadoCurrent, i in feriado
+                      tr
+                        td #{feriadoCurrent.nombreFeriado} 
+                        td #{feriadoCurrent.epoch} 
+            else
+              h3 Feriados
+              p No se han encontrado registros
 
           //-Solicitudes Vacaciones
           if(reporteVacaciones)

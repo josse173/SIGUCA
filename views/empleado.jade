@@ -139,6 +139,11 @@ block content
                         option #{tipoEmpleado} 
                         option #{empleadoProfesor}
 
+                    label(for='estado') Estado:
+                      br
+                      select.form-control#estadoEmpleado(data-style="btn-inverse", data-width="140px", name="estadoEmpleado") 
+                          
+
                     label(for='departamento') Departamento:
                       br
                       select.form-control#selectDepartamentos.selectpicker(data-style="btn-success", data-width="200px", data-selected-text-format="count>2", type="text", name="departamentos", multiple="multiple") 

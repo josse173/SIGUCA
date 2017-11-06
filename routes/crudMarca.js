@@ -40,8 +40,12 @@ function marca (ipOrigen,tipoUsuario, marca, cb) {
 		epochTimeGte = date.hours(0).minutes(0).seconds(0).unix(),
 		epochTimeLte = date.hours(23).minutes(59).seconds(59).unix();
 		marca.epoch = epochTime;
+		if(!marca.dispositivo){
+			marca.dispositivo="Computadora";
+		}
+		
 		marca.ipOrigen=ipOrigen;
-		console.log(marca);
+		
 		var newMarca = Marca(marca);
 		
 		Marca.find(
@@ -267,7 +271,7 @@ exports.rfidReader = function(tipoUsuario, codTarjeta, tipoMarca, ip, cb) {
 			tipo = 'Salida';
 		} else tipo = 'error';
 
-		marca(ip, tipoUsuario, {usuario: usuario.id, tipoMarca: tipo,tipoUsuario: tipoUsuario}, 
+		marca(ip, tipoUsuario, {usuario: usuario.id, tipoMarca: tipo,tipoUsuario: tipoUsuario,dispositivo:"Pi"}, 
 			function(msj){					
 				return cb(msj);
 			});
@@ -376,6 +380,7 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 				//
 			}
 			else if(!err && usuario.horarioFijo && usuario.horarioFijo!=""){
+				
 				HorarioFijo.findById(usuario.horarioFijo,function(error,horarioFijo){
 					if(!error && horarioFijo!="" && horarioFijo){
 							var mOut= moment.unix(marca.epoch);

@@ -18,6 +18,7 @@ exports.get = function(query, cb){
 //		Métodos Solicitudes Extras   
 //---------------------------------------------------------------------
 exports.addExtra = function(extra, cb){
+
 	var epochTime = moment().unix(),
 	epochInicio = moment(extra.epochInicio,"DD/MM/YYYY HH:mm").unix(),
 	epochTermino = moment(extra.epochTermino,"DD/MM/YYYY HH:mm").unix(),

@@ -18,7 +18,7 @@ class UtilImg:
                  pass
 
         #Variables globales
-        url = "http://siguca.greencore.int/uploads/"
+        url = "http://10.42.30.19:3000/uploads/"
 
         #Funcion que recibe la imagen deseada y la obtiene de la url planteada inicialmente
         def getImageURL(self, img):
