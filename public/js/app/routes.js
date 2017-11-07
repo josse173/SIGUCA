@@ -14,6 +14,7 @@
 
 //Muestra el modal "justificaciones" al cargar la pagina, validando que haya más de una justificación.
 
+var contador=0;
 
 $(".justificarMasaUsuario").click(function(){
     
@@ -474,6 +475,15 @@ $("button[data-target=#editHorarioFijo]").click( function() {
 
     $.get('/empleado/edit/'+id, function( data ) {
 
+        if(contador>0){
+
+            $('#estadoEmpleado').find('option').remove();
+            $('#estadoEmpleado').find('option').remove();
+        }else{
+            contador++;
+        }
+       
+
         var x = document.getElementById("estadoEmpleado");
         var option = document.createElement("option");
         option.text = data.estado;
@@ -515,7 +525,7 @@ $("button[data-target=#editHorarioFijo]").click( function() {
         $('#selectHorarioFijo').selectpicker('refresh'); 
         $('#HorarioEmpleado').selectpicker('refresh'); 
         $('#selectTipo').selectpicker('refresh');    
-        $('#estadoEmpleado')('refresh');    
+        $('#estadoEmpleado').refresh();
         
          
 
