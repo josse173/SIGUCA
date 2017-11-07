@@ -61,27 +61,26 @@ html
           span#barLogo
             img(src='/images/GreenCore.png' height="50" width="200",  href="/Ayuda")#sigucaLogo
       .collapse.navbar-collapse.navbar-ex1-collapse
-          ul.nav.navbar-nav
           ul.nav.navbar-nav.navbar-right
             if (usuario)
                 ul.nav.nav-pills
                   li
                     if(usuario.tipo == 'Supervisor')
-                      a(href="/escritorio")
+                      a.activeControl(href="/escritorio")
                         i.icon-home.icon-large
                         |&nbsp;Escritorio
                     else
                       if(usuario.tipo == 'Empleado' || usuario.tipo == config.empleadoProfesor)
-                        a(href="/escritorioEmpl")
+                        a.activeControl(href="/escritorioEmpl")
                           i.icon-home.icon-large
                           |&nbsp;Escritorio
                       else
-                        a(href="/escritorioAdmin")
+                        a.activeControl(href="/escritorioAdmin")
                           i.icon-home.icon-large
                           |&nbsp;Escritorio
                   if(usuario.tipo == 'Supervisor')
                     li
-                      a(href="/gestionarEventos")
+                      a.activeControl(href="/gestionarEventos")
                         i.icon-cogs.icon-large
                         |&nbsp;Acciones
                     //-li
@@ -91,38 +90,38 @@ html
 
                     li
                       div.dropdown
-                        button.btn.btn-primary.dropdown-toggle(type='button',data-toggle="dropdown") 
+                        button.btn.dropdown-toggle.text-primary.father-1(type='button',data-toggle="dropdown") 
                           i.icon-edit.icon-large
-                          |&nbsp;Reportes
+                            |&nbsp;Reportes 
                           span.caret
                         ul.dropdown-menu
                           li
-                            a(href="/reportes/marcas") Marcas/Tardías
+                            a.activeControl.son-1(href="/reportes/marcas") Marcas/Tardías
                           li
-                            a(href="/reportes/horas") Horas
+                            a.activeControl.son-1(href="/reportes/horas") Horas
                           li
-                            a(href="/reportes/justificaciones") Justificaciones
+                            a.activeControl.son-1(href="/reportes/justificaciones") Justificaciones
                           li
-                            a(href="/reportes/extras") Solicitudes
+                            a.activeControl.son-1(href="/reportes/extras") Solicitudes
                           li
-                            a(href="/reportes/vacaciones") Vacaciones
+                            a.activeControl.son-1(href="/reportes/vacaciones") Vacaciones
                           li 
-                            a(href="/reportes/Feriados") Feriados
+                            a.activeControl.son-1(href="/reportes/Feriados") Feriados
                   if(usuario.tipo == 'Supervisor' || usuario.tipo == 'Empleado' || usuario.tipo == config.empleadoProfesor)
                     li
-                      a(href="/eventos")
+                      a.activeControl(href="/eventos")
                         i.icon-book.icon-large  
                         |&nbsp;Mis Eventos 
                   li
-                    a(href="/configuracion")
+                    a.activeControl(href="/configuracion")
                       i.icon-cog.icon-large
                       |&nbsp;Configuración
                   li
-                    a(href='/Ayuda')
+                    a.activeControl(href='/Ayuda')
                       i.icon-question-sign.icon-large     
                       |&nbsp;Acerca de SIGUCA  
                   li
-                    a(href='/logout')
+                    a.activeControl(href='/logout')
                       i.icon-off.icon-large     
                       |&nbsp;Cerrar Sessión 
                       
@@ -159,4 +158,6 @@ html
     script(scr='http://code.jquery.com/jquery-1.11.1.js')
     script(src="/js/components/jquery.validate.min.js")
     
+    //-Controla cual o cuales opciones del menú deberían estar activas
+    script(src="/js/app/mainActive.js")
     block sigucaJS
