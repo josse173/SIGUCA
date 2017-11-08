@@ -37,7 +37,7 @@ module.exports = {
       var marcaQuery = {};
       var vacacionesQuery = {};
       var cierreQuery = {};//{"usuarios.tiempo.horas":{"$gte":0}};
-      var usuarioQuery = {tipo:{'$nin': ['Administrador', "Supervisor"]}};
+      var usuarioQuery = {estado:"Activo",tipo:{'$nin': ['Administrador', "Supervisor"]}};
       var populateQuery = {
         path: 'usuario'
       };

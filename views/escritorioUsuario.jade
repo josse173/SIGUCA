@@ -33,13 +33,15 @@
             tr
               th(data-sort-ignore="true") Tipo
               th(data-sort-ignore="true" data-type="numeric" ) Hora
+              
+             
           tbody.marcasDetalle
             each marca, i in marcas
               case marca.tipoMarca
                 when "Entrada"
                   tr
                     td Entrada
-                    td(data-value=marca.epoch) #{marca.fecha}
+                    td(data-value=marca.epoch) #{marca.fecha}    
                 when "Salida a Receso"
                   tr
                     td Salida a Receso
@@ -77,11 +79,18 @@
             tr
               th(data-sort-ignore="true") Tipo
               th(data-sort-ignore="true") Hora
+              th Dispositivo
           tbody.marcasDetalle#marcasBody
             each marca, i in marcas
               tr
                 td #{marca.tipoMarca}
                 td #{marca.fecha}
+                if(marca.dispositivo=="Computadora")
+                  td 
+                    img(src='/images/compu.png' height="50" width="auto")#CompuLogo
+                else
+                  td
+                    img(src='/images/ras.png' height="50" width="auto")#PiLogo
   div.clearfix
   br
   .col-lg-offset-msj.col-md-offset-1
@@ -143,14 +152,18 @@
               th(data-sort-ignore="true" data-type="numeric" ) Fecha justificada
               th(data-sort-ignore="true") Motivo
               th(data-sort-ignore="true" data-type="numeric" ) Información
+              th Justificar
           tbody.justDetalle
             each just, i in justificaciones
-              tr(data-toggle="modal" data-target="#updateJustificacion" data-value=just._id)
+              tr
                 //.miClase fue crerada para contar la cantidad de justificaciones creadas
                 td.miClase #{just.fecha.str} 
                 td #{just.fechaJust.str}
                 td #{just.motivo}
                 td #{just.informacion}
+                td 
+                  button.btn.btn-success(type='button',data-toggle="modal", data-target="#updateJustificacion" ,data-value=just._id ) Justificar
+
           tfoot
             tr
               td(colspan='8')
@@ -365,6 +378,8 @@ input(id='ipOrigen',name='ipOrigen' ,value='', style='display:none')
       .modal-header
         button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
         h3#myModalLabel.modal-title Justificaciones pendientes
+        textarea#detalleJustificacionMasa.detalleJustificacionMasa.form-control(rows="4" cols="50" name='motivo' required ,style='display:none')
+        button#botonJustificacionMasa.btn.btn-success(type='button',style='display:none' ) Justificaciones en masa
       .modal-body
           .form-group
               .col-xs-4
@@ -373,17 +388,23 @@ input(id='ipOrigen',name='ipOrigen' ,value='', style='display:none')
                   table#tablaJust.footable(data-page-navigation=".pagination" data-page-size="4" )
                     thead
                       tr
+                        th(data-sort-ignore="true" data-type="numeric" ) En masa
                         th(data-sort-ignore="true" data-type="numeric" ) Fecha creada
                         th(data-sort-ignore="true" data-type="numeric" ) Fecha justificada
                         th(data-sort-ignore="true") Motivo
                         th(data-sort-ignore="true" data-type="numeric" ) Información
+                        th Justificar
                     tbody.justDetalle
                       each just, i in justificaciones
-                        tr(data-toggle="modal" data-target="#updateJustificacion" data-value=just._id)
+                        tr
+                          td 
+                            input.justificarMasaUsuario(type='checkbox',checked=false, id='justificarMasaUsuario' ,value=just._id+":/"+just.motivo)
                           td #{just.fecha.str} 
                           td #{just.fechaJust.str}
                           td #{just.motivo}
                           td #{just.informacion}
+                          td 
+                            button.btn.btn-success(type='button',data-toggle="modal", data-target="#updateJustificacion" ,data-value=just._id ) Justificar
                     tfoot
                       tr
                         td(colspan='8')

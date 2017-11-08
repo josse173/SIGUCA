@@ -259,9 +259,11 @@ body {
 		margin-left: 10%;
 		margin-top: 30px;
 	}
+	/*
 	.marca{
 		display: none;
 	}
+	*/
 	.marcaResponsive{
 		display: block;
 	}
