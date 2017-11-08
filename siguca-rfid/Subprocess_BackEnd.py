@@ -40,7 +40,7 @@ import UtilImg
 
 #SETTINGS AND CONFIGURATIONS
 #IP OF NODE JS SERVER WHERE SIGUCA IS RUNNING
-server_IP='10.42.30.19'
+server_IP='siguca.greencore.int'
 #PORT OF THE MONGODB 
 port='27017'
 #PORT OF OF SIGUCA NODE JS PORT 
@@ -56,7 +56,7 @@ connection = MongoClient('mongodb://'+server_IP+':'+port)
 #DATABASE CONNECTIONS.
 db = connection.sigucadb
 collection = db.usuarios
-codigosExistentes=list(collection.find({},{"codTarjeta": 1,"_id":0}))
+codigosExistentes=list(collection.find({"estado":"Activo"},{"codTarjeta": 1,"_id":0}))
 
 #Obtiene ipv4
 def getIpv4():
@@ -369,12 +369,12 @@ while True:
         root1.mainloop()
 
         #Si tiene mas de un rol se solicita un tipo sino de una ves la marca
-        codigosExistentes=list(collection.find({},{"tipo":  1,"codTarjeta": 1,"_id":0}))
+        codigosExistentes=list(collection.find({"estado":"Activo"},{"tipo":  1,"codTarjeta": 1,"_id":0}))
         for post in codigosExistentes:
             if str(dec) == str(post['codTarjeta']):
                 listTipo =  post["tipo"] 
-                if isinstance(listTipo,str) or isinstance(listTipo,unicode):
-                    obtieneMarca(dec,str(listTipo))
+		if (len(listTipo) == 1):
+                    obtieneMarca(dec,str(listTipo[0]))
                 else:
                     #Se obtiene el tipo de usuario
                     tipoUsuario = obtieneTipoUsuario(dec,listTipo)
