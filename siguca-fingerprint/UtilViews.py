@@ -56,22 +56,37 @@ class UtilViews:
         result = self.instUtilFingerprint.search()
         self.frame.destroy()
         if result == -1:
-            self.viewMessage("No se han encontrado coincidencias.", "red")
+            self.viewMessage("No matches found.", "red")
             self.viewPrincipal()
         else:
             #Valida con BD
             self.user = self.instUtilBD.findCodUser(result)
             if self.user != None:
-                self.viewMessage("Bienvenido " + self.user["nombre"] + " " + self.user["apellido1"], "light green")
-                    
+                self.viewMessage("welcome " + self.user["nombre"] + " " + self.user["apellido1"], "light green") 
+
+                #Cambia idioma a ingles
+                tipoTem = self.user["tipo"]
+                listTipo = list()
+                for x in range(0,len(tipoTem)):
+                    if tipoTem[x] == "Empleado":
+                        listTipo.append("Employee")
+                    elif tipoTem[x]  == "Administrador":
+                        listTipo.append("Administrator")
+                    elif tipoTem[x]   == "Supervisor":
+                        listTipo.append("Supervisor")
+                    elif tipoTem[x] == "Profesor":
+                        listTipo.append("Teacher")
+                    elif tipoTem[x] == "Usuario sin acceso web":
+                        listTipo.append("User without web access")
+
                 #Valida si tiene mas de un rol
                 if (len(self.user["tipo"]) == 1):
                     self.tipoUsuario = (self.user["tipo"])[0]
                     self.viewMark()
                 else:
-                    self.viewObtieneTipoUsuario(self.user["tipo"])
+                    self.viewObtieneTipoUsuario(listTipo)
             else:
-                self.viewMessage("No se han encontrado coincidencias.", "red")
+                self.viewMessage("No matches found.", "red")
                 self.viewPrincipal()
 
     #Escucha fingerprint para actualizar
@@ -79,7 +94,7 @@ class UtilViews:
         result = self.instUtilFingerprint.search()
         self.frame.destroy()
         if result >= 0:
-            self.viewMessage("ERROR! La huella ha sido registrada previamente", "red")
+            self.viewMessage("ERROR! the fingerprint has been registered before.", "red")
             self.viewAdmin()
         else:
            self.viewSaveFingerprint()
@@ -90,7 +105,7 @@ class UtilViews:
         result = self.instUtilFingerprint.save()
         
         if result == "not match":
-            self.viewMessage("ERROR! Las huellas no coinciden", "red")
+            self.viewMessage("ERROR! The prints do not match.", "red")
         else:
             #Actualiza en la BD la nueva pos de la huella
             self.instUtilBD.updateCode(self.userTem["_id"], result)
@@ -98,7 +113,7 @@ class UtilViews:
             #Si el usuario tenía una huella registrada, se elimina
             if int(self.userTem["codTarjeta"]) != -1:
                 self.instUtilFingerprint.delete(int(self.userTem["codTarjeta"]))
-            self.viewMessage("Realizado con éxito", "green")
+            self.viewMessage("Made successfully.", "green")
 
         self.frame.destroy()
         self.viewAdmin()
@@ -109,10 +124,18 @@ class UtilViews:
         tipo = ""
         for tem in listSeleccionado:
             tipo = listBox.get(tem)
-            if tipo != "":
-                self.tipoUsuario = tipo
-            else:
-                self.tipoUsuario = tipo 
+
+        if tipo == "Employee":
+            self.tipoUsuario = "Empleado"
+        elif tipo == "Administrator":
+            self.tipoUsuario = "Administrador"
+        elif tipo == "Supervisor":
+            self.tipoUsuario = "Supervisor"
+        elif tipo == "Teacher":
+            self.tipoUsuario = "Profesor"
+        elif tipo == "User without web access":
+            self.tipoUsuario = "Usuario sin acceso web"
+
         self.frame.destroy()
         self.viewMark()
 
@@ -130,13 +153,13 @@ class UtilViews:
         
         self.frame.destroy()
         if result == "faildUser":
-            self.viewMessage("El usuario es incorrecto", "orange")
+            self.viewMessage("The user is incorrect.", "orange")
             self.viewSession()
         elif result == "faildPassword":
-            self.viewMessage("La contraseña es incorrecta.", "orange")
+            self.viewMessage("Password is incorrect.", "orange")
             self.viewSession()
         elif result == "faildPermission":
-            self.viewMessage("Error, no cuenta con permisos para acceder", "red")
+            self.viewMessage("Permissions error.", "red")
             self.viewSession()
         else:
             self.viewAdmin()
@@ -166,7 +189,7 @@ class UtilViews:
         self.frame.destroy()
         if action == "delete":
             self.instUtilFingerprint.delete(self.userTem["codTarjeta"])
-            self.viewMessage("Realizado con éxito", "green")
+            self.viewMessage("Made successfully.", "green")
             self.instUtilBD.updateCode(self.userTem["_id"], -1)
             self.viewAdmin()
 
@@ -210,10 +233,10 @@ class UtilViews:
         self.lblImg2 = Label(self.frame,image=self.photo,bd=0).place(x=-150, y=50)
 
         #Boton para continuar
-        btnIngresar = Button(self.frame, text="Ingresar", command=lambda: self.ingresar("mark"), fg="white", activeforeground="#ffffff", activebackground="#00aa00", bg="green",width=17, height=2, bd=2, font="Helveltica 15 bold").place(x=470, y=200)
+        btnIngresar = Button(self.frame, text="Mark", command=lambda: self.ingresar("mark"), fg="white", activeforeground="#ffffff", activebackground="#00aa00", bg="green",width=17, height=2, bd=2, font="Helveltica 15 bold").place(x=470, y=200)
         
         #Boton para ingresar al modulo administrativo
-        btnConf = Button(self.frame, text="Administrar", command=lambda: self.ingresar("admin"), fg="#bbbbbb", activeforeground="white", activebackground="green", bg="#222222",width=14, height=2, bd=1, font="Helveltica 12 bold").place(x=505, y=270)
+        btnConf = Button(self.frame, text="Log in", command=lambda: self.ingresar("admin"), fg="#bbbbbb", activeforeground="white", activebackground="green", bg="#222222",width=14, height=2, bd=1, font="Helveltica 12 bold").place(x=505, y=270)
 
         self.root.mainloop()#Muestra la ventana
 
@@ -230,7 +253,7 @@ class UtilViews:
     def viewGetFingerprint(self):
         print "Vista obtiene finger print"
         self.initFrame()
-        lblTitle = Label(self.frame,text="Coloque el dedo en el dispositivo",bd="2",bg= "#000000", fg="#55aa55", font="Helveltica 20 bold").place(x=200,y=200)
+        lblTitle = Label(self.frame,text="Place your finger on the sensor.",bd="2",bg= "#000000", fg="#55aa55", font="Helveltica 20 bold").place(x=200,y=200)
         self.root.update()
         self.root.after(0, lambda: self.accionBuscaFinger())
 
@@ -238,7 +261,7 @@ class UtilViews:
     def viewGetFingerprintUpdate(self):
         print "Vista obtiene finger print para actualizar"
         self.initFrame()
-        lblTitle = Label(self.frame,text="Coloque el dedo en el dispositivo",bd="2",bg= "#000000", fg="#55aa55", font="Helveltica 20 bold").place(x=175,y=200)
+        lblTitle = Label(self.frame,text="Place your finger on the sensor.",bd="2",bg= "#000000", fg="#55aa55", font="Helveltica 20 bold").place(x=175,y=200)
         self.root.update()
         self.root.after(0, lambda: self.accionBuscaFingerActualizar())
 
@@ -247,14 +270,14 @@ class UtilViews:
     def viewSaveFingerprint(self):
         print "Vista, verifica huella y la actualiza"
         self.initFrame()
-        lblTitle = Label(self.frame,text="Vuelva a colocar el dedo en el dispositivo",bd="2",bg= "#000000", fg="#55aa55", font="Helveltica 20 bold").place(x=125,y=200)
+        lblTitle = Label(self.frame,text="Put your finger back on the sensor.",bd="2",bg= "#000000", fg="#55aa55", font="Helveltica 20 bold").place(x=125,y=200)
         self.root.update()
         self.root.after(0, lambda: self.accionActualizaHuella())
 
     #------- Vista Solicitar Tipo de usuario ---------
     def viewObtieneTipoUsuario(self, listTipo):
         self.initFrame()
-        lblTitle = Label(self.frame,text="Seleccione un tipo de usuario",bd="2",bg= "#000000", fg="#55aa55", font="Helveltica 30 bold").place(x=150,y=2)
+        lblTitle = Label(self.frame,text="Select a type of user.",bd="2",bg= "#000000", fg="#55aa55", font="Helveltica 30 bold").place(x=150,y=2)
         #Muestra los roles del usuario al cual le pertenece el llavin 
         listBox = Listbox(self.frame,bd="1",fg="#888888", bg="#000000", font="Helveltica 30 bold",selectbackground="#999999",selectforeground="#ffffff",height=13,selectborderwidth=1, activestyle=NONE, justify="center")
         listBox.place(x=10,y=100)
@@ -266,19 +289,19 @@ class UtilViews:
         #Se crea el entorno grafico  para realizar las marcas
         self.initFrame()
     
-        button = Button(self.frame,text="       Entrada        ", command = lambda: self.actionMark(1),fg="white",activeforeground="white",activebackground="#446644",bg="green",width=22,height=3,bd=3,font="Helveltica 17 bold")
+        button = Button(self.frame,text="       Entry        ", command = lambda: self.actionMark(1),fg="white",activeforeground="white",activebackground="#446644",bg="green",width=22,height=3,bd=3,font="Helveltica 17 bold")
     
-        button1 = Button(self.frame,text="        Salida        ", command =lambda:  self.actionMark(6),fg="white",activeforeground="white",activebackground="#446644",bg="green",width=22,height=3,bd=3,font="Helveltica 17 bold")
+        button1 = Button(self.frame,text="      Output        ", command =lambda:  self.actionMark(6),fg="white",activeforeground="white",activebackground="#446644",bg="green",width=22,height=3,bd=3,font="Helveltica 17 bold")
     
-        button2 = Button(self.frame,text="   Salida a Receso   ", command =lambda:  self.actionMark(2),fg="white",activeforeground="white",activebackground="#cac251",bg="orange",width=22,height=3,bd=3,font="Helveltica 17 bold")
+        button2 = Button(self.frame,text="   Recess output    ", command =lambda:  self.actionMark(2),fg="white",activeforeground="white",activebackground="#cac251",bg="orange",width=22,height=3,bd=3,font="Helveltica 17 bold")
         
-        button3 = Button(self.frame,text="   Entrada de Receso  ", command =lambda:  self.actionMark(3),fg="white",activeforeground="white",activebackground="#cac251",bg="orange",width=22,height=3,bd=3,font="Helveltica 17 bold")
+        button3 = Button(self.frame,text="    Recess entry    ", command =lambda:  self.actionMark(3),fg="white",activeforeground="white",activebackground="#cac251",bg="orange",width=22,height=3,bd=3,font="Helveltica 17 bold")
         
-        button4 = Button(self.frame,text="  Salida al Almuerzo  ", command =lambda:  self.actionMark(4),fg="white",activeforeground="white",activebackground="#4444ff",bg="blue",width=22,height=3,bd=3,font="Helveltica 17 bold")
+        button4 = Button(self.frame,text="    Lunch output    ", command =lambda:  self.actionMark(4),fg="white",activeforeground="white",activebackground="#4444ff",bg="blue",width=22,height=3,bd=3,font="Helveltica 17 bold")
         
-        button5 = Button(self.frame,text="  Entrada del Almuerzo ", command =lambda: self.actionMark(5), fg="white",activeforeground="white",activebackground="#4444ff",bg="blue",width=22,height=3,bd=3,font="Helveltica 17 bold")
+        button5 = Button(self.frame,text="     Lunch entry    ", command =lambda: self.actionMark(5), fg="white",activeforeground="white",activebackground="#4444ff",bg="blue",width=22,height=3,bd=3,font="Helveltica 17 bold")
 
-        button6 = Button(self.frame,text="Cancelar",command=lambda: self.actionMark("cancel"),fg="white",activeforeground="white",activebackground="red",bg="#ff4444",width=47,height=3,bd=3,font="Helveltica 17 bold")
+        button6 = Button(self.frame,text="Cancel",command=lambda: self.actionMark("cancel"),fg="white",activeforeground="white",activebackground="red",bg="#ff4444",width=47,height=3,bd=3,font="Helveltica 17 bold")
     
         button.grid(row=1,column=1)
         button1.grid(row=1,column=2)
@@ -291,7 +314,7 @@ class UtilViews:
     #------- Vista para para Iniciar sesion ---------
     def viewSession(self):
         self.initFrame()
-        lblTitle = Label(self.frame,text="Ingrese los datos solicitados.", bd="2",bg= "#000000", fg="#55aa55", font="Helveltica 25 bold").place(x=200,y=2)
+        lblTitle = Label(self.frame,text="Enter the requested data.", bd="2",bg= "#000000", fg="#55aa55", font="Helveltica 25 bold").place(x=200,y=2)
         lblFromUser = Label(self.frame,text="User",bd="2", bg= "#000000", fg="#55aa55", font="Helveltica 15 bold").place(x=10,y=70)
 
         txtUser = Entry(self.frame,fg="#888888", bg="#333333", font="Helveltica 20 bold",selectbackground="#999999",selectforeground="#ffffff",selectborderwidth=1, justify="center")
@@ -302,29 +325,29 @@ class UtilViews:
         txtPassword = Entry(self.frame, show="*", fg="#888888", bg="#333333", font="Helveltica 20 bold",selectborderwidth=1, justify="center")
         txtPassword.place(x=10,y=180)
 
-        buttonAccess = Button(self.frame,text="Ingresar",command= lambda: self.actionSession(txtUser.get(),txtPassword.get()),fg="white",activeforeground="white",activebackground="#008800",bg="#336633",width=15,height=2,bd=1,font="Helveltica 16 bold").place(x=380,y=100)
+        buttonAccess = Button(self.frame,text="Enter",command= lambda: self.actionSession(txtUser.get(),txtPassword.get()),fg="white",activeforeground="white",activebackground="#008800",bg="#336633",width=15,height=2,bd=1,font="Helveltica 16 bold").place(x=380,y=100)
     
-        buttonCancel = Button(self.frame,text="Cancelar",command= lambda: self.actionAdmin("cancel"),fg="white",activeforeground="white",activebackground="#880000",bg="#663333",width=15,height=2,bd=1,font="Helveltica 16 bold").place(x=380,y=170)
+        buttonCancel = Button(self.frame,text="Cancel",command= lambda: self.actionAdmin("cancel"),fg="white",activeforeground="white",activebackground="#880000",bg="#663333",width=15,height=2,bd=1,font="Helveltica 16 bold").place(x=380,y=170)
 
     #------- Vista para administrar el fingerprint ---------
     def viewAdmin(self):
         self.initFrame()
-        lblTitle = Label(self.frame,text="Seleccionae una de las opciones.",bd="2",bg= "#000000", fg="#55aa55", font="Helveltica 20 bold").place(x=150,y=50)
+        lblTitle = Label(self.frame,text="Select one of the options.",bd="2",bg= "#000000", fg="#55aa55", font="Helveltica 20 bold").place(x=150,y=50)
         
         #Actualizar huella dactilar
-        buttonUpdate = Button(self.frame,text="Actualizar Huella",command= lambda: self.actionAdmin("update"),fg="white",activeforeground="white",activebackground="#333333",bg="#444444",width=15,height=1,bd=1,font="Helveltica 15 bold").place(x=80,y=100)
+        buttonUpdate = Button(self.frame,text="Update footprint",command= lambda: self.actionAdmin("update"),fg="white",activeforeground="white",activebackground="#333333",bg="#444444",width=15,height=1,bd=1,font="Helveltica 15 bold").place(x=80,y=100)
 
         #Eliminar huella dactilar        
-        buttonDelete = Button(self.frame,text="Eliminar Huella",command= lambda: self.actionAdmin("delete"),fg="white",activeforeground="white",activebackground="#333333",bg="#444444",width=15,height=1,bd=1,font="Helveltica 15 bold").place(x=280,y=100)
+        buttonDelete = Button(self.frame,text="Delete footprint",command= lambda: self.actionAdmin("delete"),fg="white",activeforeground="white",activebackground="#333333",bg="#444444",width=15,height=1,bd=1,font="Helveltica 15 bold").place(x=280,y=100)
         
         #Cancelar        
-        buttonCancel = Button(self.frame,text="Salir",command= lambda: self.actionAdmin("cancel"),fg="white",activeforeground="white",activebackground="#880000",bg="#773333",width=15,height=1,bd=1,font="Helveltica 15 bold").place(x=480,y=100)
+        buttonCancel = Button(self.frame,text="Exit",command= lambda: self.actionAdmin("cancel"),fg="white",activeforeground="white",activebackground="#880000",bg="#773333",width=15,height=1,bd=1,font="Helveltica 15 bold").place(x=480,y=100)
 
     #------- Vista Solicitar el usuario a modificar ---------
     def viewGetUser(self, listUser, action):
         self.initFrame()
         
-        lblTitle = Label(self.frame,text="Seleccione un usuario",bd="2",bg= "#000000", fg="#55aa55", font="Helveltica 25 bold").place(x=150,y=30)
+        lblTitle = Label(self.frame,text="Select a user.",bd="2",bg= "#000000", fg="#55aa55", font="Helveltica 25 bold").place(x=150,y=30)
         
         #Muestra los roles del usuario al cual le pertenece el llavin
         scroll = Scrollbar(self.frame,width=50, bg="orange")
