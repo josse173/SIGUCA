@@ -5,6 +5,7 @@
 import hashlib
 import time
 from pyfingerprint.pyfingerprint import PyFingerprint
+from UtilBD import UtilBD
 
 #Clase encargada de controlar el fingerprint
 class UtilFingerprint:
@@ -26,7 +27,8 @@ class UtilFingerprint:
 
     #Busca una huella en especifico
     def search(self):
-        self.initFP()
+        self.clearMemory()
+        #self.initFP()
 
         try:
             #Esperando a que sea leido el dedo
@@ -62,7 +64,6 @@ class UtilFingerprint:
     #-------- Guarda una huella en el dispositivo --------
     def save(self):
         self.initFP()
-    
         try:            
             #Se valida que la huella se registrara correctamente
             while (self.f.readImage() == False):
@@ -86,3 +87,26 @@ class UtilFingerprint:
             print('Exception message: ' + str(e))
             exit(1)
 
+    #Limpia el dispositivo de huellas que correspondan a usuarios eliminados
+    def clearMemory(self):
+        self.initFP()
+        listUserBD = UtilBD().listUserFinger()
+        
+        if len(listUserBD) < self.f.getTemplateCount():
+
+            #Recorre los elementos de la primera pagina del sensor
+            tableFinger = self.f.getTemplateIndex(0)
+            for temTable in range(0,len(tableFinger)):
+                
+                #En caso de que la posición esté en uso se busca en BD
+                if tableFinger[temTable] == True:
+                    success = False
+                    for temUser in range(0,len(listUserBD)):
+                        user = listUserBD[temUser]
+                        if(user["codTarjeta"] == temTable):
+                            success = True
+                            break
+                    #Si no se encontraron coincidencias en la BD,
+                    #se elimina del sensor
+                    if success == False:
+                        self.f.deleteTemplate(temTable)
