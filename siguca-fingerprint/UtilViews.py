@@ -159,7 +159,7 @@ class UtilViews:
             self.viewMessage("Password is incorrect.", "orange")
             self.viewSession()
         elif result == "faildPermission":
-            self.viewMessage("Permissions error.", "red")
+            self.viewMessage("Access denied... Please contact the system administrator.", "red")
             self.viewSession()
         else:
             self.viewAdmin()
@@ -233,10 +233,10 @@ class UtilViews:
         self.lblImg2 = Label(self.frame,image=self.photo,bd=0).place(x=-150, y=50)
 
         #Boton para continuar
-        btnIngresar = Button(self.frame, text="Mark", command=lambda: self.ingresar("mark"), fg="white", activeforeground="#ffffff", activebackground="#00aa00", bg="green",width=17, height=2, bd=2, font="Helveltica 15 bold").place(x=470, y=200)
+        btnIngresar = Button(self.frame, text="Start", command=lambda: self.ingresar("mark"), fg="white", activeforeground="#ffffff", activebackground="#00aa00", bg="green",width=17, height=2, bd=2, font="Helveltica 15 bold").place(x=470, y=200)
         
         #Boton para ingresar al modulo administrativo
-        btnConf = Button(self.frame, text="Log in", command=lambda: self.ingresar("admin"), fg="#bbbbbb", activeforeground="white", activebackground="green", bg="#222222",width=14, height=2, bd=1, font="Helveltica 12 bold").place(x=505, y=270)
+        btnConf = Button(self.frame, text="Admin login", command=lambda: self.ingresar("admin"), fg="#bbbbbb", activeforeground="white", activebackground="green", bg="#222222",width=14, height=2, bd=1, font="Helveltica 12 bold").place(x=505, y=270)
 
         self.root.mainloop()#Muestra la ventana
 
@@ -289,32 +289,32 @@ class UtilViews:
         #Se crea el entorno grafico  para realizar las marcas
         self.initFrame()
     
-        button = Button(self.frame,text="       Entry        ", command = lambda: self.actionMark(1),fg="white",activeforeground="white",activebackground="#446644",bg="green",width=22,height=3,bd=3,font="Helveltica 17 bold")
+        button = Button(self.frame,text="    Punch in       ", command = lambda: self.actionMark(1),fg="white",activeforeground="white",activebackground="#446644",bg="green",width=30,height=3,bd=2,font="Helveltica 17 bold")
     
-        button1 = Button(self.frame,text="      Output        ", command =lambda:  self.actionMark(6),fg="white",activeforeground="white",activebackground="#446644",bg="green",width=22,height=3,bd=3,font="Helveltica 17 bold")
+        button1 = Button(self.frame,text="   Punch out      ", command =lambda:  self.actionMark(6),fg="white",activeforeground="white",activebackground="#446644",bg="green",width=30,height=3,bd=2,font="Helveltica 17 bold")
     
-        button2 = Button(self.frame,text="   Recess output    ", command =lambda:  self.actionMark(2),fg="white",activeforeground="white",activebackground="#cac251",bg="orange",width=22,height=3,bd=3,font="Helveltica 17 bold")
+        button2 = Button(self.frame,text="     Break in     ", command =lambda:  self.actionMark(2),fg="white",activeforeground="white",activebackground="#cac251",bg="orange",width=30,height=3,bd=2,font="Helveltica 17 bold")
         
-        button3 = Button(self.frame,text="    Recess entry    ", command =lambda:  self.actionMark(3),fg="white",activeforeground="white",activebackground="#cac251",bg="orange",width=22,height=3,bd=3,font="Helveltica 17 bold")
+        button3 = Button(self.frame,text="     Break out    ", command =lambda:  self.actionMark(3),fg="white",activeforeground="white",activebackground="#cac251",bg="orange",width=30,height=3,bd=2,font="Helveltica 17 bold")
         
-        button4 = Button(self.frame,text="    Lunch output    ", command =lambda:  self.actionMark(4),fg="white",activeforeground="white",activebackground="#4444ff",bg="blue",width=22,height=3,bd=3,font="Helveltica 17 bold")
+        button4 = Button(self.frame,text="   Out to lunch   ", command =lambda:  self.actionMark(4),fg="white",activeforeground="white",activebackground="#4444ff",bg="blue",width=30,height=3,bd=2,font="Helveltica 17 bold")
         
-        button5 = Button(self.frame,text="     Lunch entry    ", command =lambda: self.actionMark(5), fg="white",activeforeground="white",activebackground="#4444ff",bg="blue",width=22,height=3,bd=3,font="Helveltica 17 bold")
+        button5 = Button(self.frame,text="   In from lunch  ", command =lambda: self.actionMark(5), fg="white",activeforeground="white",activebackground="#4444ff",bg="blue",width=30,height=3,bd=2,font="Helveltica 17 bold")
 
-        button6 = Button(self.frame,text="Cancel",command=lambda: self.actionMark("cancel"),fg="white",activeforeground="white",activebackground="red",bg="#ff4444",width=47,height=3,bd=3,font="Helveltica 17 bold")
+        button6 = Button(self.frame,text="Cancel",command=lambda: self.actionMark("cancel"),fg="white",activeforeground="white",activebackground="red",bg="#ff4444",width=65,height=3,bd=2,font="Helveltica 17 bold")
     
-        button.grid(row=1,column=1)
-        button1.grid(row=1,column=2)
-        button2.grid(row=2,column=1)
-        button3.grid(row=2,column=2)
-        button4.grid(row=3,column=1)
-        button5.grid(row=3,column=2)
-        button6.grid(row=4,column=1, columnspan=15)
+        button.grid(row=2,column=1)
+        button1.grid(row=2,column=2)
+        button2.grid(row=3,column=1)
+        button3.grid(row=3,column=2)
+        button4.grid(row=4,column=1)
+        button5.grid(row=4,column=2)
+        button6.grid(row=5,column=1, columnspan=10)
 
     #------- Vista para para Iniciar sesion ---------
     def viewSession(self):
         self.initFrame()
-        lblTitle = Label(self.frame,text="Enter the requested data.", bd="2",bg= "#000000", fg="#55aa55", font="Helveltica 25 bold").place(x=200,y=2)
+        lblTitle = Label(self.frame,text="Please enter your credentials.", bd="2",bg= "#000000", fg="#55aa55", font="Helveltica 25 bold").place(x=200,y=2)
         lblFromUser = Label(self.frame,text="User",bd="2", bg= "#000000", fg="#55aa55", font="Helveltica 15 bold").place(x=10,y=70)
 
         txtUser = Entry(self.frame,fg="#888888", bg="#333333", font="Helveltica 20 bold",selectbackground="#999999",selectforeground="#ffffff",selectborderwidth=1, justify="center")
@@ -332,13 +332,13 @@ class UtilViews:
     #------- Vista para administrar el fingerprint ---------
     def viewAdmin(self):
         self.initFrame()
-        lblTitle = Label(self.frame,text="Select one of the options.",bd="2",bg= "#000000", fg="#55aa55", font="Helveltica 20 bold").place(x=150,y=50)
+        lblTitle = Label(self.frame,text="Please select one of the following actions.",bd="2",bg= "#000000", fg="#55aa55", font="Helveltica 20 bold").place(x=150,y=50)
         
         #Actualizar huella dactilar
-        buttonUpdate = Button(self.frame,text="Update footprint",command= lambda: self.actionAdmin("update"),fg="white",activeforeground="white",activebackground="#333333",bg="#444444",width=15,height=1,bd=1,font="Helveltica 15 bold").place(x=80,y=100)
+        buttonUpdate = Button(self.frame,text="Update fingerprint",command= lambda: self.actionAdmin("update"),fg="white",activeforeground="white",activebackground="#333333",bg="#444444",width=15,height=1,bd=1,font="Helveltica 15 bold").place(x=80,y=100)
 
         #Eliminar huella dactilar        
-        buttonDelete = Button(self.frame,text="Delete footprint",command= lambda: self.actionAdmin("delete"),fg="white",activeforeground="white",activebackground="#333333",bg="#444444",width=15,height=1,bd=1,font="Helveltica 15 bold").place(x=280,y=100)
+        buttonDelete = Button(self.frame,text="Delete fingerprint",command= lambda: self.actionAdmin("delete"),fg="white",activeforeground="white",activebackground="#333333",bg="#444444",width=15,height=1,bd=1,font="Helveltica 15 bold").place(x=280,y=100)
         
         #Cancelar        
         buttonCancel = Button(self.frame,text="Exit",command= lambda: self.actionAdmin("cancel"),fg="white",activeforeground="white",activebackground="#880000",bg="#773333",width=15,height=1,bd=1,font="Helveltica 15 bold").place(x=480,y=100)
@@ -347,7 +347,7 @@ class UtilViews:
     def viewGetUser(self, listUser, action):
         self.initFrame()
         
-        lblTitle = Label(self.frame,text="Select a user.",bd="2",bg= "#000000", fg="#55aa55", font="Helveltica 25 bold").place(x=150,y=30)
+        lblTitle = Label(self.frame,text="Please select an user.",bd="2",bg= "#000000", fg="#55aa55", font="Helveltica 25 bold").place(x=150,y=30)
         
         #Muestra los roles del usuario al cual le pertenece el llavin
         scroll = Scrollbar(self.frame,width=50, bg="orange")
