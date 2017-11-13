@@ -33,7 +33,7 @@ Usuario.findOne({ 'tipo' :  'Administrador' }, function (err, user) {
             apellido2: 'Solutions',
             email: 'soporte@greencore.co.cr',
             cedula: 0,
-            codTarjeta: 0,
+            codTarjeta: -1,
             departamentos: {
                 nombre: 'adminDefault'
             },
