@@ -108,7 +108,6 @@ $('#agregarEmpleado').click(function(){
             cedula:{required:true,numeros:true},
             apellido1:{required:true,letras:true},
             apellido2:{required:true,letras:true},
-            email:{required:true,email:true},
             codTarjeta:{required:true,numeros:true},
             username:{required:true},
             password:{required:true}
