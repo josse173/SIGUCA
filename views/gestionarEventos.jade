@@ -9,7 +9,7 @@ block content
       div.filter
         h3 Filtros   
         table
-          form(role='form', method="POST", action="/filtrarEventos/")
+          form(role='form', method="POST", action="/filtrarEventos/todosEventos")
             td
               select.form-control#selectFiltro.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro") 
                 option(value= "todos|gestionarEventos") Todos los usuarios
