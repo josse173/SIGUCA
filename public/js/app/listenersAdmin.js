@@ -118,7 +118,6 @@ $('#agregarEmpleado').click(function(){
             cedula:{required:'El campo es requerido'},
             apellido1:{required:'El campo es requerido'},
             apellido2:{required:'El campo es requerido'},
-            email:{required:'El campo es requerido',email:'Formato inválido'},
             codTarjeta:{required:'El campo es requerido'},
             username:{required:'El campo es requerido'},
             username:{required:'El campo es requerido'},
