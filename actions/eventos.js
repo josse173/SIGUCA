@@ -416,21 +416,21 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
   }
 
   //Si el filtrado es por horas
-  if(filtrado && filtrado == "horas" ){
+  if(filtrado && filtrado == "horas" || filtrado=="todosEventos" ){
     filtro.horasEmpleado = listaSumada;
     filtro.cierreUsuarios = cList;
     
   }
 
   //Si el filtrado es por justificaciones
-  if(filtrado && filtrado == "justificaciones" ){
+  if(filtrado && filtrado == "justificaciones" || filtrado=="todosEventos"  ){
     filtro.justificaciones = util.unixTimeToRegularDate(justificaciones.filter(function(m){
       return m.usuario;
     }), true);
   }
     
   //Si el filtrado es por extras
-  if(filtrado && filtrado == "extras" ){
+  if(filtrado && filtrado == "extras"  || filtrado=="todosEventos" ){
     
     filtro.extras = util.unixTimeToRegularDate(extras.filter(function(m){
       return m.usuario;
