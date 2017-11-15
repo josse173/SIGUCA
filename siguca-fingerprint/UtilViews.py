@@ -13,7 +13,7 @@ import socket
 #Clase dedicada a administrar las distintas vistas del sistema
 class UtilViews:
     
-    server_ip="10.42.22.176"
+    server_ip="10.42.22.175"
     app_port="3000"
 
     '''
@@ -253,7 +253,12 @@ class UtilViews:
     def viewGetFingerprint(self):
         print "Vista obtiene finger print"
         self.initFrame()
-        lblTitle = Label(self.frame,text="Place your finger on the sensor.",bd="2",bg= "#000000", fg="#55aa55", font="Helveltica 20 bold").place(x=200,y=200)
+
+        #Muestra la imagen
+        self.photo = UtilImg().getImageURL("dedo.png",self.frame)
+        self.lblImg2 = Label(self.frame,image=self.photo,bd=0).place(x=300, y=50)
+
+        lblTitle = Label(self.frame,text="Place your finger on the sensor.",bd="2",bg= "#000000", fg="#55aa55", font="Helveltica 20 bold").place(x=180,y=400)
         self.root.update()
         self.root.after(0, lambda: self.accionBuscaFinger())
 
@@ -261,7 +266,12 @@ class UtilViews:
     def viewGetFingerprintUpdate(self):
         print "Vista obtiene finger print para actualizar"
         self.initFrame()
-        lblTitle = Label(self.frame,text="Place your finger on the sensor.",bd="2",bg= "#000000", fg="#55aa55", font="Helveltica 20 bold").place(x=175,y=200)
+
+         #Muestra la imagen
+        self.photo = UtilImg().getImageURL("dedo.png",self.frame)
+        self.lblImg2 = Label(self.frame,image=self.photo,bd=0).place(x=300, y=50)
+
+        lblTitle = Label(self.frame,text="Place your finger on the sensor.",bd="2",bg= "#000000", fg="#55aa55", font="Helveltica 20 bold").place(x=175,y=400)
         self.root.update()
         self.root.after(0, lambda: self.accionBuscaFingerActualizar())
 
@@ -270,7 +280,12 @@ class UtilViews:
     def viewSaveFingerprint(self):
         print "Vista, verifica huella y la actualiza"
         self.initFrame()
-        lblTitle = Label(self.frame,text="Put your finger back on the sensor.",bd="2",bg= "#000000", fg="#55aa55", font="Helveltica 20 bold").place(x=125,y=200)
+
+        #Muestra la imagen
+        self.photo = UtilImg().getImageURL("dedo.png",self.frame)
+        self.lblImg2 = Label(self.frame,image=self.photo,bd=0).place(x=300, y=50)
+
+        lblTitle = Label(self.frame,text="Put your finger back on the sensor.",bd="2",bg= "#000000", fg="#55aa55", font="Helveltica 20 bold").place(x=155,y=400)
         self.root.update()
         self.root.after(0, lambda: self.accionActualizaHuella())
 
