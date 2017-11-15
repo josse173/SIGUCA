@@ -56,7 +56,7 @@ exports.conteoJustificaciones=function(usuario,cb){
 			}
 
 		}//fin del if que pregunta si existe el empleado.
-		Justificaciones.find({usuario:{$in:identificadores},estado:"Incompleto"},function(error,cantidad){
+		Justificaciones.find({usuario:{$in:identificadores},estado:"Pendiente"},function(error,cantidad){
 			if(cantidad){
 				for(var i=0;i<usuariosConDepartamento.length;i++){
 					var contador=0;
@@ -121,7 +121,7 @@ exports.conteoJustificacionesTotal=function(usuario,cb){
 			}
 
 		}//fin del if que pregunta si existe el empleado.
-		Justificaciones.find({usuario:{$in:identificadores},estado:"Incompleto"},function(error,cantidad){
+		Justificaciones.find({usuario:{$in:identificadores},estado:"Pendiente"},function(error,cantidad){
 			if(cantidad){
 				for(var i=0;i<usuariosConDepartamento.length;i++){
 					for (var j=0;j<cantidad.length;j++) {

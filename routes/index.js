@@ -74,9 +74,11 @@ module.exports = function(app, io) {
         
         crudJustificaciones.conteoJustificaciones(req.user,function (conteoJustificaciones){
             if(conteoJustificaciones){
+                req.user.tipo = req.session.name;
                 res.render('justificacionesPendientes',{
                     usuario:req.user,
-                    arrayJustificaciones:conteoJustificaciones
+                    arrayJustificaciones:conteoJustificaciones,
+                    
                 })
             }
         });
