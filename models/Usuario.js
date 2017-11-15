@@ -50,7 +50,7 @@ var SchemaUsuario = new Schema({
    default: ''
  },
  cedula: {
-   type: Number,
+   type: String,
    default: 0
  },
  fechaCreacion: {
