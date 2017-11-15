@@ -106,8 +106,6 @@ $('#agregarEmpleado').click(function(){
         rules:{
             nombre:{required:true,letras:true},
             cedula:{required:true,numeros:true},
-            apellido1:{required:true,letras:true},
-            apellido2:{required:true,letras:true},
             codTarjeta:{required:true,numeros:true},
             username:{required:true},
             password:{required:true}
@@ -115,8 +113,6 @@ $('#agregarEmpleado').click(function(){
         messages:{
             nombre:{required:'El campo es requerido'},
             cedula:{required:'El campo es requerido'},
-            apellido1:{required:'El campo es requerido'},
-            apellido2:{required:'El campo es requerido'},
             codTarjeta:{required:'El campo es requerido'},
             username:{required:'El campo es requerido'},
             username:{required:'El campo es requerido'},
