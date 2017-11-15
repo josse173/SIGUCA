@@ -104,17 +104,10 @@ $('#agregarEmpleado').click(function(){
     $('#agregarEmpleadoFormulario').validate({
         
         rules:{
-            nombre:{required:true,letras:true},
-            cedula:{required:true,numeros:true},
-            codTarjeta:{required:true,numeros:true},
             username:{required:true},
             password:{required:true}
         },
         messages:{
-            nombre:{required:'El campo es requerido'},
-            cedula:{required:'El campo es requerido'},
-            codTarjeta:{required:'El campo es requerido'},
-            username:{required:'El campo es requerido'},
             username:{required:'El campo es requerido'},
             password:{required:'El campo es requerido'}
         }
