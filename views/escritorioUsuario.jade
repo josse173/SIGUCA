@@ -120,13 +120,24 @@
     h4.headerFont Pendientes de revisar 
     ul.list-group
       li.list-group-item
-        a(href='/gestionarEventos')
+        a(href='/gestionarEventos/')
           span.badge #{soliCount}
           |   Solicitudes
       li.list-group-item
         a(href='/gestionarEventos')
           span.badge #{justCount} 
           |   Justificaciones
+
+       li.list-group-item
+        a(href='/justificacionesPendientes')
+          span.badge #{contJust} 
+          |   Justificaciones pendientes
+
+  h4.headerFont Pendientes de justicar 
+  ul.list-group
+    a(href='/justificacionesPendientes')
+      span.badge #{contJust} 
+      |   Justificaciones pendientes
 
   h4.headerFont Acciones 
   ul.list-group

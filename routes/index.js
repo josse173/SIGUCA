@@ -70,6 +70,18 @@ module.exports = function(app, io) {
     });
 
  
+    app.get('/justificacionesPendientes',function(req,res){
+        
+        crudJustificaciones.conteoJustificaciones(req.user,function (conteoJustificaciones){
+            if(conteoJustificaciones){
+                res.render('justificacionesPendientes',{
+                    usuario:req.user,
+                    arrayJustificaciones:conteoJustificaciones
+                })
+            }
+        });
+       
+    });
    
     //var upload = multer({storage: 'pru/'});
    // app.post('/imagen',upload.single('myimage'),function(req,res,next){
@@ -138,7 +150,7 @@ module.exports = function(app, io) {
 
     //******************************************************************************
     /*
-    *  Se cuentan las solicitudes y justificaciones pendientes y se filtran por supervisor
+    *  Lleva al escritorio de supervisor
     */
     app.get('/escritorio', autentificado, escritorio_actions.escritorio);
 

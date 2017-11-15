@@ -474,7 +474,6 @@ function marcasPorDias(marcas,cb){
   var entro=false;
   var ordenadas=new Array();
   var temporal = new Array();
-  console.log(marcas[0]);
   for (var i = 0; i <marcas.length; i++){
     if (primeraVez==0){
         var objMarcas = new Object();

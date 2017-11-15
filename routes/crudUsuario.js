@@ -407,7 +407,10 @@ exports.deleteUsuario = function(id, cb){
 	Marcas.remove({usuario:id}, function (err, marcas) { 
 	});
 	
-	Solicitudes.remove({usuario:id}, function (err, marcas) { 
+	Solicitudes.remove({usuario:id}, function (err, solicitudes) { 
+	});
+	
+	Vacaciones.remove({usuario:id}, function (err, vacaciones) { 
 	});
 	
 

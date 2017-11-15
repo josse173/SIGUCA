@@ -11,13 +11,14 @@ var CierrePersonal = require('../models/CierrePersonal');
 var util = require('../util/util');
 var crud = require('../routes/crud');
 var crudUsuario = require('../routes/crudUsuario');
+var crudJustificaciones = require('../routes/crudJustificaciones');
 var config 			= require('../config');
 var HorarioFijo = require('../models/HorarioFijo');
 var HorarioPersonalizado = require('../models/HorarioEmpleado');
 var Vacaciones = require('../models/Vacaciones');
-
 module.exports = {
 	escritorio : function (req, res) {
+		var conteoJustificacionesTotal=0;
 		req.user.tipo = req.session.name;
 		if (req.session.name == "Supervisor") {
 			var epochGte = moment().hours(0).minutes(0).seconds(0).milliseconds(0);
@@ -75,20 +76,46 @@ module.exports = {
 													if(req.user.tipo.length > 1 && req.session.name == config.empleadoProfesor){
 														arrayJust = null;
 													}
-
-													return res.render('escritorio', {
-														title: 'Escritorio Supervisor | SIGUCA',
-														departamentos: supervisor[0].departamentos, 
-														justificaciones: arrayJust, 
-														solicitudes: soli,
-														justCount: justCount.length, 
-														soliCount: soliCount.length,
-														todos: array,
-														usuario: req.user,
-														marcas: marcas,
-														cierreUsuarios: cierreUsuarios,
-														//horasSemanales: horasSemanales
+													
+													
+													crudJustificaciones.conteoJustificacionesTotal(req.user,function (conteoTotal){
+														
+														if(conteoTotal&& conteoTotal>0){
+															conteoJustificacionesTotal=conteoTotal;
+															
+															return res.render('escritorio', {
+																title: 'Escritorio Supervisor | SIGUCA',
+																departamentos: supervisor[0].departamentos, 
+																justificaciones: arrayJust, 
+																solicitudes: soli,
+																justCount: justCount.length, 
+																soliCount: soliCount.length,
+																todos: array,
+																usuario: req.user,
+																marcas: marcas,
+																cierreUsuarios: cierreUsuarios,
+																contJust:conteoJustificacionesTotal
+																//horasSemanales: horasSemanales
+															});
+														}else{
+															return res.render('escritorio', {
+																title: 'Escritorio Supervisor | SIGUCA',
+																departamentos: supervisor[0].departamentos, 
+																justificaciones: arrayJust, 
+																solicitudes: soli,
+																justCount: justCount.length, 
+																soliCount: soliCount.length,
+																todos: array,
+																usuario: req.user,
+																marcas: marcas,
+																cierreUsuarios: cierreUsuarios,
+																contJust:0
+																//horasSemanales: horasSemanales
+															});
+														}
 													});
+												   
+													
 					                               // });//Supervisor
 					                            });//Horas Semanales
 					                        });//Departamentos    
