@@ -416,21 +416,21 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
   }
 
   //Si el filtrado es por horas
-  if(filtrado && filtrado == "horas" || req.route.path.substring(0, 9) !=='/reportes'){
+  if(filtrado && filtrado == "horas" ){
     filtro.horasEmpleado = listaSumada;
     filtro.cierreUsuarios = cList;
     
   }
 
   //Si el filtrado es por justificaciones
-  if(filtrado && filtrado == "justificaciones" || req.route.path.substring(0, 9) !=='/reportes'){
+  if(filtrado && filtrado == "justificaciones" ){
     filtro.justificaciones = util.unixTimeToRegularDate(justificaciones.filter(function(m){
       return m.usuario;
     }), true);
   }
     
   //Si el filtrado es por extras
-  if(filtrado && filtrado == "extras" || req.route.path.substring(0, 9) !=='/reportes'){
+  if(filtrado && filtrado == "extras" ){
     
     filtro.extras = util.unixTimeToRegularDate(extras.filter(function(m){
       return m.usuario;
