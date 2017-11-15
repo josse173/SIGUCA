@@ -40,6 +40,10 @@ function marca (ipOrigen,tipoUsuario, marca, cb) {
 		epochTimeGte = date.hours(0).minutes(0).seconds(0).unix(),
 		epochTimeLte = date.hours(23).minutes(59).seconds(59).unix();
 		marca.epoch = epochTime;
+		if(!marca.dispositivo){
+			marca.dispositivo="Computadora";
+		}
+		
 		marca.ipOrigen=ipOrigen;
 		
 		var newMarca = Marca(marca);
@@ -267,7 +271,7 @@ exports.rfidReader = function(tipoUsuario, codTarjeta, tipoMarca, ip, cb) {
 			tipo = 'Salida';
 		} else tipo = 'error';
 
-		marca(ip, tipoUsuario, {usuario: usuario.id, tipoMarca: tipo,tipoUsuario: tipoUsuario}, 
+		marca(ip, tipoUsuario, {usuario: usuario.id, tipoMarca: tipo,tipoUsuario: tipoUsuario,dispositivo:"Pi"}, 
 			function(msj){					
 				return cb(msj);
 			});

@@ -33,13 +33,15 @@
             tr
               th(data-sort-ignore="true") Tipo
               th(data-sort-ignore="true" data-type="numeric" ) Hora
+              
+             
           tbody.marcasDetalle
             each marca, i in marcas
               case marca.tipoMarca
                 when "Entrada"
                   tr
                     td Entrada
-                    td(data-value=marca.epoch) #{marca.fecha}
+                    td(data-value=marca.epoch) #{marca.fecha}    
                 when "Salida a Receso"
                   tr
                     td Salida a Receso
@@ -77,11 +79,18 @@
             tr
               th(data-sort-ignore="true") Tipo
               th(data-sort-ignore="true") Hora
+              th Dispositivo
           tbody.marcasDetalle#marcasBody
             each marca, i in marcas
               tr
                 td #{marca.tipoMarca}
                 td #{marca.fecha}
+                if(marca.dispositivo=="Computadora")
+                  td 
+                    img(src='/images/compu.png' height="50" width="auto")#CompuLogo
+                else
+                  td
+                    img(src='/images/ras.png' height="50" width="auto")#PiLogo
   div.clearfix
   br
   .col-lg-offset-msj.col-md-offset-1
@@ -111,13 +120,21 @@
     h4.headerFont Pendientes de revisar 
     ul.list-group
       li.list-group-item
-        a(href='/gestionarEventos')
+        a(href='/gestionarEventos/extras')
           span.badge #{soliCount}
           |   Solicitudes
       li.list-group-item
-        a(href='/gestionarEventos')
+        a(href='/gestionarEventos/justificaciones')
           span.badge #{justCount} 
           |   Justificaciones
+
+     
+
+    h4.headerFont Pendientes de justicar 
+    ul.list-group
+      a(href='/justificacionesPendientes')
+        span.badge #{contJust} 
+        |   Justificaciones pendientes
 
   h4.headerFont Acciones 
   ul.list-group

@@ -1,0 +1,31 @@
+extends layout
+
+block content
+  .container
+    
+
+    if(arrayJustificaciones)
+      if(arrayJustificaciones!= 0)
+        br
+        h3 Justificaciones pendientes
+        .tableSolicitudes.footable
+          table#extraPDF 
+              thead
+                tr
+                  th(data-hide="phone,small,medium" data-sort-ignore="true") Usuario
+                  th(data-hide="phone,small,medium" data-sort-ignore="true") Cantidad
+                  
+              tbody
+                each empleado, i in arrayJustificaciones
+                  tr
+
+                    td #{empleado.empleado.nombre} #{empleado.empleado.apellido1}  #{empleado.empleado.apellido2} 
+                    td #{empleado.empleado.contadorJustificaciones} 
+               
+      else
+        h3 Justificaciones pendientes
+        p No se han encontrado registros  
+               
+block sigucaJS
+  script(src="/js/components/mailgun_validator.js")
+  script(src="/js/components/generarPassword.js")

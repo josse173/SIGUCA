@@ -266,7 +266,7 @@ function ejecutarCierre(){
     var contador=0;
     //Se realiza el cierre para todos los usuarios menos el tipo administrador
     var entro =false;
-    Usuario.find({},{_id:1, nombre:1,horarioFijo:1,horario:1,horarioEmpleado:1,tipo:1}).
+    Usuario.find({estado:"Activo"},{_id:1, nombre:1,horarioFijo:1,horario:1,horarioEmpleado:1,tipo:1}).
     populate("horarioFijo").exec(
         function(err, usuarios){
             if(!err){

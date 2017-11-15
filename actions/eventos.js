@@ -37,7 +37,7 @@ module.exports = {
       var marcaQuery = {};
       var vacacionesQuery = {};
       var cierreQuery = {};//{"usuarios.tiempo.horas":{"$gte":0}};
-      var usuarioQuery = {tipo:{'$nin': ['Administrador', "Supervisor"]}};
+      var usuarioQuery = {estado:"Activo",tipo:{'$nin': ['Administrador', "Supervisor"]}};
       var populateQuery = {
         path: 'usuario'
       };
@@ -416,21 +416,21 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
   }
 
   //Si el filtrado es por horas
-  if(filtrado && filtrado == "horas" || req.route.path.substring(0, 9) !=='/reportes'){
+  if(filtrado && filtrado == "horas" ){
     filtro.horasEmpleado = listaSumada;
     filtro.cierreUsuarios = cList;
     
   }
 
   //Si el filtrado es por justificaciones
-  if(filtrado && filtrado == "justificaciones" || req.route.path.substring(0, 9) !=='/reportes'){
+  if(filtrado && filtrado == "justificaciones" ){
     filtro.justificaciones = util.unixTimeToRegularDate(justificaciones.filter(function(m){
       return m.usuario;
     }), true);
   }
     
   //Si el filtrado es por extras
-  if(filtrado && filtrado == "extras" || req.route.path.substring(0, 9) !=='/reportes'){
+  if(filtrado && filtrado == "extras" ){
     
     filtro.extras = util.unixTimeToRegularDate(extras.filter(function(m){
       return m.usuario;
@@ -474,7 +474,6 @@ function marcasPorDias(marcas,cb){
   var entro=false;
   var ordenadas=new Array();
   var temporal = new Array();
-  console.log(marcas[0]);
   for (var i = 0; i <marcas.length; i++){
     if (primeraVez==0){
         var objMarcas = new Object();

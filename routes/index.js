@@ -70,6 +70,18 @@ module.exports = function(app, io) {
     });
 
  
+    app.get('/justificacionesPendientes',function(req,res){
+        
+        crudJustificaciones.conteoJustificaciones(req.user,function (conteoJustificaciones){
+            if(conteoJustificaciones){
+                res.render('justificacionesPendientes',{
+                    usuario:req.user,
+                    arrayJustificaciones:conteoJustificaciones
+                })
+            }
+        });
+       
+    });
    
     //var upload = multer({storage: 'pru/'});
    // app.post('/imagen',upload.single('myimage'),function(req,res,next){
@@ -138,7 +150,7 @@ module.exports = function(app, io) {
 
     //******************************************************************************
     /*
-    *  Se cuentan las solicitudes y justificaciones pendientes y se filtran por supervisor
+    *  Lleva al escritorio de supervisor
     */
     app.get('/escritorio', autentificado, escritorio_actions.escritorio);
 
@@ -177,17 +189,18 @@ module.exports = function(app, io) {
     *  Carga las justificaciones, solicitudes de horas extra y solicitudes de permisos pendientes, 
     *  a cada consulta se le realiza la conversion de epoch a la CST Standard.
     */
-    app.get('/gestionarEventos', autentificado, event_actions.filtrarEventos);
+    app.get('/gestionarEventos/:filtrado', autentificado, event_actions.filtrarEventos);
 
     /*
     *  Carga las justificaciones, solicitudes de horas extra y solicitudes de permisos NO pendientes,
     *  a cada consulta se le realiza la conversión de epoch a la CST Standard.
     *  
     */
+    
     app.get('/reportes', autentificado, event_actions.filtrarEventos);
 
     app.post('/reportes', autentificado, event_actions.filtrarEventos);
-
+    
     //Obtiene el filtrado elegido
     app.get('/reportes/:filtrado', autentificado, event_actions.filtrarEventos);
     app.post('/reportes/:filtrado', autentificado, event_actions.filtrarEventos);
@@ -585,7 +598,7 @@ module.exports = function(app, io) {
     *  Obtiene un usuario
     */
     app.post('/empleado/tipo/get', function (req, res) {
-        Usuario.findOne({username:req.body.username2}, function (err, user) {
+        Usuario.findOne({username:req.body.username2,estado:"Activo"}, function (err, user) {
             if (err || (user && !user.validPassword(req.body.password2))) { return res.json(err) }
             res.json(user);
         });

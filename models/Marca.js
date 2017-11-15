@@ -24,9 +24,13 @@ var SchemaMarca = new Schema({
         type: String,
         default: ""
     },
-    ipOrigen: { // En el caso de que el usuario tenga varios roles, aquí se va a especificar el tipo al cual pertenece esta marca
+    ipOrigen: { // Si es de la pi almacena la ip, si es otro dispositivo mac address, dispositivos iphone se estan omitiendo
         type: String,
         default: "Ip desconocida"
+    },
+    dispositivo: { // Dispositivo desde el que se realiza la marca
+        type: String,
+        default: ""
     },
 });
 
