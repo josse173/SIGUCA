@@ -23,9 +23,8 @@ exports.addMarca = function(ipOrigen,tipoUsuario,m, cb){
 
 function saveMarca(m, cb, msg){
 	m.save(function (err, marca) {
-		var msjOk = "Marca registrada correctamente.";
-		var msjError = "No se pudo contactar con el sistema. \n"+
-		"El error ocurrió al realizar marca y esta no se registró.";
+		var msjOk = "Success check.";
+		var msjError = "Unable to connect the system.";
 		//
 		err ? cb(msjError, msg) : cb(msjOk, msg);
 	});
@@ -65,7 +64,7 @@ function marca (ipOrigen,tipoUsuario, marca, cb) {
 							saveMarca(newMarca,cb,msg);
 						});
 				}
-				else cb("La marca de entrada fue registrada anteriormente.");
+				else cb("ERROR, The check of punch in was previously registered.");
 			}
 			else if(newMarca.tipoMarca=="Salida"){
 				if(marcas.entrada && !marcas.salida
@@ -89,8 +88,7 @@ function marca (ipOrigen,tipoUsuario, marca, cb) {
 					
 					return msgTem;
 				}
-				else cb("La marca de salida no fue registrada, ya que fue registrada anteriormente,"+
-					"se encuentra en almuerzo o en receso.");
+				else cb("ERROR, The check of punch in was previously registered.");
 			}
 			//
 			else if(newMarca.tipoMarca=="Salida a Receso"){
@@ -106,9 +104,7 @@ function marca (ipOrigen,tipoUsuario, marca, cb) {
 						//
 					return saveMarca(newMarca,cb);
 				}
-				else cb("La marca de salida a receso no fue registrada, "+
-					"ya que no ha marcado entrada, ya marcó la salida o "+
-					"se encuentra en almuerzo o en otro receso");
+				else cb("ERROR, has not checked in, has already checked out or is in lunch or another break.");
 			}
 			//
 			else if(newMarca.tipoMarca=="Entrada de Receso"){
@@ -125,9 +121,7 @@ function marca (ipOrigen,tipoUsuario, marca, cb) {
 						//
 					return saveMarca(newMarca,cb);
 				}
-				else cb("La marca de entrada a receso no fue registrada, "+
-					"ya que no ha marcado entrada, ya marcó la salida, "+
-					"se encuentra en almuerzo o no ha marcado para salir a receso.");
+				else cb("ERROR, has not marked entry, or marked the exit, is at lunch or has not marked to go to recess.");
 			}
 			//
 			else if(newMarca.tipoMarca=="Salida al Almuerzo"){
@@ -141,9 +135,7 @@ function marca (ipOrigen,tipoUsuario, marca, cb) {
 						//
 					return saveMarca(newMarca,cb);
 				}
-				else cb("La marca de salida a almuerzo no fue registrada, "+
-					"ya que no ha marcado entrada, ya marcó la salida o "+
-					"ya se encuentra en almuerzo o receso.");
+				else cb("ERROR, has not checked in, has already checked the exit or is already in lunch or recess.");
 			}
 			//
 			else if(newMarca.tipoMarca=="Entrada de Almuerzo"){
@@ -157,9 +149,7 @@ function marca (ipOrigen,tipoUsuario, marca, cb) {
 						//
 					return saveMarca(newMarca,cb);
 				}
-				else cb("La marca de entrada de almuerzo no fue registrada, "+
-					"ya que no ha marcado entrada, ya marcó la salida, "+
-					"se encuentra en receso o no ha marcado para salir a almuerzo.");
+				else cb("ERROR, has not marked entry, or marked the exit, or is in recess or has not marked to go to lunch.");
 			}
 			//
 			else if(newMarca.tipoMarca=="Entrada a extras"){
@@ -170,8 +160,7 @@ function marca (ipOrigen,tipoUsuario, marca, cb) {
 						//
 					return saveMarca(newMarca,cb);
 				}
-				else cb("La marca de entrada a horas extras no fue registrada, "+
-					"ya que no ha salido de la jornada regular.");
+				else cb("ERROR, He has not left the regular day.");
 			}
 			//
 			else if(newMarca.tipoMarca=="Salida de extras"){
@@ -183,12 +172,9 @@ function marca (ipOrigen,tipoUsuario, marca, cb) {
 						//
 						return saveMarca(newMarca,cb);
 					}
-					else cb("La marca de salida de horas extras no fue registrada, "+
-						"ya que no ha salido de la jornada regular o no ha marcado"+
-						" entrada a las horas extras.");
+					else cb("ERROR, has not left the regular day or has not marked or entry to overtime.");
 				}
-			else return cb("Surgió un error no contemplado con la marca,"+
-				"vuelva a intentarlo o contacto con el administrador");
+			else return cb("ERROR, try again.");
 		});
 		//
 	}
