@@ -12,7 +12,6 @@ block content
             th Nombre
             th Apellidos
             th(data-hide="phone") Cédula
-            th(data-hide="phone,small,medium,large") Email
             th(data-hide="phone") Tipo
             th(data-hide="phone,small,medium" data-sort-ignore="true") Departamento
             th(data-hide="phone,small,medium") Horario libre
@@ -28,8 +27,7 @@ block content
               td #{empleado.codTarjeta}
               td #{empleado.nombre}
               td #{empleado.apellido1} #{empleado.apellido2} 
-              td #{empleado.cedula} 
-              td #{empleado.email} 
+              td #{empleado.cedula}
               td
                 each tipo, t in empleado.tipo
                   ul
@@ -149,6 +147,10 @@ block content
                       select.form-control#selectDepartamentos.selectpicker(data-style="btn-success", data-width="200px", data-selected-text-format="count>2", type="text", name="departamentos", multiple="multiple") 
                         each departamento, i in departamentos
                             option(value= departamento.id) #{departamento.nombre}
+
+                    label.labelFiltro(for='fechaIngreso') Fecha Ingreso:
+                      input#fechaIngreso.form-control(style="cursor:pointer; cursor: hand;", type="text", name='fechaIngreso', readonly="readonly")
+
                   .form-group
                      label(for="passwordInput")
                        |Contraseña:

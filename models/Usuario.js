@@ -57,6 +57,10 @@ var SchemaUsuario = new Schema({
    type: Date,
    default: Date.now()
  },
+fechaIngreso: {
+  type: Number,
+  default: 0
+ },
  horarioEmpleado: {
    type: Schema.ObjectId,
    ref: 'HorarioEmpleado'
