@@ -152,21 +152,21 @@
                   label-info(name= codTarjeta) #{usuario.tipo} #{usuario.nombre} #{usuario.apellido1}
                 tr
                   td
-                    button.btnEntrada.btn.btn-success.btn-(style="width: 150px;", value = 'Entrada') Entrada
+                    button#btnEntrada.btnEntrada.btn.btn-success.btn-(style="width: 150px;", value = 'Entrada' ) Entrada
                   td
-                    button.btnSalida.btn.btn-success.btn-(style="width: 150px;", value = 'Salida') Salida
+                    button#btnSalida.btnSalida.btn.btn-success.btn-(style="width: 150px;", value = 'Salida') Salida
                 tr
                   td
-                    button.btnSalidaReceso.btn.btn-warning.btn-(style="width: 150px;", value = 'Salida a Receso') Salida a Receso 
+                    button#btnSalidaReceso.btnSalidaReceso.btn.btn-warning.btn-(style="width: 150px;", value = 'Salida a Receso') Salida a Receso 
                   td
-                    button.btnEntradaReceso.btn.btn-warning.btn-(style="width: 150px;", value = 'Entrada de Receso') Entrada de Receso
+                    button#btnEntradaReceso.btnEntradaReceso.btn.btn-warning.btn-(style="width: 150px;", value = 'Entrada de Receso') Entrada de Receso
                 
                 if(usuario.tipo != config.empleadoProfesor)
                   tr
                     td
-                      button.btnSalidaAlmuerzo.btn.btn-primary.btn-(style="width: 150px;", value = 'Salida al Almuerzo') Salida al Almuerzo
+                      button#btnSalidaAlmuerzo.btnSalidaAlmuerzo.btn.btn-primary.btn-(style="width: 150px;", value = 'Salida al Almuerzo') Salida al Almuerzo
                     td
-                      button.btnEntradaAlmuerzo.btn.btn-primary.btn-(style="width: 150px;", value = 'Entrada de Almuerzo') Entrada del Almuerzo
+                      button#btnEntradaAlmuerzo.btnEntradaAlmuerzo.btn.btn-primary.btn-(style="width: 150px;", value = 'Entrada de Almuerzo') Entrada del Almuerzo
               .form-group
                
                   button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
