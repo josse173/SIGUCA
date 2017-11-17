@@ -508,14 +508,15 @@ $("button[data-target=#editHorarioFijo]").click( function() {
         //Se crea la fecha
         if(data.fechaIngreso>0){
             var fechaIngesoTem = new Date((data.fechaIngreso*1000));
+            var result = fechaIngesoTem.getDate() + "/" + (fechaIngesoTem.getMonth()+1) + "/" + fechaIngesoTem.getFullYear();
         }else{
-            var fechaIngesoTem = "";
+            var result = "";
         }
 
         $('#nombre').val(data.nombre);            
         $('#cedula').val(data.cedula);
         $('#apellido1').val(data.apellido1);            
-        $('#fechaIngreso').val(fechaIngesoTem.getDate() + "/" + (fechaIngesoTem.getMonth()+1) + "/" + fechaIngesoTem.getFullYear());
+        $('#fechaIngreso').val(result);
         $('#apellido2').val(data.apellido2);            
         $('#email').val(data.email);            
         $('#codTarjeta').val(data.codTarjeta);            

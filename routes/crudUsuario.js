@@ -169,10 +169,14 @@ exports.getById = function(id, cb){
 exports.updateUsuario = function(data, cb){
 
 	//Se pasa la fecha a epoch
-	var splitDate1 = data.empleado.fechaIngreso.split('/');
-    var date1 = new Date(splitDate1[2], splitDate1[1]-1, splitDate1[0]);
-	var epoch = (date1.getTime() - date1.getMilliseconds())/1000;
-	data.empleado.fechaIngreso = epoch;
+	if(data.empleado.fechaIngreso != ""){
+		var splitDate1 = data.empleado.fechaIngreso.split('/');
+		var date1 = new Date(splitDate1[2], splitDate1[1]-1, splitDate1[0]);
+		var epoch = (date1.getTime() - date1.getMilliseconds())/1000;
+		data.empleado.fechaIngreso = epoch;
+	}else{
+		data.empleado.fechaIngreso = 0;
+	}
 
 	data.empleado.estado=data.empleado.estadoEmpleado;
 	delete data.empleado.estadoEmpleado;
