@@ -16,32 +16,33 @@ var Feriado = require('../models/Feriado');
 
 module.exports = {
     cierreAutomatico : new CronJob({
-       //cronTime: '* * * * * *',
+        //cronTime: '* * * * * *',
         cronTime: '00 50 23 * * 0-7',
         onTick: function() {
-                var date = moment(),
-                epochTime = date.unix(),
-                epochGte = date.hours(0).minutes(0).seconds(0).unix(),
-                epochLte = date.hours(23).minutes(59).seconds(59).unix();
+            /**
+             * Realizar cierre en la noche
+             */
 
-                Feriado.find({epoch:{"$gte":epochGte,"$lte":epochLte}}, function (err,feriado) {
-                    if(feriado.length>0){
-                        console.log("No se generan cierres ni justificaciones, dia feriado");
-                    }else{
-                          
-                          var hoy = new Date();
-                          console.log("Realizando cierre en la fecha '"+hoy+"' y notificando a usuarios");
-                          ejecutarCierre();
-                    }
-                });       
-        },
-        start: false,
-        timeZone: "America/Costa_Rica"
-    }),
-     aumentoVacacionesAutomatico : new CronJob({
-        cronTime: '00 00 00 01 * *', //Cada primero de cada mes
-        onTick: function() {
-            console.log("{======= Realizando aumento de vacaciones =======}");
+            var date = moment(),
+            epochTime = date.unix(),
+            epochGte = date.hours(0).minutes(0).seconds(0).unix(),
+            epochLte = date.hours(23).minutes(59).seconds(59).unix();
+
+            Feriado.find({epoch:{"$gte":epochGte,"$lte":epochLte}}, function (err,feriado) {
+                if(feriado.length>0){
+                    console.log("No se generan cierres ni justificaciones, dia feriado");
+                }else{
+                        
+                        var hoy = new Date();
+                        console.log("------ Realizando cierre en la fecha '"+hoy+"' ------");
+                        ejecutarCierre();
+                }
+            });
+
+            /**
+             * Realizando aumento de vacaciones
+             */
+            console.log("------ Realizando aumento de vacaciones------ ");
             crudVacaciones.updateVacacionesAutomatico();
         },
         start: false,
@@ -49,7 +50,6 @@ module.exports = {
     }),
 
     ejecutarCierrePorUsuarioAlMarcarSalida:function(tipoUsuario,id){
-    
 
     var hoy = new Date();
 
