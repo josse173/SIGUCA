@@ -1242,4 +1242,3 @@ module.exports = function(app, io) {
 };
 
 tareas_actions.cierreAutomatico.start();
-tareas_actions.aumentoVacacionesAutomatico.start(); //Aumenta automaticamente por mes las vacaciones de todos los usuarios

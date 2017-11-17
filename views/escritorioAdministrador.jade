@@ -256,9 +256,13 @@
 
                 label(for='departamento') Departamento:
                   br
-                  select.form-control#selectDepartamentos.selectpicker(data-style="btn-success", data-width="200px", data-selected-text-format="count>2", type="text", name="idDepartamento", multiple="multiple") 
+                  select.form-control#selectDepartamentos.selectpicker(data-style="btn-success", data-width="150px", data-selected-text-format="count>2", type="text", name="idDepartamento", multiple="multiple") 
                     each departamento, i in departamentos
                         option(value= departamento.id) #{departamento.nombre} 
+                
+                label.labelFiltro(for='fechaIngreso') Fecha Ingreso:
+                    input#fechaIngreso.form-control(style="cursor:pointer; cursor: hand;", type="text", name='fechaIngreso', readonly="readonly", placeholder="Fecha Ingreso" )
+                    
 
               .form-group
                 label(for="passwordInput")

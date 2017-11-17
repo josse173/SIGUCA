@@ -111,7 +111,8 @@ $('#agregarEmpleado').click(function(){
             email:{required:true,email:true},
             codTarjeta:{required:true,numeros:true},
             username:{required:true},
-            password:{required:true}
+            password:{required:true},
+            fechaIngreso:{required:true}
         },
         messages:{
             nombre:{required:'El campo es requerido'},
@@ -122,6 +123,7 @@ $('#agregarEmpleado').click(function(){
             codTarjeta:{required:'El campo es requerido'},
             username:{required:'El campo es requerido'},
             username:{required:'El campo es requerido'},
+            fechaIngreso:{required:'El campo es requerido'},
             password:{required:'El campo es requerido'}
         }
     });

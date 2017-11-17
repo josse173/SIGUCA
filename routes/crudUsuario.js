@@ -102,6 +102,17 @@ exports.addUsuario = function(us, cb){
 				departamentos: array,
 				});
 			}
+
+			//Se pasa la fecha a epoch
+			var splitDate1 = us.fechaIngreso.split('/');
+
+			var day = splitDate1[0];
+			if(parseInt(day) > 28){
+				day = 28;
+			}
+    		var date1 = new Date(splitDate1[2], splitDate1[1]-1, day);
+			var epoch = (date1.getTime() - date1.getMilliseconds())/1000;
+			newUser.fechaIngreso = epoch;
 			
 			newUser.password = Usuario.generateHash(us.password);
 			newUser.save(function (err, user) {
@@ -161,6 +172,22 @@ exports.getById = function(id, cb){
 
 
 exports.updateUsuario = function(data, cb){
+
+	//Se pasa la fecha a epoch
+	if(data.empleado.fechaIngreso != ""){
+		var splitDate1 = data.empleado.fechaIngreso.split('/');
+
+		var day = splitDate1[0];
+		if(parseInt(day) > 28){
+			day = 28;
+		}
+
+		var date1 = new Date(splitDate1[2], splitDate1[1]-1, day);
+		var epoch = (date1.getTime() - date1.getMilliseconds())/1000;
+		data.empleado.fechaIngreso = epoch;
+	}else{
+		data.empleado.fechaIngreso = 0;
+	}
 
 	data.empleado.estado=data.empleado.estadoEmpleado;
 	delete data.empleado.estadoEmpleado;
