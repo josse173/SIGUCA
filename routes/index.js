@@ -428,12 +428,51 @@ module.exports = function(app, io) {
             });
     });
 
+    //check de marcas de usuario 
+    app.post('/marcaCheck', autentificado, function (req, res) {
+        
+        var date = moment().format("DD/MM/YYYY");
+        console.log(date);
+        date=date.split("/");
+        console.log(date);
+        var epochGte = moment();
+        epochGte.year(date[2]).month(date[1]-1).date(date[0]);
+        epochGte.hour(0).minutes(0).seconds(0);
+        var epochLte = moment();
+        epochLte.year(date[2]).month(date[1]-1).date(date[0]);
+        epochLte.hour(23).minutes(59).seconds(59);
+        crudMarca.find({
+            usuario:req.user.id,
+            tipoUsuario: req.session.name,
+            epoch:{
+            "$gte":epochGte.unix(),
+            "$lte":epochLte.unix()
+        }},function(msj, marcas){
+            var m ="ok";
+            if(msj) m = msj;
+            var mcs = [];
+            var ml = util.unixTimeToRegularDate(marcas);
+            for(x in ml){
+                var obj = {};
+                obj.fecha = ml[x].fecha;
+                obj.tipoMarca = ml[x].tipoMarca;
+                mcs.push(obj);
+            }
+            res.json({result:m, marcas:mcs});
+        });
+    
+
+    });
+
+
     /*
     *  Traer marcas
     */
     app.post('/marca/get', autentificado, function (req, res) {
         if(req.body.date && req.body.date.split("/").length == 3){
+            console.log(req.body.date);
             var date = req.body.date.split("/");
+            console.log(date);
             var epochGte = moment();
             epochGte.year(date[2]).month(date[1]-1).date(date[0]);
             epochGte.hour(0).minutes(0).seconds(0);

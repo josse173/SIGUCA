@@ -56,7 +56,51 @@ function updateHorasTrabajadas(){
 }
 
 
+$('#btn-marca').click(function(){
+    $.ajax({
+        url: "/marcaCheck",
+        type: 'POST',
+        dataType : "json",
+        success: function(data) {
+        var contEntrada=0;
+        var contSalida=0;
+        for(m in data.marcas){
 
+            if(data.marcas[m].tipoMarca=='Salida'){
+                document.getElementById("btnSalida").disabled=true;
+                document.getElementById("btnEntrada").disabled=true;
+                document.getElementById("btnSalidaAlmuerzo").disabled=true;
+                document.getElementById("btnEntradaAlmuerzo").disabled=true;
+                document.getElementById("btnSalidaReceso").disabled=true;
+                document.getElementById("btnEntradaReceso").disabled=true;
+            }
+            else if(data.marcas[m].tipoMarca=='Entrada'){
+                document.getElementById("btnEntrada").disabled=true;
+            }
+           
+            else if(data.marcas[m].tipoMarca=='Salida a Receso'){
+                contSalida++;
+            }
+            else if(data.marcas[m].tipoMarca=='Entrada de Receso'){
+                contEntrada++;
+                
+            }
+            else if(data.marcas[m].tipoMarca=='Salida al Almuerzo'){
+                document.getElementById("btnSalidaAlmuerzo").disabled=true;
+            }
+            else if(data.marcas[m].tipoMarca=='Entrada de Almuerzo'){
+                document.getElementById("btnEntradaAlmuerzo").disabled=true;
+            }
+           
+        }
+        if(contSalida>contEntrada){
+            document.getElementById("btnSalidaReceso").disabled=true;
+        }
+
+        }}); 
+
+    
+});
 
 $('#btnIr').click(function(){
     $.ajax({
