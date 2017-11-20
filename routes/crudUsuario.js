@@ -12,7 +12,6 @@ Solicitudes 	= require('../models/Solicitudes'),
 Justificaciones 	= require('../models/Justificaciones'),
 Marcas 	= require('../models/Marca'),
 HorasTrabajadas 	= require('../models/CierrePersonal'),
-Vacaciones 	= require('../models/Vacaciones'),
 Cierre 			= require('../models/Cierre'),
 util 			= require('../util/util'),
 emailSIGUCA 	= 'siguca@greencore.co.cr';
@@ -435,11 +434,7 @@ exports.deleteUsuario = function(id, cb){
 	});
 	
 	Solicitudes.remove({usuario:id}, function (err, solicitudes) { 
-	});
-	
-	Vacaciones.remove({usuario:id}, function (err, vacaciones) { 
-	});
-	
+	});	
 
 	Usuario.remove({_id:id}, function (err, empleados) { 
 		if (err) return cb(err, '');

@@ -27,7 +27,6 @@
  var crudHorario = require('./crudHorario');
  var crudMarca = require('./crudMarca');
  var crudDepartamento = require('./crudDepartamento');
- var crudVacaciones = require('./crudVacaciones');
  var crudFeriado = require('./crudFeriado');
  var crud = require('./crud');
  var util = require('../util/util');
@@ -91,49 +90,6 @@ module.exports = function(app, io) {
     //    console.log('test :'+ JSON.stringify(req.files));
     //    res.end('Imagen Cargada en el servidor');
     //});
-  
-
-    //******************************************************************************
-    /*
-    *   Vacaciones
-    */
-  
-    app.get('/vacaciones', autentificado,function (req, res) {
-
-        crudVacaciones.listVacaciones(
-            function(err, listaUsuarios){
-                if(err) return res.redirect("/escritorioAdmin");
-
-                //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
-                req.user.tipo = req.session.name;
-                listaUsuarios.usuario = req.user;
-
-                return res.render("vacaciones", listaUsuarios); 
-            }
-        ); 
-    });
-
-    /**
-     * Actualiza un registro de vacaciones
-     */
-    app.post('/vacacionesUpdate',autentificado, function (req, res) {
-
-        crudVacaciones.updateVacaciones( req, function(err){
-                return res.redirect("/vacaciones");
-            }
-        ); 
-    });
-
-    /**
-     * Inserta vacaciones para un usuario que no contaba con un registro de las mismas
-     */
-    app.post('/vacacionesInsert',autentificado, function (req, res) {
-
-        crudVacaciones.insertVacaciones( req, function(err){
-                return res.redirect("/vacaciones");
-            }
-        ); 
-    });
 
     //******************************************************************************
     /*

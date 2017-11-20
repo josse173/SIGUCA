@@ -6,7 +6,6 @@ var Horario = require('../models/Horario');
 var HorarioEmpleado = require('../models/HorarioEmpleado');
 var HorarioFijo = require('../models/HorarioFijo');
 var Departamento = require('../models/Departamento');
-var Vacaciones = require('../models/Vacaciones');
 var crudFeriado=require('../routes/crudFeriado');
 var Justificaciones = require('../models/Justificaciones');
 var Solicitudes = require('../models/Solicitudes');
@@ -14,7 +13,6 @@ var Cierre = require('../models/Cierre');
 var util = require('../util/util');
 var CierrePersonal = require('../models/CierrePersonal');
 var crudUsuario = require('../routes/crudUsuario');
-var Vacaciones = require('../models/Vacaciones');
 
 module.exports = {
   filtrarEventos : function (req, res) {
@@ -35,7 +33,6 @@ module.exports = {
       var permisosQuery = {tipoSolicitudes:'Permisos'};
       //var cierresQuery = {};
       var marcaQuery = {};
-      var vacacionesQuery = {};
       var cierreQuery = {};//{"usuarios.tiempo.horas":{"$gte":0}};
       var usuarioQuery = {estado:"Activo",tipo:{'$nin': ['Administrador', "Supervisor"]}};
       var populateQuery = {
@@ -49,7 +46,6 @@ module.exports = {
         cierreQuery.epoch = marcaQuery.epoch = justQuery.fechaCreada = extraQuery.fechaCreada = permisosQuery.fechaCreada =  queryEpoch;  
       }
       if(usuarioId && usuarioId != 'todos'){
-        vacacionesQuery.usuario = usuarioId;
         justQuery.usuario = extraQuery.usuario = permisosQuery.usuario = marcaQuery.usuario = usuarioId;
         cierreQuery.usuario = usuarioId;
       }
@@ -72,7 +68,7 @@ module.exports = {
               }
               getInformacionRender(req, res, titulo, usuarios.concat(supervisores), departamentos, marcaQuery, 
                 justQuery, extraQuery, permisosQuery, cierreQuery, populateQuery, 
-                ((!err && usuario) ? (usuario.apellido1+" "+usuario.apellido2+", "+usuario.nombre) : null),vacacionesQuery);
+                ((!err && usuario) ? (usuario.apellido1+" "+usuario.apellido2+", "+usuario.nombre) : null));
             });
         });
       });
@@ -222,7 +218,7 @@ module.exports = {
 };
 
 function getInformacionRender(req, res, titulo, usuarios, departamentos, 
-  marcaQuery, justQuery, extraQuery, permisosQuery, cierreQuery, populateQuery, nombreUsuario,vacacionesQuery){
+  marcaQuery, justQuery, extraQuery, permisosQuery, cierreQuery, populateQuery, nombreUsuario){
   //Filtrar -departamento -usuario -fecha
   
     Justificaciones.find(justQuery).populate(populateQuery).exec(function(error, justificaciones){
@@ -232,7 +228,7 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos,
             //Se asigna el tipo de usuario con el cual ha iniciado sesion
             req.user.tipo = req.session.name;
             return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, null, 
-              justificaciones, extras, permisos, null, nombreUsuario,null);
+              justificaciones, extras, permisos, null, nombreUsuario);
           }
           else {
             Marca.find(marcaQuery).populate(populateQuery).exec(function(error, marcas){
@@ -249,42 +245,14 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos,
                   cierreQuery.usuario = { $in: usuarios };
                 }else if(req.body.filtro_departamento && req.body.filtro_departamento!="todos"){
                   cierreQuery.usuario = {$in: usuariosFiltradoDepartamento};
-                  vacacionesQuery.usuario = {$in: usuariosFiltradoDepartamento};
                 }
 
                 CierrePersonal.find(cierreQuery).populate("usuario").exec(function(error, cierres) {
-                  Vacaciones.find(vacacionesQuery).populate("usuario").exec(function(err,listVacaciones){
-
-                    /**
-                     * Se obtienen los usuarios filtrados SIN VACACIONES
-                     */
-                    var listaIdUsuarios = [];
-                    for(x in listVacaciones){
-                        listaIdUsuarios.push(listVacaciones[x].usuario.id);
-                    }
-                    
-                    usuarioQueryFiltrado._id = {$nin: listaIdUsuarios};
-                    if(vacacionesQuery.usuario){
-                      usuarioQueryFiltrado._id = vacacionesQuery.usuario;
-                    }else{
-                      usuarioQueryFiltrado._id = {$nin: listaIdUsuarios};
-                    }
-                    Usuario.find(usuarioQueryFiltrado,function(err, listaUsuariosSinVacaciones){
-                      var info = {
-                        listaUsuariosSinVacaciones: listaUsuariosSinVacaciones,
-                        listaVacaciones:listVacaciones
-                      };
-                      
                       //Se asigna el tipo de usuario con el cual ha iniciado sesion
                       req.user.tipo = req.session.name;
                       return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, marcas, 
-                        justificaciones, extras, permisos, cierres, nombreUsuario,info);
+                        justificaciones, extras, permisos, cierres, nombreUsuario);
                     });
-                       
-                  });
-                   
-                });
-
               });//Fin usuarios filtrados por departamento
             
             });//Marcas
@@ -296,7 +264,7 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos,
 
 
 function renderFiltro(req, res, titulo, usuario, departamentos, 
-  usuarios, marcas, justificaciones, extras, permisos, cierre, nombreUsuario,listVacacionesReporte){
+  usuarios, marcas, justificaciones, extras, permisos, cierre, nombreUsuario){
   var cList = [];
   if(cierre){
     cList = util.unixTimeToRegularDate(cierre.filter(
@@ -379,7 +347,7 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
   var filtro = {
     title: titulo,
     usuario: usuario,    
-    usuarios: usuarios,
+    usuarios: usuarios,//También se usa para mostrar las vacaciones
     departamentos: departamentos,
     nombreUsuario: nombreUsuario,
     filtradoReporte: filtrado,
@@ -415,6 +383,11 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
         
   }
 
+  //Si el filtrado es por vacaciones
+  if(filtrado && filtrado == "vacaciones" && req.route.path.substring(0, 9) =='/reportes'){
+    filtro.vacaciones = true;
+  }
+
   //Si el filtrado es por horas
   if(filtrado && filtrado == "horas" || filtrado=="todosEventos" ){
     filtro.horasEmpleado = listaSumada;
@@ -441,30 +414,13 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
     }), true);
   }
 
-  //Si el filtrado es por vacaciones
-  if(filtrado && filtrado == "vacaciones" && req.route.path.substring(0, 9) =='/reportes'){
-    filtro.reporteVacaciones = listVacacionesReporte;
-  }
-
   if(filtrado && filtrado == "Feriados" && req.route.path.substring(0, 9) =='/reportes'){
       crudFeriado.listaFeriados(function (feriados){
         filtro.feriado=feriados;
       });
    
   }
-    /**
-     * Se transforma la lista para ser usada en la consulta de vacaciones
-     */
-    var listaIdUsuarios = [];
-    for(x in filtro.permisos ){
-      listaIdUsuarios.push(filtro.permisos[x].usuario.id);
-    }
-
-    Vacaciones.find({usuario: { $in: listaIdUsuarios}},function(err, listVacaciones){
-      filtro.vacaciones = listVacaciones;//Se utiliza para mostrar el numero dias disponibles en la vista
-
-        return (titulo === 'Reportes | SIGUCA') ? res.render('reportes', filtro) : res.render('gestionarEventos', filtro); 
-    });
+  return (titulo === 'Reportes | SIGUCA') ? res.render('reportes', filtro) : res.render('gestionarEventos', filtro); 
 }
 
 

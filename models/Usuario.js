@@ -69,6 +69,10 @@ fechaIngreso: {
    type: Schema.ObjectId,
    ref: 'Horario'
  },
+  vacaciones: {
+  type: Number,
+  default: 0
+ },
   horarioFijo: {
    type: Schema.ObjectId,
    ref: 'horarioFijo'
