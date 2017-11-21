@@ -815,15 +815,10 @@ function workedHourFix(_idUser,horaEntradaP,minutosEntradaP,horaSalidaP,minutosS
 							addJustIncompleta(_idUser, "Jornada laborada menor que la establecida", 
 							"Horas trabajadas: "+ util.horaStr(obj.horas,obj.minutos)+
 							" - Horas establecidas: "+ util.horaStr(horaSalida, minutoSalida), function(){});
-					}
-						else{
-							
-							cb("");					
 						}
+					
 					}
-					else{
-						cb("");
-					}
+					
 				}
 
 				if(horaSalidaP>mOut.hour()){
