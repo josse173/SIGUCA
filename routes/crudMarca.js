@@ -644,10 +644,9 @@ function workedHourSchedule(_idUser,horarioEmpleado,mOut,cb,tipoUsuario,cantidad
 		}else{
 			if((cantidadUsuarios > 1 && tipoUsuario != config. empleadoProfesor) ||
 				(cantidadUsuarios == 1)){
-					addJustIncompleta(_idUser,"Salida antes de hora establecida", 
-											"Jornada laboral: "+ util.horaStr(horasTrabajadasFinal
-												, minutosTrabajadosFinal)+
-											" - Horas trabajadas: "+ util.horaStr(horasTrabajadas, minutosTrabajados), cb);
+					addJustIncompleta(_idUser, "Jornada laborada menor que la establecida", 
+					"Horas trabajadas: "+ util.horaStr(horasTrabajadas,minutosTrabajados)+
+					" - Horas establecidas: "+ util.horaStr(horasTrabajadasFinal,minutosTrabajadosFinal),cb);
 			}
 			
 		}
