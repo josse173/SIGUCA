@@ -987,29 +987,45 @@ function workedHour(_idUser,horario, mOut, mReal,cb){
 					obj.minutos=obj.minutos-60;
 				}
 				
+				/*
+				addJustIncompleta(_idUser, "Jornada laborada menor que la establecida", 
+				"Horas trabajadas: "+ util.horaStr(obj.horas,obj.minutos)+
+				" - Horas establecidas: "+ util.horaStr(horaSalida, minutoSalida), function(){});
 				
-			
+				*/
+
+				console.log(horaSalida);
+				console.log(minutoSalida);
+				console.log(obj.horas);
+				console.log(obj.minutos);
+
 				if(horaSalida>obj.horas){
-					addJustIncompleta(_idUser, "Salida antes de hora establecida", 
-											"Hora de salida: "+ util.horaStr(mReal.hora, mReal.minutos)+
-											" - Hora de marca: "+ util.horaStr(mOut.hour(), mOut.minutes()), cb);
-
-				}else if(obj.horas==horaSalida){
+					addJustIncompleta(_idUser, "Jornada laborada menor que la establecida", 
+					"Horas trabajadas: "+ util.horaStr(obj.horas,obj.minutos)+
+					" - Horas establecidas: "+ util.horaStr(horaSalida, minutoSalida), function(){});
+				
+				}else if(obj.horas==horaSalida &&minutoSalida>obj.minutos){
 		
-					if(minutoSalida>obj.minutos){
-						addJustIncompleta(_idUser, "Salida antes de hora establecida", 
-											"Hora de salida: "+ util.horaStr(mReal.hora, mReal.minutos)+
-											" - Hora de marca: "+ util.horaStr(mOut.hour(), mOut.minutes()), cb);
+					addJustIncompleta(_idUser, "Jornada laborada menor que la establecida", 
+					"Horas trabajadas: "+ util.horaStr(obj.horas,obj.minutos)+
+					" - Horas establecidas: "+ util.horaStr(horaSalida, minutoSalida), function(){});
 
-					}
-					else{
-						
-						cb("");					
-					}
+				
+
 				}
-				else{
-					cb("");
+
+				if(mOut.hour()<mReal.hora){
+					addJustIncompleta(_idUser, "Salida antes de hora establecida", 
+					"Hora de salida: "+ util.horaStr(mReal.hora, mReal.minutos)+
+					" - Hora de marca: "+ util.horaStr(mOut.hour(), mOut.minutes()),function(){});
+				}else if(mOut.hour()==mReal.hora &&mOut.minutes()< mReal.minutos){
+					addJustIncompleta(_idUser, "Salida antes de hora establecida", 
+					"Hora de salida: "+ util.horaStr(mReal.hora, mReal.minutos)+
+					" - Hora de marca: "+ util.horaStr(mOut.hour(), mOut.minutes()), function(){});
 				}
+				
+				
+				cb("");
 
 		});
 
