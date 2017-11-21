@@ -804,18 +804,18 @@ function workedHourFix(_idUser,horaEntradaP,minutosEntradaP,horaSalidaP,minutosS
 					cb("");
 				}else{
 					if(horaSalida>obj.horas){
-						addJustIncompleta(_idUser, "Salida antes de hora establecida", 
-												"Hora de salida: "+ util.horaStr(horaSalidaP,minutosSalidaP)+
-												" - Hora de marca: "+ util.horaStr(mOut.hour(), mOut.minutes()), cb);
-	
+					
+						addJustIncompleta(_idUser, "Jornada laborada menor que la establecida", 
+						"Horas trabajadas: "+ util.horaStr(obj.horas,obj.minutos)+
+						" - Horas establecidas: "+ util.horaStr(horaSalida, minutoSalida), function(){});
+			
 					}else if(obj.horas==horaSalida){
 			
 						if(minutoSalida>obj.minutos){
-							addJustIncompleta(_idUser, "Salida antes de hora establecida", 
-												"Hora de salida: "+ util.horaStr(horaSalidaP, minutosSalidaP)+
-												" - Hora de marca: "+ util.horaStr(mOut.hour(), mOut.minutes()), cb);
-	
-						}
+							addJustIncompleta(_idUser, "Jornada laborada menor que la establecida", 
+							"Horas trabajadas: "+ util.horaStr(obj.horas,obj.minutos)+
+							" - Horas establecidas: "+ util.horaStr(horaSalida, minutoSalida), function(){});
+					}
 						else{
 							
 							cb("");					
@@ -825,9 +825,21 @@ function workedHourFix(_idUser,horaEntradaP,minutosEntradaP,horaSalidaP,minutosS
 						cb("");
 					}
 				}
-				
+
+				if(horaSalidaP>mOut.hour()){
+
+					addJustIncompleta(_idUser, "Salida antes de hora establecida", 
+					"Hora de salida: "+ util.horaStr(horaSalidaP,minutosSalidaP)+
+					" - Hora de marca: "+ util.horaStr(mOut.hour(), mOut.minutes()), function(){});
+				}else if(horaSalidaP==mOut.hour()&& minutosSalidaP>mOut.minutes()){
+					addJustIncompleta(_idUser, "Salida antes de hora establecida", 
+					"Hora de salida: "+ util.horaStr(horaSalidaP,minutosSalidaP)+
+					" - Hora de marca: "+ util.horaStr(mOut.hour(), mOut.minutes()), function(){});
+				}
+				cb("");	
 
 		});
+	
 
 
 }
