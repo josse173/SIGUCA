@@ -9,7 +9,6 @@ var crud = require('../routes/crud');
 var crudHorario = require('../routes/crudHorario');
 var crudSolicitud = require('../routes/crudSolicitud');
 var crudJustificaciones = require('../routes/crudJustificaciones');
-var crudVacaciones = require('../routes/crudVacaciones');
 var Feriado = require('../models/Feriado');
 
 
@@ -38,12 +37,6 @@ module.exports = {
                         ejecutarCierre();
                 }
             });
-
-            /**
-             * Realizando aumento de vacaciones
-             */
-            console.log("------ Realizando aumento de vacaciones------ ");
-            crudVacaciones.updateVacacionesAutomatico();
         },
         start: false,
         timeZone: "America/Costa_Rica"

@@ -517,6 +517,7 @@ $("button[data-target=#editHorarioFijo]").click( function() {
         $('#cedula').val(data.cedula);
         $('#apellido1').val(data.apellido1);            
         $('#fechaIngreso').val(result);
+        $('#vacaciones').val(data.vacaciones);
         $('#apellido2').val(data.apellido2);            
         $('#email').val(data.email);            
         $('#codTarjeta').val(data.codTarjeta);            
