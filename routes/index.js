@@ -388,9 +388,7 @@ module.exports = function(app, io) {
     app.post('/marcaCheck', autentificado, function (req, res) {
         
         var date = moment().format("DD/MM/YYYY");
-        console.log(date);
         date=date.split("/");
-        console.log(date);
         var epochGte = moment();
         epochGte.year(date[2]).month(date[1]-1).date(date[0]);
         epochGte.hour(0).minutes(0).seconds(0);
@@ -426,9 +424,7 @@ module.exports = function(app, io) {
     */
     app.post('/marca/get', autentificado, function (req, res) {
         if(req.body.date && req.body.date.split("/").length == 3){
-            console.log(req.body.date);
             var date = req.body.date.split("/");
-            console.log(date);
             var epochGte = moment();
             epochGte.year(date[2]).month(date[1]-1).date(date[0]);
             epochGte.hour(0).minutes(0).seconds(0);
