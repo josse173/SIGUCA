@@ -516,6 +516,39 @@ module.exports = function(app, io) {
     });
 
 
+
+    app.post('/verificarEmpleadoActualizar',autentificado,function(req,res){
+      
+        Usuario.find({$or:[{'username' :  req.body.empleado.username},{'cedula':req.body.empleado.cedula},{'codTarjeta':req.body.empleado.codTarjeta}]}, function (err, user) {
+            if (err){
+                res.json(err);
+            } 
+            else{
+                
+                if(user.length>1){
+                    res.json("El usuario ya existe");
+                }else{
+                    var contador=0;
+                    for(var h=0;h<user.length;h++){
+                        if(user[h]._id==req.body.empleado._id){
+                            contador++;
+                        }
+                      
+                        
+                    }
+                    if(contador>0){
+                        res.json("Correcto");
+                    }
+                    else{
+                        res.json("El usuario ya existe");
+                    }
+                    
+                }
+            }
+        });
+    });
+
+
     app.post('/verificarEmpleado',autentificado,function(req,res){
         Usuario.findOne({ $or:[{'username' :  req.body.empleado.username},{'cedula':req.body.empleado.cedula},{'codTarjeta':req.body.empleado.codTarjeta}]}, function (err, user) {
             if (err){

@@ -1,3 +1,32 @@
+$('#btnActualizarEmpleado').click(function(){
+    var empleado=new Object();
+    empleado._id= $('#idEmpleado').val();
+    empleado.cedula= $('#cedula').val();
+    empleado.codTarjeta= $('#codTarjeta').val();
+    empleado.username=$('#username').val();
+    $.ajax({
+        url: "/verificarEmpleadoActualizar",
+        type: 'POST',
+        dataType : "json",
+        data:{"empleado":empleado},
+        success: function(data) {    
+            if(data=="Correcto"){
+                $('#actualizarEmpleado').submit();
+            }else{
+                alertify.error("el usuario ya existe");
+               
+            }
+          
+        },
+        error: function(){
+            alertify.error("error");
+        }
+    }); 
+});
+ 
+ 
+ 
+ 
  $('[name="horario"]').change(function () {
         if($('[name="horario"]').val()!="Sin horario"){
             document.getElementsByName("horarioFijo")[0].disabled = true;
