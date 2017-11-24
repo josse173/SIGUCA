@@ -27,7 +27,6 @@
  var crudHorario = require('./crudHorario');
  var crudMarca = require('./crudMarca');
  var crudDepartamento = require('./crudDepartamento');
- var crudVacaciones = require('./crudVacaciones');
  var crudFeriado = require('./crudFeriado');
  var crud = require('./crud');
  var util = require('../util/util');
@@ -91,49 +90,6 @@ module.exports = function(app, io) {
     //    console.log('test :'+ JSON.stringify(req.files));
     //    res.end('Imagen Cargada en el servidor');
     //});
-  
-
-    //******************************************************************************
-    /*
-    *   Vacaciones
-    */
-  
-    app.get('/vacaciones', autentificado,function (req, res) {
-
-        crudVacaciones.listVacaciones(
-            function(err, listaUsuarios){
-                if(err) return res.redirect("/escritorioAdmin");
-
-                //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
-                req.user.tipo = req.session.name;
-                listaUsuarios.usuario = req.user;
-
-                return res.render("vacaciones", listaUsuarios); 
-            }
-        ); 
-    });
-
-    /**
-     * Actualiza un registro de vacaciones
-     */
-    app.post('/vacacionesUpdate',autentificado, function (req, res) {
-
-        crudVacaciones.updateVacaciones( req, function(err){
-                return res.redirect("/vacaciones");
-            }
-        ); 
-    });
-
-    /**
-     * Inserta vacaciones para un usuario que no contaba con un registro de las mismas
-     */
-    app.post('/vacacionesInsert',autentificado, function (req, res) {
-
-        crudVacaciones.insertVacaciones( req, function(err){
-                return res.redirect("/vacaciones");
-            }
-        ); 
-    });
 
     //******************************************************************************
     /*
@@ -427,6 +383,41 @@ module.exports = function(app, io) {
                 res.json({result:msj, justificacion:msjJust});
             });
     });
+
+    //check de marcas de usuario 
+    app.post('/marcaCheck', autentificado, function (req, res) {
+        
+        var date = moment().format("DD/MM/YYYY");
+        date=date.split("/");
+        var epochGte = moment();
+        epochGte.year(date[2]).month(date[1]-1).date(date[0]);
+        epochGte.hour(0).minutes(0).seconds(0);
+        var epochLte = moment();
+        epochLte.year(date[2]).month(date[1]-1).date(date[0]);
+        epochLte.hour(23).minutes(59).seconds(59);
+        crudMarca.find({
+            usuario:req.user.id,
+            tipoUsuario: req.session.name,
+            epoch:{
+            "$gte":epochGte.unix(),
+            "$lte":epochLte.unix()
+        }},function(msj, marcas){
+            var m ="ok";
+            if(msj) m = msj;
+            var mcs = [];
+            var ml = util.unixTimeToRegularDate(marcas);
+            for(x in ml){
+                var obj = {};
+                obj.fecha = ml[x].fecha;
+                obj.tipoMarca = ml[x].tipoMarca;
+                mcs.push(obj);
+            }
+            res.json({result:m, marcas:mcs});
+        });
+    
+
+    });
+
 
     /*
     *  Traer marcas
@@ -1203,4 +1194,3 @@ module.exports = function(app, io) {
 };
 
 tareas_actions.cierreAutomatico.start();
-tareas_actions.aumentoVacacionesAutomatico.start(); //Aumenta automaticamente por mes las vacaciones de todos los usuarios

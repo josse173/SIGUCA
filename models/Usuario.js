@@ -57,6 +57,10 @@ var SchemaUsuario = new Schema({
    type: Date,
    default: Date.now()
  },
+fechaIngreso: {
+  type: Number,
+  default: 0
+ },
  horarioEmpleado: {
    type: Schema.ObjectId,
    ref: 'HorarioEmpleado'
@@ -64,6 +68,10 @@ var SchemaUsuario = new Schema({
  horario: {
    type: Schema.ObjectId,
    ref: 'Horario'
+ },
+  vacaciones: {
+  type: Number,
+  default: 0
  },
   horarioFijo: {
    type: Schema.ObjectId,

@@ -1,59 +1,64 @@
 .col-xs-8
-  h4.text-center.wellW.well.headerFont.colorBorder #{usuario.nombre} #{usuario.apellido1} 
-  h4.text-center.wellW.well.headerFont.colorBorder Tipo usuario: #{usuario.tipo}
-  h5.text-center.wellW.well.headerFont.colorBorder 
-   | Código de Colaborador: 
-   label#codigoUsuario #{usuario.codTarjeta}
-  br
-  div.img-circle.col-md-offset-4
-    img(src="" height="300" width="300"  border="5" alt="Asigna una imagen en configuración :)" name=imagenPerfil).wellW.well#imagenPerfil
 
-  br 
-  br
-  .marca.text-center.col-md-offset-2.col-lg-offset-4.col-xs-4x
-    div.marcasTable.wellW.col-md-offset-1
-      h4.headerFont Registro de Marcas
+  //-Perfil personal
+  div.col-md-6
+    div.img-circle
+      img.img-responsive(src="/uploads/"+usuario.codTarjeta+".png" border="5" alt="Asigna una imagen en configuración.")
+      
+      h3.text-success Perfil del usuario.
+      h5
+        b Nombre:
+        |#{usuario.nombre}
+      h5
+        b Apellidos:
+        |#{usuario.apellido1} #{usuario.apellido2}
+      h5
+        b Rol:
+        |#{usuario.tipo}
+      h5
+        b Código:
+        |#{usuario.codTarjeta}
+
+  //-Marcas
+  div.col-md-5
+    div(style="border: 2px solid green; padding: 5%;")
+      h3.text-success Registro de Marcas
       div
-        label Hora oficial 
+        label Hora oficial
           span.clock
         label Tiempo trabajado 
           span.clockHorasTrab
-      br
-      div.col-md-offset-1
-        table#tablaMarcas.footable
-          thead
+      
+    h3.text-success Consulta por fecha.
+    input#date_range_marca.form-control(type='text')
+    button#btnIr.btn-primary.btn    Ir   
+
+    div
+      div.hideDisplay
+        div.label.headerFont.panel.panel-success
+          .panel-heading
+            .panel-title Tiempo Total Laborado:
+          .panel-body
+            button.close#cerrarPanel(type='button') ×
+            .text-center.bigFont.span.qwer  
+      
+      table#tablaMarcas.footable
+        thead
+          tr
+            th(data-sort-ignore="true") Tipo
+            th(data-sort-ignore="true") Hora
+            th Dispositivo
+        tbody.marcasDetalle#marcasBody
+          each marca, i in marcas
             tr
-              th(data-sort-ignore="true") Tipo
-              th(data-sort-ignore="true") Hora
-              th Dispositivo
-          tbody.marcasDetalle#marcasBody
-            each marca, i in marcas
-              tr
-                td #{marca.tipoMarca}
-                td #{marca.fecha}
-                if(marca.dispositivo=="Computadora")
-                  td 
-                    img(src='/images/compu.png' height="50" width="auto")#CompuLogo
-                else
-                  td
-                    img(src='/images/ras.png' height="50" width="auto")#PiLogo
-  div.clearfix
-  br
-  .col-lg-offset-msj.col-md-offset-1
-    div.container-fluid.col-xs-4.hideDisplay
-      div.container-fluid.label.headerFont.panel.panel-success.col-md-offset-3
-         .panel-heading
-          .panel-title Tiempo Total Laborado:
-         .panel-body
-          button.close#cerrarPanel(type='button') ×
-          .text-center.bigFont.span.qwer   
-  .col-lg-offset-msj2
-    div#calSupervisor.wellW.well.container-fluid
-      div.marcasTable
-      label.text-center
-        |Calendario para consulta de horas trabajadas en Fechas específicas
-      input#date_range_marca.form-control(type='text')
-      button#btnIr.btn-primary    Ir      
+              td #{marca.tipoMarca}
+              td #{marca.fecha}
+              if(marca.dispositivo=="Computadora")
+                td 
+                  img(src='/images/compu.png' height="50" width="auto")#CompuLogo
+              else
+                td
+                  img(src='/images/ras.png' height="50" width="auto")#PiLogo   
 
  .col-xs-4
   .marca
@@ -94,10 +99,10 @@
       a(data-toggle="modal" data-target="#addJustificacion")
         | Justificaciones
   br
-  .col-xs-4
-    div.justTable.table-responsive
-      div
-      h4.headerFont Justificaciones pendientes
+  .col-xs-12
+    h4 Justificaciones pendientes
+      span.label.label-default #{justificaciones.length}
+    div.justTable.table-responsive      
       div
         table#tablaJust.footable(data-page-navigation=".pagination" data-page-size="4" )
           thead
@@ -147,21 +152,21 @@
                   label-info(name= codTarjeta) #{usuario.tipo} #{usuario.nombre} #{usuario.apellido1}
                 tr
                   td
-                    button.btnEntrada.btn.btn-success.btn-(style="width: 150px;", value = 'Entrada') Entrada
+                    button#btnEntrada.btnEntrada.btn.btn-success.btn-(style="width: 150px;", value = 'Entrada' ) Entrada
                   td
-                    button.btnSalida.btn.btn-success.btn-(style="width: 150px;", value = 'Salida') Salida
+                    button#btnSalida.btnSalida.btn.btn-success.btn-(style="width: 150px;", value = 'Salida') Salida
                 tr
                   td
-                    button.btnSalidaReceso.btn.btn-warning.btn-(style="width: 150px;", value = 'Salida a Receso') Salida a Receso 
+                    button#btnSalidaReceso.btnSalidaReceso.btn.btn-warning.btn-(style="width: 150px;", value = 'Salida a Receso') Salida a Receso 
                   td
-                    button.btnEntradaReceso.btn.btn-warning.btn-(style="width: 150px;", value = 'Entrada de Receso') Entrada de Receso
+                    button#btnEntradaReceso.btnEntradaReceso.btn.btn-warning.btn-(style="width: 150px;", value = 'Entrada de Receso') Entrada de Receso
                 
                 if(usuario.tipo != config.empleadoProfesor)
                   tr
                     td
-                      button.btnSalidaAlmuerzo.btn.btn-primary.btn-(style="width: 150px;", value = 'Salida al Almuerzo') Salida al Almuerzo
+                      button#btnSalidaAlmuerzo.btnSalidaAlmuerzo.btn.btn-primary.btn-(style="width: 150px;", value = 'Salida al Almuerzo') Salida al Almuerzo
                     td
-                      button.btnEntradaAlmuerzo.btn.btn-primary.btn-(style="width: 150px;", value = 'Entrada de Almuerzo') Entrada del Almuerzo
+                      button#btnEntradaAlmuerzo.btnEntradaAlmuerzo.btn.btn-primary.btn-(style="width: 150px;", value = 'Entrada de Almuerzo') Entrada del Almuerzo
               .form-group
                
                   button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar

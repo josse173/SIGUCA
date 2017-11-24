@@ -233,15 +233,7 @@ block content
                           td #{permiso.detalle} 
                           td
                             textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
-                          td(class=permiso.usuario.id)
-                            -var disponibles = false
-                            each item, i in vacaciones
-                              if(item.usuario == permiso.usuario.id)
-                                -disponibles = true
-                                |#{item.disponibles}
-                                
-                            if(disponibles == false)
-                              |0
+                          td(class=permiso.usuario.id) #{permiso.usuario.vacaciones}
                           td
                             select.select_picker(name='estado'+permiso.id, id="estado"+permiso.id, data-width="auto"  data-style="btn-inverse")
                               option(value='Pendiente') Pendiente
