@@ -979,12 +979,12 @@ $('.tableHorarioPersonalizado').footable().on('click','.eliminarPersonalizado',f
     .set({
         'labels':{ok:'Eliminar', cancel:'Cancelar'},
         'transition': 'slide',
-        'message': '¿Está seguro de <i>inactivar</i> al empleado(a) <strong>' +  split[0] + '</strong>?' ,
+        'message': '¿Está seguro de <i>eliminar</i> al empleado(a) <strong>' +  split[0] + '</strong>?' ,
         'onok': function(){ 
             $.get('/empleado/delete/'+split[1], function (data){
                 if(data == 'Se elimino'){
                     footable.removeRow(row);
-                    alertify.message('Se inactivo el empleado(a) <strong>' +  split[0] + '</strong> con éxito');
+                    alertify.message('Se eliminó el empleado(a) <strong>' +  split[0] + '</strong> con éxito');
                 } else {
                     alertify.error(data);
                 }
