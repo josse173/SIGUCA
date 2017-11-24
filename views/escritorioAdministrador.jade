@@ -54,22 +54,6 @@
               button#areas.btn.btn-primary(type = 'submit', name='eliminar',  onclick= "/empleado")
                 i.icon-edit.icon-large
         tr
-          td Vacaciones:  
-            td
-              form(action= '/vacaciones')
-                -if(numUsuariosSinVacaciones > 0)
-                  button.btn.btn-success(type = 'submit')
-                    i.icon-plus.icon-large
-                -else
-                  button.btn.btn-success(type = 'submit', disabled)
-                    i.icon-plus.icon-large
-                    
-            td
-              form(action= '/vacaciones')    
-                button.btn.btn-primary(type = 'submit')
-                  i.icon-edit.icon-large
-
-        tr
           td Feriado:  
             td
               button.btn.btn-success(type = 'submit' data-toggle="modal" data-target="#asignarFeriado")
@@ -219,7 +203,7 @@
                   input#codTarjeta.form-control(type= 'text', placeholder='Código de Empleado', name='codTarjeta')
                 label(for="usernameInput")
                   |Usuario:
-                  input.form-control#textInput(type="text", name="username", placeholder="Usuario")
+                  input.form-control#username(type="text", name="username", placeholder="Usuario")
                 
 
                 label Horario libre:
@@ -256,9 +240,13 @@
 
                 label(for='departamento') Departamento:
                   br
-                  select.form-control#selectDepartamentos.selectpicker(data-style="btn-success", data-width="200px", data-selected-text-format="count>2", type="text", name="idDepartamento", multiple="multiple") 
+                  select.form-control#selectDepartamentos.selectpicker(data-style="btn-success", data-width="150px", data-selected-text-format="count>2", type="text", name="idDepartamento", multiple="multiple") 
                     each departamento, i in departamentos
                         option(value= departamento.id) #{departamento.nombre} 
+                
+                label.labelFiltro(for='fechaIngreso') Fecha Ingreso:
+                    input#fechaIngreso.form-control(style="cursor:pointer; cursor: hand;", type="text", name='fechaIngreso', readonly="readonly", placeholder="Fecha Ingreso" )
+                    
 
               .form-group
                 label(for="passwordInput")
@@ -268,7 +256,7 @@
                   br
                   button.btn.btn-default(type='button', onclick='generatepass(8)') Generar Contraseña
                        
-              button.btn.btn-success#agregarEmpleado(type='submit') Ingresar
+              button.btn.btn-success#agregarEmpleado(type='button') Ingresar
               button.btn.btn-danger#clearLabel(type='button', data-dismiss='modal') Cancelar
 
   //            

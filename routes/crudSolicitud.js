@@ -3,7 +3,6 @@ var mongoose 		= require('mongoose'),
 nodemailer 		= require('nodemailer'),
 moment 			= require('moment'),
 Solicitudes 	= require('../models/Solicitudes'),
-Vacaciones		= require('../models/Vacaciones');
 Usuario 		= require('../models/Usuario'),
 util 			= require('../util/util'),
 config          = require('../config.json'),
@@ -273,21 +272,8 @@ exports.gestionarSoli = function(solicitud, cb, idUser){
 			/*
 			 * Actualiza las vacaciones, solo cuando son aceptadas
 			 */
-			Vacaciones.find({usuario:soli.usuario},function(err,vacaciones){
-			
-				if(solicitud.estado == "Aceptada"){
-					if(vacaciones.length <= 0){
-						var vacaTem = new Vacaciones();
-							vacaTem.disponibles = (0-soli.cantidadDias);
-							vacaTem.usuario= soli.usuario.id;
-						
-						vacaTem.save();
-					}else{
-						Vacaciones.findByIdAndUpdate(vacaciones[0].id,{disponibles:(vacaciones[0].disponibles-soli.cantidadDias)}
-						).populate('usuario').exec(function (err, soli2) {});
-					}
-				}
-			});
+			Usuario.update({_id:soli.usuario}, {$inc:{vacaciones:(0-soli.cantidadDias)}},function(err){});
+
 
 			/*
 			 * Envía el correo electrónico 

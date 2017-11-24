@@ -146,7 +146,10 @@ $(document).ready(function()
         format: 'd/m/Y',
         timepicker: false
     });
-
+    jQuery('#fechaIngreso').datetimepicker({
+        format: 'd/m/Y',
+        timepicker: false
+    });
      
 
 
@@ -501,10 +504,20 @@ $("button[data-target=#editHorarioFijo]").click( function() {
             option.text = "Activo";
             x.add(option);
         }
+        
+        //Se crea la fecha
+        if(data.fechaIngreso>0){
+            var fechaIngesoTem = new Date((data.fechaIngreso*1000));
+            var result = fechaIngesoTem.getDate() + "/" + (fechaIngesoTem.getMonth()+1) + "/" + fechaIngesoTem.getFullYear();
+        }else{
+            var result = "";
+        }
 
         $('#nombre').val(data.nombre);            
-        $('#cedula').val(data.cedula);            
+        $('#cedula').val(data.cedula);
         $('#apellido1').val(data.apellido1);            
+        $('#fechaIngreso').val(result);
+        $('#vacaciones').val(data.vacaciones);
         $('#apellido2').val(data.apellido2);            
         $('#email').val(data.email);            
         $('#codTarjeta').val(data.codTarjeta);            
@@ -966,12 +979,12 @@ $('.tableHorarioPersonalizado').footable().on('click','.eliminarPersonalizado',f
     .set({
         'labels':{ok:'Eliminar', cancel:'Cancelar'},
         'transition': 'slide',
-        'message': '¿Está seguro de <i>inactivar</i> al empleado(a) <strong>' +  split[0] + '</strong>?' ,
+        'message': '¿Está seguro de <i>eliminar</i> al empleado(a) <strong>' +  split[0] + '</strong>?' ,
         'onok': function(){ 
             $.get('/empleado/delete/'+split[1], function (data){
                 if(data == 'Se elimino'){
                     footable.removeRow(row);
-                    alertify.message('Se inactivo el empleado(a) <strong>' +  split[0] + '</strong> con éxito');
+                    alertify.message('Se eliminó el empleado(a) <strong>' +  split[0] + '</strong> con éxito');
                 } else {
                     alertify.error(data);
                 }

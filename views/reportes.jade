@@ -32,7 +32,7 @@ block content
                       option(value=dep._id, selected) #{dep.nombre}
                     else
                       option(value=dep._id ) #{dep.nombre}
-              -if(reporteVacaciones)
+              -if(vacaciones)
                 td.hide
               -else
                 td
@@ -41,7 +41,7 @@ block content
                       input#date_range_start.form-control.fondoTransparente(type='text', name='fechaDesde', value=rangoFecha.fechaDesde)
                       span.input-group-addon.fondoTransparente-derecha
                         i.icon-calendar
-              -if(reporteVacaciones)
+              -if(vacaciones)
                 td.hide
               -else
                 td
@@ -111,10 +111,10 @@ block content
                       td 0
                 
                 //-Vacaciones
-                if(reporteVacaciones)
+                if(vacaciones)
                   tr
                     td Total empleados
-                    td #{reporteVacaciones.listaVacaciones.length + reporteVacaciones.listaUsuariosSinVacaciones.length}
+                    td #{usuarios.length}
 
                 //-Horas laboradas
                 if(horasEmpleado)
@@ -445,8 +445,7 @@ block content
               p No se han encontrado registros
 
           //-Solicitudes Vacaciones
-          if(reporteVacaciones)
-            if(reporteVacaciones.listaVacaciones.length > 0 || reporteVacaciones.listaUsuariosSinVacaciones.length > 0)
+          if(vacaciones)
               br
               h3 Vacaciones
               .tableSolicitudes.footable
@@ -462,28 +461,14 @@ block content
                         th(data-hide="phone,small") Días disponibles
                     tbody
                       form(method="POST", action="/vacacionesUpdate")
-                        each elemento, i in reporteVacaciones.listaVacaciones
+                        each elemento, i in usuarios
                             tr
-                              td #{elemento.usuario.nombre}
-                              td #{elemento.usuario.apellido1} #{elemento.usuario.apellido2} 
-                              td #{elemento.usuario.cedula} 
-                              td #{elemento.usuario.email} 
-                              td #{elemento.usuario.estado}
-                              td.text-center #{elemento.disponibles}
-
-                        each elemento, i in reporteVacaciones.listaUsuariosSinVacaciones
-                          tr
-                            td #{elemento.nombre}
-                            td #{elemento.apellido1} #{elemento.apellido2} 
-                            td #{elemento.cedula} 
-                            td #{elemento.email} 
-                            td #{elemento.estado}
-                            td.text-center 0
-                          
-            else
-              h3 Solicitudes Permisos
-              p No se han encontrado registros 
-
+                              td #{elemento.nombre}
+                              td #{elemento.apellido1} #{elemento.apellido2} 
+                              td #{elemento.cedula} 
+                              td #{elemento.email} 
+                              td #{elemento.estado}
+                              td.text-center #{elemento.vacaciones}
 
 block sigucaJS  
   script(src="/js/app/reportes.js")

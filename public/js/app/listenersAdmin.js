@@ -98,32 +98,60 @@ $.validator.addMethod("numeros", function(value, element) {
 }, "Ingrese valores numéricos.");
 
 
+$('#agregarEmpleadoFormulario').validate({
+    
+    rules:{
+        nombre:{required:true,letras:true},
+        cedula:{required:true,numeros:true},
+        apellido1:{required:true,letras:true},
+        apellido2:{required:true,letras:true},
+        email:{required:true,email:true},
+        codTarjeta:{required:true,numeros:true},
+        username:{required:true},
+        password:{required:true},
+        fechaIngreso:{required:true}
+    },
+    messages:{
+        nombre:{required:'El campo es requerido'},
+        cedula:{required:'El campo es requerido'},
+        apellido1:{required:'El campo es requerido'},
+        apellido2:{required:'El campo es requerido'},
+        email:{required:'El campo es requerido',email:'Formato inválido'},
+        codTarjeta:{required:'El campo es requerido'},
+        username:{required:'El campo es requerido'},
+        username:{required:'El campo es requerido'},
+        fechaIngreso:{required:'El campo es requerido'},
+        password:{required:'El campo es requerido'}
+    }
+});
+
 $('#agregarEmpleado').click(function(){
+  
     
-    
-    $('#agregarEmpleadoFormulario').validate({
-        
-        rules:{
-            nombre:{required:true,letras:true},
-            cedula:{required:true,numeros:true},
-            apellido1:{required:true,letras:true},
-            apellido2:{required:true,letras:true},
-            email:{required:true,email:true},
-            codTarjeta:{required:true,numeros:true},
-            username:{required:true},
-            password:{required:true}
+    var empleado=new Object();
+    empleado.cedula=$('#cedula').val();
+    empleado.username= $('#username').val();
+    empleado.codTarjeta= $('#codTarjeta').val();
+
+    $.ajax({
+        url: "/verificarEmpleado",
+        type: 'POST',
+        dataType : "json",
+        data:{"empleado":empleado},
+        success: function(data) {    
+            if(data=="Correcto"){
+                $('#agregarEmpleadoFormulario').submit();
+                //location.href="/escritorioEmpl";
+            }else{
+                alertify.error('El usuario ya existe');
+            }
+          
         },
-        messages:{
-            nombre:{required:'El campo es requerido'},
-            cedula:{required:'El campo es requerido'},
-            apellido1:{required:'El campo es requerido'},
-            apellido2:{required:'El campo es requerido'},
-            email:{required:'El campo es requerido',email:'Formato inválido'},
-            codTarjeta:{required:'El campo es requerido'},
-            username:{required:'El campo es requerido'},
-            username:{required:'El campo es requerido'},
-            password:{required:'El campo es requerido'}
+        error: function(){
+            alert("Error al insertar usuario");
         }
-    });
+    }); 
+
+ 
 });
 

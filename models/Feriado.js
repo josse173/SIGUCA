@@ -2,7 +2,7 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
-//Crear el esquema de Vacaciones
+//Crear el esquema de Feriados
 var SchemaFeriados = new Schema({ 
     nombreFeriado: {
         type: String,
