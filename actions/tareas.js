@@ -9,13 +9,14 @@ var crud = require('../routes/crud');
 var crudHorario = require('../routes/crudHorario');
 var crudSolicitud = require('../routes/crudSolicitud');
 var crudJustificaciones = require('../routes/crudJustificaciones');
+var crudUsuario = require('../routes/crudUsuario');
 var Feriado = require('../models/Feriado');
 
 
 
 module.exports = {
     cierreAutomatico : new CronJob({
-        //cronTime: '* * * * * *',
+        //cronTime: '00 42 17 * * 0-7',
         cronTime: '00 50 23 * * 0-7',
         onTick: function() {
             /**
@@ -37,6 +38,12 @@ module.exports = {
                         ejecutarCierre();
                 }
             });
+
+            /**
+             * Realizar actualización de vacaciones
+             */
+            crudUsuario.updateVacaciones();
+            
         },
         start: false,
         timeZone: "America/Costa_Rica"
@@ -91,9 +98,7 @@ module.exports = {
                              }); 
                         
                         }
-                        
-                           
-                        
+                                                
                 });
     
         }
