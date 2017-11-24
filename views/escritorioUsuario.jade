@@ -6,21 +6,30 @@
       img.img-responsive(src="/uploads/"+usuario.codTarjeta+".png" border="5" alt="Asigna una imagen en configuración.")
       
       h3.text-success Perfil del usuario.
-      h5
-        b Nombre:
-        |#{usuario.nombre}
-      h5
-        b Apellidos:
-        |#{usuario.apellido1} #{usuario.apellido2}
-      h5
-        b Rol:
-        |#{usuario.tipo}
-      h5
-        b Código:
-        |#{usuario.codTarjeta}
-      h5
-        b Vacaciones: 
-        |#{usuario.vacaciones}
+      
+      table.table-responsive.tableInfo
+        
+        tbody
+          tr
+            td
+              b Nombre:
+            td #{usuario.nombre}
+          tr
+            td 
+              b Apellidos: 
+            td #{usuario.apellido1} #{usuario.apellido2}
+          tr
+            td
+              b Rol: 
+            td #{usuario.tipo}
+          tr
+            td
+              b Código:
+            td #{usuario.codTarjeta}
+          tr
+            td
+              b Vacaciones: 
+            td #{usuario.vacaciones}
 
   //-Marcas
   div.col-md-5
