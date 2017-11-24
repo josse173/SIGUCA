@@ -203,7 +203,7 @@
                   input#codTarjeta.form-control(type= 'text', placeholder='Código de Empleado', name='codTarjeta')
                 label(for="usernameInput")
                   |Usuario:
-                  input.form-control#textInput(type="text", name="username", placeholder="Usuario")
+                  input.form-control#username(type="text", name="username", placeholder="Usuario")
                 
 
                 label Horario libre:
@@ -256,7 +256,7 @@
                   br
                   button.btn.btn-default(type='button', onclick='generatepass(8)') Generar Contraseña
                        
-              button.btn.btn-success#agregarEmpleado(type='submit') Ingresar
+              button.btn.btn-success#agregarEmpleado(type='button') Ingresar
               button.btn.btn-danger#clearLabel(type='button', data-dismiss='modal') Cancelar
 
   //            

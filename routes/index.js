@@ -516,6 +516,19 @@ module.exports = function(app, io) {
     });
 
 
+    app.post('/verificarEmpleado',autentificado,function(req,res){
+        Usuario.findOne({ $or:[{'username' :  req.body.empleado.username},{'cedula':req.body.empleado.cedula},{'codTarjeta':req.body.empleado.codTarjeta}]}, function (err, user) {
+            if (err){
+                res.json(err);
+            } 
+            if (!user) {
+                res.json("Correcto");
+            }else if(user){
+                res.json("usuario existe");
+            }
+        });
+    });
+
     //******************************************************************************
     /*
     *  Crea un nuevo usuario

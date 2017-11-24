@@ -987,18 +987,7 @@ function workedHour(_idUser,horario, mOut, mReal,cb){
 					obj.minutos=obj.minutos-60;
 				}
 				
-				/*
-				addJustIncompleta(_idUser, "Jornada laborada menor que la establecida", 
-				"Horas trabajadas: "+ util.horaStr(obj.horas,obj.minutos)+
-				" - Horas establecidas: "+ util.horaStr(horaSalida, minutoSalida), function(){});
 				
-				*/
-
-				console.log(horaSalida);
-				console.log(minutoSalida);
-				console.log(obj.horas);
-				console.log(obj.minutos);
-
 				if(horaSalida>obj.horas){
 					addJustIncompleta(_idUser, "Jornada laborada menor que la establecida", 
 					"Horas trabajadas: "+ util.horaStr(obj.horas,obj.minutos)+
