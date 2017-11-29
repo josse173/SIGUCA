@@ -513,7 +513,8 @@ $("button[data-target=#editHorarioFijo]").click( function() {
             var result = "";
         }
 
-        $('#nombre').val(data.nombre);            
+        $('#nombre').val(data.nombre);   
+                
         $('#cedula').val(data.cedula);
         $('#apellido1').val(data.apellido1);            
         $('#fechaIngreso').val(result);
@@ -527,7 +528,9 @@ $("button[data-target=#editHorarioFijo]").click( function() {
         $('#selectHorarioFijo').selectpicker('val', data.horarioFijo);   
         $('#HorarioEmpleado').selectpicker('val', data.horarioEmpleado);     
         $('#selectDepartamentos').selectpicker('val', data.horario);    
-
+        $('#idEmpleado').val(data._id);  
+        $("#idEmpleado").css('display','none');
+    
         var val = [];
         for (var i = 0; i < data.departamentos.length; i++) {
             val.push(data.departamentos[i].departamento);

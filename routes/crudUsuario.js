@@ -171,7 +171,8 @@ exports.getById = function(id, cb){
 
 
 exports.updateUsuario = function(data, cb){
-
+	delete data.empleado._id;
+	
 	//Se pasa la fecha a epoch
 	if(data.empleado.fechaIngreso != ""){
 		var splitDate1 = data.empleado.fechaIngreso.split('/');
