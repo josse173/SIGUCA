@@ -150,29 +150,27 @@
               
 #addMarca.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
     .modal-dialog
-        .modal-content
+        .modal-content.fontTransparent
           .modal-header
             button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
             h3#myModalLabel.modal-title Marcas de asistencia
           .modal-body
-            .row
-                div.col-xs-12   
-                  label-info(name= codTarjeta) #{usuario.tipo} #{usuario.nombre} #{usuario.apellido1}
+            .row.text-center
                 div.col-md-6
-                  button#btnEntrada.btnEntrada.btn.btn-success.btn-(style="width: 150px;", value = 'Entrada' ) Entrada
+                  button#btnEntrada.btnEntrada.btn.btn-success.btn-lg(style="width: 95%;", value = 'Entrada' ) Entrada
                 div.col-md-6
-                  button#btnSalida.btnSalida.btn.btn-success.btn-(style="width: 150px;", value = 'Salida') Salida
+                  button#btnSalida.btnSalida.btn.btn-success.btn-lg(style="width: 95%;", value = 'Salida') Salida
                 div.col-md-6
-                  button#btnSalidaReceso.btnSalidaReceso.btn.btn-warning.btn-(style="width: 150px;", value = 'Salida a Receso') Salida a Receso 
+                  button#btnSalidaReceso.btnSalidaReceso.btn.btn-warning.btn-lg(style="width: 95%;", value = 'Salida a Receso') Salida a Receso 
                 div.col-md-6
-                  button#btnEntradaReceso.btnEntradaReceso.btn.btn-warning.btn-(style="width: 150px;", value = 'Entrada de Receso') Entrada de Receso
+                  button#btnEntradaReceso.btnEntradaReceso.btn.btn-warning.btn-lg(style="width: 95%;", value = 'Entrada de Receso') Entrada de Receso
                 if(usuario.tipo != config.empleadoProfesor)
                   div.col-md-6
-                    button#btnSalidaAlmuerzo.btnSalidaAlmuerzo.btn.btn-primary.btn-(style="width: 150px;", value = 'Salida al Almuerzo') Salida al Almuerzo
+                    button#btnSalidaAlmuerzo.btnSalidaAlmuerzo.btn.btn-primary.btn-lg(style="width: 95%;", value = 'Salida al Almuerzo') Salida al Almuerzo
                   div.col-md-6
-                    button#btnEntradaAlmuerzo.btnEntradaAlmuerzo.btn.btn-primary.btn-(style="width: 150px;", value = 'Entrada de Almuerzo') Entrada del Almuerzo
+                    button#btnEntradaAlmuerzo.btnEntradaAlmuerzo.btn.btn-primary.btn-lg(style="width: 95%;", value = 'Entrada de Almuerzo') Entrada del Almuerzo
                 div.col-md-6
-                    button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
+                    button.btn.btn-danger.btn-lg(style="width: 95%;",type='button', data-dismiss='modal') Cancelar
 
 #horaExtra.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
     .modal-dialog
