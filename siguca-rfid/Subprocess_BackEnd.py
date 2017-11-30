@@ -24,6 +24,7 @@
  #*/
 
 import urllib
+from bson.objectid import ObjectId
 import time 
 import os, sys
 import serial 
@@ -283,30 +284,73 @@ def obtieneMarca(dec,tipo):
     root.attributes('-fullscreen', True)
     frame = Frame(root)
     frame.pack()
-    frame.config(background="black")
     root.config(background="black", height=600, width=600,cursor="none")
 	
     #en cada botón se llama el método correspondiente con el parámetro del código  obtenido por la lectura.
 
-    button = Button(frame,text="       Entrada        ", command = lambda: Entrada(dec,tipo),fg="white",activeforeground="white",activebackground="green",bg="green",width=22,height=3,bd=9,font="Helveltica 17 bold")
-    button1 = Button(frame,text="        Salida        ", command =lambda: Salida(dec,tipo),fg="white",activeforeground="white",activebackground="green",bg="green",width=22,height=3,bd=9,font="Helveltica 17 bold")
-    button2 = Button(frame,text="   Salida a Receso   ", command =lambda: SalidaReceso(dec,tipo),fg="white",activeforeground="white",activebackground="orange",bg="orange",width=22,height=3,bd=9,font="Helveltica 17 bold")
-    button3 = Button(frame,text="   Entrada de Receso  ", command =lambda: EntradaReceso(dec,tipo),fg="white",activeforeground="white",activebackground="orange",bg="orange",width=22,height=3,bd=9,font="Helveltica 17 bold")
-    button4 = Button(frame,text="  Salida al Almuerzo  ", command =lambda: SalidaAlmuerzo(dec,tipo),fg="white",activeforeground="white",activebackground="blue",bg="blue",width=22,height=3,bd=9,font="Helveltica 17 bold")
-    button5 = Button(frame,text="  Entrada del Almuerzo ", command =lambda: EntradaAlmuerzo(dec,tipo),fg="white",activeforeground="white",activebackground="blue",bg="blue",width=22,height=3,bd=9,font="Helveltica 17 bold")
-    button6 = Button(frame,text="Cancelar",command=lambda: root.destroy(),fg="white",activeforeground="white",activebackground="red",bg="red",width=47,height=3,bd=9,font="Helveltica 17 bold")
-    button.grid(row=1,column=1)
-    button1.grid(row=1,column=2)
-    button2.grid(row=2,column=1)
-    button3.grid(row=2,column=2)
-    button4.grid(row=3,column=1)
-    button5.grid(row=3,column=2)
-    button6.grid(row=4,column=1, columnspan=15)
-    #nuevo
-	#explanation = str("Hora: ")+time.strftime("%H:%M")
-	#clock = Label(frame, fg="white",activeforeground="white",activebackground="blue",bg="black",width=51,height=2,bd=9,font="Helveltica 16",text=explanation, wraplength=350)
-	#clock.grid(row=5,column=1, columnspan=15)
-    #nuevo
+    button = Button(root,text="       Entrada        ", command = lambda: Entrada(dec,tipo),fg="white",activeforeground="white",activebackground="green",bg="green",width=22,height=3,bd=0,font="Helveltica 17 bold")
+    button1 = Button(root,text="        Salida        ", command =lambda: Salida(dec,tipo),fg="white",activeforeground="white",activebackground="green",bg="green",width=22,height=3,bd=0,font="Helveltica 17 bold")
+    button2 = Button(root,text="   Salida a Receso   ", command =lambda: SalidaReceso(dec,tipo),fg="white",activeforeground="white",activebackground="orange",bg="orange",width=22,height=3,bd=0,font="Helveltica 17 bold")
+    button3 = Button(root,text="   Entrada de Receso  ", command =lambda: EntradaReceso(dec,tipo),fg="white",activeforeground="white",activebackground="orange",bg="orange",width=22,height=3,bd=0,font="Helveltica 17 bold")
+    button4 = Button(root,text="  Salida al Almuerzo  ", command =lambda: SalidaAlmuerzo(dec,tipo),fg="white",activeforeground="white",activebackground="blue",bg="blue",width=22,height=3,bd=0,font="Helveltica 17 bold")
+    button5 = Button(root,text="  Entrada del Almuerzo ", command =lambda: EntradaAlmuerzo(dec,tipo),fg="white",activeforeground="white",activebackground="blue",bg="blue",width=22,height=3,bd=0,font="Helveltica 17 bold")
+    button6 = Button(root,text="Cancelar",command=lambda: root.destroy(),fg="white",activeforeground="white",activebackground="red",bg="red",width=50,height=3,bd=0,font="Helveltica 17 bold")
+    button.place(x=50,y=20)
+    button1.place(x=400,y=20)
+    button2.place(x=50,y=130)
+    button3.place(x=400,y=130)
+    button4.place(x=50,y=240)
+    button5.place(x=400,y=240)
+    button6.place(x=50,y=350)
+    
+
+    #Se validan los botones de SIGUCA   
+    codigosExistentes=list(collection.find({"estado":"Activo"},{"tipo":  1,"codTarjeta": 1,"_id":1}))
+
+    idUser = ""
+    for post in codigosExistentes:
+	if str(dec) == str(post['codTarjeta']):
+        	idUser = post["_id"]
+
+    #Se obtienen las marcas
+    dia = time.strftime("%d")
+    mes = time.strftime("%m")
+    ano = time.strftime("%Y") 
+
+    t = time.mktime(time.strptime(dia+"."+mes+"."+ano+" 00:00:00", "%d.%m.%Y %H:%M:%S"))
+    listMarcas = list(db.marcas.find({"usuario":ObjectId(idUser), "epoch":{"$gte":t}}))
+
+    salidaReceso = 0
+    entradaReceso = 0
+
+    for temMarca in listMarcas:	
+
+	if temMarca["tipoMarca"] == "Salida":
+		button.configure(state=DISABLED, bg="#111111")	
+		button1.configure(state=DISABLED, bg="#111111")
+		button2.configure(state=DISABLED, bg="#fcb750")
+		button3.configure(state=DISABLED, bg="#fcb750")
+		button4.configure(state=DISABLED, bg="#4fc7ff")
+		button5.configure(state=DISABLED, bg="#4fc7ff")
+
+	if temMarca["tipoMarca"] == "Entrada":
+		button.configure(state=DISABLED, bg="#9eff9b")
+
+	if temMarca["tipoMarca"] == "Entrada de Receso":
+                entradaReceso += 1
+
+	if temMarca["tipoMarca"] == "Salida a Receso":
+		salidaReceso += 1
+
+	if temMarca["tipoMarca"] == "Salida al Almuerzo":
+		button4.configure(state=DISABLED, bg="#afb2ff")
+
+	if temMarca["tipoMarca"] == "Entrada de Almuerzo":
+                button5.configure(state=DISABLED, bg="#afb2ff")
+
+    if salidaReceso>entradaReceso:
+		button2.configure(state=DISABLED, bg="#ffc57c")		
+
     root.after(4000, lambda: root.destroy())
     root.mainloop()
 
@@ -339,7 +383,7 @@ def obtieneTipoUsuario(dec,listTipo):
 
         rootTipo.after(5000, lambda: rootTipo.destroy())
         rootTipo.mainloop()
-        return "Correcto";
+        return "Correcto"
 
 
 #En esta sección tenemos el orden de como se van a ir ejecutando los métodos dentro del sistema , esto es  lo que se ejecutará cuando se lance el script.
