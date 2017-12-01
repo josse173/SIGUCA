@@ -326,12 +326,12 @@ def obtieneMarca(dec,tipo):
     for temMarca in listMarcas:	
 
 	if temMarca["tipoMarca"] == "Salida":
-		button.configure(state=DISABLED, bg="#111111")	
-		button1.configure(state=DISABLED, bg="#111111")
-		button2.configure(state=DISABLED, bg="#fcb750")
-		button3.configure(state=DISABLED, bg="#fcb750")
-		button4.configure(state=DISABLED, bg="#4fc7ff")
-		button5.configure(state=DISABLED, bg="#4fc7ff")
+		button.configure(state=DISABLED, bg="#9eff9b")	
+		button1.configure(state=DISABLED, bg="#9eff9b")
+		button2.configure(state=DISABLED, bg="#ffc57c")
+		button3.configure(state=DISABLED, bg="#ffc57c")
+		button4.configure(state=DISABLED, bg="#afb2ff")
+		button5.configure(state=DISABLED, bg="#afb2ff")
 
 	if temMarca["tipoMarca"] == "Entrada":
 		button.configure(state=DISABLED, bg="#9eff9b")
