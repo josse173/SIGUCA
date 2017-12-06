@@ -3,6 +3,7 @@ var mongoose 		= require('mongoose'),
 nodemailer 		= require('nodemailer'),
 moment 			= require('moment'),
 Usuario 		= require('../models/Usuario'),
+Correo		= require('../models/Correo'),
 Justificaciones = require('../models/Justificaciones'),
 util 			= require('../util/util'),
 config 			= require('../config.json'),
@@ -213,34 +214,45 @@ exports.updateJust = function(justificacion, cb){
 		estado: "Pendiente"
 	};
 
+
 	Usuario.findById(justificacion.usuario, function(err, user){
 		Justificaciones.findById(justificacion.id).populate('usuario').exec(function (err, just) { 
 			if(JSON.stringify(user._id)===JSON.stringify(just.usuario._id)){
 				justificacionActualizada.fechaJustificada = epochTime;
 			}
 			Justificaciones.findByIdAndUpdate(justificacion.id, justificacionActualizada, function (err, justActualizada) {
-				if (!err && just.estado!="Incompleto") {
+
+				if (!err && just.estado=="Incompleto") {
 					Usuario.find({'tipo' : 'Supervisor', 'departamentos.departamento' : just.usuario.departamentos[0].departamento}, {'email' : 1}).exec(function (err, supervisor) { 
-						if (err) return cb(err);
-
-						var transporter = nodemailer.createTransport('smtps://'+config.emailUser+':'+config.emailPass+'@'+config.emailEmail);
-
-						for (var i = 0; i < supervisor.length; i++) {
-							transporter.sendMail({
-								from: emailSIGUCA,
-								to: supervisor[i].email,
-								subject: 'Modificación de una justificación en SIGUCA',
-								text: " El usuario " + just.usuario.nombre + " " + just.usuario.apellido1 + " " + just.usuario.apellido2
-								+ " ha modificado la siguiente justificación: "
-								+ " \r\n Motivo: " + just.motivo
-								+ " \r\n Detalle: " + just.detalle
-								+ "\r\n\r\n A continuación se muestra la justificación modificada" 
-								+ " \r\n Motivo: " + justActualizada.motivo
-								+ " \r\n Detalle: " + justActualizada.detalle
+						if (err){
+							return cb(err);
+						} 
+						else{
+							Correo.find({},function(errorCritico,listaCorreos){
+								if(!errorCritico){
+									var transporter = nodemailer.createTransport('smtps://'+listaCorreos[0].nombreCorreo+':'+listaCorreos[0].password+'@'+listaCorreos[0].dominioCorreo);
+									for (var i = 0; i < supervisor.length; i++) {
+										transporter.sendMail({
+											from:listaCorreos[0].nombreCorreo,
+											to: supervisor[i].email,
+											subject: 'Modificación de una justificación en SIGUCA',
+											text: " El usuario " + just.usuario.nombre + " " + just.usuario.apellido1 + " " + just.usuario.apellido2
+											+ " ha modificado la siguiente justificación: "
+											+ " \r\n Motivo: " + just.motivo
+											+ " \r\n Detalle: " + just.detalle
+											+ "\r\n\r\n A continuación se muestra la justificación modificada" 
+											+ " \r\n Motivo: " + justActualizada.motivo
+											+ " \r\n Detalle: " + justificacion.detalle
+										});
+									}
+								}
 							});
 						}
+						
+
 					});
 				}
+			
 				return cb(err);
 			});
 			//
@@ -255,20 +267,23 @@ exports.deleteJust = function(id, cb){
 		var fecha = "";
 		if(just.fechaCreada)
 			fecha = moment(just.fechaCreada);
-
-		var transporter = nodemailer.createTransport('smtps://'+config.emailUser+':'+config.emailPass+'@'+config.emailEmail);
-
-		transporter.sendMail({
-			from: emailSIGUCA,
-			to: just.usuario.email,
-			subject: 'Se ha eliminado una justificación en SIGUCA',
-			text: " Estimado(a) " + just.usuario.nombre + " " + just.usuario.apellido1 + " " + just.usuario.apellido2
-			+ " \r\n Su supervisor ha eliminado una de las justificaciones presentadas, en la cuál se indicabá lo siguiente: " 
-			+ " \r\n Fecha: " + fecha
-			+ " \r\n Motivo: " + just.motivo
-			+ " \r\n Detalle: " + just.detalle
+		Correo.find({},function(errorCritico,listaCorreos){
+			if(!errorCritico){
+				var transporter = nodemailer.createTransport('smtps://'+listaCorreos[0].nombreCorreo+':'+listaCorreos[0].password+'@'+listaCorreos[0].dominioCorreo);
+					transporter.sendMail({
+						from: listaCorreos[0].nombreCorreo,
+						to: just.usuario.email,
+						subject: 'Se ha eliminado una justificación en SIGUCA',
+						text: " Estimado(a) " + just.usuario.nombre + " " + just.usuario.apellido1 + " " + just.usuario.apellido2
+						+ " \r\n Su supervisor ha eliminado una de las justificaciones presentadas, en la cuál se indicabá lo siguiente: " 
+						+ " \r\n Fecha: " + fecha
+						+ " \r\n Motivo: " + just.motivo
+						+ " \r\n Detalle: " + just.detalle
+					});
+			}
 		});
 
+		
 		return cb(err, 'Se elimino');
 	});
 }
@@ -279,19 +294,22 @@ exports.deleteJustMasa = function(id, cb){
 		var fecha = "";
 		if(just.fechaCreada)
 			fecha = moment(just.fechaCreada);
-
-		var transporter = nodemailer.createTransport('smtps://'+config.emailUser+':'+config.emailPass+'@'+config.emailEmail);
-
-		transporter.sendMail({
-			from: emailSIGUCA,
-			to: just.usuario.email,
-			subject: 'Se ha eliminado una justificación en SIGUCA',
-			text: " Estimado(a) " + just.usuario.nombre + " " + just.usuario.apellido1 + " " + just.usuario.apellido2
-			+ " \r\n Su supervisor ha eliminado una de las justificaciones presentadas, en la cuál se indicabá lo siguiente: " 
-			+ " \r\n Fecha: " + fecha
-			+ " \r\n Motivo: " + just.motivo
-			+ " \r\n Detalle: " + just.detalle
+		Correo.find({},function(errorCritico,listaCorreos){
+			if(!errorCritico){
+				var transporter = nodemailer.createTransport('smtps://'+listaCorreos[0].nombreCorreo+':'+listaCorreos[0].password+'@'+listaCorreos[0].dominioCorreo);
+					transporter.sendMail({
+						from: listaCorreos[0].nombreCorreo,
+						to: just.usuario.email,
+						subject: 'Se ha eliminado una justificación en SIGUCA',
+						text: " Estimado(a) " + just.usuario.nombre + " " + just.usuario.apellido1 + " " + just.usuario.apellido2
+						+ " \r\n Su supervisor ha eliminado una de las justificaciones presentadas, en la cuál se indicabá lo siguiente: " 
+						+ " \r\n Fecha: " + fecha
+						+ " \r\n Motivo: " + just.motivo
+						+ " \r\n Detalle: " + just.detalle
+					});
+			}
 		});
+		
 
 	});
 }
@@ -308,34 +326,39 @@ exports.gestionarJust = function(justificacion, cb, idUser){
 			}
 			).populate('usuario').exec(function (err, just) { 
 				if (err) return cb(err, '');
-				var transporter = nodemailer.createTransport('smtps://'+config.emailUser+':'+config.emailPass+'@'+config.emailEmail);
-				var a = new Date(just.fechaCreada * 1000);
-				var date = ""+a.getDate()+"/"+util.getMes(a.getMonth())+"/"+a.getFullYear();
-
-				var justtext = "\r\n\r\nFecha de creación:"+date+"\n"
-				+ "Motivo:"+just.motivo+"\n"
-				+ "Detalle:"+just.detalle+"\r\n\r\n";
-				var superV = "";
-				if(!errUser && supervisor) {
-					superV += supervisor.nombre;
-					superV += " " + supervisor.apellido1;
-					superV += " " + supervisor.apellido2;
-				}
-				transporter.sendMail({
-					from: emailSIGUCA,
-					to: just.usuario.email,
-					subject: 'Respuesta a justificación en SIGUCA',
-					text: " Estimado(a) " + just.usuario.nombre 
-					+ ",\r\n\r\nPor este medio se le notifica que "
-					+"la siguiente justificación ha sido respondida:"
-					+ justtext
-					+ "Le informamos que la justificación fue " + justificacion.estado 
-					+ " por el supervisor " + superV
-					+ ", con el siguiente comentario"
-					+ "\r\n\r\n " + justificacion.comentarioSupervisor
-					+ "\r\n\r\n Saludos cordiales."
+				Correo.find({},function(errorCritico,listaCorreos){
+					if(!errorCritico){
+						var transporter = nodemailer.createTransport('smtps://'+listaCorreos[0].nombreCorreo+':'+listaCorreos[0].password+'@'+listaCorreos[0].dominioCorreo);
+						var a = new Date(just.fechaCreada * 1000);
+						var date = ""+a.getDate()+"/"+util.getMes(a.getMonth())+"/"+a.getFullYear();
+		
+						var justtext = "\r\n\r\nFecha de creación:"+date+"\n"
+						+ "Motivo:"+just.motivo+"\n"
+						+ "Detalle:"+just.detalle+"\r\n\r\n";
+						var superV = "";
+						if(!errUser && supervisor) {
+							superV += supervisor.nombre;
+							superV += " " + supervisor.apellido1;
+							superV += " " + supervisor.apellido2;
+						}
+						transporter.sendMail({
+							from:listaCorreos[0].nombreCorreo,
+							to: just.usuario.email,
+							subject: 'Respuesta a justificación en SIGUCA',
+							text: " Estimado(a) " + just.usuario.nombre 
+							+ ",\r\n\r\nPor este medio se le notifica que "
+							+"la siguiente justificación ha sido respondida:"
+							+ justtext
+							+ "Le informamos que la justificación fue " + justificacion.estado 
+							+ " por el supervisor " + superV
+							+ ", con el siguiente comentario"
+							+ "\r\n\r\n " + justificacion.comentarioSupervisor
+							+ "\r\n\r\n Saludos cordiales."
+						});
+						return cb(err, 'Se elimino');
+					}
 				});
-				return cb(err, 'Se elimino');
+				
 			});
 		//
 	});
@@ -352,32 +375,36 @@ exports.gestionarJustifcacion = function(justificacion, cb, idUser){
 			}
 			).populate('usuario').exec(function (err, just) { 
 				if (err) return cb(err, '');
-				var transporter = nodemailer.createTransport('smtps://'+config.emailUser+':'+config.emailPass+'@'+config.emailEmail);
-				var a = new Date(just.fechaCreada * 1000);
-				var date = ""+a.getDate()+"/"+util.getMes(a.getMonth())+"/"+a.getFullYear();
-
-				var justtext = "\r\n\r\nFecha de creación:"+date+"\n"
-				+ "Motivo:"+just.motivo+"\n"
-				+ "Detalle:"+just.detalle+"\r\n\r\n";
-				var superV = "";
-				if(!errUser && supervisor) {
-					superV += supervisor.nombre;
-					superV += " " + supervisor.apellido1;
-					superV += " " + supervisor.apellido2;
-				}
-				transporter.sendMail({
-					from: emailSIGUCA,
-					to: just.usuario.email,
-					subject: 'Respuesta a justificación en SIGUCA',
-					text: " Estimado(a) " + just.usuario.nombre 
-					+ ",\r\n\r\nPor este medio se le notifica que "
-					+"la siguiente justificación ha sido respondida:"
-					+ justtext
-					+ "Le informamos que la justificación fue " + justificacion.estado 
-					+ " por el supervisor " + superV
-					+ ", con el siguiente comentario"
-					+ "\r\n\r\n " + justificacion.comentarioSupervisor
-					+ "\r\n\r\n Saludos cordiales."
+				Correo.find({},function(errorCritico,listaCorreos){
+					if(!errorCritico){
+						var transporter = nodemailer.createTransport('smtps://'+listaCorreos[0].nombreCorreo+':'+listaCorreos[0].password+'@'+listaCorreos[0].dominioCorreo);
+						var a = new Date(just.fechaCreada * 1000);
+						var date = ""+a.getDate()+"/"+util.getMes(a.getMonth())+"/"+a.getFullYear();
+		
+						var justtext = "\r\n\r\nFecha de creación:"+date+"\n"
+						+ "Motivo:"+just.motivo+"\n"
+						+ "Detalle:"+just.detalle+"\r\n\r\n";
+						var superV = "";
+						if(!errUser && supervisor) {
+							superV += supervisor.nombre;
+							superV += " " + supervisor.apellido1;
+							superV += " " + supervisor.apellido2;
+						}
+						transporter.sendMail({
+							from: listaCorreos[0].nombreCorreo,
+							to: just.usuario.email,
+							subject: 'Respuesta a justificación en SIGUCA',
+							text: " Estimado(a) " + just.usuario.nombre 
+							+ ",\r\n\r\nPor este medio se le notifica que "
+							+"la siguiente justificación ha sido respondida:"
+							+ justtext
+							+ "Le informamos que la justificación fue " + justificacion.estado 
+							+ " por el supervisor " + superV
+							+ ", con el siguiente comentario"
+							+ "\r\n\r\n " + justificacion.comentarioSupervisor
+							+ "\r\n\r\n Saludos cordiales."
+						});
+					}
 				});
 				//return cb(err, 'Se elimino');
 			});

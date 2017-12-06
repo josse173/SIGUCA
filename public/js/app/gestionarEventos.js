@@ -209,7 +209,7 @@ $("#justificarMasa").click(function() {
         dataType : "json",
         data:{vector:arrayJustificaciones},
         success: function(data) {
-           location.href="/gestionarEventos";
+           location.href="/gestionarEventos/justificaciones";
         },
         error: function(){
             alert("Error al eliminar justificacion.");
@@ -246,7 +246,7 @@ $("#justificacionDeleteMasa").click(function() {
         dataType : "json",
         data:{vector:arrayJustificaciones},
         success: function(data) {
-           location.href="/gestionarEventos";
+           location.href="/gestionarEventos/justificaciones";
         },
         error: function(){
             alert("Error al eliminar justificacion.");

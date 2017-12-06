@@ -28,6 +28,7 @@
  var crudMarca = require('./crudMarca');
  var crudDepartamento = require('./crudDepartamento');
  var crudFeriado = require('./crudFeriado');
+ var crudCorreo = require('./crudCorreo');
  var crud = require('./crud');
  var util = require('../util/util');
  var ObjectId = mongoose.Types.ObjectId;
@@ -36,6 +37,7 @@
 //Modelos para el manejo de objetos de la base de datos
 var Marca = require('../models/Marca');
 var Feriado = require('../models/Feriado');
+var Correo = require('../models/Correo');
 var Usuario = require('../models/Usuario');
 var Horario = require('../models/Horario');
 var HorarioFijo = require('../models/HorarioFijo');
@@ -1102,7 +1104,24 @@ module.exports = function(app, io) {
            
     });
     
-    
+    //asignarCorreo
+    app.post('/asignarCorreo',autentificado, crudCorreo.insertarCorreo);
+
+
+    app.get('/correo',autentificado,function(req,res){
+        Correo.find(function(err,correos){
+            if(err){
+                return res.jason(err);
+            }else{
+                req.user.tipo = req.session.name;
+                return res.render('correo', {
+                title: 'Nuevo correo | SIGUCA',
+                correo:correos,
+                usuario:req.user
+            });
+            }
+        });
+    });
 
     /*
     *  Crud de feriados
@@ -1143,6 +1162,20 @@ module.exports = function(app, io) {
         });
     });
 
+    app.get('/correo/delete/:id', autentificado, function (req, res) { 
+        crudCorreo.deleteCorreo(req.params.id, function (err, msj) {
+            if (err) return res.json(err);
+            else res.send(msj);
+        });
+    });
+
+    app.get('/correo/editCorreo/:id',function(req,res){
+        Correo.findById(req.params.id,function(err,feriado){
+            if (err) return res.json(err);
+            else res.json(feriado);
+        });
+     });
+
     
      app.get('/feriado/editFeriado/:id',function(req,res){
         Feriado.findById(req.params.id,function(err,feriado){
@@ -1152,12 +1185,9 @@ module.exports = function(app, io) {
      });
 
 
-      app.post('/feriadoUpdate/:id',autentificado, crudFeriado.actualizarFeriado);
+    app.post('/correoUpdate/:id',autentificado, crudCorreo.actualizarCorreo);
 
-   
-
-
-
+    app.post('/feriadoUpdate/:id',autentificado, crudFeriado.actualizarFeriado);
 
     io.sockets.on('connection', function(socket){
 

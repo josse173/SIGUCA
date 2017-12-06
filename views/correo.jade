@@ -1,0 +1,52 @@
+extends layout
+
+block content
+  .container
+    
+    br
+    h3 Lista de correos
+    table.footable.tableCorreo
+        thead
+          tr
+            th Nombre
+            th Editar
+            th Eliminar
+           
+           
+        tbody 
+          each correoCurrent, i in correo
+            tr
+              td #{correoCurrent.nombreCorreo} 
+              td
+                button.btn.btn-default(data-toggle="modal" data-target="#editCorreo" value=correoCurrent._id)
+                  i.icon-pencil.icon-large.i-success
+
+              td
+                button.correoDelete.btn.btn-default(value=correoCurrent.nombreCorreo+','+correoCurrent ._id)
+                  i.icon-trash.icon-large.i-danger
+
+      #editCorreo.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+      .modal-dialog
+          .modal-content
+            .modal-header
+              button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+              h4#myModalLabel.modal-title Actualizar correo
+            .modal-body
+              form.formUpdateCorreo(action='/correoUpdate', method='post')#login-form.well.span4
+                .form-group
+                  label(for='nombre' style="float:left") Cuenta de correo:
+                  input#nombreCorreo.form-control( type="email", name="nombreCorreo")   
+                  label(for='dominio' style="float:left") Dominio de correo:
+                  input#dominioCorreo.form-control( type="text", name="dominioCorreo")     
+
+                  label(for='pass' style="float:left") Contraseña:
+                  input#password.form-control( type="password", name="password")  
+
+               
+                button.btn.btn-success(type='submit') Actualizar
+                alertify.myAlert("Browser dialogs made easy!")
+                button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar 
+    
+   
+block sigucaJS
+  

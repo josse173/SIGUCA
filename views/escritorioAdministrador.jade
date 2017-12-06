@@ -63,6 +63,18 @@
               form(action= '/feriado')    
                 button.btn.btn-primary(type = 'submit')
                   i.icon-edit.icon-large
+    
+        tr
+        td Correo:  
+          td
+            button.btn.btn-success(type = 'submit' data-toggle="modal" data-target="#asignarCorreo")
+              i.icon-plus.icon-large
+                  
+          td
+            form(action= '/correo')    
+              button.btn.btn-primary(type = 'submit')
+                i.icon-edit.icon-large
+
 
 
 .col-xs-2  
@@ -385,6 +397,27 @@
                  
               button.btn.btn-success(type='submit') Ingresar
               button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
+
+  #asignarCorreo.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+    .modal-dialog
+        .modal-content
+          .modal-header
+            button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+            h4#myModalLabel.modal-title Añadir correo
+          .modal-body
+            form(action='/asignarCorreo', method='post')#login-form.well.span4
+              .form-group
+                h4 Información Básica
+                label(for='nombre' style="float:left") Cuenta de correo:
+                  input.form-control#textInput( type="email", name="nombreCorreo",required)  
+                label(for='nombre' style="float:left") @Dominio de correo:
+                  input.form-control#textInput( type="text", name="dominioCorreo",required)       
+                label(for='nombre' style="float:left") Contraseña:
+                  input.form-control#textInput(type="password", name="password",required)    
+                div.clearfix
+                button.btn.btn-success(type='submit') Ingresar
+                button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
+
 
   
 

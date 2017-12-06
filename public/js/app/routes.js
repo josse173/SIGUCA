@@ -780,6 +780,7 @@ $("#extraLink").click(function(){
     });
 
  $('.tableSolicitudes').footable().on('click', '.solicitudDelete', function(e) {
+
     var footable = $('.tableSolicitudes').data('footable');
     var row = $(this).parents('tr:first');
 
@@ -801,6 +802,31 @@ $("#extraLink").click(function(){
             });
         }
     }).show(); 
+});
+
+
+$('.tableVacaciones').footable().on('click', '.solicitudDelete', function(e) {
+   var footable = $('.tableSolicitudes').data('footable');
+   var row = $(this).parents('tr:first');
+
+   var solicitud = $(this).val();
+   var split = solicitud.split(',');
+   alertify.dialog('confirm')
+   .set({
+       'labels':{ok:'Eliminar', cancel:'Cancelar'},
+       'transition': 'slide',
+       'message': '¿Está seguro de eliminar la solicitud de <br/><strong>' +  split[0] + '</strong> creada el día <i><b> ' + split[2] + ' </b></i>?',
+       'onok': function(){ 
+           $.get('/solicitud/delete/'+split[1], function (data){
+               if(data == 'Se elimino'){
+                   footable.removeRow(row);
+                   alertify.message('Se eliminó la solicitud de <strong>' +  split[0] + '</strong> con éxito');
+               } else {
+                   alertify.error(data);
+               }
+           });
+       }
+   }).show(); 
 });
 
  $('.tableMarcas').footable().on('click', '.marcaDelete', function(e) {
@@ -905,6 +931,31 @@ $("#extraLink").click(function(){
 });
 
 
+$('.tableCorreo').footable().on('click', '.correoDelete', function(e) {
+    var footable = $('.tableCorreo').data('footable');
+    var row = $(this).parents('tr:first');
+
+    var correo= $(this).val();
+    var split = correo.split(',');
+    alertify.dialog('confirm')
+    .set({
+        'labels':{ok:'Eliminar', cancel:'Cancelar'},
+        'transition': 'slide',
+        'message': '¿Está seguro de eliminar el horario <strong>' +  split[0] + '</strong>?' ,
+        'onok': function(){ 
+            $.get('/correo/delete/'+split[1], function (data){
+                if(data == 'Se elimino'){
+                    footable.removeRow(row);
+                    alertify.message('Se eliminó el horario ' +  split[0] + ' con éxito');
+                } else {
+                    alertify.error('No se puede eliminar el horario <strong>' +  split[0] + '</strong>, ya que un empleado lo tiene asignado');
+                }
+            });
+        }
+    }).show();    
+});
+
+
 
 $("button[data-target=#editFeriado]").click( function() {
     var id = $(this).val();
@@ -915,6 +966,15 @@ $("button[data-target=#editFeriado]").click( function() {
     });
 });
 
+$("button[data-target=#editCorreo]").click( function() {
+    var id = $(this).val();
+    $('.formUpdateCorreo').attr('action', '/correoUpdate/'+id);
+    $.get('/correo/editCorreo/'+id, function( data ) {
+       $('#nombreCorreo').val(data.nombreCorreo);
+       $('#dominioCorreo').val(data.dominioCorreo);
+       $('#password').val(data.password);
+    });
+});
 
 
 
