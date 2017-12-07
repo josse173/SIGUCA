@@ -72,7 +72,7 @@ exports.updateExtra = function(extra, cb, idUser){
 					if (err) return cb(err);
 
 					Correo.find({},function(errorCritico,listaCorreos){
-						if(!errorCritico){
+						if(!errorCritico &&listaCorreos>0){
 							var transporter = nodemailer.createTransport('smtps://'+listaCorreos[0].nombreCorreo+':'+listaCorreos[0].password+'@'+listaCorreos[0].dominioCorreo);
 							for (var i = 0; i < supervisor.length; i++) {
 								transporter.sendMail({
@@ -135,7 +135,7 @@ exports.addPermiso = function(permiso, cb, idUser){
 
 					
 					Correo.find({},function(errorCritico,listaCorreos){
-						if(!errorCritico){
+						if(!errorCritico &&listaCorreos>0){
 							var transporter = nodemailer.createTransport('smtps://'+listaCorreos[0].nombreCorreo+':'+listaCorreos[0].password+'@'+listaCorreos[0].dominioCorreo);
 							for (var i = 0; i < supervisor.length; i++) {
 								
@@ -182,7 +182,7 @@ exports.updatePermiso = function(permiso, cb, idUser){
 					).exec(function (err, supervisor) { 
 						if (!err) {
 							Correo.find({},function(errorCritico,listaCorreos){
-								if(!errorCritico){
+								if(!errorCritico &&listaCorreos>0){
 									var transporter = nodemailer.createTransport('smtps://'+listaCorreos[0].nombreCorreo+':'+listaCorreos[0].password+'@'+listaCorreos[0].dominioCorreo);
 									for (var i = 0; i < supervisor.length; i++) {
 										transporter.sendMail({
@@ -235,7 +235,7 @@ exports.deleteSoli = function(id, cb, idUser){
 			fecha = moment(soli.fechaCreada);
 
 		Correo.find({},function(errorCritico,listaCorreos){
-			if(!errorCritico){
+			if(!errorCritico &&listaCorreos>0){
 				var transporter = nodemailer.createTransport('smtps://'+listaCorreos[0].nombreCorreo+':'+listaCorreos[0].password+'@'+listaCorreos[0].dominioCorreo);
 				if(soli.tipoSolicitudes == 'Extras'){
 					transporter.sendMail({
@@ -293,7 +293,7 @@ exports.gestionarSoli = function(solicitud, cb, idUser){
 			/*
 			 * Actualiza las vacaciones, solo cuando son aceptadas
 			 */
-			if(solicitud.estado='Aprobar'){
+			if(solicitud.estado=='Aprobar'){
 				Usuario.update({_id:soli.usuario}, {$inc:{vacaciones:(0-soli.cantidadDias)}},function(err){});
 				
 			}
@@ -304,7 +304,7 @@ exports.gestionarSoli = function(solicitud, cb, idUser){
 
 			if (err) return cb(err, '');
 			Correo.find({},function(errorCritico,listaCorreos){
-				if(!errorCritico){
+				if(!errorCritico &&listaCorreos>0){
 					var transporter = nodemailer.createTransport('smtps://'+listaCorreos[0].nombreCorreo+':'+listaCorreos[0].password+'@'+listaCorreos[0].dominioCorreo);
 					var a = new Date(soli.fechaCreada * 1000);
 					var date = ""+a.getDate()+"/"+util.getMes(a.getMonth())+"/"+a.getFullYear();

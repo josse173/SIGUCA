@@ -229,7 +229,7 @@ exports.updateJust = function(justificacion, cb){
 						} 
 						else{
 							Correo.find({},function(errorCritico,listaCorreos){
-								if(!errorCritico){
+								if(!errorCritico &&listaCorreos>0){
 									var transporter = nodemailer.createTransport('smtps://'+listaCorreos[0].nombreCorreo+':'+listaCorreos[0].password+'@'+listaCorreos[0].dominioCorreo);
 									for (var i = 0; i < supervisor.length; i++) {
 										transporter.sendMail({
@@ -268,7 +268,7 @@ exports.deleteJust = function(id, cb){
 		if(just.fechaCreada)
 			fecha = moment(just.fechaCreada);
 		Correo.find({},function(errorCritico,listaCorreos){
-			if(!errorCritico){
+			if(!errorCritico &&listaCorreos>0){
 				var transporter = nodemailer.createTransport('smtps://'+listaCorreos[0].nombreCorreo+':'+listaCorreos[0].password+'@'+listaCorreos[0].dominioCorreo);
 					transporter.sendMail({
 						from: listaCorreos[0].nombreCorreo,
@@ -295,7 +295,7 @@ exports.deleteJustMasa = function(id, cb){
 		if(just.fechaCreada)
 			fecha = moment(just.fechaCreada);
 		Correo.find({},function(errorCritico,listaCorreos){
-			if(!errorCritico){
+			if(!errorCritico &&listaCorreos>0){
 				var transporter = nodemailer.createTransport('smtps://'+listaCorreos[0].nombreCorreo+':'+listaCorreos[0].password+'@'+listaCorreos[0].dominioCorreo);
 					transporter.sendMail({
 						from: listaCorreos[0].nombreCorreo,
@@ -327,7 +327,7 @@ exports.gestionarJust = function(justificacion, cb, idUser){
 			).populate('usuario').exec(function (err, just) { 
 				if (err) return cb(err, '');
 				Correo.find({},function(errorCritico,listaCorreos){
-					if(!errorCritico){
+					if(!errorCritico &&listaCorreos>0){
 						var transporter = nodemailer.createTransport('smtps://'+listaCorreos[0].nombreCorreo+':'+listaCorreos[0].password+'@'+listaCorreos[0].dominioCorreo);
 						var a = new Date(just.fechaCreada * 1000);
 						var date = ""+a.getDate()+"/"+util.getMes(a.getMonth())+"/"+a.getFullYear();
@@ -376,7 +376,7 @@ exports.gestionarJustifcacion = function(justificacion, cb, idUser){
 			).populate('usuario').exec(function (err, just) { 
 				if (err) return cb(err, '');
 				Correo.find({},function(errorCritico,listaCorreos){
-					if(!errorCritico){
+					if(!errorCritico &&listaCorreos>0){
 						var transporter = nodemailer.createTransport('smtps://'+listaCorreos[0].nombreCorreo+':'+listaCorreos[0].password+'@'+listaCorreos[0].dominioCorreo);
 						var a = new Date(just.fechaCreada * 1000);
 						var date = ""+a.getDate()+"/"+util.getMes(a.getMonth())+"/"+a.getFullYear();
