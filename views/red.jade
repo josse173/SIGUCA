@@ -1,0 +1,44 @@
+extends layout
+
+block content
+  .container
+    
+    br
+    h3 Lista de redes
+    table.footable.tableRed
+        thead
+          tr
+            th Nombre
+            th Editar
+            th Eliminar
+           
+        tbody 
+          each redCurrent, i in red
+            tr
+              td #{redCurrent.nombreRed} 
+              td
+                button.btn.btn-default(data-toggle="modal" data-target="#editRed" value=redCurrent._id)
+                  i.icon-pencil.icon-large.i-success
+
+              td
+                button.redDelete.btn.btn-default(value=redCurrent.nombreRed+','+redCurrent._id)
+                  i.icon-trash.icon-large.i-danger
+
+    #editRed.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+      .modal-dialog
+          .modal-content
+            .modal-header
+              button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+              h4#myModalLabel.modal-title Actualizar red
+            .modal-body
+              form.formUpdateRed(action='/redUpdate', method='post')#login-form.well.span4
+                .form-group
+                  label(for='nombre' style="float:left") Red:
+                  input#nombreRed.form-control( type="text", name="nombreRed")   
+             
+               
+                button.btn.btn-success(type='submit') Actualizar
+                alertify.myAlert("Browser dialogs made easy!")
+                button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar              
+
+block sigucaJS

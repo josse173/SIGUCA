@@ -5,6 +5,7 @@ Usuario 			= require('../models/Usuario'),
 cierre 				= require('../actions/tareas.js'),
 Marca 				= require('../models/Marca'),
 Horario 			= require('../models/Horario'),
+Red 			= require('../models/Red'),
 HorarioFijo 		= require('../models/HorarioFijo'),
 util 				= require('../util/util'),
 crudHorario 		= require('./crudHorario'),
@@ -12,6 +13,7 @@ crud 				= require('./crud'),
 crudJustificaciones = require('../routes/crudJustificaciones'),
 config 				= require('../config.json');
 cierrePersonal 		= require ('../models/CierrePersonal.js');
+var contador=0;
 //justificaciones 	= require ('../models/Justificaciones.js');
 //--------------------------------------------------------------------
 //		Métodos Marcas
@@ -32,8 +34,7 @@ function saveMarca(m, cb, msg){
 }
 
 function marca (ipOrigen,tipoUsuario, marca, cb) {
-
-
+	
 	if(marca.tipoMarca != 'error') {
 		var date = moment(),
 		epochTime = date.unix(),
@@ -44,9 +45,32 @@ function marca (ipOrigen,tipoUsuario, marca, cb) {
 			marca.dispositivo="Computadora";
 		}
 		
-		marca.ipOrigen=ipOrigen;
+		var arrayOrigen=ipOrigen.split(".");
+		var tempRed;
+		if(arrayOrigen.length>=3){
+			for(var i=0;i<3;i++){
+				if(i==0)
+				tempRed=arrayOrigen[i];
+				else
+				tempRed=tempRed+"."+arrayOrigen[i];
+			}
 		
+		}
+
+		marca.ipOrigen=ipOrigen;
 		var newMarca = Marca(marca);
+		Red.find({nombreRed:tempRed},function(err,redes){
+			if(!err &&redes.length>0 ){
+				if(redes.length>0){
+					newMarca.red="local";
+				}
+			}else if(marca.ipOrigen!=""){
+				newMarca.red="remota";
+			}else if(marca.ipOrigen==""){
+				newMarca.red="Desconocida";
+			}
+		
+			
 		
 		Marca.find(
 		{
@@ -190,8 +214,23 @@ function marca (ipOrigen,tipoUsuario, marca, cb) {
 			else return cb("Surgió un error no contemplado con la marca,"+
 				"vuelva a intentarlo o contacto con el administrador");
 		});
+	});
 		//
 	}
+}
+
+function verificarRed(tempRed,cb){
+	Red.find({nombreRed:tempRed},function(err,redes){
+		if(!err &&redes.length>0 ){
+			if(redes.length>0){
+				cb("local");
+			}else{
+				cb("remota");
+			}
+		}
+		
+	});
+
 }
 
 exports.deleteMarca = function(id,tipoMarca,usuarioId, tipoUsuario, cb){

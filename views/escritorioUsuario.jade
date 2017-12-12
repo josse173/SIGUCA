@@ -60,7 +60,9 @@
             th(data-sort-ignore="true") Tipo
             th(data-sort-ignore="true") Hora
             th Dispositivo
+            th Red
         tbody.marcasDetalle#marcasBody
+        
           each marca, i in marcas
             tr
               td #{marca.tipoMarca}
@@ -71,6 +73,15 @@
               else
                 td
                   img(src='/images/ras.png' height="50" width="auto")#PiLogo   
+              if(marca.red=="local")
+                td
+                  img(src='/images/office.png' height="50" width="auto")#OffieLogo
+              else if(marca.red=="remota")  
+                td
+                  img(src='/images/home.png' height="50" width="auto")#OffieLogo
+              else  
+                td #{marca.red}
+              
 
  .col-xs-4
   .marca

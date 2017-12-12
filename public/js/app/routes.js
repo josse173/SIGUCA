@@ -946,14 +946,39 @@ $('.tableCorreo').footable().on('click', '.correoDelete', function(e) {
             $.get('/correo/delete/'+split[1], function (data){
                 if(data == 'Se elimino'){
                     footable.removeRow(row);
-                    alertify.message('Se eliminó el horario ' +  split[0] + ' con éxito');
+                    alertify.message('Se eliminó el correo ' +  split[0] + ' con éxito');
                 } else {
-                    alertify.error('No se puede eliminar el horario <strong>' +  split[0] + '</strong>, ya que un empleado lo tiene asignado');
+                    alertify.error('No se puede eliminar el correo <strong>' +  split[0] + '</strong>,');
                 }
             });
         }
     }).show();    
 });
+
+$('.tableRed').footable().on('click', '.redDelete', function(e) {
+    var footable = $('.tableRed').data('footable');
+    var row = $(this).parents('tr:first');
+
+    var red= $(this).val();
+    var split = red.split(',');
+    alertify.dialog('confirm')
+    .set({
+        'labels':{ok:'Eliminar', cancel:'Cancelar'},
+        'transition': 'slide',
+        'message': '¿Está seguro de eliminar la red <strong>' +  split[0] + '</strong>?' ,
+        'onok': function(){ 
+            $.get('/red/delete/'+split[1], function (data){
+                if(data == 'Se elimino'){
+                    footable.removeRow(row);
+                    alertify.message('Se eliminó la red ' +  split[0] + ' con éxito');
+                } else {
+                    alertify.error('No se puede eliminar la red <strong>' +  split[0] + '</strong>');
+                }
+            });
+        }
+    }).show();    
+});
+
 
 
 
@@ -976,6 +1001,13 @@ $("button[data-target=#editCorreo]").click( function() {
     });
 });
 
+$("button[data-target=#editRed]").click( function() {
+    var id = $(this).val();
+    $('.formUpdateRed').attr('action', '/redUpdate/'+id);
+    $.get('/red/editRed/'+id, function( data ) {
+       $('#nombreRed').val(data.nombreRed);
+    });
+});
 
 
 

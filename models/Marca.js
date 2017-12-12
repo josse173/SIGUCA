@@ -32,6 +32,10 @@ var SchemaMarca = new Schema({
         type: String,
         default: ""
     },
+    red: { // Dispositivo desde el que se realiza la marca
+        type: String,
+        default: ""
+    },
 });
 
 module.exports = mongoose.model('Marca', SchemaMarca);

@@ -29,6 +29,7 @@
  var crudDepartamento = require('./crudDepartamento');
  var crudFeriado = require('./crudFeriado');
  var crudCorreo = require('./crudCorreo');
+ var crudRed = require('./crudRed');
  var crud = require('./crud');
  var util = require('../util/util');
  var ObjectId = mongoose.Types.ObjectId;
@@ -38,6 +39,7 @@
 var Marca = require('../models/Marca');
 var Feriado = require('../models/Feriado');
 var Correo = require('../models/Correo');
+var Red = require('../models/Red');
 var Usuario = require('../models/Usuario');
 var Horario = require('../models/Horario');
 var HorarioFijo = require('../models/HorarioFijo');
@@ -1122,6 +1124,43 @@ module.exports = function(app, io) {
             }
         });
     });
+
+
+    //asignarRed
+    app.post('/asignarRed',autentificado, crudRed.insertarRed);
+
+    app.get('/red',autentificado,function(req,res){
+        Red.find(function(err,redes){
+            if(err){
+                return res.jason(err);
+            }else{
+                req.user.tipo = req.session.name;
+                return res.render('red', {
+                title: 'Nueva Red | SIGUCA',
+                red:redes,
+                usuario:req.user
+            });
+            }
+        });
+    });
+
+    app.get('/red/delete/:id', autentificado, function (req, res) { 
+        crudRed.deleteRed(req.params.id, function (err, msj) {
+            if (err) return res.json(err);
+            else res.send(msj);
+        });
+    });
+
+
+    app.get('/red/editRed/:id',function(req,res){
+        Red.findById(req.params.id,function(err,red){
+            if (err) return res.json(err);
+            else res.json(red);
+        });
+     });
+
+
+    app.post('/redUpdate/:id',autentificado, crudRed.actualizarRed);
 
     /*
     *  Crud de feriados
