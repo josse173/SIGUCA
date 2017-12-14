@@ -37,6 +37,7 @@
 //**********************************************
 //Modelos para el manejo de objetos de la base de datos
 var Marca = require('../models/Marca');
+var HorasTrabajadas = require('../models/CierrePersonal');
 var Feriado = require('../models/Feriado');
 var Correo = require('../models/Correo');
 var Red = require('../models/Red');
@@ -419,6 +420,48 @@ module.exports = function(app, io) {
             res.json({result:m, marcas:mcs});
         });
     
+
+    });
+
+    app.post('/rango/get', autentificado, function (req, res) {
+        if(req.body.fecha.inicio && req.body.fecha.inicio.split("/").length == 3 &&
+        req.body.fecha.final && req.body.fecha.final.split("/").length == 3){
+
+            var inicio = req.body.fecha.inicio.split("/");
+            var final = req.body.fecha.final.split("/");
+
+            var epochGte = moment();
+            epochGte.year(inicio[2]).month(inicio[1]-1).date(inicio[0]);
+            epochGte.hour(0).minutes(0).seconds(0);
+
+            var epochLte = moment();
+            epochLte.year(final[2]).month(final[1]-1).date(final[0]);
+            epochLte.hour(23).minutes(59).seconds(59);
+
+            HorasTrabajadas.find({
+                usuario:req.user.id,
+                tipoUsuario: req.session.name,
+                epoch:{
+                "$gte":epochGte.unix(),
+                "$lte":epochLte.unix()
+                }
+            },function(error,cierres){
+                if(!error && cierres.length>0){
+                    var lista=new Array();
+                    for(var i=0;i<cierres.length;i++){
+                        var obj=new Object();
+                        obj.minutos=cierres[i].tiempo.minutos;
+                        obj.horas=cierres[i].tiempo.horas;
+                        lista.push(obj);
+                    }
+                    res.json({result:"ok", lista:lista});
+                    
+                }else{
+                    res.json({result:"fail"});
+                }
+            });
+
+        }
 
     });
 

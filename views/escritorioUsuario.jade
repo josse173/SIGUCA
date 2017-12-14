@@ -42,8 +42,18 @@
           span.clockHorasTrab
       
     h3.text-success Consulta por fecha.
-    input#date_range_marca.form-control(type='text')
-    button#btnIr.btn-primary.btn    Ir   
+    .form-group
+      label.labelFiltro(for='fechaHasta') Desde:
+        div.input-group
+          input#date_range_marca.form-control(type='text')
+          span.input-group-addon
+            i.icon-calendar     
+      label.labelFiltro(for='fechaHasta') Hasta:
+        div.input-group
+          input#date_range_end.form-control(type='text')
+          span.input-group-addon
+            i.icon-calendar   
+        button#btnIr.btn-primary.btn    Ir   
 
     div
       div.hideDisplay

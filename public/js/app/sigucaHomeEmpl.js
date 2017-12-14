@@ -103,6 +103,60 @@ $('#btn-marca').click(function(){
 });
 
 $('#btnIr').click(function(){
+    if($('#date_range_end').val()!="" &&  $('#date_range_marca').val()!=""){
+        var obj=new Object();
+        obj.inicio=$('#date_range_marca').val();
+        obj.final=$('#date_range_end').val();
+        $.ajax({
+            url: "/rango/get",
+            type: 'POST',
+            dataType : "json",
+            data: {"fecha":obj},
+            success: function(data) {
+                if(data.result=="ok"){
+                    var horas=0, minutos=0;
+                    for(var i=0;i<data.lista.length;i++){
+                        horas=horas+data.lista[i].horas;
+                        minutos=minutos+data.lista[i].minutos;
+                    }
+                    while(minutos>59){
+                        horas++;
+                        minutos=minutos-60;
+                    }
+                    
+                    if(minutos<10){
+                        minutos = "0"+minutos;
+                    }
+                    if(horas<10){
+                        horas = "0"+horas;
+                    }
+                    
+                    $(".hideDisplay").css("display","inline-flex");
+                    $(".qwer").html("");
+                    var cantidadFinal= horas+":"+minutos;
+                    $(".qwer").text(cantidadFinal); 
+                    $("#date_range_marca").val(""); 
+                    $("#date_range_end").val(""); 
+     
+                }else{
+                    $(".hideDisplay").css("display","inline-flex");
+                    $(".qwer").html("");
+                    var cantidadFinal= 0+":"+0+""+0;
+                    $(".qwer").text(cantidadFinal); 
+                }
+                
+             
+            }
+            ,error: function(){
+                alert("Error.");
+            }
+        });
+
+            
+
+
+    }
+    else{
     $.ajax({
         url: "/marca/get",
         type: 'POST',
@@ -116,11 +170,14 @@ $('#btnIr').click(function(){
                     .append(
                         $("<td></td>").text(data.marcas[m].tipoMarca))
                     .append(
-                        $("<td></td>").text(data.marcas[m].fecha.hora)));
+                        $("<td></td>").text(data.marcas[m].fecha.hora))
+                    
+                    );
                }               
             }
             $(".hideDisplay").css("display","inline-flex");
             $(".qwer").html("");
+            $(".qwer").text(0+""+0+":"+""+0+""+0); 
             if(data.result!="error"){
                 for(m in data.marcas){
                     if(data.marcas[m].tipoMarca=='Entrada'){
@@ -201,6 +258,7 @@ $('#btnIr').click(function(){
                     minutos=minutos-60;
                 }
 
+                alert();
                 var cantidadFinal= horas+":"+minutos;
                 $(".qwer").text(cantidadFinal); 
  
@@ -212,8 +270,11 @@ $('#btnIr').click(function(){
         }
 
     });  
+
+    }//fin
 });
 //
+
 
 
 $('#cerrarPanel').click(function(){
