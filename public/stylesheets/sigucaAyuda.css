@@ -285,7 +285,14 @@ body {
 	}
     .eventosCierre {
     	margin: 0;
-    }
+	}
+	.tableInfo{
+		display: none;
+	}.text-success {
+		display: none;
+	}.img-responsive{
+		display: none;
+	}
 }
 @media(max-width: 350px) {
     #calSupervisor {

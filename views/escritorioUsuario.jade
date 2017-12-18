@@ -40,6 +40,10 @@
           span.clock
         label Tiempo trabajado 
           span.clockHorasTrab
+      .marca
+        div#contBotones
+          div           
+          button#btn-marca.btn.btn-success(name='marcar', onclick= "changeElemt('marca')", data-toggle="modal" data-target="#addMarca" value=usuario._id) Realizar Marca
       
     h3.text-success Consulta por fecha.
     .form-group
@@ -94,12 +98,6 @@
               
 
  .col-xs-4
-  .marca
-    h4.headerFont  Marca Mediante el Sistema
-    div#contBotones
-      div           
-       button#btn-marca.btn.btn-success(name='marcar', onclick= "changeElemt('marca')", data-toggle="modal" data-target="#addMarca" value=usuario._id) Realizar Marca
-
   if(usuario.tipo == 'Supervisor')
     h4.headerFont Pendientes de revisar 
     ul.list-group
