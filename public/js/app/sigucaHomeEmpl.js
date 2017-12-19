@@ -258,7 +258,7 @@ $('#btnIr').click(function(){
                     minutos=minutos-60;
                 }
 
-                alert();
+                //alert();
                 var cantidadFinal= horas+":"+minutos;
                 $(".qwer").text(cantidadFinal); 
  
