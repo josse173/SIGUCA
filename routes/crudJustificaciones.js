@@ -268,7 +268,7 @@ exports.deleteJust = function(id, cb){
 		if(just.fechaCreada)
 			fecha = moment(just.fechaCreada);
 		Correo.find({},function(errorCritico,listaCorreos){
-			if(!errorCritico &&listaCorreos>0){
+			if(!errorCritico &&listaCorreos.length>0){
 				var transporter = nodemailer.createTransport('smtps://'+listaCorreos[0].nombreCorreo+':'+listaCorreos[0].password+'@'+listaCorreos[0].dominioCorreo);
 					transporter.sendMail({
 						from: listaCorreos[0].nombreCorreo,
@@ -280,6 +280,8 @@ exports.deleteJust = function(id, cb){
 						+ " \r\n Motivo: " + just.motivo
 						+ " \r\n Detalle: " + just.detalle
 					});
+			}else{
+				console.log("error al enviar correo de eliminado de justificación");
 			}
 		});
 
