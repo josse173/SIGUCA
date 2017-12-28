@@ -329,7 +329,7 @@ exports.gestionarJust = function(justificacion, cb, idUser){
 			).populate('usuario').exec(function (err, just) { 
 				if (err) return cb(err, '');
 				Correo.find({},function(errorCritico,listaCorreos){
-					if(!errorCritico &&listaCorreos>0){
+					if(!errorCritico &&listaCorreos.length>0){
 						var transporter = nodemailer.createTransport('smtps://'+listaCorreos[0].nombreCorreo+':'+listaCorreos[0].password+'@'+listaCorreos[0].dominioCorreo);
 						var a = new Date(just.fechaCreada * 1000);
 						var date = ""+a.getDate()+"/"+util.getMes(a.getMonth())+"/"+a.getFullYear();
@@ -358,6 +358,9 @@ exports.gestionarJust = function(justificacion, cb, idUser){
 							+ "\r\n\r\n Saludos cordiales."
 						});
 						return cb(err, 'Se elimino');
+					}else{
+						return cb(err, 'Se elimino');
+						
 					}
 				});
 				
@@ -378,7 +381,7 @@ exports.gestionarJustifcacion = function(justificacion, cb, idUser){
 			).populate('usuario').exec(function (err, just) { 
 				if (err) return cb(err, '');
 				Correo.find({},function(errorCritico,listaCorreos){
-					if(!errorCritico &&listaCorreos>0){
+					if(!errorCritico &&listaCorreos.length>0){
 						var transporter = nodemailer.createTransport('smtps://'+listaCorreos[0].nombreCorreo+':'+listaCorreos[0].password+'@'+listaCorreos[0].dominioCorreo);
 						var a = new Date(just.fechaCreada * 1000);
 						var date = ""+a.getDate()+"/"+util.getMes(a.getMonth())+"/"+a.getFullYear();
@@ -406,6 +409,8 @@ exports.gestionarJustifcacion = function(justificacion, cb, idUser){
 							+ "\r\n\r\n " + justificacion.comentarioSupervisor
 							+ "\r\n\r\n Saludos cordiales."
 						});
+					}else{
+						console.log("problemas 2");
 					}
 				});
 				//return cb(err, 'Se elimino');
