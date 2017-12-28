@@ -72,7 +72,7 @@ exports.updateExtra = function(extra, cb, idUser){
 					if (err) return cb(err);
 
 					Correo.find({},function(errorCritico,listaCorreos){
-						if(!errorCritico &&listaCorreos>0){
+						if(!errorCritico &&listaCorreos.length>0){
 							var transporter = nodemailer.createTransport('smtps://'+listaCorreos[0].nombreCorreo+':'+listaCorreos[0].password+'@'+listaCorreos[0].dominioCorreo);
 							for (var i = 0; i < supervisor.length; i++) {
 								transporter.sendMail({
@@ -161,6 +161,7 @@ exports.addPermiso = function(permiso, cb, idUser){
 }
 
 exports.updatePermiso = function(permiso, cb, idUser){
+	console.log("adfa");
 	var epochTime = moment().unix();
 
 	var solicitudActualizada = {
@@ -182,7 +183,7 @@ exports.updatePermiso = function(permiso, cb, idUser){
 					).exec(function (err, supervisor) { 
 						if (!err) {
 							Correo.find({},function(errorCritico,listaCorreos){
-								if(!errorCritico &&listaCorreos>0){
+								if(!errorCritico &&listaCorreos.length>0){
 									var transporter = nodemailer.createTransport('smtps://'+listaCorreos[0].nombreCorreo+':'+listaCorreos[0].password+'@'+listaCorreos[0].dominioCorreo);
 									for (var i = 0; i < supervisor.length; i++) {
 										transporter.sendMail({
@@ -235,7 +236,7 @@ exports.deleteSoli = function(id, cb, idUser){
 			fecha = moment(soli.fechaCreada);
 
 		Correo.find({},function(errorCritico,listaCorreos){
-			if(!errorCritico &&listaCorreos>0){
+			if(!errorCritico &&listaCorreos.length>0){
 				var transporter = nodemailer.createTransport('smtps://'+listaCorreos[0].nombreCorreo+':'+listaCorreos[0].password+'@'+listaCorreos[0].dominioCorreo);
 				if(soli.tipoSolicitudes == 'Extras'){
 					transporter.sendMail({
@@ -304,7 +305,7 @@ exports.gestionarSoli = function(solicitud, cb, idUser){
 
 			if (err) return cb(err, '');
 			Correo.find({},function(errorCritico,listaCorreos){
-				if(!errorCritico &&listaCorreos>0){
+				if(!errorCritico &&listaCorreos.length>0){
 					var transporter = nodemailer.createTransport('smtps://'+listaCorreos[0].nombreCorreo+':'+listaCorreos[0].password+'@'+listaCorreos[0].dominioCorreo);
 					var a = new Date(soli.fechaCreada * 1000);
 					var date = ""+a.getDate()+"/"+util.getMes(a.getMonth())+"/"+a.getFullYear();
