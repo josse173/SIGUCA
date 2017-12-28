@@ -229,7 +229,7 @@ exports.updateJust = function(justificacion, cb){
 						} 
 						else{
 							Correo.find({},function(errorCritico,listaCorreos){
-								if(!errorCritico &&listaCorreos>0){
+								if(!errorCritico &&listaCorreos.length>0){
 									var transporter = nodemailer.createTransport('smtps://'+listaCorreos[0].nombreCorreo+':'+listaCorreos[0].password+'@'+listaCorreos[0].dominioCorreo);
 									for (var i = 0; i < supervisor.length; i++) {
 										transporter.sendMail({
