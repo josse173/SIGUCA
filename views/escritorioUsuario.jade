@@ -34,7 +34,7 @@
   //-Marcas
   div.col-md-5
     div(style="border: 2px solid green; padding: 5%;")
-      h3.text-success Registro de Marcas
+      h3.text-success Realizar Marca
       div
         label Hora oficial
           span.clock
@@ -45,6 +45,36 @@
           div           
           button#btn-marca.btn.btn-success(name='marcar', onclick= "changeElemt('marca')", data-toggle="modal" data-target="#addMarca" value=usuario._id) Realizar Marca
       
+  
+    h3.text-success Registro de Marcas 
+    table#tablaMarcas.footable
+      thead
+        tr
+          th(data-sort-ignore="true") Tipo
+          th(data-sort-ignore="true") Hora
+          th Dispositivo
+          th Red
+      tbody.marcasDetalle#marcasBody
+      
+        each marca, i in marcas
+          tr
+            td #{marca.tipoMarca}
+            td #{marca.fecha}
+            if(marca.dispositivo=="Computadora")
+              td 
+                img(src='/images/compu.png' height="50" width="auto")#CompuLogo
+            else
+              td
+                img(src='/images/ras.png' height="50" width="auto")#PiLogo   
+            if(marca.red=="local")
+              td
+                img(src='/images/office.png' height="50" width="auto")#OffieLogo
+            else if(marca.red=="remota")  
+              td
+                img(src='/images/home.png' height="50" width="auto")#OffieLogo
+            else  
+              td #{marca.red}
+
     h3.text-success Consulta por fecha.
     .form-group
       label.labelFiltro(for='fechaHasta') Desde:
@@ -68,33 +98,6 @@
             button.close#cerrarPanel(type='button') ×
             .text-center.bigFont.span.qwer  
       
-      table#tablaMarcas.footable
-        thead
-          tr
-            th(data-sort-ignore="true") Tipo
-            th(data-sort-ignore="true") Hora
-            th Dispositivo
-            th Red
-        tbody.marcasDetalle#marcasBody
-        
-          each marca, i in marcas
-            tr
-              td #{marca.tipoMarca}
-              td #{marca.fecha}
-              if(marca.dispositivo=="Computadora")
-                td 
-                  img(src='/images/compu.png' height="50" width="auto")#CompuLogo
-              else
-                td
-                  img(src='/images/ras.png' height="50" width="auto")#PiLogo   
-              if(marca.red=="local")
-                td
-                  img(src='/images/office.png' height="50" width="auto")#OffieLogo
-              else if(marca.red=="remota")  
-                td
-                  img(src='/images/home.png' height="50" width="auto")#OffieLogo
-              else  
-                td #{marca.red}
               
 
  .col-xs-4

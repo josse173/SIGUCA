@@ -270,6 +270,10 @@ body {
 }
 
 @media(max-width: 589px) {
+	#tablaMarcas{
+		margin-top: 10%
+	}
+	
 	.filter {
 	    padding-right: 15px;
 		padding-left: 15px;
@@ -295,6 +299,10 @@ body {
 	}
 }
 @media(max-width: 350px) {
+	#tablaMarcas{
+		margin-top: 10%
+	}
+
     #calSupervisor {
 		margin-left: 20px;
     }
