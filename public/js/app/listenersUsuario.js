@@ -211,6 +211,7 @@ $("#diaFinal,#diaInicio").change(function(e){
         var diasDif = fecha2.getTime() - fecha1.getTime();
         var dias = Math.round(diasDif/(1000 * 60 * 60 * 24));
 
+        dias++;
         if(dias && dias!= null){
             document.getElementById("lblnumDias").innerHTML = "Días: " + dias;
             document.getElementById("cantidadDias").value = dias;
