@@ -219,7 +219,6 @@
                  input#apellido2.form-control(type= 'text', placeholder='Sandi', name='apellido2')   
                 label(for='email') Correo Eléctronico:
                   input#email.form-control(type= 'email', placeholder='alguien@ejemplo.com', name='email')
-                 
               .form-group 
                 h3 Información Laboral
                 label(for='codTarjeta') Código de Empleado:
@@ -269,7 +268,9 @@
                 
                 label.labelFiltro(for='fechaIngreso') Fecha Ingreso:
                     input#fechaIngreso.form-control(style="cursor:pointer; cursor: hand;", type="text", name='fechaIngreso', readonly="readonly", placeholder="Fecha Ingreso" )
-                    
+
+                label(for='teleTrabajo') Tele trabajo:
+                  input#teleTrabajo.form-control(type='checkbox',checked=false, name="teleTrabajo") 
 
               .form-group
                 label(for="passwordInput")

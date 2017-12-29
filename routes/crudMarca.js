@@ -4,6 +4,7 @@ moment 				= require('moment'),
 Usuario 			= require('../models/Usuario'),
 cierre 				= require('../actions/tareas.js'),
 Marca 				= require('../models/Marca'),
+Usuario 				= require('../models/Usuario'),
 Horario 			= require('../models/Horario'),
 Red 			= require('../models/Red'),
 HorarioFijo 		= require('../models/HorarioFijo'),
@@ -59,6 +60,7 @@ function marca (ipOrigen,tipoUsuario, marca, cb) {
 
 		marca.ipOrigen=ipOrigen;
 		var newMarca = Marca(marca);
+		console.log(newMarca.usuario);
 		Red.find({nombreRed:tempRed},function(err,redes){
 			if(!err &&redes.length>0 ){
 				if(redes.length>0){
@@ -71,151 +73,304 @@ function marca (ipOrigen,tipoUsuario, marca, cb) {
 			}
 		
 			
-		
-		Marca.find(
-		{
-			epoch:{'$gte': epochTimeGte, '$lte': epochTimeLte}, 
-			usuario: newMarca.usuario,
-			tipoUsuario: tipoUsuario
-		}).sort({epoch: 1}).exec(function (err, marcas){
-			var marcas = util.clasificarMarcas(marcas);
-			if(newMarca.tipoMarca=="Entrada" ){
-				if(!marcas.entrada && !marcas.salida
-					&& !marcas.almuerzoIn && !marcas.almuerzoOut
-					&& marcas.recesos.length==0){
-						//
-					return revisarMarca(tipoUsuario, newMarca.usuario, newMarca,
-						function(msg){
-							saveMarca(newMarca,cb,msg);
-						});
-				}
-				else cb("La marca de entrada fue registrada anteriormente.");
-			}
-			else if(newMarca.tipoMarca=="Salida"){
-				if(marcas.entrada && !marcas.salida
-					&& (
-						(marcas.almuerzoIn && marcas.almuerzoOut) ||
-						(!marcas.almuerzoIn && !marcas.almuerzoOut)
-						)
-					&& (
-						marcas.recesos.length==0 ||
-						marcas.recesos[marcas.recesos.length-1].recesoIn
-						)){
-						//
-					var msgTem = revisarMarca(tipoUsuario, newMarca.usuario, newMarca,
-						function(msg){
-							saveMarca(newMarca,cb,msg);
-							cierre.ejecutarCierrePorUsuarioAlMarcarSalida(tipoUsuario,newMarca.usuario);
-							//cierre.ejecutarCierre();
-						
-						});
-					
-					
-					return msgTem;
-				}
-				else cb("La marca de salida no fue registrada, ya que fue registrada anteriormente,"+
-					"se encuentra en almuerzo o en receso.");
-			}
-			//
-			else if(newMarca.tipoMarca=="Salida a Receso"){
-				if(marcas.entrada && !marcas.salida
-					&& (
-						(marcas.almuerzoIn && marcas.almuerzoOut) ||
-						(!marcas.almuerzoIn && !marcas.almuerzoOut)
-						)
-					&& (
-						marcas.recesos.length==0 ||
-						marcas.recesos[marcas.recesos.length-1].recesoIn
-						)){
-						//
-					return saveMarca(newMarca,cb);
-				}
-				else cb("La marca de salida a receso no fue registrada, "+
-					"ya que no ha marcado entrada, ya marcó la salida o "+
-					"se encuentra en almuerzo o en otro receso");
-			}
-			//
-			else if(newMarca.tipoMarca=="Entrada de Receso"){
-				if(marcas.entrada && !marcas.salida
-					&& (
-						(marcas.almuerzoIn && marcas.almuerzoOut) ||
-						(!marcas.almuerzoIn && !marcas.almuerzoOut)
-						)
-					&&  (
-						marcas.recesos.length>0 &&
-						!marcas.recesos[marcas.recesos.length-1].recesoIn
-						)
-					){
-						//
-					return saveMarca(newMarca,cb);
-				}
-				else cb("La marca de entrada a receso no fue registrada, "+
-					"ya que no ha marcado entrada, ya marcó la salida, "+
-					"se encuentra en almuerzo o no ha marcado para salir a receso.");
-			}
-			//
-			else if(newMarca.tipoMarca=="Salida al Almuerzo"){
-				if(marcas.entrada && !marcas.salida
-					&& !marcas.almuerzoOut && !marcas.almuerzoIn
-					&& (
-						marcas.recesos.length==0 ||
-						marcas.recesos[marcas.recesos.length-1].recesoIn
-						)
-					){
-						//
-					return saveMarca(newMarca,cb);
-				}
-				else cb("La marca de salida a almuerzo no fue registrada, "+
-					"ya que no ha marcado entrada, ya marcó la salida o "+
-					"ya se encuentra en almuerzo o receso.");
-			}
-			//
-			else if(newMarca.tipoMarca=="Entrada de Almuerzo"){
-				if(marcas.entrada && !marcas.salida
-					&& marcas.almuerzoOut && !marcas.almuerzoIn
-					&& (
-						marcas.recesos.length==0 ||
-						marcas.recesos[marcas.recesos.length-1].recesoIn
-						)
-					){
-						//
-					return saveMarca(newMarca,cb);
-				}
-				else cb("La marca de entrada de almuerzo no fue registrada, "+
-					"ya que no ha marcado entrada, ya marcó la salida, "+
-					"se encuentra en receso o no ha marcado para salir a almuerzo.");
-			}
-			//
-			else if(newMarca.tipoMarca=="Entrada a extras"){
-				if(
-					(marcas.entrada && marcas.salida) ||
-					(!marcas.entrada && !marcas.salida) 
-					){
-						//
-					return saveMarca(newMarca,cb);
-				}
-				else cb("La marca de entrada a horas extras no fue registrada, "+
-					"ya que no ha salido de la jornada regular.");
-			}
-			//
-			else if(newMarca.tipoMarca=="Salida de extras"){
-				if(
-					(marcas.entrada && marcas.salida) ||
-					(!marcas.entrada && !marcas.salida) 
-					){
-						//Falta validar que se haya entrado a las horas extras primero
-						//
-						return saveMarca(newMarca,cb);
+		if(newMarca.red=="local"){
+			Marca.find(
+				{
+					epoch:{'$gte': epochTimeGte, '$lte': epochTimeLte}, 
+					usuario: newMarca.usuario,
+					tipoUsuario: tipoUsuario
+				}).sort({epoch: 1}).exec(function (err, marcas){
+					var marcas = util.clasificarMarcas(marcas);
+					if(newMarca.tipoMarca=="Entrada" ){
+						if(!marcas.entrada && !marcas.salida
+							&& !marcas.almuerzoIn && !marcas.almuerzoOut
+							&& marcas.recesos.length==0){
+								//
+							return revisarMarca(tipoUsuario, newMarca.usuario, newMarca,
+								function(msg){
+									saveMarca(newMarca,cb,msg);
+								});
+						}
+						else cb("La marca de entrada fue registrada anteriormente.");
 					}
-					else cb("La marca de salida de horas extras no fue registrada, "+
-						"ya que no ha salido de la jornada regular o no ha marcado"+
-						" entrada a las horas extras.");
+					else if(newMarca.tipoMarca=="Salida"){
+						if(marcas.entrada && !marcas.salida
+							&& (
+								(marcas.almuerzoIn && marcas.almuerzoOut) ||
+								(!marcas.almuerzoIn && !marcas.almuerzoOut)
+								)
+							&& (
+								marcas.recesos.length==0 ||
+								marcas.recesos[marcas.recesos.length-1].recesoIn
+								)){
+								//
+							var msgTem = revisarMarca(tipoUsuario, newMarca.usuario, newMarca,
+								function(msg){
+									saveMarca(newMarca,cb,msg);
+									cierre.ejecutarCierrePorUsuarioAlMarcarSalida(tipoUsuario,newMarca.usuario);
+									//cierre.ejecutarCierre();
+								
+								});
+							
+							
+							return msgTem;
+						}
+						else cb("La marca de salida no fue registrada, ya que fue registrada anteriormente,"+
+							"se encuentra en almuerzo o en receso.");
+					}
+					//
+					else if(newMarca.tipoMarca=="Salida a Receso"){
+						if(marcas.entrada && !marcas.salida
+							&& (
+								(marcas.almuerzoIn && marcas.almuerzoOut) ||
+								(!marcas.almuerzoIn && !marcas.almuerzoOut)
+								)
+							&& (
+								marcas.recesos.length==0 ||
+								marcas.recesos[marcas.recesos.length-1].recesoIn
+								)){
+								//
+							return saveMarca(newMarca,cb);
+						}
+						else cb("La marca de salida a receso no fue registrada, "+
+							"ya que no ha marcado entrada, ya marcó la salida o "+
+							"se encuentra en almuerzo o en otro receso");
+					}
+					//
+					else if(newMarca.tipoMarca=="Entrada de Receso"){
+						if(marcas.entrada && !marcas.salida
+							&& (
+								(marcas.almuerzoIn && marcas.almuerzoOut) ||
+								(!marcas.almuerzoIn && !marcas.almuerzoOut)
+								)
+							&&  (
+								marcas.recesos.length>0 &&
+								!marcas.recesos[marcas.recesos.length-1].recesoIn
+								)
+							){
+								//
+							return saveMarca(newMarca,cb);
+						}
+						else cb("La marca de entrada a receso no fue registrada, "+
+							"ya que no ha marcado entrada, ya marcó la salida, "+
+							"se encuentra en almuerzo o no ha marcado para salir a receso.");
+					}
+					//
+					else if(newMarca.tipoMarca=="Salida al Almuerzo"){
+						if(marcas.entrada && !marcas.salida
+							&& !marcas.almuerzoOut && !marcas.almuerzoIn
+							&& (
+								marcas.recesos.length==0 ||
+								marcas.recesos[marcas.recesos.length-1].recesoIn
+								)
+							){
+								//
+							return saveMarca(newMarca,cb);
+						}
+						else cb("La marca de salida a almuerzo no fue registrada, "+
+							"ya que no ha marcado entrada, ya marcó la salida o "+
+							"ya se encuentra en almuerzo o receso.");
+					}
+					//
+					else if(newMarca.tipoMarca=="Entrada de Almuerzo"){
+						if(marcas.entrada && !marcas.salida
+							&& marcas.almuerzoOut && !marcas.almuerzoIn
+							&& (
+								marcas.recesos.length==0 ||
+								marcas.recesos[marcas.recesos.length-1].recesoIn
+								)
+							){
+								//
+							return saveMarca(newMarca,cb);
+						}
+						else cb("La marca de entrada de almuerzo no fue registrada, "+
+							"ya que no ha marcado entrada, ya marcó la salida, "+
+							"se encuentra en receso o no ha marcado para salir a almuerzo.");
+					}
+					//
+					else if(newMarca.tipoMarca=="Entrada a extras"){
+						if(
+							(marcas.entrada && marcas.salida) ||
+							(!marcas.entrada && !marcas.salida) 
+							){
+								//
+							return saveMarca(newMarca,cb);
+						}
+						else cb("La marca de entrada a horas extras no fue registrada, "+
+							"ya que no ha salido de la jornada regular.");
+					}
+					//
+					else if(newMarca.tipoMarca=="Salida de extras"){
+						if(
+							(marcas.entrada && marcas.salida) ||
+							(!marcas.entrada && !marcas.salida) 
+							){
+								//Falta validar que se haya entrado a las horas extras primero
+								//
+								return saveMarca(newMarca,cb);
+							}
+							else cb("La marca de salida de horas extras no fue registrada, "+
+								"ya que no ha salido de la jornada regular o no ha marcado"+
+								" entrada a las horas extras.");
+						}
+					else return cb("Surgió un error no contemplado con la marca,"+
+						"vuelva a intentarlo o contacto con el administrador");
+				});
+		}else{
+			Usuario.findById(newMarca.usuario,function(error,empleado){
+				if(!error && empleado){
+					if(empleado.teleTrabajo=="on"){
+						Marca.find(
+							{
+								epoch:{'$gte': epochTimeGte, '$lte': epochTimeLte}, 
+								usuario: newMarca.usuario,
+								tipoUsuario: tipoUsuario
+							}).sort({epoch: 1}).exec(function (err, marcas){
+								var marcas = util.clasificarMarcas(marcas);
+								if(newMarca.tipoMarca=="Entrada" ){
+									if(!marcas.entrada && !marcas.salida
+										&& !marcas.almuerzoIn && !marcas.almuerzoOut
+										&& marcas.recesos.length==0){
+											//
+										return revisarMarca(tipoUsuario, newMarca.usuario, newMarca,
+											function(msg){
+												saveMarca(newMarca,cb,msg);
+											});
+									}
+									else cb("La marca de entrada fue registrada anteriormente.");
+								}
+								else if(newMarca.tipoMarca=="Salida"){
+									if(marcas.entrada && !marcas.salida
+										&& (
+											(marcas.almuerzoIn && marcas.almuerzoOut) ||
+											(!marcas.almuerzoIn && !marcas.almuerzoOut)
+											)
+										&& (
+											marcas.recesos.length==0 ||
+											marcas.recesos[marcas.recesos.length-1].recesoIn
+											)){
+											//
+										var msgTem = revisarMarca(tipoUsuario, newMarca.usuario, newMarca,
+											function(msg){
+												saveMarca(newMarca,cb,msg);
+												cierre.ejecutarCierrePorUsuarioAlMarcarSalida(tipoUsuario,newMarca.usuario);
+												//cierre.ejecutarCierre();
+											
+											});
+										
+										
+										return msgTem;
+									}
+									else cb("La marca de salida no fue registrada, ya que fue registrada anteriormente,"+
+										"se encuentra en almuerzo o en receso.");
+								}
+								//
+								else if(newMarca.tipoMarca=="Salida a Receso"){
+									if(marcas.entrada && !marcas.salida
+										&& (
+											(marcas.almuerzoIn && marcas.almuerzoOut) ||
+											(!marcas.almuerzoIn && !marcas.almuerzoOut)
+											)
+										&& (
+											marcas.recesos.length==0 ||
+											marcas.recesos[marcas.recesos.length-1].recesoIn
+											)){
+											//
+										return saveMarca(newMarca,cb);
+									}
+									else cb("La marca de salida a receso no fue registrada, "+
+										"ya que no ha marcado entrada, ya marcó la salida o "+
+										"se encuentra en almuerzo o en otro receso");
+								}
+								//
+								else if(newMarca.tipoMarca=="Entrada de Receso"){
+									if(marcas.entrada && !marcas.salida
+										&& (
+											(marcas.almuerzoIn && marcas.almuerzoOut) ||
+											(!marcas.almuerzoIn && !marcas.almuerzoOut)
+											)
+										&&  (
+											marcas.recesos.length>0 &&
+											!marcas.recesos[marcas.recesos.length-1].recesoIn
+											)
+										){
+											//
+										return saveMarca(newMarca,cb);
+									}
+									else cb("La marca de entrada a receso no fue registrada, "+
+										"ya que no ha marcado entrada, ya marcó la salida, "+
+										"se encuentra en almuerzo o no ha marcado para salir a receso.");
+								}
+								//
+								else if(newMarca.tipoMarca=="Salida al Almuerzo"){
+									if(marcas.entrada && !marcas.salida
+										&& !marcas.almuerzoOut && !marcas.almuerzoIn
+										&& (
+											marcas.recesos.length==0 ||
+											marcas.recesos[marcas.recesos.length-1].recesoIn
+											)
+										){
+											//
+										return saveMarca(newMarca,cb);
+									}
+									else cb("La marca de salida a almuerzo no fue registrada, "+
+										"ya que no ha marcado entrada, ya marcó la salida o "+
+										"ya se encuentra en almuerzo o receso.");
+								}
+								//
+								else if(newMarca.tipoMarca=="Entrada de Almuerzo"){
+									if(marcas.entrada && !marcas.salida
+										&& marcas.almuerzoOut && !marcas.almuerzoIn
+										&& (
+											marcas.recesos.length==0 ||
+											marcas.recesos[marcas.recesos.length-1].recesoIn
+											)
+										){
+											//
+										return saveMarca(newMarca,cb);
+									}
+									else cb("La marca de entrada de almuerzo no fue registrada, "+
+										"ya que no ha marcado entrada, ya marcó la salida, "+
+										"se encuentra en receso o no ha marcado para salir a almuerzo.");
+								}
+								//
+								else if(newMarca.tipoMarca=="Entrada a extras"){
+									if(
+										(marcas.entrada && marcas.salida) ||
+										(!marcas.entrada && !marcas.salida) 
+										){
+											//
+										return saveMarca(newMarca,cb);
+									}
+									else cb("La marca de entrada a horas extras no fue registrada, "+
+										"ya que no ha salido de la jornada regular.");
+								}
+								//
+								else if(newMarca.tipoMarca=="Salida de extras"){
+									if(
+										(marcas.entrada && marcas.salida) ||
+										(!marcas.entrada && !marcas.salida) 
+										){
+											//Falta validar que se haya entrado a las horas extras primero
+											//
+											return saveMarca(newMarca,cb);
+										}
+										else cb("La marca de salida de horas extras no fue registrada, "+
+											"ya que no ha salido de la jornada regular o no ha marcado"+
+											" entrada a las horas extras.");
+									}
+								else return cb("Surgió un error no contemplado con la marca,"+
+									"vuelva a intentarlo o contacto con el administrador");
+							});
+					}else{
+						return cb("El usuario no tiene permiso para marcar de manera remota");
+					}
 				}
-			else return cb("Surgió un error no contemplado con la marca,"+
-				"vuelva a intentarlo o contacto con el administrador");
-		});
-	});
-		//
+			});
+		}
+		
+	});//Consulta redes
+	
 	}
 }
 

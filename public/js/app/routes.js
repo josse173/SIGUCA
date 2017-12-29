@@ -471,13 +471,11 @@ $("button[data-target=#editHorarioFijo]").click( function() {
 });
 
 
-
  $("button[data-target=#editEmpl]").click( function() {
     var id = $(this).val();
     $('.formUpdate').attr('action', '/empleado/'+id);
 
     $.get('/empleado/edit/'+id, function( data ) {
-
         if(contador>0){
 
             $('#estadoEmpleado').find('option').remove();
@@ -514,7 +512,13 @@ $("button[data-target=#editHorarioFijo]").click( function() {
         }
 
         $('#nombre').val(data.nombre);   
-                
+        if(data.teleTrabajo=="on"){
+            $('#teleTrabajo').attr("checked",true);
+          
+        }else {
+            $('#teleTrabajo').attr("checked",false);       
+        }
+        
         $('#cedula').val(data.cedula);
         $('#apellido1').val(data.apellido1);            
         $('#fechaIngreso').val(result);
@@ -542,7 +546,7 @@ $("button[data-target=#editHorarioFijo]").click( function() {
         $('#HorarioEmpleado').selectpicker('refresh'); 
         $('#selectTipo').selectpicker('refresh');    
         $('#estadoEmpleado').refresh();
-        
+       
          
 
     });

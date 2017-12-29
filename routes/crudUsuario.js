@@ -21,8 +21,10 @@ var config 			= require('../config');
 //	Métodos Usuario
 //---------------------------------------------------------------------
 exports.addUsuario = function(us, cb){
+	if(!us.teleTrabajo){
+		us.teleTrabajo="off";
+	}
 	
-	//Inserta los tipos de usuario como array
 	var arrayTipo = [];
 	if(us.tipo instanceof Array){
 		for( var t in us.tipo){
@@ -57,6 +59,8 @@ exports.addUsuario = function(us, cb){
 				codTarjeta: us.codTarjeta,
 				departamentos: array,
 				horario: us.idHorario,
+				teleTrabajo:us.teleTrabajo
+				
 				});
 			}else if(us.horarioFijo){
 				
@@ -71,7 +75,8 @@ exports.addUsuario = function(us, cb){
 				cedula: us.cedula,
 				codTarjeta: us.codTarjeta,
 				departamentos: array,
-				horarioFijo:us.horarioFijo
+				horarioFijo:us.horarioFijo,
+				teleTrabajo:us.teleTrabajo
 				});
 			}else if(us.personalizado){
 				var newUser = new Usuario({
@@ -85,7 +90,8 @@ exports.addUsuario = function(us, cb){
 				cedula: us.cedula,
 				codTarjeta: us.codTarjeta,
 				departamentos: array,
-				horarioEmpleado:us.personalizado
+				horarioEmpleado:us.personalizado,
+				teleTrabajo:us.teleTrabajo
 				});
 			}else{
 				var newUser = new Usuario({
@@ -99,6 +105,7 @@ exports.addUsuario = function(us, cb){
 				cedula: us.cedula,
 				codTarjeta: us.codTarjeta,
 				departamentos: array,
+				teleTrabajo:us.teleTrabajo
 				});
 			}
 
@@ -171,6 +178,10 @@ exports.getById = function(id, cb){
 
 
 exports.updateUsuario = function(data, cb){
+	
+	if(!data.empleado.teleTrabajo){
+		data.empleado.teleTrabajo="off";
+	}
 	delete data.empleado._id;
 	
 	//Se pasa la fecha a epoch

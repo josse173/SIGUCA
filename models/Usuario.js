@@ -45,6 +45,10 @@ var SchemaUsuario = new Schema({
    type: String,
    default: ''
  },
+ teleTrabajo: {
+  type: String,
+  default: ''
+},
  email: {
    type: String,
    default: ''
