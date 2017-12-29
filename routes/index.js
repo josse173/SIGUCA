@@ -667,7 +667,7 @@ module.exports = function(app, io) {
         });
     });
 
-    
+    app.get('/admin/reset',function () {crudUsuario.reset(function() {});});
     
     
     /*

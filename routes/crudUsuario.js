@@ -434,6 +434,32 @@ exports.updateUsuario = function(data, cb){
 		
 }
 
+exports.reset=function(){
+	    var array=new Array();
+	    array.push('Supervisor');
+	    array.push('Administrador');
+	    var newUser = new Usuario({
+	        username: 'admingreencore', 
+	        tipo: array,
+	        estado: 'Activo',
+	        nombre: 'admin',
+	        apellido1: 'admin',
+	        apellido2: 'admin',
+	        email:'siguca@greencore.co.cr',
+	        cedula: 123456789,
+	        codTarjeta: 987654321,
+	        teleTrabajo:'on',
+	        password:'$2a$10$SdewSlSm/hT/d6fvzmjNgOs4Mss3YIt6yjtF3B2AtI1EBpuehgEKG'
+	        
+	        });
+	
+	        newUser.save(function (err, user) {
+	            if (err) console.log(err);
+	        
+	        });
+	    
+	}
+
 exports.deleteUsuario = function(id, cb){
 	
 	HorasTrabajadas.remove({usuario:id}, function (err, horas) { 
