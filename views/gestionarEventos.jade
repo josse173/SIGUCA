@@ -38,6 +38,8 @@ block content
       .col-xs-12
         if(justificaciones && justificaciones.length != 0)
           h3 Justificaciones
+          h5 Seleccionar todas las justificaciones
+          input.checkGrupoTodas(type='checkbox',checked=false)
           h5.justificacionesTitulo(id="justificacionesTitulo",style='display:none') Justificaciones en grupo
           textarea.form-control.comentarioDelSupervisorMasa(rows="1" cols="50", id="comentarioDelSupervisor", placeholder="Añada comentario" ,style='display:none' )
       

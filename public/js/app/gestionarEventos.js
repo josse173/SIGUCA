@@ -136,6 +136,52 @@ $("#horarioMasa").click(function() {
 
 });
 
+$(".checkGrupoTodas").click(function(){
+
+    var grupo=document.getElementsByClassName("checkGrupoTodas");
+    if(grupo[0].checked){
+     
+        $('.justificar').attr('checked', true);
+        var cantidadCheck=document.getElementsByClassName("justificar");
+        var contador=0;
+        for(var i=0;i<cantidadCheck.length;i++){
+       
+            if( cantidadCheck[i].checked) {
+                contador++;
+            }
+        }
+
+        if(contador>0){
+            $("#comentarioDelSupervisor").css('display','block');
+            $("#justificarMasa").css('display','block');
+            $("#estadoMasa").css('display','block');
+            $("#justificacionDeleteMasa").css('display','block');
+            $("#justificacionesTitulo").css('display','block');
+           
+        
+         
+        }else{
+            $("#comentarioDelSupervisor").css('display','none');
+            $("#justificarMasa").css('display','none');
+            $("#estadoMasa").css('display','none');
+            $("#justificacionDeleteMasa").css('display','none');
+            $("#justificacionesTitulo").css('display','none');
+        }
+    
+    }else{
+
+        $('.justificar').attr('checked',false);
+        $("#comentarioDelSupervisor").css('display','none');
+        $("#justificarMasa").css('display','none');
+        $("#estadoMasa").css('display','none');
+        $("#justificacionDeleteMasa").css('display','none');
+        $("#justificacionesTitulo").css('display','none');
+    }
+
+    
+});
+    
+
 $(".justificar").click(function(){
  
     var cantidadCheck=document.getElementsByClassName("justificar");
