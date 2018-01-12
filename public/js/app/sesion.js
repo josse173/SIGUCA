@@ -84,6 +84,10 @@ function verificarTipos(){
                     
                     
                 }
+            }else{
+                var notification = alertify.error('Error:Los credenciales no coinciden con ningún usuario', 'success', 4, function(){ 
+                    
+                 });
             }
         
         },
