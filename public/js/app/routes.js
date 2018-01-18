@@ -995,6 +995,17 @@ $("button[data-target=#editFeriado]").click( function() {
     });
 });
 
+$("button[data-target=#editContenido]").click( function() {
+    var id = $(this).val();
+    $('.formUpdateContenido').attr('action', '/contenidoUpdate/'+id);
+    $.get('/contenido/editContenido/'+id, function( data ) {
+       $('#titulo').val(data.titulo);
+       $('#seccion').val(data.seccion);
+       $('#llave').val(data.llave);
+    });
+});
+
+
 $("button[data-target=#editCorreo]").click( function() {
     var id = $(this).val();
     $('.formUpdateCorreo').attr('action', '/correoUpdate/'+id);

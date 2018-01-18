@@ -3,57 +3,57 @@
   //-Perfil personal
   div.col-md-6
     div.img-circle
-      img.img-responsive(src="/uploads/"+usuario.codTarjeta+".png" border="5" alt="Asigna una imagen en configuración.")
+      img.img-responsive(src="/uploads/"+usuario.codTarjeta+".png" border="5" alt="#{textos[0].titulo}")
       
-      h3.text-success Perfil del usuario.
+      h3.text-success #{textos[1].titulo}
       
       table.table-responsive.tableInfo
         
         tbody
           tr
             td
-              b Nombre:
+              b #{textos[2].titulo}
             td #{usuario.nombre}
           tr
             td 
-              b Apellidos: 
+              b #{textos[3].titulo}
             td #{usuario.apellido1} #{usuario.apellido2}
           tr
             td
-              b Rol: 
+              b #{textos[4].titulo}
             td #{usuario.tipo}
           tr
             td
-              b Código:
+              b #{textos[5].titulo}
             td #{usuario.codTarjeta}
           tr
             td
-              b Vacaciones: 
+              b #{textos[6].titulo}
             td #{usuario.vacaciones}
 
   //-Marcas
   div.col-md-5
     div(style="border: 2px solid green; padding: 5%;")
-      h3.text-success Realizar Marca
+      h3.text-success #{textos[7].titulo}
       div
-        label Hora oficial
+        label #{textos[8].titulo}
           span.clock
-        label Tiempo trabajado 
+        label #{textos[9].titulo}
           span.clockHorasTrab
       .marca
         div#contBotones
           div           
-          button#btn-marca.btn.btn-success(name='marcar', onclick= "changeElemt('marca')", data-toggle="modal" data-target="#addMarca" value=usuario._id) Realizar Marca
+          button#btn-marca.btn.btn-success(name='marcar', onclick= "changeElemt('marca')", data-toggle="modal" data-target="#addMarca" value=usuario._id) #{textos[10].titulo}
       
   
-    h3.text-success Registro de Marcas 
+    h3.text-success #{textos[11].titulo}
     table#tablaMarcas.footable
       thead
         tr
-          th(data-sort-ignore="true") Tipo
-          th(data-sort-ignore="true") Hora
-          th(data-sort-ignore="true") Dispositivo
-          th(data-sort-ignore="true") Red
+          th(data-sort-ignore="true") #{textos[12].titulo}
+          th(data-sort-ignore="true") #{textos[13].titulo}
+          th(data-sort-ignore="true") #{textos[14].titulo}
+          th(data-sort-ignore="true") #{textos[15].titulo}
       tbody.marcasDetalle#marcasBody
       
         each marca, i in marcas
@@ -75,19 +75,19 @@
             else  
               td #{marca.red}
 
-    h3.text-success Consulta por fecha.
+    h3.text-success #{textos[16].titulo}
     .form-group
-      label.labelFiltro(for='fechaHasta') Desde:
+      label.labelFiltro(for='fechaHasta') #{textos[17].titulo}
         div.input-group
           input#date_range_marca.form-control(type='text')
           span.input-group-addon
             i.icon-calendar     
-      label.labelFiltro(for='fechaHasta') Hasta:
+      label.labelFiltro(for='fechaHasta') #{textos[18].titulo}
         div.input-group
           input#date_range_end.form-control(type='text')
           span.input-group-addon
             i.icon-calendar   
-        button#btnIr.btn-primary.btn    Ir   
+        button#btnIr.btn-primary.btn #{textos[19].titulo}  
 
     div
       div.hideDisplay
@@ -121,30 +121,30 @@
         span.badge #{contJust} 
         |   Justificaciones pendientes
 
-  h4.headerFont Acciones 
+  h4.headerFont #{textos[20].titulo} 
   ul.list-group
     li.list-group-item
       a(data-toggle="modal" data-target="#horaExtra")#extraLink
-        | Solicitud de hora extraordinaria
+        | #{textos[21].titulo} 
     li.list-group-item
       a(data-toggle="modal" data-target="#permiso")
-        | Solicitud de permiso anticipado
+        | #{textos[22].titulo} 
     li.list-group-item
       a(data-toggle="modal" data-target="#addJustificacion")
-        | Justificaciones
+        | #{textos[23].titulo} 
   br
   .col-xs-12
-    h4 Justificaciones pendientes
+    h4 #{textos[24].titulo} 
       span.label.label-default #{justificaciones.length}
     div.justTable.table-responsive      
       div.row
         table#tablaJust.footable(data-page-navigation=".pagination" data-page-size="4" )
           thead
             tr
-              th(data-sort-ignore="true" data-type="numeric" ) Fecha creada
-              th(data-sort-ignore="true") Motivo
-              th(data-sort-ignore="true" data-type="numeric" ) Información
-              th Justificar
+              th(data-sort-ignore="true" data-type="numeric" ) #{textos[25].titulo} 
+              th(data-sort-ignore="true") #{textos[26].titulo} 
+              th(data-sort-ignore="true" data-type="numeric" ) #{textos[27].titulo} 
+              th #{textos[28].titulo} 
           tbody.justDetalle
             each just, i in justificaciones
               tr
@@ -175,53 +175,53 @@
         .modal-content.fontTransparent
           .modal-header
             button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-            h3#myModalLabel.modal-title Marcas de asistencia
+            h3#myModalLabel.modal-title #{textos[29].titulo} 
           .modal-body
             .row.text-center
                 div.col-md-6
-                  button#btnEntrada.btnEntrada.btn.btn-success.btn-lg(style="width: 95%;", value = 'Entrada' ) Entrada
+                  button#btnEntrada.btnEntrada.btn.btn-success.btn-lg(style="width: 95%;", value = 'Entrada' ) #{textos[30].titulo} 
                 div.col-md-6
-                  button#btnSalida.btnSalida.btn.btn-success.btn-lg(style="width: 95%;", value = 'Salida') Salida
+                  button#btnSalida.btnSalida.btn.btn-success.btn-lg(style="width: 95%;", value = 'Salida') #{textos[31].titulo} 
                 div.col-md-6
-                  button#btnSalidaReceso.btnSalidaReceso.btn.btn-warning.btn-lg(style="width: 95%;", value = 'Salida a Receso') Salida a Receso 
+                  button#btnSalidaReceso.btnSalidaReceso.btn.btn-warning.btn-lg(style="width: 95%;", value = 'Salida a Receso') #{textos[33].titulo} 
                 div.col-md-6
-                  button#btnEntradaReceso.btnEntradaReceso.btn.btn-warning.btn-lg(style="width: 95%;", value = 'Entrada de Receso') Entrada de Receso
+                  button#btnEntradaReceso.btnEntradaReceso.btn.btn-warning.btn-lg(style="width: 95%;", value = 'Entrada de Receso') #{textos[32].titulo} 
                 if(usuario.tipo != config.empleadoProfesor)
                   div.col-md-6
-                    button#btnSalidaAlmuerzo.btnSalidaAlmuerzo.btn.btn-primary.btn-lg(style="width: 95%;", value = 'Salida al Almuerzo') Salida al Almuerzo
+                    button#btnSalidaAlmuerzo.btnSalidaAlmuerzo.btn.btn-primary.btn-lg(style="width: 95%;", value = 'Salida al Almuerzo') #{textos[33].titulo}
                   div.col-md-6
-                    button#btnEntradaAlmuerzo.btnEntradaAlmuerzo.btn.btn-primary.btn-lg(style="width: 95%;", value = 'Entrada de Almuerzo') Entrada del Almuerzo
+                    button#btnEntradaAlmuerzo.btnEntradaAlmuerzo.btn.btn-primary.btn-lg(style="width: 95%;", value = 'Entrada de Almuerzo') #{textos[34].titulo}
                 div.col-md-6
-                    button.btn.btn-danger.btn-lg(style="width: 95%;",type='button', data-dismiss='modal') Cancelar
+                    button.btn.btn-danger.btn-lg(style="width: 95%;",type='button', data-dismiss='modal') #{textos[35].titulo}
 
 #horaExtra.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
     .modal-dialog
         .modal-content
           .modal-header
             button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-            h4#myModalLabel.modal-title Solicitar hora extraordinaria
+            h4#myModalLabel.modal-title #{textos[37].titulo}
           .modal-body
             form#solicitud-extra-form(role='form', method="POST", action="/solicitud_extra").well.span4
               .form-group
-                label(for='fecha') Inicio:
+                label(for='fecha') #{textos[38].titulo}
                   div.input-group
-                    input#date_timepicker_start.form-control(type='text', name='epochInicio', placeholder='Fecha y hora de inicio' required )
+                    input#date_timepicker_start.form-control(type='text', name='epochInicio', placeholder='#{textos[40].titulo}' required )
                     span.input-group-addon
                       i.icon-time
-                label(for='fecha') Termino:
+                label(for='fecha') #{textos[39].titulo}
                   div.input-group
-                    input#date_timepicker_end.form-control(type='text', name='epochTermino', placeholder='Fecha y hora final' required )
+                    input#date_timepicker_end.form-control(type='text', name='epochTermino', placeholder='#{textos[41].titulo}' required )
                     span.input-group-addon
                       i.icon-time
               .form-group
-                label(for='cliente') Cliente:
+                label(for='cliente') #{textos[42].titulo}
                   input#clienteSoli.input-small.form-control(type="text", name='cliente' required )
-                label(for='motivo') Motivo:
+                label(for='motivo') #{textos[43].titulo}
                   textarea#motivo.form-control(rows="4" cols="50" name='motivo' required )
                 
                                              
-              button.btn.btn-success Enviar
-              button#btn-soli-cancelar.btn.btn-default(type='button', data-dismiss='modal') Cancelar
+              button.btn.btn-success #{textos[44].titulo}
+              button#btn-soli-cancelar.btn.btn-default(type='button', data-dismiss='modal') #{textos[45].titulo}
 
  
 #permiso.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true' )
@@ -229,24 +229,24 @@
         .modal-content
           .modal-header
             button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-            h4#myModalLabel.modal-title Solicitar permiso anticipado
+            h4#myModalLabel.modal-title #{textos[46].titulo}
           .modal-body
             form.formSoli(role='form', method="POST")#login-form.well.span4
               .form-group
-                label(for='diaInicio') Día Inicial:
+                label(for='diaInicio') #{textos[47].titulo}
                   div.input-group
                     input#diaInicio.form-control(type='text', name='diaInicio', placeholder='Fecha Inicial' required)
                     span.input-group-addon
                       i.icon-calendar
-                label(for='diaFinal') Día Final:
+                label(for='diaFinal') #{textos[48].titulo}
                   div.input-group
                     input#diaFinal.form-control(type= 'text', placeholder='Fecha Final', name= 'diaFinal' required)
                     span.input-group-addon
                       i.icon-calendar
-                label#lblnumDias(for='cantidadDias')  Días: 0
+                label#lblnumDias(for='cantidadDias')  #{textos[49].titulo}
                 input#cantidadDias.form-control(type= 'hidden', placeholder='3', name= 'cantidadDias' required)
               .form-group
-                label(for='motivo') Motivo:
+                label(for='motivo') #{textos[50].titulo}
                   select#selectMotivo.form-control(type= 'text', name= 'motivo' style='float:left' required)
                     option(value='seleccionar') Seleccione una opción
                     option(value='Vacaciones') Vacaciones
@@ -254,14 +254,14 @@
                     option(value='Permiso Estudio') Permiso de Estudio
                     option(value='Familiar') Familiar
                     option(value='otro') Otro
-                label(for='motivoOtro') Otro:
+                label(for='motivoOtro') #{textos[51].titulo}
                   input#motivoOtro.form-control(type= 'text', placeholder='Otro', name= 'motivoOtro' style='float:left' disabled)
               .form-group
-                label(for='detalle') Detalle:
+                label(for='detalle') #{textos[52].titulo}
                   textarea#detalle.form-control(rows="4" cols="50" name='detalle' required)
                                                                    
-              button#btn-permiso.btn.btn-success Enviar
-              button#btn-permiso-cancelar.btn.btn-default(type='button', data-dismiss='modal') Cancelar
+              button#btn-permiso.btn.btn-success #{textos[44].titulo}
+              button#btn-permiso-cancelar.btn.btn-default(type='button', data-dismiss='modal') #{textos[45].titulo}
 
          
 #addJustificacion.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
@@ -273,21 +273,21 @@
       .modal-body
         form.formJust(role='form', method="POST")#login-form.well.span4
           .form-group
-            label(for='motivoJust') Motivo:
+            label(for='motivoJust') #{textos[50].titulo}
               select#selectMotivoJust.form-control(type= 'text', name= 'motivoJust' style='float:left' required)
                 option(value='seleccionar') Seleccione una opción
                 option(value='Tardía') Tardía
                 option(value='Omisión de Marca') Omisión de Marca
                 option(value='Ausencia') Ausencia
                 option(value='otro') Otro
-            label(for='motivoOtroJust') Otro:
+            label(for='motivoOtroJust') #{textos[51].titulo}
               input#motivoOtroJust.form-control(type= 'text', placeholder='Otro', name= 'motivoOtroJust' style='float:left' disabled)
           .form-group
-              label(for='detalles') Detalles:
+              label(for='detalles') #{textos[52].titulo}
               textarea#detalles.form-control(rows="4" cols="50" name='detalle' required)
                  
-          button#btn-just.btn.btn-success(type='submit') Enviar
-          button#btn-just-cancelar.btn.btn-default(type='button', data-dismiss='modal') Cancelar
+          button#btn-just.btn.btn-success(type='submit') #{textos[44].titulo}
+          button#btn-just-cancelar.btn.btn-default(type='button', data-dismiss='modal') #{textos[45].titulo}
 
 #updateJustificacion.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
   .modal-dialog

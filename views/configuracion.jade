@@ -4,43 +4,64 @@ block content
   .container 
     .col-xs-2
     .col-xs-8
-
-      div#containerCentral
-        h3  Configuración Empleado
+      if(texto[0])  
+        div#containerCentral
+          h3  #{texto[0].titulo}
+      else
+        div#containerCentral
+          h3  Título principal
          
     .col-xs-12
       .col-xs-6
-        h3 Actualizar nombre de usuario
+        if(texto[1])
+          h3 #{texto[1].titulo}
+        else
+          h3 Actualizar nombre de usuario
         form(role='form', method="POST", action="/cambioUsername/"+usuario._id)#login-form.well.span4
           .form-group
-            label(for='username') Username
-              input.form-control(type='text', placeholder='username', name='username', value=usuario.username)
+            if(texto[3])
+              label(for='username') #{texto[3].titulo}
+            else
+              label(for='username') Username
+            input.form-control(type='text', placeholder='username', name='username', value=usuario.username)
           .form-group
-            button#ingreso.btn.btn-success(name='ingreso') Ingresar
-            button#cancelar.btn.btn-danger(name='cancelar') Cancelar   
+            if(texto[4])
+              button#ingreso.btn.btn-success(name='ingreso') #{texto[4].titulo}
+            else
+              button#ingreso.btn.btn-success(name='ingreso') Ingresar
+            if(texto[5])
+              button#cancelar.btn.btn-danger(name='cancelar') #{texto[5].titulo}
+            else
+              button#cancelar.btn.btn-danger(name='cancelar') Cancelar  
 
       .col-xs-6
-        h3 Actualizar Contraseña
+        if(texto[2])
+          h3 #{texto[2].titulo}
+        else
+          h3 Actualizar Contraseña
         form(role='form', method="POST", action="/cambioPassword/"+usuario._id)#login-form.well.span4
           .form-group
-            label(for='currentpassword') Contraseña Actual
-              input.form-control(type='password', placeholder='Contraseña Actual', name='currentPassword')
+            if(texto[7])
+              label(for='currentpassword') #{texto[8].titulo}
+            else
+              label(for='currentpassword') Contraseña Actual
+            input.form-control(type='password', placeholder='#{texto[7].titulo}', name='currentPassword')
           .form-group
-            label(for='newPassword') Nueva Contraseña
-              input.form-control(type='password', placeholder='Nueva Contraseña', ng-model='query', name='newPassword')
-            label(for='repeatNewPassword') Repita Nueva Contraseña
-              input.form-control(type='password', placeholder='Repetir Nueva Contraseña', ng-model='query', name='repeatNewPassword')
+            label(for='newPassword') #{texto[6].titulo}
+              input.form-control(type='password', placeholder=' #{texto[6].titulo}', ng-model='query', name='newPassword')
+            label(for='repeatNewPassword') #{texto[7].titulo}
+              input.form-control(type='password', placeholder='#{texto[7].titulo}', ng-model='query', name='repeatNewPassword')
           .form-group
             .controls
-             button#ingreso.btn.btn-success Ingresar
-             button#cancelar.btn.btn-danger Cancelar
+             button#ingreso.btn.btn-success #{texto[4].titulo}
+             button#cancelar.btn.btn-danger #{texto[5].titulo}
     .col-xs-12
       .col-xs-6.well.span4
           label.text-center
-            | Imagen de usuario 
+            | #{texto[9].titulo}
           br  
           label.text-center
-            | Por  favor .PNG, tamaño recomendado 500 x 500    
+            | #{texto[10].titulo}  
           form(role='form',method="post",enctype="multipart/form-data",action="/IMAGEN/"+usuario._id,accept='image/png')
            
             p

@@ -85,6 +85,17 @@
             form(action= '/red')    
               button.btn.btn-primary(type = 'submit')
                 i.icon-edit.icon-large
+        
+        tr
+        td Contenido:  
+          td
+            button.btn.btn-success(type = 'submit' data-toggle="modal" data-target="#asignarContenido")
+              i.icon-plus.icon-large
+                  
+          td
+            form(action= '/contenido')    
+              button.btn.btn-primary(type = 'submit')
+                i.icon-edit.icon-large
 
 
 
@@ -426,6 +437,26 @@
                   input.form-control#textInput( type="text", name="dominioCorreo",required)       
                 label(for='nombre' style="float:left") Contraseña:
                   input.form-control#textInput(type="password", name="password",required)    
+                div.clearfix
+                button.btn.btn-success(type='submit') Ingresar
+                button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
+
+  #asignarContenido.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+    .modal-dialog
+        .modal-content
+          .modal-header
+            button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+            h4#myModalLabel.modal-title Añadir correo
+          .modal-body
+            form(action='/asignarContenido', method='post')#login-form.well.span4
+              .form-group
+                h4 Información Básica
+                label(for='nombre' style="float:left") Título:
+                  input.form-control#textInput( type="text", name="titulo",required)  
+                label(for='nombre' style="float:left") Llave:
+                  input.form-control#textInput( type="text", name="llave",required)       
+                label(for='nombre' style="float:left") Sección:
+                  input.form-control#textInput(type="text", name="seccion",required)    
                 div.clearfix
                 button.btn.btn-success(type='submit') Ingresar
                 button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar

@@ -1,0 +1,50 @@
+extends layout
+
+block content
+  .container
+    
+    br
+    h3 Textos por interface
+    table.footable.tableContenido(data-page-navigation=".pagination" ,data-page-size="200")
+        thead
+          tr
+            th Sección
+            th Palabra clave
+            th Editar
+            
+        tbody 
+          each textos, i in contenido
+            tr
+              td #{textos.seccion} 
+              td #{textos.llave} 
+              td
+                button.btn.btn-default(data-toggle="modal" data-target="#editContenido" value=textos._id)
+                  i.icon-pencil.icon-large.i-success
+
+    
+     #editContenido.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+      .modal-dialog
+          .modal-content
+            .modal-header
+              button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+              h4#myModalLabel.modal-title Actualizar contenido
+            .modal-body
+              form.formUpdateContenido(action='/contenidoUpdate', method='post')#login-form.well.span4
+                .form-group
+                  label(for='titulo' style="float:left") Contenido a modificar:
+                  input#titulo.form-control( type="text", name="titulo")      
+
+                  label(for='llave' style="float:left") Llave:
+                  input#llave.form-control( type="text", name="llave" ,disabled) 
+
+                  label(for='nombre' style="float:left") Sección:
+                  input#seccion.form-control( type="text", name="seccion",disabled) 
+            
+               
+                button.btn.btn-success(type='submit') Actualizar
+                alertify.myAlert("Browser dialogs made easy!")
+                button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar 
+
+
+block sigucaJS
+  

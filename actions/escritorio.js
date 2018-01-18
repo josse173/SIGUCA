@@ -1,6 +1,7 @@
 
 var moment = require('moment');
 var Marca = require('../models/Marca');
+var Contenido = require('../models/Contenido');
 var Usuario = require('../models/Usuario');
 var Horario = require('../models/Horario');
 var Departamento = require('../models/Departamento');
@@ -143,38 +144,43 @@ module.exports = {
 
 	        //Se busca en la base de datos todas las marcas realizadas por el usuario
     		//Se busca en la base de datos las marcas del mismo día
-	        //console.log(req.user.id);
-	        Marca.find(
-	        	{usuario: req.user.id, epoch:{"$gte": epochGte.unix()}, tipoUsuario: req.session.name},
-	        	{_id:0,tipoMarca:1,epoch:1,dispositivo:1,red:1}
-	        	).exec(
-	        	function(error, marcas) {
-	        		if (error) return res.json(error);
-	        		Justificaciones.find(
-	        			{usuario: req.user.id, estado:'Incompleto', tipoUsuario: req.session.name}
-	        			).exec(function(err, justificaciones) {
-	        				if (err) return res.json(err);
-	        				var supervisor = {departamentos: [1]};
-	        				var arrayMarcas = util.eventosAjuste(marcas, supervisor, "escritorioEmpl");
-							var arrayJust = util.unixTimeToRegularDate(justificaciones, true);
-													
-							//En caso de ser profesor no se pasan las justificaciones
-							if(req.user.tipo.length > 1 && req.session.name == config.empleadoProfesor){
-								arrayJust = new Array();
-							}
-
-							//Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
-							req.user.tipo = req.session.name;	
-
-	        				return res.render('escritorio', {
-	        					title: 'Escritorio Empleado | SIGUCA',
-	        					usuario: req.user, 
-	        					marcas: arrayMarcas,
-	        					justificaciones : arrayJust
-	        				});
-	        			});
-	        		//
-	        	});
+			//console.log(req.user.id);
+			Contenido.find({seccion:"escritorioEmpl"},function(err,contenido){
+				if (err) return res.json(error);
+				Marca.find(
+					{usuario: req.user.id, epoch:{"$gte": epochGte.unix()}, tipoUsuario: req.session.name},
+					{_id:0,tipoMarca:1,epoch:1,dispositivo:1,red:1}
+					).exec(
+					function(error, marcas) {
+						if (error) return res.json(error);
+						Justificaciones.find(
+							{usuario: req.user.id, estado:'Incompleto', tipoUsuario: req.session.name}
+							).exec(function(err, justificaciones) {
+								if (err) return res.json(err);
+								var supervisor = {departamentos: [1]};
+								var arrayMarcas = util.eventosAjuste(marcas, supervisor, "escritorioEmpl");
+								var arrayJust = util.unixTimeToRegularDate(justificaciones, true);
+														
+								//En caso de ser profesor no se pasan las justificaciones
+								if(req.user.tipo.length > 1 && req.session.name == config.empleadoProfesor){
+									arrayJust = new Array();
+								}
+	
+								//Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
+								req.user.tipo = req.session.name;	
+	
+								return res.render('escritorio', {
+									title: 'Escritorio Empleado | SIGUCA',
+									usuario: req.user, 
+									marcas: arrayMarcas,
+									justificaciones : arrayJust,
+									textos:contenido
+								});
+							});
+						//
+					});
+			});
+	        
 	    	//Buscar las justificaciones que se llamen "Pendiente "
 	    } else {
 	    	req.logout();

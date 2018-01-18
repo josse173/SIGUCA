@@ -28,6 +28,7 @@
  var crudMarca = require('./crudMarca');
  var crudDepartamento = require('./crudDepartamento');
  var crudFeriado = require('./crudFeriado');
+ var crudContenido = require('./crudContenido');
  var crudCorreo = require('./crudCorreo');
  var crudRed = require('./crudRed');
  var crud = require('./crud');
@@ -40,6 +41,7 @@ var Marca = require('../models/Marca');
 var HorasTrabajadas = require('../models/CierrePersonal');
 var Feriado = require('../models/Feriado');
 var Correo = require('../models/Correo');
+var Contenido = require('../models/Contenido');
 var Red = require('../models/Red');
 var Usuario = require('../models/Usuario');
 var Horario = require('../models/Horario');
@@ -524,12 +526,40 @@ module.exports = function(app, io) {
     */
     app.get('/configuracion', autentificado, function (req, res) {
         //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
-        req.user.tipo = req.session.name;
-        res.render('configuracion', {
-            title: 'Configuración | SIGUCA',
-            usuario: req.user
+        Contenido.find({},function(error,textos){
+            if(!error && textos){
+                req.user.tipo = req.session.name;
+                res.render('configuracion', {
+                    title: 'Configuración | SIGUCA',
+                    usuario: req.user,
+                    texto:textos
+                });
+            }else{
+                req.user.tipo = req.session.name;
+                res.render('configuracion', {
+                    title: 'Configuración | SIGUCA',
+                    usuario: req.user,
+                    texto:textos
+                });
+            }
         });
+       
     });
+
+    app.post('/asignarContenido', autentificado, function (req, res){
+        
+          var content =new Contenido({
+              seccion:req.body.seccion,
+              titulo:req.body.titulo,
+              llave:req.body.llave
+          });
+          console.log(content);
+          content.save(function (err, user) {
+              if (err) console.log(err);
+              console.log("El usuario se creo ");
+          });
+          res.redirect('/escritorioAdmin');
+      });
 
     /*
     *  Crea marca desde RFID  
@@ -781,6 +811,7 @@ module.exports = function(app, io) {
     *   Cambia el username de los usuarios
     */
     app.post('/cambioUsername/:id', autentificado, function (req, res) {
+
         if(req.session.name != "Administrador"){
             var user = {
                 id: req.params.id,
@@ -1211,6 +1242,35 @@ module.exports = function(app, io) {
 
     app.post('/asignarFeriado',autentificado, crudFeriado.insertarFeriado);
 
+
+    //Contenido
+    //lista la lista de contenidos creados.
+    app.get('/contenido',autentificado,function(req,res){
+        Contenido.find(function(err,contenido){
+            if(err){
+                return res.jason(err);
+            }else{
+               
+                req.user.tipo = req.session.name;
+            
+                return res.render('Contenido', {
+                title: 'Nuevo Contenido | SIGUCA',
+                contenido:contenido,
+                usuario:req.user
+            });
+            }
+        });
+    });
+
+    app.get('/contenido/editContenido/:id',function(req,res){
+        Contenido.findById(req.params.id,function(err,feriado){
+            if (err) return res.json(err);
+            else res.json(feriado);
+        });
+     });
+
+     app.post('/contenidoUpdate/:id',autentificado, crudContenido.actualizarContenido);
+
     //lista la lista de feriados creado.
     app.get('/feriado',autentificado,function(req,res){
         Feriado.find(function(err,feriados){
@@ -1265,6 +1325,8 @@ module.exports = function(app, io) {
             else res.json(feriado);
         });
      });
+
+     
 
 
     app.post('/correoUpdate/:id',autentificado, crudCorreo.actualizarCorreo);
