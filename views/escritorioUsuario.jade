@@ -102,24 +102,24 @@
 
  .col-xs-4
   if(usuario.tipo == 'Supervisor')
-    h4.headerFont Pendientes de revisar 
+    h4.headerFont #{textos[54].titulo}
     ul.list-group
       li.list-group-item
         a(href='/gestionarEventos/extras')
           span.badge #{soliCount}
-          |   Solicitudes
+          |   #{textos[55].titulo}
       li.list-group-item
         a(href='/gestionarEventos/justificaciones')
           span.badge #{justCount} 
-          |   Justificaciones
+          |   #{textos[56].titulo}
 
      
 
-    h4.headerFont Pendientes de justicar 
+    h4.headerFont #{textos[57].titulo}
     ul.list-group
       a(href='/justificacionesPendientes')
         span.badge #{contJust} 
-        |   Justificaciones pendientes
+        |   #{textos[57].titulo}
 
   h4.headerFont #{textos[20].titulo} 
   ul.list-group

@@ -1,15 +1,15 @@
 .col-xs-4.col-sm-offset-2.col-md-offset-3.col-lg-offset-4
     h3#labelIMEC(class="text-center")
-      |IMEC:
+      |#{textos[0].titulo}
     table.footable
       thead
         tr
-          th Acción
-          th Nuevo
-          th Modificar o eliminar
+          th #{textos[1].titulo}
+          th #{textos[2].titulo}
+          th #{textos[3].titulo}
       tbody
         tr
-          td Departamento:
+          td #{textos[4].titulo}
           form(action= '/departamento')
             td
               button#empleados.btn.btn-success(name='agregar', data-toggle="modal" data-target="#addDep")
@@ -19,7 +19,7 @@
                 i.icon-edit.icon-large
         tr
         
-          td Horarios:
+          td #{textos[5].titulo}
           form(action= '/horarioN')    
             td
               div.dropdown
@@ -28,24 +28,24 @@
                           span.caret
                         ul.dropdown-menu
                           li
-                              button.btn.btn-success(name='agregar', data-toggle="modal" data-target="#addHorario") Horario Fijo
+                              button.btn.btn-success(name='agregar', data-toggle="modal" data-target="#addHorario") #{textos[23].titulo}
                                 i.icon-plus.icon-large 
                           li
-                              button.btn.btn-success(name='agregar', data-toggle="modal" data-target="#addHorarioLibre") Horario libre
+                              button.btn.btn-success(name='agregar', data-toggle="modal" data-target="#addHorarioLibre") #{textos[24].titulo}
                                 i.icon-plus.icon-large 
 
-                              button.btn.btn-success(name='agregar', data-toggle="modal" data-target="#addHorarioPersonalizado") Horario personalizado
+                              button.btn.btn-success(name='agregar', data-toggle="modal" data-target="#addHorarioPersonalizado") #{textos[25].titulo}
                                 i.icon-plus.icon-large 
 
                           li
-                              a.btn.btn-success(href='/horarioMasa' style='color:white') Horario en masa
+                              a.btn.btn-success(href='/horarioMasa' style='color:white') #{textos[26].titulo}
                                 i.icon-plus.icon-large 
                   
             td
               button#areas.btn.btn-primary(type = 'submit', name='eliminar',  onclick= "/horarioN")
                 i.icon-edit.icon-large
         tr
-          td Empleado:
+          td #{textos[6].titulo}
           form(action= '/empleado')     
             td
               button#empleados.btn.btn-success(name='agregar', data-toggle="modal" data-target="#addEmpl") 
@@ -54,7 +54,7 @@
               button#areas.btn.btn-primary(type = 'submit', name='eliminar',  onclick= "/empleado")
                 i.icon-edit.icon-large
         tr
-          td Feriado:  
+          td #{textos[7].titulo}
             td
               button.btn.btn-success(type = 'submit' data-toggle="modal" data-target="#asignarFeriado")
                 i.icon-plus.icon-large
@@ -65,7 +65,7 @@
                   i.icon-edit.icon-large
     
         tr
-        td Correo:  
+        td #{textos[8].titulo}
           td
             button.btn.btn-success(type = 'submit' data-toggle="modal" data-target="#asignarCorreo")
               i.icon-plus.icon-large
@@ -76,7 +76,7 @@
                 i.icon-edit.icon-large
 
         tr
-        td Redes:  
+        td #{textos[9].titulo}
           td
             button.btn.btn-success(type = 'submit' data-toggle="modal" data-target="#asignarRed")
               i.icon-plus.icon-large
@@ -87,7 +87,7 @@
                 i.icon-edit.icon-large
         
         tr
-        td Contenido:  
+        td #{textos[10].titulo}
           td
             button.btn.btn-success(type = 'submit' data-toggle="modal" data-target="#asignarContenido")
               i.icon-plus.icon-large
@@ -105,14 +105,14 @@
         .modal-content
           .modal-header
             button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-            h4#myModalLabel.modal-title Asignar horario a empleado
+            h4#myModalLabel.modal-title #{textos[15].titulo}
           .modal-body
             form(role='form', method="POST", action="/agregarHorarioPersonalizado")#login-form.well.span4
               .form-group
-                label(for='nombre' style="float:left") Nombre del feriado:
+                label(for='nombre' style="float:left") #{textos[16].titulo}
                 input.form-control( type="text", name="nombreHorarioPersonalizado",id="nombreHorarioPersonalizado")     
               .form-group
-                h4 Información de jornada
+                h4 #{textos[17].titulo}
                 - var dias = ["lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo"];
                 each dia in dias    
                   - var strEntrada =  dia+"HoraEntrada";
@@ -120,29 +120,29 @@
                   - var strDia =  dia.charAt(0).toUpperCase() + dia.slice(1);
                   label #{strDia}:
                   br
-                  label(for = strEntrada) Hora de Inicio:
+                  label(for = strEntrada) #{textos[18].titulo}
                     div#timepicker.input-group
                       input.input-small.form-control(type="text", name= strEntrada, id=strEntrada)
                       span.input-group-addon
                         i.icon-time
-                  label(for = strSalida) Hora de salida:
+                  label(for = strSalida) #{textos[19].titulo}
                     div#timepicker1.input-group
                       input.input-small.form-control(type="text", name= strSalida, id=strSalida)
                       span.input-group-addon
                         i.icon-time
-                label(for = "tiempoAlmuerzo") Tiempo de almuerzo:
+                label(for = "tiempoAlmuerzo") #{textos[21].titulo}
                   div#timepicker3.input-group
                     input.input-small.form-control(type="text", name= "tiempoAlmuerzo", id= "tiempoAlmuerzo")
                     span.input-group-addon
                       i.icon-time
-                label(for = "tiempoReceso") Tiempo de receso:
+                label(for = "tiempoReceso") #{textos[20].titulo}
                   div#timepicker5.input-group
                     input.input-small.form-control(type="text", name= "tiempoReceso", id= "tiempoReceso")
                     span.input-group-addon
                       i.icon-time
                  
-              button.btn.btn-success(type='submit') Asignar
-              button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
+              button.btn.btn-success(type='submit') #{textos[13].titulo}
+              button.btn.btn-danger(type='button', data-dismiss='modal') #{textos[14].titulo}
     
  
 .col-xs-2  
@@ -199,14 +199,14 @@
         .modal-content
           .modal-header
             button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-            h4#myModalLabel.modal-title Añadir nuevo departamento
+            h4#myModalLabel.modal-title #{textos[11].titulo}
           .modal-body
             form(role='form', method="POST", action="/departamento")#login-form.well.span4
               .form-group
-                  label(for='nombre') Nombre:
-                    input#group.form-control( type="text", placeholder='Nombre del area', name= "nombre")
-              button.btn.btn-success(type='submit') Ingresar
-              button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar                
+                  label(for='nombre') #{textos[12].titulo}
+                    input#group.form-control( type="text", placeholder='#{textos[12].titulo}', name= "nombre")
+              button.btn.btn-success(type='submit') #{textos[13].titulo}
+              button.btn.btn-danger(type='button', data-dismiss='modal') #{textos[14].titulo}               
 
 
   //agregar empleados
@@ -232,13 +232,12 @@
                   input#email.form-control(type= 'email', placeholder='alguien@ejemplo.com', name='email')
               .form-group 
                 h3 Información Laboral
-                label(for='codTarjeta') Código de Empleado:
-                  input#codTarjeta.form-control(type= 'text', placeholder='Código de Empleado', name='codTarjeta')
                 label(for="usernameInput")
                   |Usuario:
                   input.form-control#username(type="text", name="username", placeholder="Usuario")
+                label(for='codTarjeta') Código de Empleado:
+                  input#codTarjeta.form-control(type= 'text', placeholder='Código de Empleado', name='codTarjeta')
                 
-
                 label Horario libre:
                   br
                   select.form-control#textInput.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="idHorario") 
@@ -300,12 +299,12 @@
         .modal-content
           .modal-header
             button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-            h4#myModalLabel.modal-title Añadir nuevo horario
+            h4#myModalLabel.modal-title #{textos[15].titulo}
           .modal-body
             form(action='/horarioFijo', method='post')#login-form.well.span4
               .form-group
-                h4 Información Básica
-                label(for='nombre' style="float:left") Nombre del Horario:
+                h4 #{textos[17].titulo}
+                label(for='nombre' style="float:left") #{textos[16].titulo}
                   input.form-control#textInput( type="text", name="nombre")     
 
                 label(for='dias') L
@@ -337,31 +336,31 @@
                   input(type='checkbox',name='Domingo',id='Domingo',value='Domingo')  
 
               .form-group
-                label(for='horaEntrada') Hora de entrada:
+                label(for='horaEntrada') #{textos[18].titulo}
                   div#timepicker5.input-group
                     input.input-small.form-control(type="text", name= 'horaEntrada')
                     span.input-group-addon
                       i.icon-time  
-                label(for='horaSalida') Hora de salida:
+                label(for='horaSalida') #{textos[19].titulo}
                   div#timepicker6.input-group
                     input.input-small.form-control(type="text", name= 'horaSalida')
                     span.input-group-addon
                       i.icon-time
 
               .form-group
-                label(for='tiempoReceso') Rango de receso:
+                label(for='tiempoReceso') #{textos[20].titulo}
                   div#timepicker2.input-group
                     input.input-small.form-control(type="text", name= 'tiempoReceso')
                     span.input-group-addon
                       i.icon-time  
-                label(for='tiempoAlmuerzo') Rango de almuerzo:
+                label(for='tiempoAlmuerzo') #{textos[21].titulo}
                   div#timepicker3.input-group
                     input.input-small.form-control(type="text", name= 'tiempoAlmuerzo')
                     span.input-group-addon
                       i.icon-time
                 
-              button.btn.btn-success(type='submit') Ingresar
-              button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
+              button.btn.btn-success(type='submit') #{textos[13].titulo}
+              button.btn.btn-danger(type='button', data-dismiss='modal') #{textos[14].titulo}
 
  
   #addHorarioLibre.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
@@ -369,27 +368,27 @@
         .modal-content
           .modal-header
             button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-            h4#myModalLabel.modal-title Añadir nuevo horario
+            h4#myModalLabel.modal-title #{textos[15].titulo}
           .modal-body
             form(action='/horarioN', method='post')#login-form.well.span4
               .form-group
-                h4 Información Básica
-                label(for='nombre' style="float:left") Nombre del Horario:
+                h4 #{textos[17].titulo}
+                label(for='nombre' style="float:left") #{textos[16].titulo}
                   input.form-control#textInput( type="text", name="nombre")     
 
-                label(for='rango') Jornada laboral:
+                label(for='rango') #{textos[22].titulo}
                   div#timepicker5.input-group
                     input.input-small.form-control(type="text", name= 'rangoJornada')
                     span.input-group-addon
                       i.icon-time     
 
               .form-group
-                label(for='tiempoReceso') Rango de receso:
+                label(for='tiempoReceso') #{textos[20].titulo}
                   div#timepicker2.input-group
                     input.input-small.form-control(type="text", name= 'tiempoReceso')
                     span.input-group-addon
                       i.icon-time  
-                label(for='tiempoAlmuerzo') Rango de almuerzo:
+                label(for='tiempoAlmuerzo') #{textos[21].titulo}
                   div#timepicker3.input-group
                     input.input-small.form-control(type="text", name= 'tiempoAlmuerzo')
                     span.input-group-addon
@@ -403,80 +402,79 @@
         .modal-content
           .modal-header
             button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-            h4#myModalLabel.modal-title Añadir nuevo feriado
+            h4#myModalLabel.modal-title #{textos[27].titulo}
           .modal-body
             form(action='/asignarFeriado', method='post')#login-form.well.span4
               .form-group
-                h4 Información Básica
-                label(for='nombre' style="float:left") Nombre del feriado:
+                h4 #{textos[17].titulo}
+                label(for='nombre' style="float:left") #{textos[28].titulo}
                   input.form-control#textInput( type="text", name="nombreFeriado")     
 
-                label.labelFiltro(for='fechaHasta') Fecha:
+                label.labelFiltro(for='fechaHasta') #{textos[29].titulo}
                   div.input-group
                     input#date_range_end.form-control(type='text', name='date')
                     span.input-group-addon
                       i.icon-calendar     
 
                  
-              button.btn.btn-success(type='submit') Ingresar
-              button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
+              button.btn.btn-success(type='submit') #{textos[13].titulo}
+              button.btn.btn-danger(type='button', data-dismiss='modal') #{textos[14].titulo}
 
   #asignarCorreo.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
     .modal-dialog
         .modal-content
           .modal-header
             button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-            h4#myModalLabel.modal-title Añadir correo
+            h4#myModalLabel.modal-title #{textos[30].titulo}
           .modal-body
             form(action='/asignarCorreo', method='post')#login-form.well.span4
               .form-group
-                h4 Información Básica
-                label(for='nombre' style="float:left") Cuenta de correo:
+                h4 #{textos[17].titulo}
+                label(for='nombre' style="float:left") #{textos[31].titulo}
                   input.form-control#textInput( type="email", name="nombreCorreo",required)  
-                label(for='nombre' style="float:left") @Dominio de correo:
+                label(for='nombre' style="float:left") #{textos[32].titulo}
                   input.form-control#textInput( type="text", name="dominioCorreo",required)       
-                label(for='nombre' style="float:left") Contraseña:
+                label(for='nombre' style="float:left") #{textos[33].titulo}
                   input.form-control#textInput(type="password", name="password",required)    
                 div.clearfix
-                button.btn.btn-success(type='submit') Ingresar
-                button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
+                button.btn.btn-success(type='submit') #{textos[13].titulo}
+                button.btn.btn-danger(type='button', data-dismiss='modal') #{textos[14].titulo}
 
   #asignarContenido.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
     .modal-dialog
         .modal-content
           .modal-header
             button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-            h4#myModalLabel.modal-title Añadir correo
+            h4#myModalLabel.modal-title #{textos[36].titulo}
           .modal-body
             form(action='/asignarContenido', method='post')#login-form.well.span4
               .form-group
-                h4 Información Básica
-                label(for='nombre' style="float:left") Título:
+                h4 #{textos[17].titulo}
+                label(for='nombre' style="float:left") #{textos[37].titulo}
                   input.form-control#textInput( type="text", name="titulo",required)  
-                label(for='nombre' style="float:left") Llave:
+                label(for='nombre' style="float:left") #{textos[38].titulo}
                   input.form-control#textInput( type="text", name="llave",required)       
-                label(for='nombre' style="float:left") Sección:
+                label(for='nombre' style="float:left") #{textos[39].titulo}
                   input.form-control#textInput(type="text", name="seccion",required)    
                 div.clearfix
-                button.btn.btn-success(type='submit') Ingresar
-                button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
-
+                button.btn.btn-success(type='submit') #{textos[13].titulo}
+                button.btn.btn-danger(type='button', data-dismiss='modal') #{textos[14].titulo}
 
   #asignarRed.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
     .modal-dialog
       .modal-content
         .modal-header
           button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-          h4#myModalLabel.modal-title Añadir correo
+          h4#myModalLabel.modal-title #{textos[34].titulo}
         .modal-body
           form(action='/asignarRed', method='post')#login-form.well.span4
             .form-group
-              h4 Información Básica
-              label(for='nombre' style="float:left") IP de red:
+              h4 #{textos[17].titulo}
+              label(for='nombre' style="float:left") #{textos[35].titulo}
                 input.form-control#textInput( type="text", name="nombreRed",required)      
               div.clearfix
-              button.btn.btn-success(type='submit') Ingresar
-              button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
+              button.btn.btn-success(type='submit') #{textos[13].titulo}
+              button.btn.btn-danger(type='button', data-dismiss='modal') #{textos[14].titulo}
 
 
   

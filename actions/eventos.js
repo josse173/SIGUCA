@@ -8,6 +8,7 @@ var HorarioFijo = require('../models/HorarioFijo');
 var Departamento = require('../models/Departamento');
 var crudFeriado=require('../routes/crudFeriado');
 var Justificaciones = require('../models/Justificaciones');
+var Contenido = require('../models/Contenido');
 var Solicitudes = require('../models/Solicitudes');
 var Cierre = require('../models/Cierre');
 var util = require('../util/util');
@@ -81,6 +82,7 @@ module.exports = {
 
   //*************************************************************************************************************
   eventos : function (req, res) {
+    console.log("jeje");
     //var inicioMes = moment().date(1);
     var epochMin = moment();
     epochMin.hours(0);
@@ -420,7 +422,14 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
       });
    
   }
-  return (titulo === 'Reportes | SIGUCA') ? res.render('reportes', filtro) : res.render('gestionarEventos', filtro); 
+  Contenido.find({seccion:"Reportes"},function(error,contenido){
+    if(!error &&contenido.length>0){
+      filtro.textos=contenido;
+      console.log(filtro.textos[0]);
+      return (titulo === 'Reportes | SIGUCA') ? res.render('reportes', filtro) : res.render('gestionarEventos', filtro);
+    }
+  });
+  //return (titulo === 'Reportes | SIGUCA') ? res.render('reportes', filtro) : res.render('gestionarEventos', filtro); 
 }
 
 

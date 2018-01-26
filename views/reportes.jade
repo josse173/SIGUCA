@@ -8,14 +8,14 @@ block content
     div.container
       if(!feriado)
         div.text-center
-          .milky Reportes DE SOLICITUDES
+          .milky #{textos[0].titulo}
 
         div.filter
           table
             form(role='form', method="POST", action="/reportes/"+filtradoReporte)
               td
                 select.form-control.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro") 
-                  option(value= "todos|reportes") Todos los usuarios
+                  option(value= "todos|reportes") #{textos[1].titulo}
                   each user in usuarios
                     //-Se verifica si la informacion esta siendo filtrada por usuario
                     if(filtroUsuario && filtroUsuario == user._id)
@@ -25,7 +25,7 @@ block content
 
               td
                 select.form-control#selectFiltro.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro_departamento") 
-                  option(value= "todos") Todos los departamentos
+                  option(value= "todos") #{textos[2].titulo}
                   each dep in departamentos
                     //-Se verifica si la informacion esta siendo filtrada por departamento
                     if(filtroDepartamento && filtroDepartamento == dep._id)
@@ -36,7 +36,7 @@ block content
                 td.hide
               -else
                 td
-                  label.labelFiltro.labFilLeft(for='fechaDesde') Desde:
+                  label.labelFiltro.labFilLeft(for='fechaDesde') #{textos[3].titulo}
                     div.input-group
                       input#date_range_start.form-control.fondoTransparente(type='text', name='fechaDesde', value=rangoFecha.fechaDesde)
                       span.input-group-addon.fondoTransparente-derecha
@@ -45,31 +45,31 @@ block content
                 td.hide
               -else
                 td
-                  label.labelFiltro(for='fechaHasta') Hasta:
+                  label.labelFiltro(for='fechaHasta') #{textos[4].titulo}
                     div.input-group
                       input#date_range_end.form-control.fondoTransparente(type='text', name='fechaHasta', value=rangoFecha.fechaHasta)
                       span.input-group-addon.fondoTransparente-derecha
                         i.icon-calendar
               td
       
-                button.filtro.form-control.btn.btn-success.fondoTransparente(type='submit', name='gestionar') Buscar
+                button.filtro.form-control.btn.btn-success.fondoTransparente(type='submit', name='gestionar') #{textos[5].titulo}
       else
         div.text-center
           .milky Reportes de #{tipoReporte}
 
       .col-xs-12
         div.eventosCierre
-          h3 Detalle de la búsqueda
+          h3 #{textos[6].titulo}
           table.footable.zoom-element
             thead
               tr
-                th(data-sort-ignore="true") Acciones
-                th(data-sort-ignore="true") Cantidad
+                th(data-sort-ignore="true") #{textos[7].titulo}
+                th(data-sort-ignore="true") #{textos[8].titulo}
             tbody#calDetalle
                 //-Marcas
                 if(marcas)
                   tr
-                    td Marcas registradas
+                    td #{textos[9].titulo}
                     if(marcas.length != 0)
                       td #{marcas.length}
                     else
@@ -162,14 +162,14 @@ block content
           if(horasEmpleado)
             if(horasEmpleado.length != 0)
               br
-              h3 Horas laboradas por colaborador
+              h3 #{textos[39].titulo}
               .tableSolicitudes.footable
                 table#totalHorasEmpleado
                     thead
                       tr
-                        th Tipo de usuario
-                        th Usuario
-                        th Tiempo trabajado
+                        th #{textos[40].titulo}
+                        th #{textos[41].titulo}
+                        th #{textos[42].titulo}
                             
                     tbody
                       each empleado, p in horasEmpleado
@@ -187,23 +187,23 @@ block content
                           td #{tiempo}
                          
             else
-              h3 Horas laboradas por empleado
-              p No se han encontrado registros
+              h3  #{textos[39].titulo}
+              p  #{textos[15].titulo}
 
           
           //-Horas por dia
           if(cierreUsuarios)
             if(cierreUsuarios.length != 0)
               br
-              h3 Horas trabajas por día 
+              h3 #{textos[43].titulo}
               .tableCierres.footable
                 table#horaTablaPDF
                     thead
                       tr
-                        th Fecha
-                        th Tipo de usuario
-                        th Usuario
-                        th Tiempo trabajado
+                        th #{textos[44].titulo}
+                        th #{textos[45].titulo}
+                        th #{textos[46].titulo}
+                        th #{textos[47].titulo}
                             
                     tbody
                       each cierre, i in cierreUsuarios
@@ -222,21 +222,21 @@ block content
                           td #{cierre.usuario.nombre} #{cierre.usuario.apellido1} 
                           td #{tiempo}
             else
-              h3 Horas Semanales 
-              p No se han encontrado registros
+              h3 #{textos[43].titulo}
+              p  #{textos[15].titulo}
 
           //-Marcas
           if(marcas)
             if(marcas.length != 0)
-              h3 Marcas
+              h3 #{textos[10].titulo}
               .footable
                 table#marcasPDF
                     thead
                       tr
-                        th(data-type="numeric" data-sort-initial="descending") Fecha
-                        th Usuario
-                        th Tipo
-                        th Tipo de usuario
+                        th(data-type="numeric" data-sort-initial="descending") #{textos[14].titulo}
+                        th #{textos[11].titulo}
+                        th #{textos[12].titulo}
+                        th #{textos[13].titulo}
                     tbody
                       each marca, i in marcas
                         tr
@@ -245,22 +245,23 @@ block content
                           td #{marca.tipoMarca} 
                           td #{marca.tipoUsuario}
             else
-              h3 Marcas 
-              p No se han encontrado registros 
+              h3 #{textos[10].titulo}
+              p #{textos[15].titulo}
                            
            //-Tardias  
         
+
           if(arregloTardias)
             if(arregloTardias.length != 0)
-              h3 Reporte tardias
+              h3 #{textos[25].titulo}
               .footable
                 table#tardiasPDF
                     thead
                       tr
-                        th Tipo de usuario
-                        th Usuario
-                        th Hora de entrada
-                        th Fecha y hora de marca
+                        th #{textos[26].titulo}
+                        th #{textos[27].titulo}
+                        th #{textos[28].titulo}
+                        th #{textos[29].titulo}
                         
                       
                     tbody
@@ -275,24 +276,24 @@ block content
                             td #{arregloTardias[g].horarioHora+":"+arregloTardias[g].horarioMinutos}
                           td #{arregloTardias[g].fecha}
             else
-              h3 Reporte tardias 
-              p No se han encontrado registros   
+              h3 #{textos[25].titulo}
+              p #{textos[15].titulo} 
              
           if(marcasPorDia)
             if(marcasPorDia.length != 0)
-                h3 Marcas diarias
+                h3 #{textos[16].titulo}
                 .footable
                   table#marcassPDF
                       thead
                         tr
-                          th Tipo usuario
-                          th Usuario
-                          th Entrada
-                          th Salida Almuerzo
-                          th Entrada Almuerzo
-                          th Salida a Receso
-                          th Entrada a Receso
-                          th Salida
+                          th #{textos[17].titulo}
+                          th #{textos[18].titulo}
+                          th #{textos[19].titulo}
+                          th #{textos[20].titulo}
+                          th #{textos[21].titulo}
+                          th #{textos[22].titulo}
+                          th #{textos[23].titulo}
+                          th #{textos[24].titulo}
                       tbody
                         -for(var s=0;s<marcasPorDia.length;s++)  
                           tr
@@ -305,25 +306,24 @@ block content
                             td  #{marcasPorDia[s].entradaReceso}
                             td  #{marcasPorDia[s].salida}
               else
-                h3 Marcas diarias
-                p No se han encontrado registros               
+                h3 #{textos[16].titulo}
+                p #{textos[15].titulo}          
 
           //-Justificaciones     
           if(justificaciones)
             if(justificaciones.length != 0)
-              h3 Justificaciones
+              h3 #{textos[30].titulo}
               .tableJustificaciones  
                 table#justificacionesPDF
                     thead
                       tr
-                        th(data-type="numeric" data-sort-initial="descending") Fecha
-                        th Usuario
-                        th Tipo Usuario
-                        th(data-hide="phone,small") Motivo
-                        th(data-hide="phone,small" data-sort-ignore="true") Detalle
-                        th(data-hide="phone,small" data-sort-ignore="true") Comentario
-                        th Estado
-                        th(data-hide="phone,small" data-sort-ignore="true") Eliminar
+                        th(data-type="numeric" data-sort-initial="descending") #{textos[31].titulo}
+                        th #{textos[32].titulo}
+                        th(data-hide="phone,small") #{textos[33].titulo}
+                        th(data-hide="phone,small" data-sort-ignore="true") #{textos[34].titulo}
+                        th(data-hide="phone,small" data-sort-ignore="true") #{textos[35].titulo}
+                        th #{textos[36].titulo}
+                        th(data-hide="phone,small" data-sort-ignore="true") #{textos[37].titulo}
                     tbody
                       each justificacion, i in justificaciones
                         tr
@@ -340,28 +340,28 @@ block content
                               button.btn.btn-default.justificacionDelete(value=justificacion.usuario.nombre+' '+justificacion.usuario.apellido1+' '+justificacion.usuario.apellido2+','+justificacion.id+','+justificacion.fecha.str, name='eliminar') 
                                 i.icon-trash.icon-large.i-danger 
             else
-              h3 Justificaciones
-              p No se han encontrado registros        
+              h3 #{textos[30].titulo}
+              p #{textos[15].titulo}        
                        
           //-Solicitudes Horas Extraordinarias
           if(extras)
             if(extras.length != 0)
               br
-              h3 Solicitudes Horas Extraordinarias
+              h3 #{textos[48].titulo}
               .tableSolicitudes.footable
                 table#extraPDF
                     thead
                       tr
-                        th(data-type="numeric" data-sort-initial="descending") Fecha
-                        th Usuario
-                        th(data-hide="phone,small" data-sort-ignore="true") Día de Inicio 
-                        th(data-hide="phone,small" data-sort-ignore="true") Día de Termino
-                        th(data-hide="phone,small,medium" data-sort-ignore="true") Cantidad de Horas
-                        th(data-hide="phone,small,medium") Cliente
-                        th(data-hide="phone,small,medium" data-sort-ignore="true") Motivo
-                        th(data-hide="phone,small,medium" data-sort-ignore="true") Comentario
-                        th(data-hide="phone,small") Estado
-                        th(data-hide="phone,small,medium" data-sort-ignore="true") Eliminar
+                        th(data-type="numeric" data-sort-initial="descending") #{textos[49].titulo}
+                        th #{textos[50].titulo}
+                        th(data-hide="phone,small" data-sort-ignore="true") #{textos[51].titulo}
+                        th(data-hide="phone,small" data-sort-ignore="true") #{textos[52].titulo}
+                        th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[53].titulo}
+                        th(data-hide="phone,small,medium") #{textos[54].titulo}
+                        th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[55].titulo}
+                        th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[56].titulo}
+                        th(data-hide="phone,small") #{textos[57].titulo}
+                        th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[58].titulo}
                     tbody
                       each extra, i in extras
                         tr
@@ -380,28 +380,28 @@ block content
                               button.btn.btn-default.solicitudDelete(value=extra.usuario.nombre+' '+extra.usuario.apellido1+' '+extra.usuario.apellido2+','+extra.id+','+extra.fecha.str, name='eliminar') 
                               i.icon-trash.icon-large.i-danger 
             else
-              h3 Solicitudes Horas Extraordinarias
-              p No se han encontrado registros 
+              h3 #{textos[48].titulo}
+              p #{textos[15].titulo}
           
           //-Solicitudes Permisos
           if(permisos)
             if(permisos.length != 0)
               br
-              h3 Solicitudes Permisos
+              h3 #{textos[59].titulo}
               .tableSolicitudes.footable
                 table#permisoPDF
                     thead
                       tr
-                        th(data-type="numeric" data-sort-initial="descending") Fecha
-                        th Usuario
-                        th(data-hide="phone,small") Día Inicial
-                        th(data-hide="phone,small") Día Final 
-                        th(data-hide="phone,small") Cantidad Días
-                        th(data-hide="phone,small,medium") Motivo
-                        th(data-hide="phone,small,medium" data-sort-ignore="true") Detalle
-                        th(data-hide="phone,small,medium" data-sort-ignore="true") Comentario
-                        th Estado
-                        th(data-hide="phone,small,medium" data-sort-ignore="true") Eliminar
+                        th(data-type="numeric" data-sort-initial="descending") #{textos[60].titulo}
+                        th  #{textos[61].titulo}
+                        th(data-hide="phone,small") #{textos[62].titulo}
+                        th(data-hide="phone,small") #{textos[63].titulo} 
+                        th(data-hide="phone,small") #{textos[64].titulo}
+                        th(data-hide="phone,small,medium") #{textos[65].titulo}
+                        th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[66].titulo}
+                        th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[67].titulo}
+                        th #{textos[68].titulo}
+                        th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[69].titulo}
                     tbody
                       each permiso, i in permisos
                         tr
@@ -420,19 +420,19 @@ block content
                               button.btn.btn-default.solicitudDelete(value=permiso.usuario.nombre+' '+permiso.usuario.apellido1+' '+permiso.usuario.apellido2+','+permiso.id+','+permiso.fecha.str, name='eliminar') 
                                 i.icon-trash.icon-large.i-danger 
             else
-              h3 Solicitudes Permisos
-              p No se han encontrado registros 
+              h3 #{textos[59].titulo}
+              p #{textos[15].titulo}
 
           //-lista de feriados
           if(feriado)
             if(feriado.lenght!=0)
               br
-              h3 Lista de feriados
+              h3 #{textos[77].titulo}
               table.footable.tableFeriado
                   thead
                     tr
-                      th Nombre
-                      th Fecha
+                      th #{textos[78].titulo}
+                      th #{textos[79].titulo}
                       
   
                   tbody 
@@ -441,24 +441,24 @@ block content
                         td #{feriadoCurrent.nombreFeriado} 
                         td #{feriadoCurrent.epoch} 
             else
-              h3 Feriados
-              p No se han encontrado registros
+              h3 #{textos[77].titulo}
+              p #{textos[15].titulo}
 
           //-Solicitudes Vacaciones
           if(vacaciones)
               br
-              h3 Vacaciones
+              h3 #{textos[70].titulo}
               .tableSolicitudes.footable
                 table#permisoPDF
                     thead
                       tr
 
-                        th Nombre
-                        th Apellidos
-                        th(data-hide="phone") Cédula
-                        th(data-hide="phone,small,medium,large") Email
-                        th(data-hide="phone,small") Estado
-                        th(data-hide="phone,small") Días disponibles
+                        th #{textos[71].titulo}
+                        th #{textos[72].titulo}
+                        th(data-hide="phone") #{textos[73].titulo}
+                        th(data-hide="phone,small,medium,large") #{textos[74].titulo}
+                        th(data-hide="phone,small") #{textos[75].titulo}
+                        th(data-hide="phone,small") #{textos[76].titulo}
                     tbody
                       form(method="POST", action="/vacacionesUpdate")
                         each elemento, i in usuarios

@@ -7,18 +7,18 @@ block content
  
   div.container#login-container
     form(class="col-md-12",action='/login', method='post')#login-form.well.span4
-      h1.headerFont(class="text-center") SIGUCA
-      p.subheading.subwell.headerFont(class="well text-center") Sistema de Gestión de Usuarios y Control de Asistencia
+      h1.headerFont(class="text-center") #{textos[0].titulo}
+      p.subheading.subwell.headerFont(class="well text-center") #{textos[1].titulo}
       div.form-group
         label(for="usernameInput")
-          |Usuario:
+          |#{textos[2].titulo}
         div.input-group.margin-bottom-sm
           span.input-group-addon
             i.icon-user
           input.form-control#username(type="text", name="username", placeholder="Usuario")
       div.form-group
         label(for="passwordInput")
-          |Contraseña:
+          |#{textos[3].titulo}
         div.input-group
           span.input-group-addon
             i.icon-key
@@ -30,7 +30,7 @@ block content
       div.form-group
         button(class="col-xs-offset-4 col-md-offset-4",type="submit")#btnIngresar.btn.btn-success.ocultar
           i.icon-lock.icon-white
-          |  Ingresar
+          |  #{textos[4].titulo}
 
       div.form-group
         button(class="col-xs-offset-4 col-md-offset-4",onClick="return verificarTipos()")#btnVerificar.btn.btn-success

@@ -70,9 +70,17 @@ module.exports = function(app, io) {
   
     
     app.get('/', function (req, res) {
-        res.render('index', {
-            usuario: req.user
+        Contenido.find({seccion:'Index'},function(err,contenido){
+            if (err){
+                return res.json(error);
+            } else{
+                res.render('index', {
+                    usuario: req.user,
+                    textos:contenido
+                });
+            }
         });
+        
     });
 
  
@@ -583,14 +591,28 @@ module.exports = function(app, io) {
     /*
     *  Redirecciona a la página de ayuda
     */
-    app.get('/ayuda', autentificado, function (req, res) {
+    app.get('/Ayuda', autentificado, function (req, res) {
         //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
-        req.user.tipo = req.session.name;
-        res.render('ayuda', {
-            title: 'Ayuda | SIGUCA',
-            usuario: req.user
+        Contenido.find({seccion:'Ayuda'},function(err,contenido){
+            if (err){
+                return res.json(error);
+            } else{
+                
+                req.user.tipo = req.session.name;
+                res.render('ayuda', {
+                    title: 'Ayuda | SIGUCA',
+                    usuario: req.user,
+                    textos:contenido
+                });
+            }
+            
+                
+            });
         });
-    });
+
+            
+       
+
 
 
 

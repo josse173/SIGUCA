@@ -33,6 +33,8 @@ module.exports = {
 				},
 				tipo:"Supervisor"
 			};
+			Contenido.find({seccion:"escritorio"},function(err,contenido){
+				if (err) return res.json(error);
 			var usuarioQuery = {tipo:{'$nin': ['Administrador', "Supervisor"]}};
 			crudUsuario.get(querrySupervisores, function (err, supervisores){
 				crudUsuario.getEmpleadoPorSupervisor(req.user.id, usuarioQuery, 
@@ -94,7 +96,8 @@ module.exports = {
 																usuario: req.user,
 																marcas: marcas,
 																cierreUsuarios: cierreUsuarios,
-																contJust:conteoJustificacionesTotal
+																contJust:conteoJustificacionesTotal,
+																textos:contenido
 																//horasSemanales: horasSemanales
 															});
 														}else{
@@ -109,7 +112,8 @@ module.exports = {
 																usuario: req.user,
 																marcas: marcas,
 																cierreUsuarios: cierreUsuarios,
-																contJust:0
+																contJust:0,
+																textos:contenido
 																//horasSemanales: horasSemanales
 															});
 														}
@@ -125,7 +129,8 @@ module.exports = {
 			                });//solicitudes
 			            });//Justificaciones
 			        });//Justificaciones
-			    });//Justificaciones
+				});//Justificaciones
+			});
 				//
 			} else {
 				req.logout();
@@ -190,31 +195,34 @@ module.exports = {
 	escritorioAdmin : function (req, res) {
 		req.user.tipo = req.session.name;
 		if (req.session.name ==="Administrador") {
-			
-			Usuario.find().exec(function(error, usuarios) {
-				Horario.find().exec(function(error, horarios) {
-					Departamento.find().exec(function(error, departamentos) {
-						HorarioFijo.find().exec(function(error,horarioFijo){
-							if (error) return res.json(error);
-							//Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
-							req.user.tipo = req.session.name;
-							HorarioPersonalizado.find().exec(function(error,personalizado){
-								return res.render('escritorio', {
-									title: 'Escritorio Administrador | SIGUCA',
-									usuario: req.user,
-									horarios: horarios,
-									departamentos: departamentos,
-									usuarios: usuarios,
-									tipoEmpleado: config.empleado2,
-									empleadoProfesor: config.empleadoProfesor,
-									arregloHorarioFijo:horarioFijo,
-									horarioPersonalizado:personalizado
+			Contenido.find({seccion:"escritorioAdmin"},function(err,contenido){
+				if (err) return res.json(error);
+				Usuario.find().exec(function(error, usuarios) {
+					Horario.find().exec(function(error, horarios) {
+						Departamento.find().exec(function(error, departamentos) {
+							HorarioFijo.find().exec(function(error,horarioFijo){
+								if (error) return res.json(error);
+								//Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
+								req.user.tipo = req.session.name;
+								HorarioPersonalizado.find().exec(function(error,personalizado){
+									return res.render('escritorio', {
+										title: 'Escritorio Administrador | SIGUCA',
+										usuario: req.user,
+										horarios: horarios,
+										departamentos: departamentos,
+										usuarios: usuarios,
+										tipoEmpleado: config.empleado2,
+										empleadoProfesor: config.empleadoProfesor,
+										arregloHorarioFijo:horarioFijo,
+										horarioPersonalizado:personalizado,
+										textos:contenido
+									});
 								});
 							});
 						});
 					});
+					
 				});
-				
 			});
 		} else {
 			req.logout();
