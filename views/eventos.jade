@@ -53,8 +53,9 @@ block content
                   td(colspan='10')
                     .pagination.pagination-centered.hide-if-no-paging
       .col-xs-12
-        h3 #{textos[9].titulo}
+       
         if(marcas.length != 0)
+          h3 #{textos[9].titulo}
           table.footable.tableMarcas(data-page-navigation=".pagination" data-page-size="6")
               thead
                 tr
@@ -78,8 +79,7 @@ block content
                 tr
                   td(colspan='3')
                     .pagination.pagination-centered.hide-if-no-paging
-        else
-          p No se han realizado marcas hasta el momento.
+        
 
       if(justificaciones.length != 0)
         .col-xs-12
