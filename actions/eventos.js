@@ -82,7 +82,6 @@ module.exports = {
 
   //*************************************************************************************************************
   eventos : function (req, res) {
-    console.log("jeje");
     //var inicioMes = moment().date(1);
     var epochMin = moment();
     epochMin.hours(0);
@@ -116,14 +115,17 @@ module.exports = {
                 //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
                 req.user.tipo = req.session.name;	
                 if (error) return res.json(error);
-                return res.render('eventos', {
-                  title: 'Solicitudes/Justificaciones | SIGUCA',
-                  usuario: req.user,
-                  justificaciones: arrayJust,
-                  extras: arrayExtras,
-                  permisos: arrayPermisos,
-                  cierreUsuarios: listaCierre,
-                  marcas: marcas
+                Contenido.find({seccion:"Eventos"},function(errorContenido,contenido){
+                  return res.render('eventos', {
+                    title: 'Solicitudes/Justificaciones | SIGUCA',
+                    usuario: req.user,
+                    justificaciones: arrayJust,
+                    extras: arrayExtras,
+                    permisos: arrayPermisos,
+                    cierreUsuarios: listaCierre,
+                    marcas: marcas,
+                    textos:contenido
+                  });
                 });
               });
               //
@@ -197,15 +199,19 @@ module.exports = {
                 req.user.tipo = req.session.name;	
 
                 if (error) return res.json(error);
-                return res.render('eventos', {
-                  title: 'Solicitudes/Justificaciones | SIGUCA',
-                  usuario: req.user,
-                  justificaciones: arrayJust,
-                  extras: arrayExtras,
-                  permisos: arrayPermisos,
-                  cierreUsuarios: listaCierre,
-                  marcas: marcas
-                });//render
+                Contenido.find({seccion:"Eventos"},function(errorContenido,contenido){
+                  return res.render('eventos', {
+                    title: 'Solicitudes/Justificaciones | SIGUCA',
+                    usuario: req.user,
+                    justificaciones: arrayJust,
+                    extras: arrayExtras,
+                    permisos: arrayPermisos,
+                    cierreUsuarios: listaCierre,
+                    marcas: marcas,
+                    textos:contenido
+                  });//render
+                });
+                
               });//CierrePersonal
             });//Permisos
           });//Extras

@@ -3,36 +3,36 @@ extends layout
 block content  
   div.container
       .info
-       h3 Mis eventos
+       h3 #{textos[0].titulo}
        h4 #{usuario.apellido1} #{usuario.apellido2}, #{usuario.nombre}   
       
       div.filter
-        h3 Filtros   
+        h3 #{textos[1].titulo}  
         table
          form(role='form', method="POST", action="/filtrarEventosEmpl")
           td
-            label.labelFiltro(for='fechaDesde') Desde:
+            label.labelFiltro(for='fechaDesde') #{textos[2].titulo}
               div.input-group
                 input#date_range_start.form-control(type='text', name='fechaDesde')
                 span.input-group-addon
                   i.icon-calendar
           td
-            label.labelFiltro(for='fechaHasta') Hasta:
+            label.labelFiltro(for='fechaHasta') #{textos[3].titulo}
               div.input-group
                 input#date_range_end.form-control(type='text', name='fechaHasta')
                 span.input-group-addon
                   i.icon-calendar
           td
-            button.form-control.btn.btn-success(type='submit', name='filtrar') Filtrar
+            button.form-control.btn.btn-success(type='submit', name='filtrar') #{textos[4].titulo}
       br
       if(cierreUsuarios && cierreUsuarios.length>0)
         .col-xs-12
-          h3 Horas Semanales 
+          h3 #{textos[38].titulo}
           table.tableCierres.footable(data-page-navigation=".pagination" data-page-size="5")
               thead
                 tr
-                  th(data-type="numeric" data-sort-initial="descending") Fecha
-                  th(data-sort-ignore="true") Tiempo trabajado
+                  th(data-type="numeric" data-sort-initial="descending") #{textos[39].titulo}
+                  th(data-sort-ignore="true") #{textos[40].titulo}
               tbody
                 each cierre, i in cierreUsuarios
                   - var x = JSON.stringify(cierre);
@@ -53,15 +53,15 @@ block content
                   td(colspan='10')
                     .pagination.pagination-centered.hide-if-no-paging
       .col-xs-12
-        h3 Marcas
+        h3 #{textos[9].titulo}
         if(marcas.length != 0)
           table.footable.tableMarcas(data-page-navigation=".pagination" data-page-size="6")
               thead
                 tr
-                  th(data-type="numeric" data-sort-initial="descending") Fecha
-                  th Tipo Usuario
-                  th Tipo
-                  th(data-sort-ignore="true") Eliminar
+                  th(data-type="numeric" data-sort-initial="descending")  #{textos[5].titulo}
+                  th  #{textos[6].titulo}
+                  th  #{textos[7].titulo}
+                  th(data-sort-ignore="true")  #{textos[8].titulo}
               tbody
                 each marca, i in marcas
                   tr
@@ -83,16 +83,16 @@ block content
 
       if(justificaciones.length != 0)
         .col-xs-12
-          h3 Justificaciones
+          h3 #{textos[10].titulo}
           table.footable(data-page-navigation=".pagination" data-page-size="5")
               thead
                 tr
-                  th(data-type="numeric" data-sort-initial="descending") Fecha
-                  th Motivo
-                  th(data-hide="phone,small" data-sort-ignore="true") Detalle
-                  th(data-hide="phone,small" data-sort-ignore="true") Comentario
-                  th Estado
-                  th(data-hide="phone,small" data-sort-ignore="true") Editar
+                  th(data-type="numeric" data-sort-initial="descending") #{textos[11].titulo}
+                  th #{textos[12].titulo}
+                  th(data-hide="phone,small" data-sort-ignore="true") #{textos[13].titulo}
+                  th(data-hide="phone,small" data-sort-ignore="true") #{textos[14].titulo}
+                  th #{textos[15].titulo}
+                  th(data-hide="phone,small" data-sort-ignore="true") #{textos[16].titulo}
               tbody 
                 each justificacion, i in justificaciones
                   tr
@@ -113,20 +113,20 @@ block content
         
       if(extras.length != 0)
         br
-        h3 Solicitudes Horas Extraordinarias
+        h3 #{textos[17].titulo}
       
         table.footable(data-page-navigation=".pagination")
             thead
               tr
-                th(data-type="numeric" data-sort-initial="descending") Fecha
-                th(data-sort-ignore="true") Día de Inicio 
-                th(data-sort-ignore="true") Día de Termino
-                th(data-hide="phone,small,medium" data-sort-ignore="true") Cantidad de Horas
-                th(data-hide="phone,small,medium") Cliente
-                th(data-hide="phone,small,medium" data-sort-ignore="true") Motivo
-                th(data-hide="phone,small,medium" data-sort-ignore="true") Comentario
-                th Estado
-                th(data-hide="phone,small" data-sort-ignore="true") Editar
+                th(data-type="numeric" data-sort-initial="descending") #{textos[18].titulo}
+                th(data-sort-ignore="true") #{textos[19].titulo}
+                th(data-sort-ignore="true") #{textos[20].titulo}
+                th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[21].titulo}
+                th(data-hide="phone,small,medium") #{textos[22].titulo}
+                th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[23].titulo}
+                th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[24].titulo}
+                th #{textos[25].titulo}
+                th(data-hide="phone,small" data-sort-ignore="true") #{textos[26].titulo}
             tbody 
               each extra, i in extras
                 tr
@@ -149,20 +149,20 @@ block content
 
       if(permisos.length != 0)
         br
-        h3 Solicitudes Permisos
+        h3 #{textos[27].titulo}
       
         table.footable(data-page-navigation=".pagination")
             thead
               tr
-                th(data-type="numeric" data-sort-initial="descending") Fecha
-                th Día Inicial
-                th Día Final 
-                th(data-hide="phone,small,medium") Cantidad Días
-                th(data-hide="phone,small,medium") Motivo
-                th(data-hide="phone,small,medium" data-sort-ignore="true") Detalle
-                th(data-hide="phone,small,medium" data-sort-ignore="true") Comentario
-                th Estado
-                th(data-hide="phone,small" data-sort-ignore="true") Editar
+                th(data-type="numeric" data-sort-initial="descending") #{textos[28].titulo}
+                th #{textos[29].titulo}
+                th #{textos[30].titulo}
+                th(data-hide="phone,small,medium") #{textos[31].titulo}
+                th(data-hide="phone,small,medium") #{textos[32].titulo}
+                th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[33].titulo}
+                th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[34].titulo}
+                th #{textos[35].titulo}
+                th(data-hide="phone,small" data-sort-ignore="true") #{textos[36].titulo}
             tbody 
               each permiso, i in permisos
                 tr
