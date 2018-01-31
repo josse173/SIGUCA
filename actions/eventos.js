@@ -391,6 +391,7 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
         
   }
 
+  console.log(req.route.path.substring(0, 9));
   //Si el filtrado es por vacaciones
   if(filtrado && filtrado == "vacaciones" && req.route.path.substring(0, 9) =='/reportes'){
     filtro.vacaciones = true;
@@ -428,7 +429,10 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
       });
    
   }
-  if(filtrado==="todosEventos"){
+
+  //|| filtrado=== "extras" || filtrado=== "justificaciones"
+  console.log(filtrado);
+  if(filtrado==="todosEventos" || req.route.path.substring(0, 9) =='/gestiona'){
     Contenido.find({seccion:"todosEventos"},function(error,contenido){
       if(!error &&contenido.length>0){
         filtro.textos=contenido;
