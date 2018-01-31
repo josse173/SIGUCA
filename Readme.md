@@ -7,12 +7,11 @@ SIGUCA is an acronym for User Managnent and Assistance Control System, in spanis
 
 ## Prerequisite Technologies
 
-### Linux
-*Node.js* - [Download][donwloadNodejs] and Install Node.js, [nodeschool][nodeschool] has free  node tutorials to get you started.
+-Linux 
+-Node.Js : sudo apt install nodejs nodejs-legacy
+-MongoDB: sudo apt install mongodb
+-npm: sudo apt install npm
 
-*MongoDB* - [Download][donwloadMongodb] and Install mongodb. Checkout their [manual][manualMongodb] if you're just starting.
-
-If you don't know how to install them, here is a guide [NodeJS and MongoDB][guide]
 
 ## Technologies 
 
@@ -41,8 +40,11 @@ If you don't know how to install them, here is a guide [NodeJS and MongoDB][guid
 Install
 ==========
 
-    From source: 'npm install'
-    Started: 'node app.js'
+  -  Download from: https://github.com/Greencorecr/SIGUCA.git
+  -  Open the SIGUCA folder: cd SIGUCA
+  -  install dependencies: npm install 
+  -  Create the database: into the folder "DB" use the command mongorestore
+  -  Start the web application: into the folder SIGUCA, use the command "nodejs app.js"
 
 ### Files structure
 
