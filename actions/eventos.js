@@ -428,13 +428,22 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
       });
    
   }
-  Contenido.find({seccion:"Reportes"},function(error,contenido){
-    if(!error &&contenido.length>0){
-      filtro.textos=contenido;
-      console.log(filtro.textos[0]);
-      return (titulo === 'Reportes | SIGUCA') ? res.render('reportes', filtro) : res.render('gestionarEventos', filtro);
-    }
-  });
+  if(filtrado==="todosEventos"){
+    Contenido.find({seccion:"todosEventos"},function(error,contenido){
+      if(!error &&contenido.length>0){
+        filtro.textos=contenido;
+        return (titulo === 'Reportes | SIGUCA') ? res.render('reportes', filtro) : res.render('gestionarEventos', filtro);
+      }
+    });
+  }else{
+    Contenido.find({seccion:"Reportes"},function(error,contenido){
+      if(!error &&contenido.length>0){
+        filtro.textos=contenido;
+        return (titulo === 'Reportes | SIGUCA') ? res.render('reportes', filtro) : res.render('gestionarEventos', filtro);
+      }
+    });
+  }
+  
   //return (titulo === 'Reportes | SIGUCA') ? res.render('reportes', filtro) : res.render('gestionarEventos', filtro); 
 }
 
