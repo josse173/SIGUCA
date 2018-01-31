@@ -7,48 +7,48 @@ block content
        h4 #{empleado}   
 
       div.filter
-        h3 Filtros   
+        h3 #{textos[1].titulo} 
         table
           form(role='form', method="POST", action="/filtrarEventos/todosEventos")
             td
               select.form-control#selectFiltro.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro") 
-                option(value= "todos|gestionarEventos") Todos los usuarios
+                option(value= "todos|gestionarEventos") #{textos[2].titulo}
                 each user in usuarios
                   option(value= user._id + "|gestionarEventos") #{user.apellido1} #{user.apellido2}, #{user.nombre}
             td
               select.form-control#selectFiltro.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro_departamento") 
-                option(value= "todos") Todos los departamentos
+                option(value= "todos") #{textos[3].titulo}
                 each dep in departamentos
                   option(value= dep._id ) #{dep.nombre}
             td
-              label.labelFiltro.labFilLeft(for='fechaDesde') Desde:
+              label.labelFiltro.labFilLeft(for='fechaDesde') #{textos[4].titulo}
                 div.input-group
                   input#date_range_start.form-control(type='text', name='fechaDesde')
                   span.input-group-addon
                     i.icon-calendar
             td
-              label.labelFiltro(for='fechaHasta') Hasta:
+              label.labelFiltro(for='fechaHasta') #{textos[5].titulo}
                 div.input-group
                   input#date_range_end.form-control(type='text', name='fechaHasta')
                   span.input-group-addon
                     i.icon-calendar
             td
-              button.filtro.form-control.btn.btn-success(type='submit', name='gestionar') Buscar
+              button.filtro.form-control.btn.btn-success(type='submit', name='gestionar') #{textos[6].titulo}
        
       .col-xs-12
         if(justificaciones && justificaciones.length != 0)
-          h3 Justificaciones
-          h5 Seleccionar todas las justificaciones
+          h3  #{textos[7].titulo}
+          h5  #{textos[8].titulo}
           input.checkGrupoTodas(type='checkbox',checked=false)
-          h5.justificacionesTitulo(id="justificacionesTitulo",style='display:none') Justificaciones en grupo
+          h5.justificacionesTitulo(id="justificacionesTitulo",style='display:none')  #{textos[9].titulo}
           textarea.form-control.comentarioDelSupervisorMasa(rows="1" cols="50", id="comentarioDelSupervisor", placeholder="Añada comentario" ,style='display:none' )
       
           select.select_picker.estadoMasa(id='estadoMasa', data-width="auto" ,data-style="btn-inverse",style='display:none;float:left')
-                          option(value='Seleccionar') Seleccionar
-                          option(value='Pendiente') Pendiente
-                          option(value='Aceptada') Aprobar
-                          option(value='Rechazada') Rechazar
-                          option(value='Incompleto') Incompleto
+                          option(value='Seleccionar')  #{textos[10].titulo}
+                          option(value='Pendiente')  #{textos[11].titulo}
+                          option(value='Aceptada')  #{textos[12].titulo}
+                          option(value='Rechazada') #{textos[13].titulo}
+                          option(value='Incompleto') #{textos[14].titulo}
 
           button.btn.btn-default.justificacionDeleteMasa(id="justificacionDeleteMasa",style='display:none;float:left') 
             i.icon-trash.icon-large.i-danger 
@@ -62,15 +62,15 @@ block content
                 thead
                   tr
                     th
-                    th(data-type="numeric" data-sort-initial="descending")  Fecha
-                    th Usuario
-                    th Tipo Usuario
-                    th Motivo
-                    th(data-sort-ignore="true") Detalle
-                    th(data-sort-ignore="true") Comentario
-                    th(data-sort-ignore="true") Acción
-                    th(data-sort-ignore="true") Aceptar
-                    th(data-sort-ignore="true") Eliminar
+                    th(data-type="numeric" data-sort-initial="descending")  #{textos[15].titulo}
+                    th #{textos[16].titulo}
+                    th #{textos[17].titulo}
+                    th #{textos[18].titulo}
+                    th(data-sort-ignore="true") #{textos[19].titulo}
+                    th(data-sort-ignore="true") #{textos[20].titulo}
+                    th(data-sort-ignore="true") #{textos[21].titulo}
+                    th(data-sort-ignore="true") #{textos[22].titulo}
+                    th(data-sort-ignore="true") #{textos[23].titulo}
                 tbody 
                   each justificacion, i in justificaciones
                     form(role='form', method="POST", action="/getionarJustificacion/"+justificacion.id)
@@ -86,10 +86,10 @@ block content
                           textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
                         td
                           select.select_picker.estado(name='estado' data-width="auto" data-style="btn-inverse")
-                            option(value='Pendiente') Pendiente
-                            option(value='Aceptada') Aprobar
-                            option(value='Rechazada') Rechazar
-                            option(value='Incompleto') Incompleto
+                            option(value='Pendiente') #{textos[11].titulo}
+                            option(value='Aceptada') #{textos[12].titulo}
+                            option(value='Rechazada') #{textos[13].titulo}
+                            option(value='Incompleto') #{textos[14].titulo}
                         td
                           button.row-delete.btn.btn-default(value=justificacion.id, name='gestionar') 
                               i.icon-ok.icon-large  
@@ -101,26 +101,26 @@ block content
                     td(colspan='8')
                       .pagination.pagination-centered.hide-if-no-paging 
           else
-            p No se han enviado justificaciones hasta el momento.               
+            p             
 
         br
         if(extras && extras.length != 0)
-          h3 Solicitudes Horas Extraordinarias
+          h3 #{textos[25].titulo}  
           if(extras && extras.length != 0)
             table.tableSolicitudes.footable(data-page-navigation=".pagination" data-page-size="5" )
                 thead
                   tr
-                    th(data-type="numeric" data-sort-initial="descending") Fecha
-                    th Usuario
-                    th(data-sort-ignore="true") Día de Inicio 
-                    th(data-sort-ignore="true") Día de Termino
-                    th(data-sort-ignore="true") Cantidad de Horas
-                    th Cliente
-                    th(data-sort-ignore="true") Motivo
-                    th(data-sort-ignore="true") Comentario
-                    th(data-sort-ignore="true") Acción
-                    th(data-sort-ignore="true" data-name="Delete") Aceptar
-                    th(data-sort-ignore="true") Eliminar
+                    th(data-type="numeric" data-sort-initial="descending") #{textos[26].titulo}  
+                    th #{textos[27].titulo}  
+                    th(data-sort-ignore="true") #{textos[28].titulo}  
+                    th(data-sort-ignore="true") #{textos[29].titulo}  
+                    th(data-sort-ignore="true") #{textos[30].titulo}  
+                    th #{textos[31].titulo}  
+                    th(data-sort-ignore="true") #{textos[32].titulo}  
+                    th(data-sort-ignore="true") #{textos[33].titulo}  
+                    th(data-sort-ignore="true") #{textos[34].titulo}  
+                    th(data-sort-ignore="true" data-name="Delete") #{textos[35].titulo}  
+                    th(data-sort-ignore="true") #{textos[36].titulo}  
                 tbody 
                   each extra, i in extras
                     form(role='form', method="POST", action="/getionarSolicitud/"+extra.id)
@@ -136,9 +136,9 @@ block content
                           textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
                         td
                           select.select_picker(name="estado"+extra.id, id="estado"+extra.id, data-width="auto"  data-style="btn-inverse")
-                            option(value='Pendiente') Pendiente
-                            option(value='Aceptada') Aprobar
-                            option(value='Rechazada') Rechazar
+                            option(value='Pendiente') #{textos[11].titulo}
+                            option(value='Aceptada') #{textos[12].titulo}
+                            option(value='Rechazada') #{textos[13].titulo}
                         td
                           button.row-delete.btn.btn-default(value=extra.id, name='gestionar') 
                             i.icon-ok.icon-large  
@@ -150,26 +150,26 @@ block content
                     td(colspan='11')
                       .pagination.pagination-centered.hide-if-no-paging
           else
-            p No se han enviado extras hasta el momento. 
+            p #{textos[37].titulo}  
 
         br
         if(permisos && permisos.length != 0)
-          h3 Solicitudes Permisos
+          h3 #{textos[38].titulo} 
           if(permisos && permisos.length != 0)
             table.tableSolicitudes.footable(data-page-navigation=".pagination" data-page-size="5")
                 thead
                   tr
-                    th(data-type="numeric" data-sort-initial="descending") Fecha
-                    th Usuario
-                    th Día Inicial
-                    th Día Final 
-                    th Cantidad Días
-                    th Motivo
-                    th(data-sort-ignore="true") Detalle
-                    th(data-sort-ignore="true") Comentario
-                    th(data-sort-ignore="true") Acción
-                    th(data-sort-ignore="true") Aceptar
-                    th(data-sort-ignore="true") Eliminar
+                    th(data-type="numeric" data-sort-initial="descending") #{textos[26].titulo}
+                    th #{textos[27].titulo}
+                    th #{textos[28].titulo}
+                    th #{textos[29].titulo}
+                    th #{textos[30].titulo}
+                    th #{textos[31].titulo}
+                    th(data-sort-ignore="true") #{textos[32].titulo}
+                    th(data-sort-ignore="true") #{textos[33].titulo}
+                    th(data-sort-ignore="true") #{textos[34].titulo}
+                    th(data-sort-ignore="true") #{textos[35].titulo}
+                    th(data-sort-ignore="true") #{textos[36].titulo}
                 tbody 
                   each permiso, i in permisos
                     if(permiso.motivo != "Vacaciones")
@@ -186,9 +186,9 @@ block content
                             textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
                           td
                             select.select_picker(name='estado'+permiso.id, id="estado"+permiso.id, data-width="auto"  data-style="btn-inverse")
-                              option(value='Pendiente') Pendiente
-                              option(value='Aceptada') Aprobar
-                              option(value='Rechazada') Rechazar
+                              option(value='Pendiente') #{textos[11].titulo}
+                              option(value='Aceptada') #{textos[12].titulo}
+                              option(value='Rechazada') #{textos[13].titulo}
                           td
                             button.row-delete.btn.btn-default(value=permiso.id, name='gestionar') 
                               i.icon-ok.icon-large  
@@ -200,27 +200,27 @@ block content
                     td(colspan='11')
                       .pagination.pagination-centered.hide-if-no-paging
           else
-            p No se han enviado permisos hasta el momento. 
+            p #{textos[39].titulo}
 
         br
         if(permisos && permisos.length != 0)
-          h3 Solicitudes Vacaciones
+          h3 #{textos[40].titulo}
           if(permisos && permisos.length != 0)
             table.tableVacaciones.footable(data-page-navigation=".pagination" data-page-size="5")
                 thead
                   tr
-                    th(data-type="numeric" data-sort-initial="descending") Fecha
-                    th Usuario
-                    th Día Inicial
-                    th Día Final 
-                    th Cantidad Días
-                    th Motivo
-                    th(data-sort-ignore="true") Detalle
-                    th(data-sort-ignore="true") Comentario
-                    th(data-sort-ignore="true") Días Disponibles
-                    th(data-sort-ignore="true") Acción
-                    th(data-sort-ignore="true") Aceptar
-                    th(data-sort-ignore="true") Eliminar
+                    th(data-type="numeric" data-sort-initial="descending") #{textos[26].titulo}
+                    th #{textos[27].titulo}
+                    th #{textos[28].titulo}
+                    th #{textos[29].titulo}
+                    th #{textos[30].titulo}
+                    th #{textos[31].titulo}
+                    th(data-sort-ignore="true") #{textos[32].titulo}
+                    th(data-sort-ignore="true") #{textos[33].titulo}
+                    th(data-sort-ignore="true") #{textos[41].titulo}
+                    th(data-sort-ignore="true") #{textos[34].titulo}
+                    th(data-sort-ignore="true") #{textos[35].titulo}
+                    th(data-sort-ignore="true") #{textos[36].titulo}
                 tbody
                   each permiso, i in permisos
                     if(permiso.motivo == "Vacaciones")
@@ -238,9 +238,9 @@ block content
                           td(class=permiso.usuario.id) #{permiso.usuario.vacaciones}
                           td
                             select.select_picker(name='estado'+permiso.id, id="estado"+permiso.id, data-width="auto"  data-style="btn-inverse")
-                              option(value='Pendiente') Pendiente
-                              option(value='Aceptada') Aprobar
-                              option(value='Rechazada') Rechazar
+                              option(value='Pendiente') #{textos[11].titulo}
+                              option(value='Aceptada') #{textos[12].titulo}
+                              option(value='Rechazada') #{textos[13].titulo}
                           td
                             button.row-delete.btn.btn-default(value="idPermiso:"+permiso.id+",idUsuario:"+permiso.usuario.id+",horasSolicitadas:"+permiso.cantidadDias, name='gestionar') 
                               i.icon-ok.icon-large  
@@ -252,7 +252,7 @@ block content
                     td(colspan='11')
                       .pagination.pagination-centered.hide-if-no-paging
           else
-            p No se han enviado permisos hasta el momento. 
+            p #{textos[39].titulo} 
 
 block sigucaJS  
   script(src="/js/app/gestionarEventos.js")
