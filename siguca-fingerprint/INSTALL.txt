@@ -1,0 +1,57 @@
+1. Install dependencies:
+
+  As root:
+
+    apt-get install vim python-tk python-rpi.gpio python-pip build-essential libffi-dev python-dev --yes
+    pip install pymongo bcrypt
+    wget -O - http://apt.pm-codeworks.de/pm-codeworks.de.gpg | apt-key add -
+    wget http://apt.pm-codeworks.de/pm-codeworks.list -P /etc/apt/sources.list.d/
+    apt-get update
+    apt-get install python-fingerprint --yes
+
+
+2. Enable UART in boot config:
+
+  vim /boot/config.txt
+
+
+    # Enable UART
+    enable_uart=1
+    force_turbo=1
+
+3. Create systemd init script"
+
+  vim /etc/systemd/system/siguca.service
+
+    [Unit]
+    Description=SIGUCA
+    After=systemd-user-sessions.service
+    
+    [Service]
+    Environment="DISPLAY=:0"
+    Environment="PYTHONUNBUFFERED=1"
+    ExecStart="/usr/local/bin/siguca/siguca-fingerprint/Index.py"
+    StandardOutput=syslog
+    StandardError=syslog
+    Restart=always
+    
+    [Install]
+    WantedBy=graphical.target
+
+
+4. Ir order to be able to run the GUI app as root uer, is needed that the user has access to X Window System, so there have to be a file in /etc/X11/Xsession.d/36x11-common_xhost-root-local:
+
+    xhost +si:localuser:root
+
+
+5. Reload the configuration:
+
+    systemctl daemon-reload
+
+
+6. Start and Enable the service:
+
+    systemctl enable siguca
+    systemctl start siguca
+
+
