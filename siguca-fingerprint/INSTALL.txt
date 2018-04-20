@@ -21,7 +21,7 @@
 
 3. Create systemd init script"
 
-  vim /etc/systemd/system/siguca.service
+  vim /etc/systemd/system/siguca-fingerprint.service
 
     [Unit]
     Description=SIGUCA
