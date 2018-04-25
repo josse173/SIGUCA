@@ -3,7 +3,7 @@
   As root:
 
     apt-get install vim python-tk python-rpi.gpio python-pip build-essential libffi-dev python-dev --yes
-    pip install pymongo bcrypt
+    pip install pymongo==3.5.0 bcrypt==3.1.4
     wget -O - http://apt.pm-codeworks.de/pm-codeworks.de.gpg | apt-key add -
     wget http://apt.pm-codeworks.de/pm-codeworks.list -P /etc/apt/sources.list.d/
     apt-get update
