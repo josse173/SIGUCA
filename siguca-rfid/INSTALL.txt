@@ -1,0 +1,20 @@
+- Instalación de Raspbian.
+  - NOOBS.
+- Actualización Sistema Operativo
+  - sudo apt update -y
+  - sudo apt upgrade -y
+- Sincronización de aplicación (/usr/local/bin/siguca), es decir la versión master de SIGUCA que contiene a siguca-rfid
+- Creación de servicio de systemd (/etc/systemd/system/siguca.service). Habilitarlo y probarlo.
+  - Esto es Opcional
+- Habilitar UART, turbo y rotación de pantalla (lcd_rotate=2 para que gire 180°)
+  - /boot/config.txt
+- Modificar configuración de consola predeterminada.
+  - /boot/cmdline.txt
+- Instalación de dependencias necesarias para que levante la aplicación.
+  - sudo pip install pymongo pyserial
+- Ajustar la fecha local, sino presenta problemas el sistema.
+  raspi-config o timedatectl
+- Modificar/Crear el siguiente archivo para que systemd al arracar el SO, y ejecute el script de python, pueda levantar X,
+agregando la siguiente línea: 
+  - sudo vim /etc/X11/Xsession.d/36x11-common_xhost-root-local
+      xhost +si:localuser:root
