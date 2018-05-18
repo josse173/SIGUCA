@@ -1,4 +1,5 @@
 #coding=utf-8
+#!/usr/bin/python2
 #/**
  #  GreenCore Solutions
  #* Python-Extension to SIGUCA application
