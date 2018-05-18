@@ -2,7 +2,7 @@
   - NOOBS.
 - Actualización Sistema Operativo
   - sudo apt update -y
-  - sudo apt upgrade -y
+  - sudo apt upgrade
 - Sincronización de aplicación (/usr/local/bin/siguca), es decir la versión master de SIGUCA que contiene a siguca-rfid
 - Creación de servicio de systemd (/etc/systemd/system/siguca.service). Habilitarlo y probarlo.
   - Esto es Opcional
@@ -18,3 +18,23 @@
 agregando la siguiente línea: 
   - sudo vim /etc/X11/Xsession.d/36x11-common_xhost-root-local
       xhost +si:localuser:root
+      
+      
+      
+Script Systemd:
+
+[Unit]
+Description=SIGUCA RFID
+After=systemd-user-sessions.service
+
+[Service]
+Environment="DISPLAY=:0"
+Environment="PYTHONUNBUFFERED=1"
+ExecStart="/usr/local/bin/siguca/siguca-rfid/Main_FrontEnd.py"
+StandardOutput=syslog
+StandardError=syslog
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
