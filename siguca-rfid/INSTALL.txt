@@ -1,8 +1,8 @@
 - Instalación de Raspbian.
   - NOOBS.
 - Actualización Sistema Operativo
-  - sudo apt update -y
-  - sudo apt upgrade
+  - sudo apt update
+  - sudo apt upgrade -y
 - Sincronización de aplicación (/usr/local/bin/siguca), es decir la versión master de SIGUCA que contiene a siguca-rfid
 - Creación de servicio de systemd (/etc/systemd/system/siguca.service). Habilitarlo y probarlo.
   - Esto es Opcional
