@@ -358,7 +358,10 @@ module.exports = function(app, io) {
     app.post('/getionarSolicitudAjax/:id', autentificado, function (req, res) {
         var solicitud = req.body;
         solicitud.id = req.params.id;
-        var estadoreal = 'Pendiente'+solicitud.id;
+
+        //var estadoreal = 'Pendiente'+solicitud.id;
+        var estadoreal = 'Pendiente';
+        
         if(solicitud.estado != estadoreal) {
             crudSolicitud.gestionarSoli(solicitud, function (err, msj) { 
                 if (err) res.json(err);

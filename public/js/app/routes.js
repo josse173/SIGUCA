@@ -706,6 +706,7 @@ $("#extraLink").click(function(){
             var comentarioSupervisor = row.find('.comentarioSupervisor').val();
             var estadoreal = "#estado"+id;
             var estado = $(estadoreal).val();
+            var motivo= row.find('#motivo').text();
 
             //Se actualizan las horas disponibles al usuario que fue aceptado
             if(estado == "Aceptada"){
@@ -718,7 +719,7 @@ $("#extraLink").click(function(){
              * Se hace la actualización en Base de datos por medio de Ajax
              */
             $.post('/getionarSolicitudAjax/'+id, 
-                {comentarioSupervisor: comentarioSupervisor, estado: estado}, 
+                {comentarioSupervisor: comentarioSupervisor, estado: estado, motivo: motivo}, 
                 function (data){
                     if(data == 'Se elimino'){
                         footable.removeRow(row);
