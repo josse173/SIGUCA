@@ -228,11 +228,11 @@ block content
                         tr
                           td(data-value=permiso.fechaCreada) #{permiso.fecha.str} 
                           td #{permiso.usuario.nombre} #{permiso.usuario.apellido1} 
-                          td #{permiso.diaInicio} 
-                          td #{permiso.diaFinal} 
-                          td #{permiso.cantidadDias} 
-                          td #{permiso.motivo} 
-                          td #{permiso.detalle} 
+                          td #{permiso.diaInicio}
+                          td #{permiso.diaFinal}
+                          td #{permiso.cantidadDias}
+                          td#motivo #{permiso.motivo}
+                          td #{permiso.detalle}
                           td
                             textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
                           td(class=permiso.usuario.id) #{permiso.usuario.vacaciones}

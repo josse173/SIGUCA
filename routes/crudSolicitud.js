@@ -294,7 +294,7 @@ exports.gestionarSoli = function(solicitud, cb, idUser){
 			/*
 			 * Actualiza las vacaciones, solo cuando son aceptadas
 			 */
-			if(solicitud.estado=='Aceptada'){
+			if(solicitud.estado=='Aceptada' && solicitud.motivo == 'Vacaciones'){
 				Usuario.update({_id:soli.usuario}, {$inc:{vacaciones:(0-soli.cantidadDias)}},function(err){});
 				
 			}
