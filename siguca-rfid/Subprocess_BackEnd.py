@@ -25,15 +25,16 @@
 
 import urllib
 from bson.objectid import ObjectId
-import time 
+import time
 import os, sys
-import serial 
+import serial
 import subprocess
 import RPi.GPIO as GPIO
 from Tkinter import *
 from pymongo import MongoClient
 from PIL import Image
 import socket
+from keyboard_alike import reader
 
 #Import para imagenes
 import UtilImg
@@ -42,9 +43,10 @@ import UtilImg
 #SETTINGS AND CONFIGURATIONS
 #IP OF NODE JS SERVER WHERE SIGUCA IS RUNNING
 server_IP='siguca.greencore.int'
+#server_IP='192.168.1.4'
 #PORT OF THE MONGODB 
 port='27017'
-#PORT OF OF SIGUCA NODE JS PORT 
+#PORT OF OF SIGUCA NODE JS PORT
 app_Port='3000'
 #WE NEED TO SET A BROWSER TO SEND  POST ACTION TO THE NODE SERVER , SET IT UP HERE AS UNIX COMMAND
 browserSelection='curl'
@@ -84,8 +86,8 @@ def Entrada(dec,tipo):
     except:
         pass
     root3.after(4000, lambda: root3.destroy())
-    root3.mainloop()  
-    
+    root3.mainloop()
+
 def SalidaReceso(dec,tipo):
     root3 = Tk()
     root3.attributes('-fullscreen', True)
@@ -94,7 +96,7 @@ def SalidaReceso(dec,tipo):
     root3.config(background="black",cursor="none")
     f = urllib.urlopen('http://'+server_IP+':'+app_Port+'/rfidReader?pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta='+dec+'&tipoMarca=2&tipo='+tipo+"&ipv4="+getIpv4())
     data = f.read()
-   
+
     try:
 	if (data == "La marca de salida a receso no fue registrada, ya que no ha marcado entrada, ya marcó la salida o se encuentra en almuerzo o en otro receso"):
 	        w2 = Label(root3, text=data, wraplength=650,  fg = "red", bg = "black", font = "Helvetica 20 bold", height=70, width=100).pack()
@@ -193,54 +195,39 @@ def Salida(dec,tipo):
     root3.after(4000, lambda: root3.destroy())
     root3.mainloop()
 
- #Método principal de lectura para rfid.   
+ #Método principal de lectura para rfid.
 def read_rfid():
     #Excepcion para que no deje de escuchar si no encuentra  lectura .
-    try:    
+    try:
         #Se inicializan las variables sin ningún contenido
-	os.system('clear')        
+	os.system('clear')
         print "Escuchando entradas..."
         data = None
-        ser = None   
-        
+        ser = None
+
         #Serial instance defines where its going constantly listen , you must set the baudrate in accordance to your own module to process the entry. 9600 to rdm 6300, also set the dev path. These ones are defaults:
 
-        ser = serial.Serial(
-        port="/dev/ttyS0",\
-        baudrate=9600)
-        #ser =  sersial.Serial("/dev/ttyS0",timeout=60)
-        #ser.baudrate= 9600
-       
-  #Lo que realiza este while es hacer que la instancia se ejecute siempre , entonces cada vez que 
-  #se ejecuta un método de los implementados al principio de este script , luego de cerrar el navegador y la instancia de la aplicación gráfica de python 
-  # volvería de nuevo a ejecutarse desde aquí permitiendo que se realize una y otra vez la verificacion de marcas RFID.     
-        while True:   
-                #Cada vez que se hace la lectura se realiza un flush para evitar que el buffer almacene algún dato erroneo 
-                
+        try:
+            ser = reader.Reader(0xffff, 0x0035, 84, 16, should_reset=False)
+            ser.initialize()
+            data = ser.read().strip()
+            ser.disconnect()
 
+        except:
+            print "****ERROR ****"
+
+  #Lo que realiza este while es hacer que la instancia se ejecute siempre , entonces cada vez que
+  #se ejecuta un método de los implementados al principio de este script , luego de cerrar el navegador y la instancia de la aplicación gráfica de python
+  # volvería de nuevo a ejecutarse desde aquí permitiendo que se realize una y otra vez la verificacion de marcas RFID.
+        while True:
+                #Cada vez que se hace la lectura se realiza un flush para evitar que el buffer almacene algún dato erroneo
                 #almacenamos en la variable data la lectura realizada de RFID
-                data=ser.read(15)
-               
-                #print "Leyendo código :) , mantenga el identificador cerca del receptor"
                 print "Espere..."
-                #flush a ser para no contener basura dentro de la variable 
-                #ser.flush()
-                #se cierra la conexión para dejar de escuchar
 
-                #se quitan los datos  basura que se captan  dentro del string de caracteres del RFID
-                data=data.replace("\x02","")
-                data=data.replace("\x03","")
-                id = data
-                #Se quitan los caracteres innecesarios dentro de la cadena de caracteres, para luego convertirrlo a decimal , los cuales serían los primeros 4 números y los últimos dos.
-                splitID = list(id)
-                #aqúi basicamente lo que se hace es extraer los datos que realmente necesitamos para convertirlos a decimal
-                ParseId = [splitID[4],splitID[5],splitID[6],splitID[7],splitID[8],splitID[9]]
-                #los  unificamos  con el metodo join
-                result = ''.join(ParseId)
-                #lo convertimos a decimal 
-                dec = int(result, 16)
-                print dec
-                
+                try:
+                    dec = int(data)
+                except:
+                    print "*ERROR NO PARSE*"
                 #Se hace la validacion en el vector definido  por  la consulta a la base de datos al inicio de este archivo, ademas se pasa actualizando la lista de usuarios desde la base de datos de mongo
 
 		#codigosExistentes=list(collection.find({},{"codTarjeta": 1,"_id":0}))
@@ -249,18 +236,18 @@ def read_rfid():
 			return dec
                 ser.flushInput()
                 data.flushInput()
-                
+
     except:
        	 pass
- 
+
 #Encargado de obtener el tipo de  usuario seleccionado y pasarlo a obtiene marca
 def obtieneTipoSeleccionado(dec, listBox):
     listSeleccionado = listBox.curselection()
     tipo = ""
     for tem in listSeleccionado:
         tipo = listBox.get(tem)
-    
-    
+
+
     if tipo != "":
         obtieneMarca(dec,tipo)
     else:
@@ -269,23 +256,23 @@ def obtieneTipoSeleccionado(dec, listBox):
         frame3 = Frame(root3)
         frame3.pack()
         root3.config(background="black",cursor="none")
-        
+
         w2 = Label(root3, text="debbe seleccionar un tipo de usuario", wraplength=650,  fg = "red", bg = "black", font = "Helvetica 20 bold", height=70, width=100).pack()
-        
+
         root3.after(4000, lambda: root3.destroy())
         root3.mainloop()
 
 
 #Obtiene la marca del usuario
-def obtieneMarca(dec,tipo): 
-    
+def obtieneMarca(dec,tipo):
+
     #Se crea el entorno gráfico  para realizar las marcas
     root = Tk()
     root.attributes('-fullscreen', True)
     frame = Frame(root)
     frame.pack()
     root.config(background="black", height=600, width=600,cursor="none")
-	
+
     #en cada botón se llama el método correspondiente con el parámetro del código  obtenido por la lectura.
 
     button = Button(root,text="       Entrada        ", command = lambda: Entrada(dec,tipo),fg="white",activeforeground="white",activebackground="green",bg="green",width=22,height=3,bd=0,font="Helveltica 17 bold")
@@ -302,20 +289,24 @@ def obtieneMarca(dec,tipo):
     button4.place(x=50,y=240)
     button5.place(x=400,y=240)
     button6.place(x=50,y=350)
-    
 
-    #Se validan los botones de SIGUCA   
+
+    #Se validan los botones de SIGUCA
     codigosExistentes=list(collection.find({"estado":"Activo"},{"tipo":  1,"codTarjeta": 1,"_id":1}))
 
     idUser = ""
     for post in codigosExistentes:
-	if str(dec) == str(post['codTarjeta']):
+        ct = str(post['codTarjeta'])
+        index = ct.find('.')
+        if index > 0:
+            ct = ct[0:index]
+	    if str(dec) == ct:
         	idUser = post["_id"]
 
     #Se obtienen las marcas
     dia = time.strftime("%d")
     mes = time.strftime("%m")
-    ano = time.strftime("%Y") 
+    ano = time.strftime("%Y")
 
     t = time.mktime(time.strptime(dia+"."+mes+"."+ano+" 00:00:00", "%d.%m.%Y %H:%M:%S"))
     listMarcas = list(db.marcas.find({"usuario":ObjectId(idUser), "epoch":{"$gte":t}}))
@@ -323,10 +314,10 @@ def obtieneMarca(dec,tipo):
     salidaReceso = 0
     entradaReceso = 0
 
-    for temMarca in listMarcas:	
+    for temMarca in listMarcas:
 
 	if temMarca["tipoMarca"] == "Salida":
-		button.configure(state=DISABLED, bg="#9eff9b")	
+		button.configure(state=DISABLED, bg="#9eff9b")
 		button1.configure(state=DISABLED, bg="#9eff9b")
 		button2.configure(state=DISABLED, bg="#ffc57c")
 		button3.configure(state=DISABLED, bg="#ffc57c")
@@ -349,9 +340,9 @@ def obtieneMarca(dec,tipo):
                 button5.configure(state=DISABLED, bg="#afb2ff")
 
     if salidaReceso>entradaReceso:
-		button2.configure(state=DISABLED, bg="#ffc57c")		
+		button2.configure(state=DISABLED, bg="#ffc57c")
 
-    root.after(4000, lambda: root.destroy())
+    root.after(10000, lambda: root.destroy())
     root.mainloop()
 
 
@@ -369,7 +360,7 @@ def obtieneTipoUsuario(dec,listTipo):
 
         lblTitle = Label(rootTipo,text="Seleccione un tipo de usuario",bd="2",bg= "#ffffff", fg="#55aa55", font="Helveltica 30 bold").place(x=150,y=2)
 
-        #Muestra los roles del usuario al cual le pertenece el llavin 
+        #Muestra los roles del usuario al cual le pertenece el llavin
         listBox = Listbox(rootTipo,bd="0",fg="#888888",font="Helveltica 30 bold",selectbackground="#00bb00",selectforeground="#ffffff",height=500,selectborderwidth=2, activestyle=NONE,highlightthickness=0,justify="center")
         listBox.place(x=10,y=100)
 
@@ -401,12 +392,12 @@ while True:
         frame1 = Frame(root1)
         frame1.pack()
         root1.config(background="black",cursor="none")
-       
-        try:    
+
+        try:
 		instUtilImg = UtilImg.UtilImg()
                 photo=instUtilImg.getImageURL(dec+".png")
                 w1 = Label(root1,image=photo).pack(side="top")
-        except: 
+        except:
             pass
 
         root1.after(2000, lambda: root1.destroy())
@@ -415,8 +406,12 @@ while True:
         #Si tiene mas de un rol se solicita un tipo sino de una ves la marca
         codigosExistentes=list(collection.find({"estado":"Activo"},{"tipo":  1,"codTarjeta": 1,"_id":0}))
         for post in codigosExistentes:
-            if str(dec) == str(post['codTarjeta']):
-                listTipo =  post["tipo"] 
+	    ct = str(post['codTarjeta'])
+            index = ct.find('.')
+	    if index > 0:
+                ct = ct[0:index]
+            if str(dec) == ct:
+                listTipo =  post["tipo"]
 		if (len(listTipo) == 1):
                     obtieneMarca(dec,str(listTipo[0]))
                 else:
