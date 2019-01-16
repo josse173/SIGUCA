@@ -336,7 +336,7 @@ def obtieneTipoUsuario(dec,listTipo):
 	count = 1
 	index = 0
 
-    adminProfile = "Administrador"
+        adminProfile = "Administrador"
 	supervisorProfile = "Supervisor"
 	professorProfile = "Profesor"
 	employeeProfile = "Empleado"
@@ -375,9 +375,9 @@ def obtieneTipoUsuario(dec,listTipo):
 	    count = count + 1
 	    index = index + 1
 	    if count > 3:
-	        yAxis = 100
-		    xAxis = 480
-		    count = 1
+		 yAxis = 100
+	   	 xAxis = 480
+         	 count = 1
 
         listBox.insert(0,*buttonList)
 
