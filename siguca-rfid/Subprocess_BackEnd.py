@@ -41,7 +41,7 @@ import UtilImg
 #SETTINGS AND CONFIGURATIONS
 #IP OF NODE JS SERVER WHERE SIGUCA IS RUNNING
 server_IP='siguca.greencore.int'
-#server_IP='192.168.1.4'
+#server_IP='192.168.1.8'
 #PORT OF THE MONGODB
 port='27017'
 #PORT OF OF SIGUCA NODE JS PORT
@@ -250,7 +250,6 @@ def obtieneMarca(dec,tipo):
     root.config(background="black", height=600, width=600,cursor="none")
 
     #en cada botón se llama el método correspondiente con el parámetro del código  obtenido por la lectura.
-
     button = Button(root,text="       Entrada        ", command = lambda: Entrada(dec,tipo),fg="white",activeforeground="white",activebackground="green",bg="green",width=22,height=3,bd=0,font="Helveltica 17 bold")
     button1 = Button(root,text="        Salida        ", command =lambda: Salida(dec,tipo),fg="white",activeforeground="white",activebackground="green",bg="green",width=22,height=3,bd=0,font="Helveltica 17 bold")
     button2 = Button(root,text="   Salida a Receso   ", command =lambda: SalidaReceso(dec,tipo),fg="white",activeforeground="white",activebackground="orange",bg="orange",width=22,height=3,bd=0,font="Helveltica 17 bold")
@@ -282,9 +281,8 @@ def obtieneMarca(dec,tipo):
     dia = time.strftime("%d")
     mes = time.strftime("%m")
     ano = time.strftime("%Y")
-
     t = time.mktime(time.strptime(dia+"."+mes+"."+ano+" 00:00:00", "%d.%m.%Y %H:%M:%S"))
-    listMarcas = list(db.marcas.find({"usuario":ObjectId(idUser), "epoch":{"$gte":t}}))
+    listMarcas = list(db.marcas.find({"usuario":ObjectId(idUser),"tipoUsuario":tipo, "epoch":{"$gte":t}}))
 
     salidaReceso = 0
     entradaReceso = 0
@@ -328,7 +326,6 @@ def obtieneTipoUsuario(dec,listTipo):
         rootTipo.config(height=600, width=600,cursor="none",bg="#ffffff")
 
         lblTitle = Label(rootTipo,text="Seleccione un tipo de usuario",bd="2",bg= "#ffffff", fg="#55aa55", font="Helveltica 30 bold").place(x=100,y=2)
-
         #Muestra los roles del usuario al cual le pertenece el llavin
         listBox = Listbox(rootTipo,bd="0",fg="#888888",font="Helveltica 30 bold",selectbackground="#00bb00",selectforeground="#ffffff",height=500,selectborderwidth=2, activestyle=NONE,highlightthickness=0,justify="center")
         listBox.place(x=25,y=100)
@@ -337,16 +334,50 @@ def obtieneTipoUsuario(dec,listTipo):
 	xAxis = 120
 	buttonList = list();
 	count = 1
+	index = 0
+
+    adminProfile = "Administrador"
+	supervisorProfile = "Supervisor"
+	professorProfile = "Profesor"
+	employeeProfile = "Empleado"
+	noWebAccessProfile = "Usuario sin acceso web"
+
 	for profile in listTipo:
-	    button = Button(rootTipo,text=str(profile), command = lambda: obtieneMarca(dec, profile),fg="white",activeforeground="white",activebackground="green",bg="green",width=20,height=4,bd=0,font="Helveltica 17 bold")
+	    button = None
+	    if str(profile) == "Administrador":
+	        button = Button(rootTipo, text=str(profile), command=lambda: obtieneMarca(dec, adminProfile), fg="white",
+		    activeforeground="white", activebackground="green", bg="green", width=20, height=4, bd=0,
+		    font="Helveltica 17 bold")
+
+	    if str(profile) == "Supervisor":
+		    button = Button(rootTipo, text=str(profile), command=lambda: obtieneMarca(dec, supervisorProfile), fg="white",
+		    activeforeground="white", activebackground="green", bg="green", width=20, height=4, bd=0,
+		    font="Helveltica 17 bold")
+
+	    if str(profile) == "Empleado":
+		    button = Button(rootTipo, text=str(profile), command=lambda: obtieneMarca(dec, employeeProfile), fg="white",
+		    activeforeground="white", activebackground="green", bg="green", width=20, height=4, bd=0,
+		    font="Helveltica 17 bold")
+
+	    if str(profile) == "Usuario sin acceso web":
+		    button = Button(rootTipo, text=str(profile), command=lambda: obtieneMarca(dec, noWebAccessProfile), fg="white",
+		    activeforeground="white", activebackground="green", bg="green", width=20, height=4, bd=0,
+		    font="Helveltica 17 bold")
+
+	    if str(profile) == "Profesor":
+		    button = Button(rootTipo, text=str(profile), command=lambda: obtieneMarca(dec, professorProfile), fg="white",
+		    activeforeground="white", activebackground="green", bg="green", width=20, height=4, bd=0,
+		    font="Helveltica 17 bold")
+
 	    button.place(x=xAxis,y=yAxis)
 	    buttonList.append(button)
 	    yAxis = yAxis + 110
 	    count = count + 1
+	    index = index + 1
 	    if count > 3:
 	        yAxis = 100
-		xAxis = 480
-		count = 1
+		    xAxis = 480
+		    count = 1
 
         listBox.insert(0,*buttonList)
 
