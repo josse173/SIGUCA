@@ -315,7 +315,7 @@ def obtieneMarca(dec,tipo):
     if salidaReceso>entradaReceso:
 		button2.configure(state=DISABLED, bg="#ffc57c")
 
-    root.after(10000, lambda: root.destroy())
+    root.after(5000, lambda: root.destroy())
     root.mainloop()
 
 #Se obtiene el tipo de usuario con el cual se debe hacer la marca
