@@ -1,7 +1,6 @@
-
-var moment = require('moment');
+const moment = require('moment');
 var Marca = require('../models/Marca');
-var Usuario = require('../models/Usuario');
+const User = require('../models/Usuario');
 var CierrePersonal = require('../models/CierrePersonal');
 var util = require('../util/util');
 var CronJob = require('cron').CronJob;
@@ -12,30 +11,33 @@ var crudJustificaciones = require('../routes/crudJustificaciones');
 var crudUsuario = require('../routes/crudUsuario');
 var Feriado = require('../models/Feriado');
 
-
+const WORKING_DAYS = ["Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"];
+const USER_TYPES = {ADMIN: 'Administrador', TEACHER: 'Profesor'};
+const MAXIMUM_INTERVAL_WORKING = 12;
+const SCHEDULER_TYPE = {FIXED: 'horarioFijo', RANGE: 'horarios'};
 
 module.exports = {
-    cierreAutomatico : new CronJob({
-        //cronTime: '00 42 17 * * 0-7',
+    cierreAutomatico: new CronJob({
+        //cronTime: '* * * * *',
         cronTime: '00 50 23 * * 0-7',
-        onTick: function() {
+        onTick: function () {
             /**
              * Realizar cierre en la noche
              */
 
             var date = moment(),
-            epochTime = date.unix(),
-            epochGte = date.hours(0).minutes(0).seconds(0).unix(),
-            epochLte = date.hours(23).minutes(59).seconds(59).unix();
+                epochTime = date.unix(),
+                epochGte = date.hours(0).minutes(0).seconds(0).unix(),
+                epochLte = date.hours(23).minutes(59).seconds(59).unix();
 
-            Feriado.find({epoch:{"$gte":epochGte,"$lte":epochLte}}, function (err,feriado) {
-                if(feriado.length>0){
+            Feriado.find({epoch: {"$gte": epochGte, "$lte": epochLte}}, function (err, feriado) {
+                if (feriado.length > 0) {
                     console.log("No se generan cierres ni justificaciones, dia feriado");
-                }else{
-                        
-                        var hoy = new Date();
-                        console.log("------ Realizando cierre en la fecha '"+hoy+"' ------");
-                        ejecutarCierre();
+                } else {
+
+                    var hoy = new Date();
+                    console.log("------ Realizando cierre en la fecha '" + hoy + "' ------");
+                    executeClosingHours();
                 }
             });
 
@@ -43,417 +45,361 @@ module.exports = {
              * Realizar actualización de vacaciones
              */
             crudUsuario.updateVacaciones();
-            
+
         },
         start: false,
         timeZone: "America/Costa_Rica"
     }),
 
-    ejecutarCierrePorUsuarioAlMarcarSalida:function(tipoUsuario,id){
+    ejecutarCierrePorUsuarioAlMarcarSalida: function (tipoUsuario, id) {
 
-    var hoy = new Date();
+        var hoy = new Date();
 
-    //Fechas para encontrar información del día
-    var epochMin = moment();
-    epochMin.hours(0);
-    epochMin.minutes(0);
-    epochMin.seconds(0);
+        //Fechas para encontrar información del día
+        var epochMin = moment();
+        epochMin.hours(0);
+        epochMin.minutes(0);
+        epochMin.seconds(0);
 
-    var epochMax = moment();
-    epochMax.hours(23);
-    epochMax.minutes(59);
-    epochMax.seconds(59);
+        var epochMax = moment();
+        epochMax.hours(23);
+        epochMax.minutes(59);
+        epochMax.seconds(59);
 
-    //Se realiza el cierre para todos los usuarios menos el tipo administrador
-    Usuario.find({_id:id},{_id:1, nombre:1, horarioEmpleado:1,tipo:1}).exec(
-        function(err, usuarios){
-            if(!err && usuarios[0].horarioEmpleado){
-              
-                for(usuario in usuarios){
-                  
-                    //console.log(usuarios[usuario]);
-                    //Solo se hacen los cierres para quien tenga el horario personalizado hecho
-                    if(usuarios[usuario].horarioEmpleado && usuarios[usuario].horarioEmpleado!=""){
-                        //console.log(usuarios[usuario].horarioEmpleado);
-                        buscarHorario(usuarios[usuario]._id, tipoUsuario, epochMin, epochMax,
-                             usuarios[usuario].horarioEmpleado, usuarios[usuario].tipo.length); 
+        //Se realiza el cierre para todos los usuarios menos el tipo administrador
+        User.find({_id: id}, {_id: 1, nombre: 1, horarioEmpleado: 1, tipo: 1}).exec(
+            function (err, usuarios) {
+                if (!err && usuarios[0].horarioEmpleado) {
+
+                    for (usuario in usuarios) {
+
+                        //console.log(usuarios[usuario]);
+                        //Solo se hacen los cierres para quien tenga el horario personalizado hecho
+                        if (usuarios[usuario].horarioEmpleado && usuarios[usuario].horarioEmpleado != "") {
+                            //console.log(usuarios[usuario].horarioEmpleado);
+                            buscarHorario(usuarios[usuario]._id, tipoUsuario, epochMin, epochMax,
+                                usuarios[usuario].horarioEmpleado, usuarios[usuario].tipo.length);
+                        }
+                    }
+                } else {
+                    User.find({_id: id}, {_id: 1, nombre: 1, horario: 1, tipoUsuario: 1}).exec(
+                        function (error, usuario) {
+                            if (!err && usuario[0].horario) {
+                                var epochTime = moment().unix();
+                                cierreHorario(id, usuario[0].horario, epochTime, tipoUsuario);
+
+                            } else {
+                                User.find({_id: id}, {_id: 1, nombre: 1, horarioFijo: 1, tipoUsuario: 1}).exec(
+                                    function (error, usuario) {
+                                        if (!err && usuario[0].horarioFijo) {
+                                            var epochTime = moment().unix();
+                                            cierreHorario(id, usuario[0].horarioFijo, epochTime, tipoUsuario);
+                                        }
+                                    });
+
+                            }
+
+                        });
+
+                }
+            });
+    }
+
+};
+
+const getWorkedHoursByMarks = (formattedMarks) => {
+    const schedule = {
+        startTime: 0,
+        endTime: 0,
+        startBreakTime: 0,
+        endBreakTime: 0,
+        startLunchTime: 0,
+        endLunchTime: 0,
+        automaticEndTime: moment()
+    };
+
+    for (const mark of formattedMarks) {
+        const unixTime = moment.unix(mark.epoch);
+        if (mark.tipoMarca === 'Entrada') schedule.startTime = unixTime;
+        else if (mark.tipoMarca === 'Salida') schedule.endTime = unixTime;
+        else if (mark.tipoMarca === 'Salida a Receso') schedule.startBreakTime = unixTime;
+        else if (mark.tipoMarca === 'Entrada de Receso') schedule.endBreakTime = unixTime;
+        else if (mark.tipoMarca === 'Salida al Almuerzo') schedule.startLunchTime = unixTime;
+        else if (mark.tipoMarca === 'Entrada de Almuerzo') schedule.endLunchTime = unixTime;
+    }
+    return schedule;
+};
+
+const calculateElapsedTime = (startTime, endTime) => {
+    return moment.duration(startTime.diff(endTime))
+};
+
+const calculateClosingHours = (workedHours) => {
+    let totalElapsedTime = moment.duration(0);
+    if (workedHours.startTime > 0) {
+        const jobEndTime = workedHours.endTime === 0 ? workedHours.automaticEndTime : workedHours.endTime;
+
+        const elapsedTime = calculateElapsedTime(jobEndTime, workedHours.startTime);
+        const elapsedTimeInBreak = calculateElapsedTime(workedHours.endBreakTime, workedHours.startBreakTime);
+        const elapsedTimeInLaunch = calculateElapsedTime(workedHours.endLunchTime, workedHours.startLunchTime);
+
+        totalElapsedTime = elapsedTime.subtract(elapsedTimeInLaunch).subtract(elapsedTimeInBreak);
+    }
+    return totalElapsedTime;
+};
+
+const createPersonalClosingObject = (_idUser, userType, totalElapsedHours, totalElapsedMinutes) => {
+    return {
+        usuario: _idUser,
+        tipoUsuario: userType,
+        tiempo: {
+            horas: totalElapsedHours,
+            minutos: totalElapsedMinutes
+        },
+        epoch: moment().unix()
+    }
+};
+
+/**
+ *
+ * @param moment
+ * @param time
+ * @returns {*}
+ */
+const setTime = (moment, time) => {
+    const [hours, minutes] = time.split(':');
+    const newMoment = moment.clone();
+    newMoment.set({hour: hours, minute: minutes});
+    return newMoment
+};
+
+/**
+ *
+ * @param userSchedule
+ * @param workedHours
+ * @param currentWorkDuration
+ * @returns {boolean}
+ */
+const verifyWorkedHours = (userSchedule, workedHours, currentWorkDuration) => {
+    let canCompletePersonalClosing = true;
+    if (userSchedule && userSchedule.collection && workedHours.endTime === 0) {
+        if (userSchedule.collection.collectionName === SCHEDULER_TYPE.RANGE) {
+            canCompletePersonalClosing = currentWorkDuration >= MAXIMUM_INTERVAL_WORKING;
+        } else if (userSchedule.collection.collectionName === SCHEDULER_TYPE.FIXED) {
+            const startTimeMoment = setTime(workedHours.startTime, userSchedule.horaEntrada);
+
+            let endTimeMoment = setTime(workedHours.startTime, userSchedule.horaSalida);
+            if (endTimeMoment.isBefore(startTimeMoment)) endTimeMoment.add(1, 'days');
+
+            canCompletePersonalClosing = currentWorkDuration >= calculateElapsedTime(endTimeMoment, startTimeMoment).asHours();
+        }
+    }
+    return canCompletePersonalClosing;
+};
+
+/**
+ *
+ * @param _idUser
+ * @param userSchedule
+ * @param mOut
+ * @param userType
+ * @returns {Promise<any>} we are returning a promise because we only need to add a justification if we add a personal closing
+ */
+const cierreHorario = (_idUser, userSchedule, mOut, userType) => {
+    return new Promise((resolve, reject) => {
+        const currentDate = moment().format('L').split("/");
+        const year = Number(currentDate[2]), month = currentDate[0] - 1, date = Number(currentDate[1]);
+
+        const epochGte = moment().set({year: year, month: month, hour: 0, minutes: 0, seconds: 0}).date(date);
+        const epochLte = moment().set({year: year, month: month, hour: 23, minutes: 59, seconds: 59}).date(date);
+
+        Marca.find({
+            usuario: _idUser,
+            tipoUsuario: userType,
+            epoch: {"$gte": epochGte.unix(), "$lte": epochLte.unix(),}
+        }).then(marks => {
+            const workedHours = getWorkedHoursByMarks(marks);
+            const closingHours = calculateClosingHours(workedHours);
+
+            let canCompletePersonalClosing = verifyWorkedHours(userSchedule, workedHours, closingHours.asHours());
+            if (!canCompletePersonalClosing) {
+                reject(new Error("The current working period does not have a exit mark, but cant be closed because is not in the maximum interval of 12 working hours or the one defined by user schedule"));
+            } else {
+                let personaClosingObject = createPersonalClosingObject(_idUser, userType, closingHours.hours(), closingHours.minutes());
+                CierrePersonal(personaClosingObject).save().then(result => {
+                    resolve(result);
+                }).catch(error => {
+                    reject(new Error("Error al crear cierre en la fecha '" + new Date() + "' => Mensaje: " + error));
+                });
+            }
+        }).catch(error => {
+            reject(error);
+        });
+    });
+};
+
+/**
+ * This method manage the possibility of closing the day for a user
+ * @param userId
+ * @param type User type i.e Administrador, Profesor, Empleado..
+ * @param schedule
+ * @param mark
+ * @param conditional Conditional is always a boolean, so if is not require a conditional for a specific case we always execute the code as well
+ */
+const closePeriod = (userId, type, schedule, {mark = "Olvidó Marcar Salida.", conditional = true}) => {
+    ///////////////////////////
+    //TODO i am not going to change this since i am not sure about the purpose
+    global.globalTipoUsuario = type;
+    /////////////////////////
+    if (conditional) {
+        cierreHorario(userId, schedule, "", type).then(() => {
+            if (type !== USER_TYPES.TEACHER) addJustIncompleta(userId, mark, mark);
+        }).catch(error => {
+            console.log(error)
+        });
+    }
+};
+
+/**
+ * This method verify is the user has already a closure
+ * @param user
+ * @param type
+ * @param closingMarks
+ * @returns {boolean | *}
+ */
+const isUserPeriodUnregistered = (user, type, closingMarks) => {
+    return closingMarks.length > 0 ? closingMarks.includes(item => {
+        return !user._id.equals(item.usuario) && type !== item.tipoUsuario
+    }) : true;
+};
+
+const closingHoursByUser = (users, closingMarks, epochMin, epochMax, day) => {
+    for (const user of users) {
+        for (type of user.tipo) {
+            if (type !== USER_TYPES.ADMIN) {
+                if (isUserPeriodUnregistered(user, type, closingMarks)) {
+                    if (user.horarioEmpleado) {
+                        buscarHorario(user._id, type, epochMin, epochMax, user.horarioEmpleado, user.tipo.length);
+                    } else {
+                        //ternary operator: if horarioFIjo is not defined means the user has horario
+                        const conditional = user.horarioFijo ? user.horarioFijo[day] === day : day !== "Domingo" && day !== "Sabado";
+                        closePeriod(user._id, type, user.horarioFijo || user.horario, {conditional: conditional})
                     }
                 }
             }
-            else{
-                 Usuario.find({_id:id},{_id:1, nombre:1, horario:1,tipoUsuario:1}).exec(
-                    function(error, usuario){
-                        if(!err && usuario[0].horario){
-                            var epochTime = moment().unix();
-                            cierreHorario(id,usuario[0].horario,epochTime,tipoUsuario);
-                           
-                        }
-                        else{
-                            Usuario.find({_id:id},{_id:1, nombre:1, horarioFijo:1,tipoUsuario:1}).exec(
-                             function(error, usuario){
-                                 if(!err && usuario[0].horarioFijo){
-                                     var epochTime = moment().unix();
-                                    cierreHorario(id,usuario[0].horarioFijo,epochTime,tipoUsuario); 
-                                 }
-                             }); 
-                        
-                        }
-                                                
-                });
-    
         }
-        });
     }
-    
-}
+};
 
-function cierreHorario(_idUser,horarioEmpleado,mOut,tipoUsuario){
-    var date =  moment().format('L').split("/");
-	var epochGte = moment();
-	epochGte.year(date[2]).month(date[0]-1).date(date[1]);
-	epochGte.hour(0).minutes(0).seconds(0);
-	var epochLte = moment();
-	epochLte.year(date[2]).month(date[0]-1).date(date[1]);
-	epochLte.hour(23).minutes(59).seconds(59);
+const executeClosingHours = () => {
+    const day = WORKING_DAYS[moment().day()];
+    //Dates to find information of the day
+    const epochMin = moment().set({hours: 0, minutes: 0, seconds: 0});
+    const epochMax = moment().set({hours: 23, minutes: 59, seconds: 59});
 
-
-	Marca.find({
-        usuario:_idUser,
-        tipoUsuario:tipoUsuario,
-		epoch:{
-		"$gte":epochGte.unix(),
-		"$lte":epochLte.unix(),
-	}}, function (err, marcas) {
-		
-
-	var m2 ="ok";
-	if(err) m2 = err;
-	varepoch: mcs = [];
-	var ml = util.unixTimeToRegularDate(marcas);
-	for(x in ml){
-		var obj = {};
-		obj.fecha = ml[x].fecha;
-		obj.tipoMarca = ml[x].tipoMarca;
-		mcs.push(obj);
-	}
-	
-
-		for(m in mcs){
-			if(mcs[m].tipoMarca=='Entrada'){
-				var tiempoEntrada = mcs[m].fecha.hora;
-			}
-			if(mcs[m].tipoMarca=='Salida'){
-				var tiempoSalida =mcs[m].fecha.hora;
-			}
-			if(mcs[m].tipoMarca=='Salida a Receso'){
-				var tiempoSalidaReceso = mcs[m].fecha.hora;
-			}
-			if(mcs[m].tipoMarca=='Entrada de Receso'){
-				var tiempoEntradaReceso =mcs[m].fecha.hora;
-			}
-			if(mcs[m].tipoMarca=='Salida al Almuerzo'){
-				var tiempoSalidaAlmuerzo = mcs[m].fecha.hora ;
-			}
-			if(mcs[m].tipoMarca=='Entrada de Almuerzo'){
-				var tiempoEntradaAlmuerzo =mcs[m].fecha.hora ;
-			}
-        }
-        
-		finMinutos =moment().format();
-		finMinutos=parseInt(String(finMinutos).substr(14,2));
-        
-        if(tiempoEntrada){
-            inicioMinutos = parseInt(tiempoEntrada.substr(3,2));
-			
-            inicioHoras = parseInt(String(tiempoEntrada).substr(0,2));
-            
-            finHoras=moment().format();
-            finHoras = parseInt(String(finHoras).substr(11,2));
-
-            
-            var transcurridoMinutos = finMinutos - inicioMinutos;
-            var transcurridoHoras = finHoras - inicioHoras;  //bloque de salida y entrada
-
-            if(tiempoSalidaReceso!=null){
-            var inicioRecesoMinutos = parseInt(String(tiempoSalidaReceso).substr(3,2));
-            var inicioRecesoHoras = parseInt(String(tiempoSalidaReceso).substr(0,2));
-            var finRecesoMinutos = parseInt(String(tiempoEntradaReceso).substr(3,2));
-            var finRecesoHoras = parseInt(String(tiempoEntradaReceso).substr(0,2));
-            var transcurridoRecesoMinutos = finRecesoMinutos - inicioRecesoMinutos;
-            var transcurridoRecesoHoras = finRecesoHoras - inicioRecesoHoras;//bloque para recesos 
-            }else{
-                transcurridoRecesoHoras = 0;
-                transcurridoRecesoMinutos = 0;
+    //The closure is created for all users except for the administrator type
+    User.find({estado: "Activo"}, {
+        _id: 1,
+        nombre: 1,
+        horarioFijo: 1,
+        horario: 1,
+        horarioEmpleado: 1,
+        tipo: 1
+    }).populate("horarioFijo").populate('horario').then(users => {
+        CierrePersonal.find({
+            epoch: {
+                "$gte": epochMin.unix(),
+                "$lte": epochMax.unix()
             }
-            if(tiempoSalidaAlmuerzo!=null){
-            var inicioAlmuerzoMinutos = parseInt(String(tiempoSalidaAlmuerzo).substr(3,2));
-            var inicioAlmuerzoHoras = parseInt(String(tiempoSalidaAlmuerzo).substr(0,2));
-            var finAlmuerzoMinutos = parseInt(String(tiempoEntradaAlmuerzo).substr(3,2));
-            var finAlmuerzoHoras = parseInt(String(tiempoEntradaAlmuerzo).substr(0,2));
-            var transcurridoAlmuerzoMinutos = finAlmuerzoMinutos - inicioAlmuerzoMinutos;
-            var transcurridoAlmuerzoHoras = finAlmuerzoHoras - inicioAlmuerzoHoras;//bloque para almuerzos
-            }else{
-                transcurridoAlmuerzoMinutos = 0;
-                transcurridoAlmuerzoHoras = 0;
-            }
-
-            var transcurridoHorasTotal = transcurridoHoras - transcurridoRecesoHoras - transcurridoAlmuerzoHoras;
-            var transcurridoMinutosTotal = transcurridoMinutos - transcurridoRecesoMinutos - transcurridoAlmuerzoMinutos;
-            
-
-            if (transcurridoMinutosTotal < 0) {
-                transcurridoHorasTotal--;
-                transcurridoMinutosTotal = 60 + transcurridoMinutosTotal;
-            }
-            var horasTrabajadas = transcurridoHorasTotal;
-            var minutosTrabajados = transcurridoMinutosTotal;	
-            var obj = {
-            usuario: _idUser,
-            tipoUsuario: tipoUsuario,
-            tiempo: {
-                horas:horasTrabajadas,
-                minutos:minutosTrabajados
-            },
-            epoch: moment().unix()
-            };
-            var cierre = CierrePersonal(obj);
-            cierre.save(function (err, cierreActualizado) {
-                if(err) 
-                console.log("Error al crear cierre en la fecha '"+hoy+"' => Mensaje: "+error);
-            });
-		
-        }else{
-            var obj = {
-            usuario: _idUser,
-            tipoUsuario: tipoUsuario,
-            tiempo: {
-                horas:0,
-                minutos:0
-            },
-            epoch: moment().unix()
-            };
-            var cierre = CierrePersonal(obj);
-            cierre.save(function (err, cierreActualizado) {
-                if(err) 
-                console.log("Error al crear cierre en la fecha '"+hoy+"' => Mensaje: "+error);
-            });
-        }
-			
-        
+        }).then(closingMarks => {
+            closingHoursByUser(users, closingMarks, epochMin, epochMax, day)
+        }).catch(error => {
+            console.log("Error retrieving personal closing", JSON.stringify(error))
+        })
+    }).catch(error => {
+        console.log("Error retrieving users", JSON.stringify(error))
     });
-
-}
-
-
-function ejecutarCierre(){
-    var today = moment();
-    var dia = ["Domingo", "Lunes", "Martes", "Miercoles", 
-    "Jueves", "Viernes", "Sabado"][today.day()];
-    var hoy = new Date();
-
-    //Fechas para encontrar información del día
-    var epochMin = moment();
-    epochMin.hours(0);
-    epochMin.minutes(0);
-    epochMin.seconds(0);
-
-    var epochMax = moment();
-    epochMax.hours(23);
-    epochMax.minutes(59);
-    epochMax.seconds(59);
-    var contador=0;
-    //Se realiza el cierre para todos los usuarios menos el tipo administrador
-    var entro =false;
-    Usuario.find({estado:"Activo"},{_id:1, nombre:1,horarioFijo:1,horario:1,horarioEmpleado:1,tipo:1}).
-    populate("horarioFijo").exec(
-        function(err, usuarios){
-            if(!err){
-                CierrePersonal.find({epoch: { "$gte": epochMin.unix(),"$lte":epochMax.unix()}}).exec(function(error,cierre){
-                    if(!error){
-                        
-                        for(var i=0;i<usuarios.length;i++){
-                            entro=false;
-
-                            var arrayTipo = new Array();
-                            if(usuarios[i].tipo.length>1){
-                                for(var s=0;s<usuarios[i].tipo.length;s++){
-                                    arrayTipo.push(usuarios[i].tipo[s]); 
-                                }
-                            } else {
-                                arrayTipo.push(usuarios[i].tipo);
-                            }
-
-                            for(var t=0;t < arrayTipo.length;t++){
-                                entro=false;
-                                var valor= arrayTipo[t];
-                                //Recorre los cierres buscando coincidencia con el tipo t
-                                for(var j=0;j<cierre.length;j++){
-                                    //Valida si cada tipo del usuario tiene cierre sino lo genera
-                                    if(usuarios[i]._id.equals(cierre[j].usuario) && valor==cierre[j].tipoUsuario){
-                                        entro= true;
-                                        j=cierre.length;
-                                    }
-                                }
-
-                                //Si no tiene cierres este usuario con este rol se genera el cierre
-                                if(entro == false && usuarios[i].horarioEmpleado && usuarios[i].horarioEmpleado!="" &&
-                                     valor != "Administrador"){
-                                    buscarHorario(usuarios[i]._id,valor,epochMin, epochMax,
-                                         usuarios[i].horarioEmpleado, usuarios[i].tipo.length); 
-                                }else if(entro == false && usuarios[i].horarioFijo && usuarios[i].horarioFijo!="" &&
-                                    valor != "Administrador"){
-                                        
-                                       if(dia==usuarios[i].horarioFijo.Domingo
-                                        ||dia==usuarios[i].horarioFijo.Lunes
-                                        ||dia==usuarios[i].horarioFijo.Martes
-                                        ||dia==usuarios[i].horarioFijo.Miercoles
-                                        ||dia==usuarios[i].horarioFijo.Jueves
-                                        ||dia==usuarios[i].horarioFijo.Viernes
-                                        ||dia==usuarios[i].horarioFijo.Sabado){
-                                        global.globalTipoUsuario = valor;
-                                        if(usuarios[i].tipo.length>1 && valor=="Profesor"){
-                                            cierreHorario(usuarios[i]._id,"","",valor);
-                                        }else{
-                                            cierreHorario(usuarios[i]._id,"","",valor);
-                                            addJustIncompleta(usuarios[i]._id, "Marca de salida omitida", "Marca de salida omitiada");
-                                        
-                                        }  
-                                    }
-                                     
-                                }else if(entro == false && usuarios[i].horario && usuarios[i].horario!="" &&
-                                valor != "Administrador"){
-                                   global.globalTipoUsuario = valor;
-                                   if(dia!="Domingo" && dia!="Sabado"){
-                                    if(usuarios[i].tipo.length>1 && valor=="Profesor"){
-                                        cierreHorario(usuarios[i]._id,"","",valor);
-                                    }else{
-                                        cierreHorario(usuarios[i]._id,"","",valor);
-                                        addJustIncompleta(usuarios[i]._id, "Marca de salida omitida", "Marca de salida omitiada");
-                                    
-                                    }  
-                                   
-                                   }
-                                   
-                                }
-                               
-                            }
-                            
-                        }
-                            
-                    }  
-                            
-                        
-                });
-            }
-        });
-    }
-                
-                
+};
 
 
 var once = false;
 
-function crearCierre(epoch, ejecutar){
+function crearCierre(epoch, ejecutar) {
     var hoy = new Date();
-    var queryCierre = {epoch:epoch};
+    var queryCierre = {epoch: epoch};
     var nuevoCierre = new CierrePersonal(queryCierre);
     nuevoCierre.save(function (err, cierre) {
-        if (err) 
-            console.log("Error al crear cierre en la fecha '"+hoy+"' Mensaje: "+error);
+        if (err)
+            console.log("Error al crear cierre en la fecha '" + hoy + "' Mensaje: " + error);
         ejecutar(cierre._id);
     });
 }
 
 
-
-
-
-
-
-function buscarHorario(_idUser, tipoUsuario, epochMin, epochMax, horarioEmpleado, numTipos){
-
-    crudHorario.getById(horarioEmpleado, 
-        function(error, horario){
-            if(!error && horario){
-                buscarInformacionUsuarioCierre(
-                 tipoUsuario,_idUser,epochMin, epochMax, horario, numTipos);
+function buscarHorario(_idUser, tipoUsuario, epochMin, epochMax, horarioEmpleado, numTipos) {
+    crudHorario.getById(horarioEmpleado,
+        function (error, horario) {
+            if (!error && horario) {
+                buscarInformacionUsuarioCierre(tipoUsuario, _idUser, epochMin, epochMax, horario, numTipos);
             }
         });
 }
 
 
-
-function buscarInformacionUsuarioCierre( tipoUsuario,_idUser, epochMin, epochMax, horario, numTipos){
-  
+function buscarInformacionUsuarioCierre(tipoUsuario, _idUser, epochMin, epochMax, horario, numTipos) {
     Marca.find(
-    {
-        usuario: _idUser,
-        tipoUsuario:tipoUsuario,
-        epoch: {
-            "$gte": epochMin.unix(), 
-            "$lte":epochMax.unix()
-        }
-    },
-    {_id:0,tipoMarca:1,epoch:1}
-    ).exec(function(error, marcasDelDia) {
-        if (!error && marcasDelDia){
-            var today = moment();
-            var dia = ["domingo", "lunes", "martes", "miercoles", 
-            "jueves", "viernes", "sabado"][today.day()];
-            var marcas = util.clasificarMarcas(marcasDelDia);
-            var tiempoDia = horario[dia];
-            //Si entra a las 00:00 no contará ese día, en caso de ser así
-            //el horario debería entrar como mínimo a las 00:01
-            if((tiempoDia.entrada.hora!=0 || tiempoDia.entrada.minutos!=0)
-                && (
-                    tiempoDia.salida.hora>tiempoDia.entrada.hora ||
-                    (tiempoDia.salida.hora==tiempoDia.entrada.hora
-                        && tiempoDia.salida.minutos>tiempoDia.entrada.minutos)
-                    )
-                ){
-                    //
-                global.globalTipoUsuario = tipoUsuario;
-                registroHorasRegulares(tipoUsuario, _idUser, marcas, tiempoDia, horario);
-                if(tipoUsuario != "Profesor" || numTipos == 1){
-                    if(!marcas.entrada){
-                        addJustIncompleta(_idUser, "Omisión de marca de entrada", "");
-                        //agregarUsuarioACierre(tipoUsuario,_idUser, {h:0,m:0});
-                    } 
-                    //Solo se genera una notificación de omisión de marca de salida si
-                    //el usuario incumplió las horas de trabajo
-                    else if(!marcas.salida){
-                    
-
-                        //console.log("Omisión de marca de salida");
-                        addJustIncompleta(_idUser, "Omisión de marca de salida", "");
-                    // agregarUsuarioACierre(tipoUsuario,_idUser, {h:0,m:0});
-                    }
+        {
+            usuario: _idUser,
+            tipoUsuario: tipoUsuario,
+            epoch: {
+                "$gte": epochMin.unix(),
+                "$lte": epochMax.unix()
+            }
+        },
+        {_id: 0, tipoMarca: 1, epoch: 1}
+    ).then(marksOfDay => {
+        const day = WORKING_DAYS[moment().day()];
+        const marks = util.clasificarMarcas(marksOfDay);
+        const currentDay = horario[day.toLowerCase()];
+        //Si entra a las 00:00 no contará ese día, en caso de ser así el horario debería entrar como mínimo a las 00:01
+        if ((currentDay.entrada.hora !== 0 || currentDay.entrada.minutos !== 0)
+            && (currentDay.salida.hora > currentDay.entrada.hora || (currentDay.salida.hora === currentDay.entrada.hora && currentDay.salida.minutos > currentDay.entrada.minutos))) {
+            global.globalTipoUsuario = tipoUsuario;
+            registroHorasRegulares(tipoUsuario, _idUser, marks, currentDay, horario);
+            if (tipoUsuario !== USER_TYPES.TEACHER || numTipos === 1) {
+                if (!marks.entrada) {
+                    addJustIncompleta(_idUser, "Omisión de marca de entrada", "");
+                } else if (!marks.salida) {
+                    //Solo se genera una notificación de omisión de marca de salida si el usuario incumplió las horas de trabajo
+                    addJustIncompleta(_idUser, "Omisión de marca de salida", "");
                 }
             }
         }
+    }).catch(error => {
+        console.log(error)
     });
 }
 
-function registroHorasRegulares(tipoUsuario, _idUser, marcas, tiempoDia, horario){
+function registroHorasRegulares(tipoUsuario, _idUser, marcas, tiempoDia, horario) {
     var tiempo = util.tiempoTotal(marcas);
     var hIn = {
-        h:tiempoDia.entrada.hora,
-        m:tiempoDia.entrada.minutos,
+        h: tiempoDia.entrada.hora,
+        m: tiempoDia.entrada.minutos,
     };
     var hOut = {
-        h:tiempoDia.salida.hora,
-        m:tiempoDia.salida.minutos,
+        h: tiempoDia.salida.hora,
+        m: tiempoDia.salida.minutos,
     };
     var almuerzoT = {
-        h:horario.tiempoAlmuerzo.hora,
-        m:horario.tiempoAlmuerzo.minutos,
+        h: horario.tiempoAlmuerzo.hora,
+        m: horario.tiempoAlmuerzo.minutos,
     };
     var recesoT = {
-        h:horario.tiempoReceso.hora,
-        m:horario.tiempoReceso.minutos,
+        h: horario.tiempoReceso.hora,
+        m: horario.tiempoReceso.minutos,
     };
     var totalJornada = util.ajustarHoras(hOut, hIn);
-    console.log("Calculando jornada de: "+_idUser);
+    console.log("Calculando jornada de: " + _idUser);
     console.log(totalJornada);
     console.log(almuerzoT);
     totalJornada = util.ajustarHoras(totalJornada, almuerzoT);
@@ -463,38 +409,41 @@ function registroHorasRegulares(tipoUsuario, _idUser, marcas, tiempoDia, horario
     console.log(totalJornada);
     console.log(tiempo);
     var comparaH = util.compararHoras(totalJornada.h, totalJornada.m, tiempo.h, tiempo.m);
-    agregarUsuarioACierre(tipoUsuario, _idUser, {h:tiempo.h,m:tiempo.m});
+    agregarUsuarioACierre(tipoUsuario, _idUser, {h: tiempo.h, m: tiempo.m});
     //No importa la hora que salió, lo importante es que cumpla la jornada
-    if(comparaH==1){
+    if (comparaH == 1) {
         console.log("Jornada laborada menor que la establecida");
-        addJustIncompleta(_idUser, "Jornada laborada menor que la establecida", 
-            "Horas trabajadas: "+ util.horaStr(tiempo.h, tiempo.m)+
-            " - Horas establecidas: "+ util.horaStr(totalJornada.h, totalJornada.m));
+        addJustIncompleta(_idUser, "Jornada laborada menor que la establecida",
+            "Horas trabajadas: " + util.horaStr(tiempo.h, tiempo.m) +
+            " - Horas establecidas: " + util.horaStr(totalJornada.h, totalJornada.m));
     }
 }
 
-function agregarUsuarioACierre(tipoUsuario, _idUser, tiempo){
+function agregarUsuarioACierre(tipoUsuario, _idUser, tiempo) {
     var obj = {
         usuario: _idUser,
         tipoUsuario: tipoUsuario,
         tiempo: {
-            horas:tiempo.h,
-            minutos:tiempo.m
+            horas: tiempo.h,
+            minutos: tiempo.m
         },
         epoch: moment().unix()
     };
     var cierre = CierrePersonal(obj);
     cierre.save(function (err, cierreActualizado) {
-        if(err) 
-            console.log("Error al crear cierre en la fecha '"+hoy+"' => Mensaje: "+error);
+        if (err)
+            console.log("Error al crear cierre en la fecha '" + hoy + "' => Mensaje: " + error);
     });
 }
 
-function addJustIncompleta(_idUser, motivo, informacion){
+function addJustIncompleta(_idUser, motivo, informacion) {
     crudJustificaciones.addJust(
-        {id:_idUser, detalle:"", informacion: informacion,
-        estado:"Incompleto", motivoJust:"otro",
-        motivoOtroJust:motivo},
-        function(){}
-        ); 
+        {
+            id: _idUser, detalle: "", informacion: informacion,
+            estado: "Incompleto", motivoJust: "otro",
+            motivoOtroJust: motivo
+        },
+        function () {
+        }
+    );
 }
