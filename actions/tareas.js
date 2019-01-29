@@ -14,7 +14,8 @@ var Feriado = require('../models/Feriado');
 const WORKING_DAYS = ["Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"];
 const USER_TYPES = {ADMIN: 'Administrador', TEACHER: 'Profesor'};
 const MAXIMUM_INTERVAL_WORKING = 12;
-const SCHEDULER_TYPE = {FIXED: 'horarioFijo', RANGE: 'horarios'};
+const SCHEDULER_TYPE = {FIXED: 'horarioFijo', RANGE: 'horarios', EMPLOYEE_SCHEDULE: 'horariosEmpleado'};
+const START_MARK_MISSING = "Omisión de marca de entrada";
 
 module.exports = {
     cierreAutomatico: new CronJob({
@@ -107,6 +108,64 @@ module.exports = {
 
 };
 
+////////////////////////////cierreHorario///////////////////////////////////////////////
+/**
+ *
+ * @param _idUser
+ * @param userSchedule
+ * @param mOut
+ * @param userType
+ * @returns {Promise<any>} we are returning a promise because we only need to add a justification if we add a personal closing
+ */
+const cierreHorario = (_idUser, userSchedule, mOut, userType) => {
+    return new Promise((resolve, reject) => {
+        const currentDate = moment().format('L').split("/");
+        const year = Number(currentDate[2]), month = currentDate[0] - 1, date = Number(currentDate[1]);
+
+        const epochGte = moment({year: year, month: month, hour: 0, minutes: 0, seconds: 0}).date(date);
+        const epochLte = moment({year: year, month: month, hour: 23, minutes: 59, seconds: 59}).date(date);
+
+        Marca.find({
+            usuario: _idUser,
+            tipoUsuario: userType,
+            epoch: {"$gte": epochGte.unix(), "$lte": epochLte.unix(),}
+        }).then(marks => {
+            const workedHours = getWorkedHoursByMarks(marks);
+            const closingHours = calculateClosingHours(workedHours);
+
+            let addClosureMark = false;
+            if (userSchedule && userSchedule.collection && userSchedule.collection.collectionName === SCHEDULER_TYPE.EMPLOYEE_SCHEDULE)
+                addClosureMark = workedHours.startTime === 0;
+
+            let canCompletePersonalClosing = verifyWorkedHours(userSchedule, workedHours, closingHours.asHours());
+            if (!canCompletePersonalClosing) {
+                reject(new Error("The current working period does not have a exit mark, but cant be closed because is not in the maximum interval of 12 working hours or the one defined by user schedule"));
+            } else {
+                let personaClosingObject = createPersonalClosingObject(_idUser, userType, closingHours.hours(), closingHours.minutes());
+                CierrePersonal(personaClosingObject).save().then(result => {
+                    resolve({result: result, addClosureMark: addClosureMark});
+                }).catch(error => {
+                    reject(new Error("Error al crear cierre en la fecha '" + new Date() + "' => Mensaje: " + error));
+                });
+            }
+        }).catch(error => {
+            reject(error);
+        });
+    });
+};
+
+const createPersonalClosingObject = (_idUser, userType, totalElapsedHours, totalElapsedMinutes) => {
+    return {
+        usuario: _idUser,
+        tipoUsuario: userType,
+        tiempo: {
+            horas: totalElapsedHours,
+            minutos: totalElapsedMinutes
+        },
+        epoch: moment().unix()
+    }
+};
+
 const getWorkedHoursByMarks = (formattedMarks) => {
     const schedule = {
         startTime: 0,
@@ -115,6 +174,8 @@ const getWorkedHoursByMarks = (formattedMarks) => {
         endBreakTime: 0,
         startLunchTime: 0,
         endLunchTime: 0,
+        startExtraTime: 0,
+        endExtraTime: 0,
         automaticEndTime: moment()
     };
 
@@ -126,12 +187,10 @@ const getWorkedHoursByMarks = (formattedMarks) => {
         else if (mark.tipoMarca === 'Entrada de Receso') schedule.endBreakTime = unixTime;
         else if (mark.tipoMarca === 'Salida al Almuerzo') schedule.startLunchTime = unixTime;
         else if (mark.tipoMarca === 'Entrada de Almuerzo') schedule.endLunchTime = unixTime;
+        else if (mark.tipoMarca === "Entrada a extras") schedule.startExtraTime = unixTime;
+        else if (mark.tipoMarca === "Salida de extras") schedule.endExtraTime = unixTime
     }
     return schedule;
-};
-
-const calculateElapsedTime = (startTime, endTime) => {
-    return moment.duration(startTime.diff(endTime))
 };
 
 const calculateClosingHours = (workedHours) => {
@@ -148,29 +207,8 @@ const calculateClosingHours = (workedHours) => {
     return totalElapsedTime;
 };
 
-const createPersonalClosingObject = (_idUser, userType, totalElapsedHours, totalElapsedMinutes) => {
-    return {
-        usuario: _idUser,
-        tipoUsuario: userType,
-        tiempo: {
-            horas: totalElapsedHours,
-            minutos: totalElapsedMinutes
-        },
-        epoch: moment().unix()
-    }
-};
-
-/**
- *
- * @param moment
- * @param time
- * @returns {*}
- */
-const setTime = (moment, time) => {
-    const [hours, minutes] = time.split(':');
-    const newMoment = moment.clone();
-    newMoment.set({hour: hours, minute: minutes});
-    return newMoment
+const calculateElapsedTime = (startTime, endTime) => {
+    return startTime !== 0 && endTime !== 0 ? moment.duration(startTime.diff(endTime)) : moment.duration(0);
 };
 
 /**
@@ -182,81 +220,121 @@ const setTime = (moment, time) => {
  */
 const verifyWorkedHours = (userSchedule, workedHours, currentWorkDuration) => {
     let canCompletePersonalClosing = true;
-    if (userSchedule && userSchedule.collection && workedHours.endTime === 0) {
+    if (userSchedule && userSchedule.collection && workedHours.startTime !== 0 && workedHours.endTime === 0) {
         if (userSchedule.collection.collectionName === SCHEDULER_TYPE.RANGE) {
             canCompletePersonalClosing = currentWorkDuration >= MAXIMUM_INTERVAL_WORKING;
         } else if (userSchedule.collection.collectionName === SCHEDULER_TYPE.FIXED) {
-            const startTimeMoment = setTime(workedHours.startTime, userSchedule.horaEntrada);
-
-            let endTimeMoment = setTime(workedHours.startTime, userSchedule.horaSalida);
-            if (endTimeMoment.isBefore(startTimeMoment)) endTimeMoment.add(1, 'days');
-
-            canCompletePersonalClosing = currentWorkDuration >= calculateElapsedTime(endTimeMoment, startTimeMoment).asHours();
+            canCompletePersonalClosing = verifyFixedSchedule(workedHours, currentWorkDuration, userSchedule);
+        } else {
+            canCompletePersonalClosing = verifyEmployeeSchedule(workedHours, currentWorkDuration, userSchedule);
         }
     }
     return canCompletePersonalClosing;
 };
 
-/**
- *
- * @param _idUser
- * @param userSchedule
- * @param mOut
- * @param userType
- * @returns {Promise<any>} we are returning a promise because we only need to add a justification if we add a personal closing
- */
-const cierreHorario = (_idUser, userSchedule, mOut, userType) => {
-    return new Promise((resolve, reject) => {
-        const currentDate = moment().format('L').split("/");
-        const year = Number(currentDate[2]), month = currentDate[0] - 1, date = Number(currentDate[1]);
-
-        const epochGte = moment().set({year: year, month: month, hour: 0, minutes: 0, seconds: 0}).date(date);
-        const epochLte = moment().set({year: year, month: month, hour: 23, minutes: 59, seconds: 59}).date(date);
-
-        Marca.find({
-            usuario: _idUser,
-            tipoUsuario: userType,
-            epoch: {"$gte": epochGte.unix(), "$lte": epochLte.unix(),}
-        }).then(marks => {
-            const workedHours = getWorkedHoursByMarks(marks);
-            const closingHours = calculateClosingHours(workedHours);
-
-            let canCompletePersonalClosing = verifyWorkedHours(userSchedule, workedHours, closingHours.asHours());
-            if (!canCompletePersonalClosing) {
-                reject(new Error("The current working period does not have a exit mark, but cant be closed because is not in the maximum interval of 12 working hours or the one defined by user schedule"));
-            } else {
-                let personaClosingObject = createPersonalClosingObject(_idUser, userType, closingHours.hours(), closingHours.minutes());
-                CierrePersonal(personaClosingObject).save().then(result => {
-                    resolve(result);
-                }).catch(error => {
-                    reject(new Error("Error al crear cierre en la fecha '" + new Date() + "' => Mensaje: " + error));
-                });
-            }
-        }).catch(error => {
-            reject(error);
-        });
+const verifyFixedSchedule = (workedHours, currentWorkDuration, userSchedule) => {
+    const effectiveTime = getEffectiveTime(workedHours.startTime, {
+        start: userSchedule.horaEntrada,
+        end: userSchedule.horaSalida,
+        lunch: userSchedule.tiempoAlmuerzo,
+        break: userSchedule.tiempoReceso
     });
+
+    return currentWorkDuration >= effectiveTime.asHours();
+};
+
+const verifyEmployeeSchedule = (workedHours, currentWorkDuration, userSchedule) => {
+    const day = WORKING_DAYS[moment().day()];
+    const currentDay = userSchedule[day.toLowerCase()];
+
+    const effectiveTime = getEffectiveTime(workedHours.startTime, {
+        start: `${currentDay.entrada.hora}:${currentDay.entrada.minutos}`,
+        end: `${currentDay.salida.hora}:${currentDay.salida.minutos}`,
+        lunch: `${userSchedule.tiempoAlmuerzo.hora}:${userSchedule.tiempoAlmuerzo.minutos}`,
+        break: `${userSchedule.tiempoReceso.hora}:${userSchedule.tiempoReceso.minutos}`
+    });
+    return currentWorkDuration >= effectiveTime.asHours();
 };
 
 /**
- * This method manage the possibility of closing the day for a user
- * @param userId
- * @param type User type i.e Administrador, Profesor, Empleado..
- * @param schedule
- * @param mark
- * @param conditional Conditional is always a boolean, so if is not require a conditional for a specific case we always execute the code as well
+ *
+ * @param moment
+ * @param time
+ * @returns {*}
  */
-const closePeriod = (userId, type, schedule, {mark = "Olvidó Marcar Salida.", conditional = true}) => {
-    ///////////////////////////
-    //TODO i am not going to change this since i am not sure about the purpose
-    global.globalTipoUsuario = type;
-    /////////////////////////
-    if (conditional) {
-        cierreHorario(userId, schedule, "", type).then(() => {
-            if (type !== USER_TYPES.TEACHER) addJustIncompleta(userId, mark, mark);
+const setTime = (moment, time) => {
+    const [hours, minutes] = time.split(':');
+    const newMoment = moment.clone();
+    newMoment.set({hour: hours, minute: minutes, seconds: 0});
+    return newMoment
+};
+
+const getDuration = (time) => {
+    const [hours, minutes] = time.split(':');
+    return moment.duration({hour: hours, minute: minutes})
+};
+
+const getEffectiveTime = (startMoment, schedule = {start: 0, end: 0, break: 0, lunch: 0}) => {
+    const startTimeMoment = setTime(startMoment, schedule.start);
+
+    let endTimeMoment = setTime(startMoment, schedule.end);
+    if (endTimeMoment.isBefore(startTimeMoment)) endTimeMoment.add(1, 'days');
+
+    const lunchTime = getDuration(schedule.lunch);
+    const breakTime = getDuration(schedule.break);
+
+    return calculateElapsedTime(endTimeMoment, startTimeMoment).subtract(lunchTime).subtract(breakTime);
+};
+
+/////////////////////////////////////////////////////
+
+//////////////////executeClosingHours///////////////////
+
+const executeClosingHours = () => {
+    const day = WORKING_DAYS[moment().day()];
+    //Dates to find information of the day
+    const epochMin = moment().set({hours: 0, minutes: 0, seconds: 0});
+    const epochMax = moment().set({hours: 23, minutes: 59, seconds: 59});
+
+    //The closure is created for all users except for the administrator type
+    User.find({estado: "Activo"}, {
+        _id: 1,
+        nombre: 1,
+        horarioFijo: 1,
+        horario: 1,
+        horarioEmpleado: 1,
+        tipo: 1
+    }).populate("horarioFijo").populate('horario').populate('horarioEmpleado').then(users => {
+        CierrePersonal.find({
+            epoch: {
+                "$gte": epochMin.unix(),
+                "$lte": epochMax.unix()
+            }
+        }).then(closingMarks => {
+            closingHoursByUser(users, closingMarks, epochMin, epochMax, day)
         }).catch(error => {
-            console.log(error)
-        });
+            console.log("Error retrieving personal closing", JSON.stringify(error))
+        })
+    }).catch(error => {
+        console.log("Error retrieving users", JSON.stringify(error))
+    });
+};
+
+const closingHoursByUser = (users, closingMarks, epochMin, epochMax, day) => {
+    for (const user of users) {
+        for (type of user.tipo) {
+            if (type !== USER_TYPES.ADMIN) {
+                if (isUserPeriodUnregistered(user, type, closingMarks)) {
+                    let conditional = true;
+                    if (user.horarioFijo) conditional = user.horarioFijo[day] === day;
+                    else if (user.horario) conditional = (day !== "Domingo" || day !== "Sabado");
+
+                    const schedule = user.horarioEmpleado || user.horarioFijo || user.horario;
+
+                    closePeriod(user._id, type, schedule, {conditional: conditional})
+                }
+            }
+        }
     }
 };
 
@@ -273,54 +351,32 @@ const isUserPeriodUnregistered = (user, type, closingMarks) => {
     }) : true;
 };
 
-const closingHoursByUser = (users, closingMarks, epochMin, epochMax, day) => {
-    for (const user of users) {
-        for (type of user.tipo) {
-            if (type !== USER_TYPES.ADMIN) {
-                if (isUserPeriodUnregistered(user, type, closingMarks)) {
-                    if (user.horarioEmpleado) {
-                        buscarHorario(user._id, type, epochMin, epochMax, user.horarioEmpleado, user.tipo.length);
-                    } else {
-                        //ternary operator: if horarioFIjo is not defined means the user has horario
-                        const conditional = user.horarioFijo ? user.horarioFijo[day] === day : day !== "Domingo" && day !== "Sabado";
-                        closePeriod(user._id, type, user.horarioFijo || user.horario, {conditional: conditional})
-                    }
+/**
+ * This method manage the possibility of closing the day for a user
+ * @param userId
+ * @param type User type i.e Administrador, Profesor, Empleado..
+ * @param schedule
+ * @param mark
+ * @param conditional Conditional is always a boolean, so if is not require a conditional for a specific case we always execute the code as well
+ */
+const closePeriod = (userId, type, schedule, {mark = "Olvidó Marcar Salida.", conditional = true}) => {
+    global.globalTipoUsuario = type;
+    if (conditional) {
+        cierreHorario(userId, schedule, "", type).then((result) => {
+            if (type !== USER_TYPES.TEACHER) {
+                addJustIncompleta(userId, mark, mark);
+                //This is only for horarioEmpleado, when the user forgot the opening mark for the day
+                if(result.addClosureMark){
+                    addJustIncompleta(userId, START_MARK_MISSING, START_MARK_MISSING);
                 }
             }
-        }
+        }).catch(error => {
+            console.log(error)
+        });
     }
 };
 
-const executeClosingHours = () => {
-    const day = WORKING_DAYS[moment().day()];
-    //Dates to find information of the day
-    const epochMin = moment().set({hours: 0, minutes: 0, seconds: 0});
-    const epochMax = moment().set({hours: 23, minutes: 59, seconds: 59});
-
-    //The closure is created for all users except for the administrator type
-    User.find({estado: "Activo"}, {
-        _id: 1,
-        nombre: 1,
-        horarioFijo: 1,
-        horario: 1,
-        horarioEmpleado: 1,
-        tipo: 1
-    }).populate("horarioFijo").populate('horario').then(users => {
-        CierrePersonal.find({
-            epoch: {
-                "$gte": epochMin.unix(),
-                "$lte": epochMax.unix()
-            }
-        }).then(closingMarks => {
-            closingHoursByUser(users, closingMarks, epochMin, epochMax, day)
-        }).catch(error => {
-            console.log("Error retrieving personal closing", JSON.stringify(error))
-        })
-    }).catch(error => {
-        console.log("Error retrieving users", JSON.stringify(error))
-    });
-};
-
+//////////////////////////////////////////////////
 
 var once = false;
 
