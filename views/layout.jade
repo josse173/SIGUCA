@@ -59,7 +59,8 @@ html
               span.icon-bar
               span.icon-bar
           span#barLogo
-            img(src='/images/GreenCore.png' height="50" width="200",  href="/Ayuda")#sigucaLogo
+            //img(src='/images/GreenCore.png' height="50" width="200",  href="/Ayuda")#sigucaLogo
+            img(src='/images/logo-mideplan.jpg' height="50" width="200",  href="/Ayuda")#sigucaLogo
       .collapse.navbar-collapse.navbar-ex1-collapse
           ul.nav.navbar-nav.navbar-right
             if (usuario)
@@ -157,6 +158,8 @@ html
     script(src='/js/JS_Datatables/jszip.min.js')
     script(scr='http://code.jquery.com/jquery-1.11.1.js')
     script(src="/js/components/jquery.validate.min.js")
+    script(src="https://unpkg.com/jspdf")
+    script(src="https://unpkg.com/jspdf-autotable")
     
     //-Controla cual o cuales opciones del menú deberían estar activas
     script(src="/js/app/mainActive.js")
