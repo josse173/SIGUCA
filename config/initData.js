@@ -2,7 +2,8 @@
 
 var mongoose = require('mongoose'),
     Usuario = mongoose.model('Usuario'),
-    Horario = require('../models/Horario');
+    Horario = require('../models/Horario'),
+    Configuracion = mongoose.model('Configuracion');
 
 Usuario.findOne({ 'tipo' :  'Administrador' }, function (err, user) {
     if (!user) {
@@ -25,7 +26,7 @@ Usuario.findOne({ 'tipo' :  'Administrador' }, function (err, user) {
 
         /* Se crea el usuario por defecto tipo administrador */
         var newUser = new Usuario({
-            username: 'admin', 
+            username: 'admin',
             tipo: 'Administrador',
             estado: "Activo",
             nombre: 'administrador',
@@ -40,11 +41,44 @@ Usuario.findOne({ 'tipo' :  'Administrador' }, function (err, user) {
             horario: horario,
         });
         newUser.password = Usuario.generateHash('admin');
-        
+
         //Crea Usuario
         newUser.save(function (err, user) {
             if (err) console.log(err);
             console.log("Se ha creado el usuario administrador por defecto admin:admin");
         });
+
+
     }
 });//Busca Usuario
+
+Configuracion.findOne({ 'nombreUnico' :  'cantidadAlertasDia' }, function (err, configuracion) {
+    if (!configuracion) {
+        var configuracionCantidadAlertas = new Configuracion({
+            nombreUnico: 'cantidadAlertasDia',
+            nombre: 'Cantidad Alertas por día',
+            valor: 3
+        });
+
+        configuracionCantidadAlertas.save(function (err, configuracionCantidadAlertas) {
+            if (err) console.log(err);
+        });
+    }
+});
+
+Configuracion.findOne({ 'nombreUnico' :  'cantidadAlertasDia' }, function (err, configuracion) {
+    if (!configuracion) {
+        var configuracionMinutosRespuesta = new Configuracion({
+            nombreUnico: 'MinutosRespuesta',
+            nombre: 'Minutos Respuesta',
+            valor: 10
+        });
+
+        configuracionMinutosRespuesta.save(function (err, configuracionMinutosRespuesta) {
+            if (err) console.log(err);
+        });
+    }
+});
+
+
+

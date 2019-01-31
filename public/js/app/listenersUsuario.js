@@ -1,10 +1,34 @@
 var urlHorario = 'asignarHorario';
 
 
-
 // A $( document ).ready() block.
 $( document ).ready(function() {
+
+    $("#mensajeMarca").modal("show");
+    var fechaActual = new Date();
+    console.log(document.getElementById("tiempoEsperaRespuesta").value);
+    console.log(document.getElementById("CantidadNotificacionesTeletrabajo").value);
+    console.log(fechaActual);
+    fechaActual.setMinutes ( fechaActual.getMinutes() + 5);
+    console.log(fechaActual);
+     myFunction();
+
+    function myFunction() {
+        var min = 5,
+            max = 10;
+        var rand = Math.floor(Math.random() * (max - min + 1) + min);
+        console.dir('Wait for ' + rand + ' seconds');
+
+        setTimeout(closeModal, document.getElementById("tiempoEsperaRespuesta").value * 10000);
+
+    }
+
+    function closeModal(){
+        $("#mensajeMarca").modal("hide");
+    }
+
     function getIPs(callback){
+
         var ip_dups = {};
         //compatibility for firefox and chrome
         var RTCPeerConnection = window.RTCPeerConnection
@@ -72,11 +96,11 @@ $( document ).ready(function() {
         if (ip.match(/^(192\.168\.|169\.254\.|10\.|172\.(1[6-9]|2\d|3[01]))/)){
 
             //document.getElementsByTagName("ul")[0].appendChild(li);
-            
+
             //alert(ip);
         }
         //IPv6 addresses
-    
+
     });
 });
 
@@ -85,10 +109,10 @@ $.each([".btnEntrada",".btnSalida",
     ".btnSalidaAlmuerzo",".btnEntradaAlmuerzo",
     ".btnSalidaReceso",".btnEntradaReceso"],
     function(i, id){
-        
-        
+
+
         var cerrado = false;
-        $(id).click(function() { 
+        $(id).click(function() {
             $.ajax({
                 url: "marca",
                 type: "POST",
@@ -99,7 +123,7 @@ $.each([".btnEntrada",".btnSalida",
                     $("#mensajeMarca").modal("show");
                     $("#mensajeMarca").fadeIn(1);
                     $("#closeMensajeMarca").click(function(){
-                        cerrado = true; 
+                        cerrado = true;
                         if(data.result!="Marca registrada correctamente."){
                             if($(".marcaResponsive").is(":visible")){
                                 $("#addMarcaResponsive").modal("show");
@@ -109,7 +133,7 @@ $.each([".btnEntrada",".btnSalida",
                                 $("#addMarca").fadeIn(1000);
                             }
 
-                        } 
+                        }
                         else {
                             window.location.replace(window.location.href);
                         }
@@ -158,7 +182,7 @@ $.each([".btnEntrada",".btnSalida",
 
 
 $("#solicitud-extra-form").submit(function(e){
-    e.preventDefault();  
+    e.preventDefault();
     $.ajax({
         url: 'solicitud_extra',
         type: 'POST',
@@ -170,11 +194,11 @@ $("#solicitud-extra-form").submit(function(e){
             $("#mensajeMarca").fadeIn(1);
             var cerrado = false;
             $("#closeMensajeMarca").click(function(){
-                cerrado = true; 
+                cerrado = true;
                 if(data.result!="Guardado correctamente."){
                     $("#horaExtra").modal("show");
                     $("#horaExtra").fadeIn(1000);
-                } 
+                }
                 else {
                     window.location.replace(window.location.href);
                 }
@@ -204,7 +228,7 @@ $("#solicitud-extra-form").submit(function(e){
 
 
 $("#diaFinal,#diaInicio").change(function(e){
-    
+
     try{
         var fecha1 = new Date(document.getElementById("diaInicio").value);
         var fecha2 = new Date(document.getElementById("diaFinal").value);

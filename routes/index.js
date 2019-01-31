@@ -1,7 +1,7 @@
 /*
  * GET home page.
  * Rutas
- */                 
+ */
  var fs = require('fs');
  var mongoose = require('mongoose');
  var nodemailer = require('nodemailer');
@@ -22,13 +22,14 @@
  var crudUsuario = require('./crudUsuario');
  var crudSolicitud = require('./crudSolicitud');
  var crudJustificaciones = require('./crudJustificaciones');
- 
+
 
  var crudHorario = require('./crudHorario');
  var crudMarca = require('./crudMarca');
  var crudDepartamento = require('./crudDepartamento');
  var crudFeriado = require('./crudFeriado');
  var crudContenido = require('./crudContenido');
+ var crudConfiguracion = require('./crudConfiguracion');
  var crudCorreo = require('./crudCorreo');
  var crudRed = require('./crudRed');
  var crud = require('./crud');
@@ -52,12 +53,13 @@ var Justificaciones = require('../models/Justificaciones');
 var Solicitudes = require('../models/Solicitudes');
 var Cierre = require('../models/Cierre');
 var emailSIGUCA = 'siguca@greencore.co.cr';
+var Configuracion = require('../models/Configuracion');
 
 //***************************************
 //var multer=require('multer');
 //var upload = multer({ dest: '' });
 
-var multer  =  require('multer');  
+var multer  =  require('multer');
 
 //***************************************
 var config 			= require('../config');
@@ -67,8 +69,8 @@ module.exports = function(app, io) {
     /*
     *   Redirecciona a la página principal (index.html)
     */
-  
-    
+
+
     app.get('/', function (req, res) {
         Contenido.find({seccion:'Index'},function(err,contenido){
             if (err){
@@ -80,25 +82,25 @@ module.exports = function(app, io) {
                 });
             }
         });
-        
+
     });
 
- 
+
     app.get('/justificacionesPendientes',function(req,res){
-        
+
         crudJustificaciones.conteoJustificaciones(req.user,function (conteoJustificaciones){
             if(conteoJustificaciones){
                 req.user.tipo = req.session.name;
                 res.render('justificacionesPendientes',{
                     usuario:req.user,
                     arrayJustificaciones:conteoJustificaciones,
-                    
+
                 })
             }
         });
-       
+
     });
-   
+
     //var upload = multer({storage: 'pru/'});
    // app.post('/imagen',upload.single('myimage'),function(req,res,next){
     //    console.log('test :'+ JSON.stringify(req.file));
@@ -110,8 +112,8 @@ module.exports = function(app, io) {
     /*
     *   Redirecciona a la página necesaria dependiendo del tipo de usuario
     */
-    app.post('/login', 
-        passport.authenticate('login', {failureRedirect: '/'}), 
+    app.post('/login',
+        passport.authenticate('login', {failureRedirect: '/'}),
         admin_actions.login
         );
 
@@ -133,8 +135,8 @@ module.exports = function(app, io) {
     app.get('/escritorioEmpl', autentificado, escritorio_actions.escritorioEmpl);
 
     /*
-    *  Envia los departamentos y horarios al escritorio del administrador, 
-    *  para la posterior creación de usuarios 
+    *  Envia los departamentos y horarios al escritorio del administrador,
+    *  para la posterior creación de usuarios
     */
     app.get('/escritorioAdmin', autentificado, escritorio_actions.escritorioAdmin);
 
@@ -159,7 +161,7 @@ module.exports = function(app, io) {
     //******************************************************************************
     /*
     /*
-    *  Carga las justificaciones, solicitudes de horas extra y solicitudes de permisos pendientes, 
+    *  Carga las justificaciones, solicitudes de horas extra y solicitudes de permisos pendientes,
     *  a cada consulta se le realiza la conversion de epoch a la CST Standard.
     */
     app.get('/gestionarEventos/:filtrado', autentificado, event_actions.filtrarEventos);
@@ -167,19 +169,19 @@ module.exports = function(app, io) {
     /*
     *  Carga las justificaciones, solicitudes de horas extra y solicitudes de permisos NO pendientes,
     *  a cada consulta se le realiza la conversión de epoch a la CST Standard.
-    *  
+    *
     */
-    
+
     app.get('/reportes', autentificado, event_actions.filtrarEventos);
 
     app.post('/reportes', autentificado, event_actions.filtrarEventos);
-    
+
     //Obtiene el filtrado elegido
     app.get('/reportes/:filtrado', autentificado, event_actions.filtrarEventos);
     app.post('/reportes/:filtrado', autentificado, event_actions.filtrarEventos);
 
     /*
-    *   - Filtra los eventos por usuario y rango de fecha. 
+    *   - Filtra los eventos por usuario y rango de fecha.
     *   - Dependiendo si es reporte o gestión de eventos, filtra los eventos por distintos estados.
     */
     app.post('/filtrarEventos/:filtrado', autentificado, event_actions.filtrarEventos);
@@ -213,7 +215,7 @@ module.exports = function(app, io) {
 
 
     app.post('/justificacionEmpleado', autentificado, function(req,res){
-    
+
         var just={
             id:req.body.identificador,
             usuario:req.user.id,
@@ -221,7 +223,7 @@ module.exports = function(app, io) {
             motivoOtroJust:req.body.motivoOtroJust,
             motivoJust:"otro"
 
-        }; 
+        };
         if(req.session.name!="Supervisor"){
             crudJustificaciones.updateJust(just, function (err){
                 res.redirect('/escritorioEmpl');
@@ -231,13 +233,13 @@ module.exports = function(app, io) {
                 res.redirect('/escritorio');
             });
         }
-		
+
     });
 
 
     //justificacion masa
     app.post('/justificacionMasaEmpleado', autentificado, function(req,res){
-       
+
         if(req.session.name=="Supervisor"){
             for(var i=0;i<req.body.ordenadas.length;i++){
                 var just={
@@ -246,14 +248,14 @@ module.exports = function(app, io) {
                     detalle:req.body.ordenadas[i].detalle,
                     motivoOtroJust:req.body.ordenadas[i].motivoOtroJust,
                     motivoJust:"otro"
-        
-                }; 
+
+                };
                 crudJustificaciones.updateJust(just, function (err){
-                   
+
                 });
             }
             res.json({result:"Supervisor"});
-            
+
         }else{
             for(var i=0;i<req.body.ordenadas.length;i++){
                 var just={
@@ -262,23 +264,23 @@ module.exports = function(app, io) {
                     detalle:req.body.ordenadas[i].detalle,
                     motivoOtroJust:req.body.ordenadas[i].motivoOtroJust,
                     motivoJust:"otro"
-        
-                }; 
+
+                };
                 crudJustificaciones.updateJust(just, function (err){
-                   
+
                 });
             }
             res.json({result:"Empleado"});
         }
-        
 
-           
-            
+
+
+
     });
-    
 
 
-   
+
+
     /*
     *  El supervisor elimina una justificación y se le envia un correo al dueño de la justificación
     */
@@ -315,15 +317,15 @@ module.exports = function(app, io) {
             justificacion.comentarioSupervisor = req.body.vector[i].comentarioSupervisor;
 
             if(justificacion.estado != 'Pendiente') {
-            crudJustificaciones.gestionarJustifcacion(justificacion, function (err, msj) { 
-              
+            crudJustificaciones.gestionarJustifcacion(justificacion, function (err, msj) {
+
             }, req.user.id);
             } else {
-         
+
             }
         }//end for
         res.json({});
-        
+
     });
 
 
@@ -331,14 +333,14 @@ module.exports = function(app, io) {
 
         for(var i=0;i<req.body.vector.length;i++){
             crudJustificaciones.deleteJustMasa(req.body.vector[i].id, function (err, msj) {
-		    });   
+		    });
         }//end for
         res.json({});
-        
+
     });
 
 
-       
+
 
 
     /*
@@ -361,9 +363,9 @@ module.exports = function(app, io) {
 
         //var estadoreal = 'Pendiente'+solicitud.id;
         var estadoreal = 'Pendiente';
-        
+
         if(solicitud.estado != estadoreal) {
-            crudSolicitud.gestionarSoli(solicitud, function (err, msj) { 
+            crudSolicitud.gestionarSoli(solicitud, function (err, msj) {
                 if (err) res.json(err);
                 else res.send(msj);
             },req.user.id);
@@ -380,7 +382,7 @@ module.exports = function(app, io) {
         var justificacion = req.body;
         justificacion.id = req.params.id;
         if(justificacion.estado != 'Pendiente') {
-            crudJustificaciones.gestionarJust(justificacion, function (err, msj) { 
+            crudJustificaciones.gestionarJust(justificacion, function (err, msj) {
                 if (err) res.json(err);
                 else res.send(msj);
             }, req.user.id);
@@ -394,17 +396,17 @@ module.exports = function(app, io) {
     *  Crea una nueva marca vía página web
     */
     app.post('/marca', autentificado, function (req, res) {
-        
+
         crudMarca.addMarca(req.body.ipOrigen,req.session.name,
-            {tipoMarca: req.body.marca, usuario: req.user.id,tipoUsuario: req.session.name}, 
+            {tipoMarca: req.body.marca, usuario: req.user.id,tipoUsuario: req.session.name},
             function(msj, msjJust){
                 res.json({result:msj, justificacion:msjJust});
             });
     });
 
-    //check de marcas de usuario 
+    //check de marcas de usuario
     app.post('/marcaCheck', autentificado, function (req, res) {
-        
+
         var date = moment().format("DD/MM/YYYY");
         date=date.split("/");
         var epochGte = moment();
@@ -432,7 +434,7 @@ module.exports = function(app, io) {
             }
             res.json({result:m, marcas:mcs});
         });
-    
+
 
     });
 
@@ -468,7 +470,7 @@ module.exports = function(app, io) {
                         lista.push(obj);
                     }
                     res.json({result:"ok", lista:lista});
-                    
+
                 }else{
                     res.json({result:"fail"});
                 }
@@ -525,14 +527,14 @@ module.exports = function(app, io) {
     });
 
     //******************************************************************************
-    /* 
+    /*
     *  Cálculo de las horas trabajadas en un día
     */
     app.get('/horas/actualizar', autentificado, horas_actions.horasTrabajadas);
 
 
     //******************************************************************************
-    /* 
+    /*
     *  Redirecciona a la configuración de empleado
     */
     app.get('/configuracion', autentificado, function (req, res) {
@@ -554,11 +556,11 @@ module.exports = function(app, io) {
                 });
             }
         });
-       
+
     });
 
     app.post('/asignarContenido', autentificado, function (req, res){
-        
+
           var content =new Contenido({
               seccion:req.body.seccion,
               titulo:req.body.titulo,
@@ -573,7 +575,7 @@ module.exports = function(app, io) {
       });
 
     /*
-    *  Crea marca desde RFID  
+    *  Crea marca desde RFID
     */
     app.get('/rfidReader', function (req, res) {
             //pwd1=ooKa6ieC&pwd2=of2Oobai&codTarjeta=123&tipoMarca=6
@@ -584,7 +586,7 @@ module.exports = function(app, io) {
             var tipoUsuario = req.param('tipo');
             var ip = req.param('ipv4');
             //if(pwd1 == 'ooKa6ieC' && pwd2 == 'of2Oobai' ) {
-            
+
             crudMarca.rfidReader(tipoUsuario,codTarjeta, tipoMarca, ip, function (msj) {
             res.send(msj);
                 });
@@ -600,7 +602,7 @@ module.exports = function(app, io) {
             if (err){
                 return res.json(error);
             } else{
-                
+
                 req.user.tipo = req.session.name;
                 res.render('ayuda', {
                     title: 'Ayuda | SIGUCA',
@@ -608,25 +610,25 @@ module.exports = function(app, io) {
                     textos:contenido
                 });
             }
-            
-                
+
+
             });
         });
 
-            
-       
+
+
 
 
 
 
     app.post('/verificarEmpleadoActualizar',autentificado,function(req,res){
-      
+
         Usuario.find({$or:[{'username' :  req.body.empleado.username},{'cedula':req.body.empleado.cedula},{'codTarjeta':req.body.empleado.codTarjeta}]}, function (err, user) {
             if (err){
                 res.json(err);
-            } 
+            }
             else{
-                
+
                 if(user.length>1){
                     res.json("El usuario ya existe");
                 }else{
@@ -635,8 +637,8 @@ module.exports = function(app, io) {
                         if(user[h]._id==req.body.empleado._id){
                             contador++;
                         }
-                      
-                        
+
+
                     }
                     if(contador>0){
                         res.json("Correcto");
@@ -644,7 +646,7 @@ module.exports = function(app, io) {
                     else{
                         res.json("El usuario ya existe");
                     }
-                    
+
                 }
             }
         });
@@ -655,7 +657,7 @@ module.exports = function(app, io) {
         Usuario.findOne({ $or:[{'username' :  req.body.empleado.username},{'cedula':req.body.empleado.cedula},{'codTarjeta':req.body.empleado.codTarjeta}]}, function (err, user) {
             if (err){
                 res.json(err);
-            } 
+            }
             if (!user) {
                 res.json("Correcto");
             }else if(user){
@@ -672,7 +674,7 @@ module.exports = function(app, io) {
         if (req.session.name == "Administrador") {
             crudUsuario.addUsuario(req.body, function() {
                 if (req.session.name == "Administrador"){
-                 res.redirect('/escritorioAdmin'); 
+                 res.redirect('/escritorioAdmin');
              }
             });//Busca Usuario
         } else {
@@ -684,7 +686,7 @@ module.exports = function(app, io) {
     /*
     *  Lista todos los usuarios creados
     */
-    
+
     app.get('/empleado', autentificado, function (req, res) {
         crudUsuario.listUsuarios(function (err, listaUsuarios){
             if (err) return res.json(err);
@@ -692,49 +694,49 @@ module.exports = function(app, io) {
             req.user.tipo = req.session.name;
             listaUsuarios.usuario = req.user;
             return res.render('empleado', listaUsuarios);
-        });       
+        });
     });
-    
+
 
     /*
     *  Carga los datos de un usuario en específico, además los horarios y departamentos creados
     */
-    
+
     app.get('/empleado/edit/:id', autentificado, function (req, res) {
-        Usuario.findById(req.params.id, function (err, empleado) { 
+        Usuario.findById(req.params.id, function (err, empleado) {
             if (err) return res.json(err);
             else res.json(empleado);
-        });        
+        });
     });
-    
+
 
     /*
     *  Actualiza los datos de un usuario en específico
     */
-    
+
     app.post('/empleado/:id', function (req, res) {
         var data = {
             id: req.params.id,
             empleado: req.body
         };
-        crudUsuario.updateUsuario(data, function() { 
+        crudUsuario.updateUsuario(data, function() {
             res.redirect('/empleado');
         });
     });
 
     app.get('/admin/reset',function () {crudUsuario.reset(function() {});});
-    
-    
+
+
     /*
     *  Modifica el estado de Activo a Inactivo de un usuario en específico
     */
     app.get('/empleado/delete/:id', autentificado, function (req, res) {
-        crudUsuario.deleteUsuario(req.params.id, function (err, msj) { 
+        crudUsuario.deleteUsuario(req.params.id, function (err, msj) {
             if (err) res.json(err);
             res.send(msj);
         });
     });
-    
+
     /*
     *  Obtiene un usuario
     */
@@ -810,7 +812,7 @@ module.exports = function(app, io) {
     *  En caso de tener varias sedes, se pueden crear dispositivos para especificar en cual
     *  sede se crearon las marcas manuales.
     */
-    app.get('/dispositivos', autentificado, function (req, res) { 
+    app.get('/dispositivos', autentificado, function (req, res) {
         //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
         req.user.tipo = req.session.name;
         res.render('dispositivos', {
@@ -823,14 +825,14 @@ module.exports = function(app, io) {
     *   Verifica si el usuario es valido, utiliza una función de passport
     */
     function autentificado(req, res, next) {
-            // Si no esta autentificado en la sesion, que prosiga con el enrutamiento 
+            // Si no esta autentificado en la sesion, que prosiga con el enrutamiento
             if (req.isAuthenticated())
                 return next();
 
             // redireccionar al home en caso de que no
             res.redirect('/');
         }
-        
+
     //******************************************************************************
     /*
     *   Cambia el username de los usuarios
@@ -842,7 +844,7 @@ module.exports = function(app, io) {
                 id: req.params.id,
                 username: req.body.username
             };
-            crudUsuario.changeUsername(user, function() { 
+            crudUsuario.changeUsername(user, function() {
                 res.redirect('/configuracion');
             });
         }
@@ -870,12 +872,12 @@ module.exports = function(app, io) {
 
 
 // Funcionalidad para cargar la imagen en el servidor, con la validacionde  png , la ruta donde  se  guarda
-// se define en /config/express.js 
+// se define en /config/express.js
     app.post('/IMAGEN/:id', autentificado, function(req, res) {
-    
+
 
         var extension=String(req.files.upl.type);
-        var extension = extension.substring(6); 
+        var extension = extension.substring(6);
         console.log(extension);
         if(extension!=="png"){
             res.send("Solo se aceptan .png");
@@ -936,7 +938,7 @@ module.exports = function(app, io) {
                         "tipo": "General",
                         "$or": or,
                         "epoch":{
-                            "$gte": epochGte, 
+                            "$gte": epochGte,
                             "$lt": epochLt
                         }
                     }
@@ -956,7 +958,7 @@ module.exports = function(app, io) {
                                 justificaciones: justificaciones,
                                 solicitudes: solicitudes,
                                 marcas: marcas,
-                                marcasPersonales: marcasPersonales 
+                                marcasPersonales: marcasPersonales
                             });
                         }
                     });
@@ -979,7 +981,7 @@ module.exports = function(app, io) {
                             justificaciones: justificaciones,
                             solicitudes: solicitudes,
                             marcas: marcas,
-                            marcasPersonales: marcasPersonales 
+                            marcasPersonales: marcasPersonales
                         });
                     });
                 }
@@ -994,7 +996,7 @@ module.exports = function(app, io) {
     });
     //
 
-    app.get('/dispositivos', autentificado, function (req, res) { 
+    app.get('/dispositivos', autentificado, function (req, res) {
         //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
         req.user.tipo = req.session.name;
         res.render('dispositivos', {
@@ -1011,13 +1013,13 @@ module.exports = function(app, io) {
     *  Crea un nuevo horario
     */
 
-    
+
 
     app.post('/horarioN', autentificado, function (req, res) {
         crud.addHorario(req.body, function() {
             if (req.session.name == "Administrador") {
                 res.redirect('/escritorioAdmin');
-            } 
+            }
         });
     });
 
@@ -1025,13 +1027,13 @@ module.exports = function(app, io) {
        crud.addHorarioFIjo(req.body,function(){
            if (req.session.name == "Administrador") {
                 res.redirect('/escritorioAdmin');
-            }  
+            }
        });
-     
-       
+
+
     });
 
-    
+
 
     /*
     *  Lista todos los horarios creados
@@ -1052,7 +1054,7 @@ module.exports = function(app, io) {
                         horarioPersonalizado:personalizado
                     });
                 });
-               
+
             });
         });
     });
@@ -1060,36 +1062,36 @@ module.exports = function(app, io) {
     /*
     *  Carga los datos de un horarioLibre en específico
     */
-    app.get('/horarioN/editHorario/:id', autentificado, function (req, res) { 
+    app.get('/horarioN/editHorario/:id', autentificado, function (req, res) {
         crud.loadHorario(req.params.id, function (err, horario) {
             if (err) return res.json(err);
             else res.json(horario);
         });
-    }); 
+    });
 
-    //Carga los datos de un horarioFijo en especiifico 
+    //Carga los datos de un horarioFijo en especiifico
 
-    app.get('/horarioFijo/editHorario/:id', autentificado, function (req, res) { 
+    app.get('/horarioFijo/editHorario/:id', autentificado, function (req, res) {
         crud.loadHorarioFijo(req.params.id, function (err, horario) {
             if (err) return res.json(err);
             else res.json(horario);
         });
-    }); 
+    });
 
 
-    //Carga los datos de un horarioFijo en especiifico 
+    //Carga los datos de un horarioFijo en especiifico
 
-    app.get('/horarioN/buscarPersonalizado/:id', autentificado, function (req, res) { 
+    app.get('/horarioN/buscarPersonalizado/:id', autentificado, function (req, res) {
         crud.loadHorarioEmpleado(req.params.id, function (err, horario) {
             if (err) return res.json(err);
             else res.json(horario);
         });
-    }); 
+    });
 
     /*
     *  Actualiza los datos de un horario libre en específico
     */
-    app.post('/horarioN/:id',autentificado, function (req, res) { 
+    app.post('/horarioN/:id',autentificado, function (req, res) {
         var data = { horario: req.body, id: req.params.id };
         crud.updateHorario(data, function (err, horarios) {
             if (err) return res.json(err);
@@ -1098,20 +1100,20 @@ module.exports = function(app, io) {
     });
 
     app.post('/formUpdatePersonalizado/:id',autentificado, function (req, res) {
- 
-    
+
+
         var data = { horario: req.body, id: req.params.id };
         crud.updateHorarioPersonalizado(data, function (err, horarios) {
             if (err) return res.json(err);
             res.redirect('/horarioN');
         });
-      
+
     });
 
-    
 
-    //Actualiza los datos de un horario fijo en especifico 
-     app.post('/horarioFijoN/:id',autentificado, function (req, res) { 
+
+    //Actualiza los datos de un horario fijo en especifico
+     app.post('/horarioFijoN/:id',autentificado, function (req, res) {
         var data = { horario: req.body, id: req.params.id };
         crud.updateHorarioFijo(data, function (err, horarios) {
             if (err) return res.json(err);
@@ -1122,7 +1124,7 @@ module.exports = function(app, io) {
     /*
     *  Elimina un horario libre
     */
-    app.get('/horarioN/delete/:id', autentificado, function (req, res) { 
+    app.get('/horarioN/delete/:id', autentificado, function (req, res) {
         crud.deleteHorario(req.params.id, function (err, msj) {
             if (err) return res.json(err);
             else res.send(msj);
@@ -1154,57 +1156,57 @@ module.exports = function(app, io) {
             req.user.tipo = req.session.name;
             listaUsuarios.usuario = req.user;
             return res.render('horarioMasa', listaUsuarios);
-        });     
-        
+        });
+
     });
 
     app.post('/horarioMasaLibre',autentificado,function(req,res){
-    
+
         for(var i=0;i<req.body.vector.length;i++){
-         
+
             Usuario.update({_id:req.body.vector[i].id},{ $set:{"horario":req.body.vector[i].idHorario}},function(err,horario){});
             Usuario.update({_id:req.body.vector[i].id},{ $unset:{horarioFijo:""}},function(error,correcto){});
             Usuario.update({_id:req.body.vector[i].id},{ $unset:{horarioEmpleado:""}},function(error,correcto){});
         }
         res.json({});
-       
+
     });
 
     app.post('/horarioMasaPersonalizado',autentificado,function(req,res){
             for(var i=0;i<req.body.vector.length;i++){
-             
+
                 Usuario.update({_id:req.body.vector[i].id},{ $set:{"horarioEmpleado":req.body.vector[i].idHorario}},function(err,horario){});
                 Usuario.update({_id:req.body.vector[i].id},{ $unset:{horarioFijo:""}},function(error,correcto){});
                 Usuario.update({_id:req.body.vector[i].id},{ $unset:{horario:""}},function(error,correcto){});
             }
             res.json({});
-           
+
     });
 
 
     app.post('/horarioMasaFijo',autentificado,function(req,res){
-        
+
             for(var i=0;i<req.body.vector.length;i++){
-             
+
                 Usuario.update({_id:req.body.vector[i].id},{ $set:{"horarioFijo":req.body.vector[i].idHorario}},function(err,horario){});
                 Usuario.update({_id:req.body.vector[i].id},{ $unset:{horario:""}},function(error,correcto){});
                 Usuario.update({_id:req.body.vector[i].id},{ $unset:{horarioEmpleado:""}},function(error,correcto){});
             }
             res.json({});
-           
+
     });
 
     app.post('/horarioMasaSinHorario',autentificado,function(req,res){
-        
+
             for(var i=0;i<req.body.vector.length;i++){
                 Usuario.update({_id:req.body.vector[i].id},{ $unset:{horarioEmpleado:""}},function(error,correcto){});
                 Usuario.update({_id:req.body.vector[i].id},{ $unset:{horario:""}},function(error,correcto){});
                 Usuario.update({_id:req.body.vector[i].id},{ $unset:{horarioFijo:""}},function(error,correcto){});
             }
             res.json({});
-           
+
     });
-    
+
     //asignarCorreo
     app.post('/asignarCorreo',autentificado, crudCorreo.insertarCorreo);
 
@@ -1243,7 +1245,7 @@ module.exports = function(app, io) {
         });
     });
 
-    app.get('/red/delete/:id', autentificado, function (req, res) { 
+    app.get('/red/delete/:id', autentificado, function (req, res) {
         crudRed.deleteRed(req.params.id, function (err, msj) {
             if (err) return res.json(err);
             else res.send(msj);
@@ -1275,9 +1277,9 @@ module.exports = function(app, io) {
             if(err){
                 return res.jason(err);
             }else{
-               
+
                 req.user.tipo = req.session.name;
-            
+
                 return res.render('Contenido', {
                 title: 'Nuevo Contenido | SIGUCA',
                 contenido:contenido,
@@ -1292,9 +1294,37 @@ module.exports = function(app, io) {
             if (err) return res.json(err);
             else res.json(feriado);
         });
-     });
+    });
 
-     app.post('/contenidoUpdate/:id',autentificado, crudContenido.actualizarContenido);
+    app.post('/contenidoUpdate/:id',autentificado, crudContenido.actualizarContenido);
+
+    //configuracionAlertas
+    //lista la lista de configuracion de Alertas.
+    app.get('/configuracionAlertas',autentificado,function(req,res){
+        Configuracion.find(function(err,configuraciones){
+            if(err){
+                return res.jason(err);
+            }else{
+
+                req.user.tipo = req.session.name;
+
+                return res.render('configuracionAlertas', {
+                    title: 'Nuevo Contenido | SIGUCA',
+                    configuraciones:configuraciones,
+                    usuario:req.user
+                });
+            }
+        });
+    });
+
+    app.get('/configuracionAlertas/editConfiguracion/:id',function(req,res){
+        Configuracion.findById(req.params.id,function(err,configuracion){
+            if (err) return res.json(err);
+            else res.json(configuracion);
+        });
+    });
+
+    app.post('/configuracionAlertasUpdate/:id',autentificado, crudConfiguracion.actualizarConfiguracion);
 
     //lista la lista de feriados creado.
     app.get('/feriado',autentificado,function(req,res){
@@ -1311,7 +1341,7 @@ module.exports = function(app, io) {
                     feriadosArreglado.push(obj);
                 }
                 req.user.tipo = req.session.name;
-               
+
 
                 return res.render('feriado', {
                 title: 'Nuevo Feriado | SIGUCA',
@@ -1322,14 +1352,14 @@ module.exports = function(app, io) {
         });
     });
 
-    app.get('/feriado/delete/:id', autentificado, function (req, res) { 
+    app.get('/feriado/delete/:id', autentificado, function (req, res) {
         crudFeriado.deleteFeriado(req.params.id, function (err, msj) {
             if (err) return res.json(err);
             else res.send(msj);
         });
     });
 
-    app.get('/correo/delete/:id', autentificado, function (req, res) { 
+    app.get('/correo/delete/:id', autentificado, function (req, res) {
         crudCorreo.deleteCorreo(req.params.id, function (err, msj) {
             if (err) return res.json(err);
             else res.send(msj);
@@ -1343,7 +1373,7 @@ module.exports = function(app, io) {
         });
      });
 
-    
+
      app.get('/feriado/editFeriado/:id',function(req,res){
         Feriado.findById(req.params.id,function(err,feriado){
             if (err) return res.json(err);
@@ -1351,7 +1381,7 @@ module.exports = function(app, io) {
         });
      });
 
-     
+
 
 
     app.post('/correoUpdate/:id',autentificado, crudCorreo.actualizarCorreo);
@@ -1366,7 +1396,7 @@ module.exports = function(app, io) {
             socket.emit('connected', epoch);
         });
 
-    
+
 
         /* Recibe la orden de lista y filtra cierres por tipo de usuario
         socket.on('listar', function (departamentoId){
@@ -1427,7 +1457,7 @@ module.exports = function(app, io) {
                                 result.tipo = "marcas";
                         }
                     }
-                    socket.emit('listaCierreEmpleado', result);  
+                    socket.emit('listaCierreEmpleado', result);
                 }
             });
         }

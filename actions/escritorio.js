@@ -16,6 +16,8 @@ var crudJustificaciones = require('../routes/crudJustificaciones');
 var config 			= require('../config');
 var HorarioFijo = require('../models/HorarioFijo');
 var HorarioPersonalizado = require('../models/HorarioEmpleado');
+var Configuracion = require('../models/Configuracion');
+
 module.exports = {
 	escritorio : function (req, res) {
 		var conteoJustificacionesTotal=0;
@@ -37,17 +39,17 @@ module.exports = {
 				if (err) return res.json(error);
 			var usuarioQuery = {tipo:{'$nin': ['Administrador', "Supervisor"]}};
 			crudUsuario.get(querrySupervisores, function (err, supervisores){
-				crudUsuario.getEmpleadoPorSupervisor(req.user.id, usuarioQuery, 
+				crudUsuario.getEmpleadoPorSupervisor(req.user.id, usuarioQuery,
 					function(error, usuarios, departamentos){
 						var queryInUsers = {
 							usuario:{"$in":util.getIdsList(usuarios.concat(supervisores))},
 							estado:'Pendiente'
-						}; 
+						};
 						Justificaciones.find(queryInUsers).populate('usuario').exec(function(error, justCount) {
 							Solicitudes.find(queryInUsers).populate('usuario').exec(function(error, soliCount) {
 								Marca.find({usuario: req.user.id, tipoUsuario: req.session.name, epoch:{"$gte": epochGte.unix()}},{_id:0,tipoMarca:1,epoch:1,dispositivo:1,red:1}).exec(function(error, marcas){
 									Justificaciones.find({usuario: req.user.id, estado:'Incompleto', tipoUsuario: req.session.name}).populate('usuario').exec(function(error, justificaciones) {
-										Solicitudes.find({estado:'Pendiente'}).populate('usuario').exec(function(error, solicitudes) { 
+										Solicitudes.find({estado:'Pendiente'}).populate('usuario').exec(function(error, solicitudes) {
 											Usuario.find({_id:req.user.id},{_id:0,departamentos: 1}).populate('departamentos.departamento').exec(function(error, supervisor){
 												CierrePersonal.find({epoch:{"$gte": epochYesterday.unix()}}).exec(function(err, cierres) {
 													var cierreUsuarios = [];
@@ -73,24 +75,24 @@ module.exports = {
 
 													//Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
 													req.user.tipo = req.session.name;
-												
+
 													//En caso de ser profesor no se pasan las justificaciones
 													if(req.user.tipo.length > 1 && req.session.name == config.empleadoProfesor){
 														arrayJust = null;
 													}
-													
-													
+
+
 													crudJustificaciones.conteoJustificacionesTotal(req.user,function (conteoTotal){
-														
+
 														if(conteoTotal&& conteoTotal>0){
 															conteoJustificacionesTotal=conteoTotal;
-															
+
 															return res.render('escritorio', {
 																title: 'Escritorio Supervisor | SIGUCA',
-																departamentos: supervisor[0].departamentos, 
-																justificaciones: arrayJust, 
+																departamentos: supervisor[0].departamentos,
+																justificaciones: arrayJust,
 																solicitudes: soli,
-																justCount: justCount.length, 
+																justCount: justCount.length,
 																soliCount: soliCount.length,
 																todos: array,
 																usuario: req.user,
@@ -103,10 +105,10 @@ module.exports = {
 														}else{
 															return res.render('escritorio', {
 																title: 'Escritorio Supervisor | SIGUCA',
-																departamentos: supervisor[0].departamentos, 
-																justificaciones: arrayJust, 
+																departamentos: supervisor[0].departamentos,
+																justificaciones: arrayJust,
 																solicitudes: soli,
-																justCount: justCount.length, 
+																justCount: justCount.length,
 																soliCount: soliCount.length,
 																todos: array,
 																usuario: req.user,
@@ -118,11 +120,11 @@ module.exports = {
 															});
 														}
 													});
-												   
-													
+
+
 					                               // });//Supervisor
 					                            });//Horas Semanales
-					                        });//Departamentos    
+					                        });//Departamentos
 					                    });//solicitudes
 					                });//Justificaciones
 					            });//Marcas
@@ -137,61 +139,67 @@ module.exports = {
 				res.redirect('/');
 			}
 		},
-		escritorioEmpl : function (req, res) {
-			if (req.session.name == "Empleado" || req.session.name == config.empleadoProfesor) {
-        	//Se toma la hora actual
-        	var epochGte = moment();
-        	epochGte.hours(0);
-        	epochGte.minutes(0);
-        	epochGte.seconds(0);
+	escritorioEmpl : function (req, res) {
+		if (req.session.name == "Empleado" || req.session.name == config.empleadoProfesor) {
+		//Se toma la hora actual
+		var epochGte = moment();
+		epochGte.hours(0);
+		epochGte.minutes(0);
+		epochGte.seconds(0);
 
-        	var actualEpoch = moment();
+		//Se busca en la base de datos todas las marcas realizadas por el usuario
+		//Se busca en la base de datos las marcas del mismo día
+		//console.log(req.user.id);
+		Contenido.find({seccion:"escritorioEmpl"},function(err,contenido){
+			if (err) return res.json(error);
+			Marca.find(
+				{usuario: req.user.id, epoch:{"$gte": epochGte.unix()}, tipoUsuario: req.session.name},
+				{_id:0,tipoMarca:1,epoch:1,dispositivo:1,red:1}
+				).exec(
+				function(error, marcas) {
+					if (error) return res.json(error);
+					Justificaciones.find(
+						{usuario: req.user.id, estado:'Incompleto', tipoUsuario: req.session.name}
+						).exec(function(err, justificaciones) {
+							if (err) return res.json(err);
+							var supervisor = {departamentos: [1]};
+							var arrayMarcas = util.eventosAjuste(marcas, supervisor, "escritorioEmpl");
+							var arrayJust = util.unixTimeToRegularDate(justificaciones, true);
 
-	        //Se busca en la base de datos todas las marcas realizadas por el usuario
-    		//Se busca en la base de datos las marcas del mismo día
-			//console.log(req.user.id);
-			Contenido.find({seccion:"escritorioEmpl"},function(err,contenido){
-				if (err) return res.json(error);
-				Marca.find(
-					{usuario: req.user.id, epoch:{"$gte": epochGte.unix()}, tipoUsuario: req.session.name},
-					{_id:0,tipoMarca:1,epoch:1,dispositivo:1,red:1}
-					).exec(
-					function(error, marcas) {
-						if (error) return res.json(error);
-						Justificaciones.find(
-							{usuario: req.user.id, estado:'Incompleto', tipoUsuario: req.session.name}
-							).exec(function(err, justificaciones) {
-								if (err) return res.json(err);
-								var supervisor = {departamentos: [1]};
-								var arrayMarcas = util.eventosAjuste(marcas, supervisor, "escritorioEmpl");
-								var arrayJust = util.unixTimeToRegularDate(justificaciones, true);
-														
-								//En caso de ser profesor no se pasan las justificaciones
-								if(req.user.tipo.length > 1 && req.session.name == config.empleadoProfesor){
-									arrayJust = new Array();
-								}
-	
-								//Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
-								req.user.tipo = req.session.name;	
-	
-								return res.render('escritorio', {
-									title: 'Escritorio Empleado | SIGUCA',
-									usuario: req.user, 
-									marcas: arrayMarcas,
-									justificaciones : arrayJust,
-									textos:contenido
-								});
+							//En caso de ser profesor no se pasan las justificaciones
+							if(req.user.tipo.length > 1 && req.session.name == config.empleadoProfesor){
+								arrayJust = new Array();
+							}
+
+							//Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
+							req.user.tipo = req.session.name;
+
+							return res.render('escritorio', {
+								title: 'Escritorio Empleado | SIGUCA',
+								usuario: req.user,
+								marcas: arrayMarcas,
+								justificaciones : arrayJust,
+								textos:contenido,
+                                tiempoEsperaRespuesta: 1,
+                                CantidadNotificacionesTeletrabajo: 2
 							});
-						//
-					});
-			});
-	        
-	    	//Buscar las justificaciones que se llamen "Pendiente "
-	    } else {
-	    	req.logout();
-	    	res.redirect('/');
-	    }
-	},
+						}
+					);
+				}
+			);
+		});
+
+		Configuracion.find({nombreUnico:"cantidadAlertasDia"},function(err,configuracion){
+			console.dir(err);
+			console.dir(configuracion.nombre);
+		});
+
+		//Buscar las justificaciones que se llamen "Pendiente "
+	} else {
+		req.logout();
+		res.redirect('/');
+	}
+},
 	escritorioAdmin : function (req, res) {
 		req.user.tipo = req.session.name;
 		if (req.session.name ==="Administrador") {
@@ -221,7 +229,7 @@ module.exports = {
 							});
 						});
 					});
-					
+
 				});
 			});
 		} else {

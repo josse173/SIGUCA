@@ -4,18 +4,20 @@
   div.col-md-6
     div.img-circle
       img.img-responsive(src="/uploads/"+usuario.codTarjeta+".png" border="5" alt="#{textos[0].titulo}")
-      
+
       h3.text-success #{textos[1].titulo}
-      
+      input(type="hidden" id="tiempoEsperaRespuesta" value="#{tiempoEsperaRespuesta}")
+      input(type="hidden" id="CantidadNotificacionesTeletrabajo" value="#{CantidadNotificacionesTeletrabajo}")
+
       table.table-responsive.tableInfo
-        
+
         tbody
           tr
             td
               b #{textos[2].titulo}
             td #{usuario.nombre}
           tr
-            td 
+            td
               b #{textos[3].titulo}
             td #{usuario.apellido1} #{usuario.apellido2}
           tr
@@ -42,10 +44,10 @@
           span.clockHorasTrab
       .marca
         div#contBotones
-          div           
+          div
           button#btn-marca.btn.btn-success(name='marcar', onclick= "changeElemt('marca')", data-toggle="modal" data-target="#addMarca" value=usuario._id) #{textos[10].titulo}
-      
-  
+
+
     h3.text-success #{textos[11].titulo}
     table#tablaMarcas.footable
       thead
@@ -55,24 +57,24 @@
           th(data-sort-ignore="true") #{textos[14].titulo}
           th(data-sort-ignore="true") #{textos[15].titulo}
       tbody.marcasDetalle#marcasBody
-      
+
         each marca, i in marcas
           tr
             td #{marca.tipoMarca}
             td #{marca.fecha}
             if(marca.dispositivo=="Computadora")
-              td 
+              td
                 img(src='/images/compu.png' height="50" width="auto")#CompuLogo
             else
               td
-                img(src='/images/ras.png' height="50" width="auto")#PiLogo   
+                img(src='/images/ras.png' height="50" width="auto")#PiLogo
             if(marca.red=="local")
               td
                 img(src='/images/office.png' height="50" width="auto")#OffieLogo
-            else if(marca.red=="remota")  
+            else if(marca.red=="remota")
               td
                 img(src='/images/home.png' height="50" width="auto")#OffieLogo
-            else  
+            else
               td #{marca.red}
 
     h3.text-success #{textos[16].titulo}
@@ -81,13 +83,13 @@
         div.input-group
           input#date_range_marca.form-control(type='text')
           span.input-group-addon
-            i.icon-calendar     
+            i.icon-calendar
       label.labelFiltro(for='fechaHasta') #{textos[18].titulo}
         div.input-group
           input#date_range_end.form-control(type='text')
           span.input-group-addon
-            i.icon-calendar   
-        button#btnIr.btn-primary.btn #{textos[19].titulo}  
+            i.icon-calendar
+        button#btnIr.btn-primary.btn #{textos[19].titulo}
 
     div
       div.hideDisplay
@@ -96,9 +98,9 @@
             .panel-title Tiempo Total Laborado:
           .panel-body
             button.close#cerrarPanel(type='button') ×
-            .text-center.bigFont.span.qwer  
-      
-              
+            .text-center.bigFont.span.qwer
+
+
 
  .col-xs-4
   if(usuario.tipo == 'Supervisor')
@@ -110,41 +112,41 @@
           |   #{textos[55].titulo}
       li.list-group-item
         a(href='/gestionarEventos/justificaciones')
-          span.badge #{justCount} 
+          span.badge #{justCount}
           |   #{textos[56].titulo}
 
-     
+
 
     h4.headerFont #{textos[57].titulo}
     ul.list-group
       a(href='/justificacionesPendientes')
-        span.badge #{contJust} 
+        span.badge #{contJust}
         |   #{textos[57].titulo}
 
-  h4.headerFont #{textos[20].titulo} 
+  h4.headerFont #{textos[20].titulo}
   ul.list-group
     li.list-group-item
       a(data-toggle="modal" data-target="#horaExtra")#extraLink
-        | #{textos[21].titulo} 
+        | #{textos[21].titulo}
     li.list-group-item
       a(data-toggle="modal" data-target="#permiso")
-        | #{textos[22].titulo} 
+        | #{textos[22].titulo}
     li.list-group-item
       a(data-toggle="modal" data-target="#addJustificacion")
-        | #{textos[23].titulo} 
+        | #{textos[23].titulo}
   br
   .col-xs-12
-    h4 #{textos[24].titulo} 
+    h4 #{textos[24].titulo}
       span.label.label-default #{justificaciones.length}
-    div.justTable.table-responsive      
+    div.justTable.table-responsive
       div.row
         table#tablaJust.footable(data-page-navigation=".pagination" data-page-size="4" )
           thead
             tr
-              th(data-sort-ignore="true" data-type="numeric" ) #{textos[25].titulo} 
-              th(data-sort-ignore="true") #{textos[26].titulo} 
-              th(data-sort-ignore="true" data-type="numeric" ) #{textos[27].titulo} 
-              th #{textos[28].titulo} 
+              th(data-sort-ignore="true" data-type="numeric" ) #{textos[25].titulo}
+              th(data-sort-ignore="true") #{textos[26].titulo}
+              th(data-sort-ignore="true" data-type="numeric" ) #{textos[27].titulo}
+              th #{textos[28].titulo}
           tbody.justDetalle
             each just, i in justificaciones
               tr
@@ -152,13 +154,13 @@
                 td.miClase #{just.fecha.str}
                 td #{just.motivo}
                 td #{just.informacion}
-                td 
+                td
                   button.btn.btn-success(type='button',data-toggle="modal", data-target="#updateJustificacion" ,data-value=just._id ) Justificar
 
           tfoot
             tr
               td(colspan='8')
-                .pagination.pagination-centered.hide-if-no-paging 
+                .pagination.pagination-centered.hide-if-no-paging
 
 #mensajeMarca.modal.fade
     .modal-dialog
@@ -169,23 +171,23 @@
           .modal-body
             #bodyMensaje.well.span4
               label#lblMensajeMarca
-              
+
 #addMarca.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
     .modal-dialog
         .modal-content.fontTransparent
           .modal-header
             button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-            h3#myModalLabel.modal-title #{textos[29].titulo} 
+            h3#myModalLabel.modal-title #{textos[29].titulo}
           .modal-body
             .row.text-center
                 div.col-md-6
-                  button#btnEntrada.btnEntrada.btn.btn-success.btn-lg(style="width: 95%;", value = 'Entrada' ) #{textos[30].titulo} 
+                  button#btnEntrada.btnEntrada.btn.btn-success.btn-lg(style="width: 95%;", value = 'Entrada' ) #{textos[30].titulo}
                 div.col-md-6
-                  button#btnSalida.btnSalida.btn.btn-success.btn-lg(style="width: 95%;", value = 'Salida') #{textos[31].titulo} 
+                  button#btnSalida.btnSalida.btn.btn-success.btn-lg(style="width: 95%;", value = 'Salida') #{textos[31].titulo}
                 div.col-md-6
-                  button#btnSalidaReceso.btnSalidaReceso.btn.btn-warning.btn-lg(style="width: 95%;", value = 'Salida a Receso') #{textos[33].titulo} 
+                  button#btnSalidaReceso.btnSalidaReceso.btn.btn-warning.btn-lg(style="width: 95%;", value = 'Salida a Receso') #{textos[33].titulo}
                 div.col-md-6
-                  button#btnEntradaReceso.btnEntradaReceso.btn.btn-warning.btn-lg(style="width: 95%;", value = 'Entrada de Receso') #{textos[32].titulo} 
+                  button#btnEntradaReceso.btnEntradaReceso.btn.btn-warning.btn-lg(style="width: 95%;", value = 'Entrada de Receso') #{textos[32].titulo}
                 if(usuario.tipo != config.empleadoProfesor)
                   div.col-md-6
                     button#btnSalidaAlmuerzo.btnSalidaAlmuerzo.btn.btn-primary.btn-lg(style="width: 95%;", value = 'Salida al Almuerzo') #{textos[34].titulo}
@@ -218,12 +220,12 @@
                   input#clienteSoli.input-small.form-control(type="text", name='cliente' required )
                 label(for='motivo') #{textos[43].titulo}
                   textarea#motivo.form-control(rows="4" cols="50" name='motivo' required )
-                
-                                             
+
+
               button.btn.btn-success #{textos[44].titulo}
               button#btn-soli-cancelar.btn.btn-default(type='button', data-dismiss='modal') #{textos[45].titulo}
 
- 
+
 #permiso.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true' )
     .modal-dialog
         .modal-content
@@ -259,11 +261,11 @@
               .form-group
                 label(for='detalle') #{textos[52].titulo}
                   textarea#detalle.form-control(rows="4" cols="50" name='detalle' required)
-                                                                   
+
               button#btn-permiso.btn.btn-success #{textos[44].titulo}
               button#btn-permiso-cancelar.btn.btn-default(type='button', data-dismiss='modal') #{textos[45].titulo}
 
-         
+
 #addJustificacion.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
   .modal-dialog
     .modal-content
@@ -285,7 +287,7 @@
           .form-group
               label(for='detalles') #{textos[52].titulo}
               textarea#detalles.form-control(rows="4" cols="50" name='detalle' required)
-                 
+
           button#btn-just.btn.btn-success(type='submit') #{textos[44].titulo}
           button#btn-just-cancelar.btn.btn-default(type='button', data-dismiss='modal') #{textos[45].titulo}
 
@@ -309,8 +311,8 @@
           .form-group
               label(for='detalles') Detalle:
               textarea#detalles.form-control(rows="4" cols="50" required name="detalle")
-              input#identificador.input-small(type="text", name='identificador', required ,  hidden='true') 
-              input#motivoOtroJust.input-small(type="text", name='motivoOtroJust' ,required  , hidden='true')  
+              input#identificador.input-small(type="text", name='identificador', required ,  hidden='true')
+              input#motivoOtroJust.input-small(type="text", name='motivoOtroJust' ,required  , hidden='true')
           button.btn.btn-success(type='submit') Enviar
           button.btn.btn-default(type='button', data-dismiss='modal') Cancelar
 
@@ -343,19 +345,19 @@ input(id='ipOrigen',name='ipOrigen' ,value='', style='display:none')
                     tbody.justDetalle
                       each just, i in justificaciones
                         tr
-                          td 
+                          td
                             input.justificarMasaUsuario(type='checkbox',checked=false, id='justificarMasaUsuario' ,value=just._id+":/"+just.motivo)
-                          td #{just.fecha.str} 
+                          td #{just.fecha.str}
                           td #{just.fechaJust.str}
                           td #{just.motivo}
                           td #{just.informacion}
-                          td 
+                          td
                             button.btn.btn-success(type='button',data-toggle="modal", data-target="#updateJustificacion" ,data-value=just._id ) Justificar
                     tfoot
                       tr
                         td(colspan='8')
-                          .pagination.pagination-centered.hide-if-no-paging 
+                          .pagination.pagination-centered.hide-if-no-paging
 
-                 
-  
-  
+
+
+
