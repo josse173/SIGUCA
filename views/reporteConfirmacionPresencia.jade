@@ -5,6 +5,29 @@ block content
 
     br
     h3 Reporte Confirmación Presencia
+    div.filter
+      td
+        select.form-control.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro")
+          option(value= "todos|reportes") Todos los Usuarios
+          option(value = 1) Soto Rojas Rolando
+          option(value = 2) Mora Coto Carlos
+          option(value = 3) Coto rwer Marco
+          option(value = 4) Mena wer Julio
+      td
+        label.labelFiltro.labFilLeft(for='fechaDesde') Desde
+          div.input-group
+            input#date_range_start.form-control.fondoTransparente(type='text', name='fechaDesde')
+            span.input-group-addon.fondoTransparente-derecha
+              i.icon-calendar
+      td
+        label.labelFiltro(for='fechaHasta') Hasta
+          div.input-group
+            input#date_range_end.form-control.fondoTransparente(type='text', name='fechaHasta')
+            span.input-group-addon.fondoTransparente-derecha
+              i.icon-calendar
+            button.filtro.form-control.btn.btn-success.fondoTransparente(type='submit', name='gestionar') Buscar
+
+
     table.footable.tableContenido(data-page-navigation=".pagination" ,data-page-size="25")
         thead
           tr

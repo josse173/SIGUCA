@@ -461,6 +461,7 @@ module.exports = function(app, io) {
 
         EventosTeletrabajo.findById(req.body.id, function(err, respuesta){
             if (err) console.log(err);
+            console.log(respuesta)
             if(!respuesta.presente){
                 Correo.find({},function(errorCritico,listaCorreos){
                     if(!errorCritico &&listaCorreos.length>0){

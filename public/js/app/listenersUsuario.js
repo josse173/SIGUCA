@@ -12,6 +12,7 @@ $( document ).ready(function() {
     function validarAlertas() {
 
         var fechaActual = new Date();
+        console.log('Hora Actual: ' + fechaActual.getHours() + ':' + fechaActual.getMinutes());
 
         var tiempoRespuesta = document.getElementById("tiempoRespuesta").value;
         var alertas = document.getElementById("alertas").value;
@@ -20,26 +21,16 @@ $( document ).ready(function() {
             var listaAlertas = JSON.parse(alertas);
             var listaAlertasActivas = [];
             listaAlertas.forEach(function(alerta) {
-                console.log('Fecha Alerta: '+alerta.fechaCreacion.toString());
-                console.log('Fecha Alerta Hora: '+new Date(alerta.fechaCreacion).getHours());
-                console.log('Fecha Alerta Minutos: '+new Date(alerta.fechaCreacion).getMinutes());
-                if ( alerta.fechaCreacion <= fechaActual && !alerta.mostrada) {
+                // console.log(alerta);
+                var fechaAlerta = new Date(alerta.fechaCreacion);
+                console.log('Hora Alerta: '+ fechaAlerta.getHours() + ':' + fechaAlerta.getMinutes());
+                if ( fechaAlerta <= fechaActual && !alerta.mostrada) {
 
                     $("#mensajeConfirmacionConexion").modal("show");
 
-                    blinkTab("Confirmación de Conexión");
+                    var intervalId = blinkTab("Confirmación de Conexión");
 
-                    var audio = new Audio('https://www.soundjay.com/button/beep-06.wav');
-                    audio.type = 'audio/wav';
-
-                    var playPromise = audio.play();
-
-                    if (playPromise !== undefined) {
-                        playPromise.then(function () {
-                        }).catch(function (error) {
-                        });
-                    }
-                    setInterval(closeModal, tiempoRespuesta * 60000);
+                    setInterval(closeModal, tiempoRespuesta * 60000, intervalId);
 
                     $.ajax({
                         url: "alertaMostrada",
@@ -61,10 +52,12 @@ $( document ).ready(function() {
         }
     }
 
-    function closeModal(){
+    function closeModal(intervalId){
         $("#mensajeConfirmacionConexion").modal("hide");
 
         setTimeout(validarPresente, 1000);
+
+        clearInterval(intervalId);
     }
 
     function validarPresente() {
@@ -77,13 +70,24 @@ $( document ).ready(function() {
             success: function(data) {},
             error: function(){}
         });
-
     }
 
     var blinkTab = function(message) {
         var oldTitle = document.title,
             timeoutId,
-            blink = function() { document.title = document.title == message ? ' ' : message; },
+            blink = function() {
+                document.title = document.title == message ? ' ' : message;
+                var audio = new Audio('https://www.soundjay.com/button/beep-06.wav');
+                audio.type = 'audio/wav';
+
+                var playPromise = audio.play();
+
+                if (playPromise !== undefined) {
+                    playPromise.then(function () {
+                    }).catch(function (error) {
+                    });
+                }
+            },
             clear = function() {
                 clearInterval(timeoutId);
                 document.title = oldTitle;
@@ -95,6 +99,8 @@ $( document ).ready(function() {
             timeoutId = setInterval(blink, 1000);
             window.onmousemove = clear;
         }
+
+        return timeoutId;
     };
 
     function getIPs(callback){

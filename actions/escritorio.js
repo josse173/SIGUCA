@@ -185,120 +185,135 @@ module.exports = {
 
                                         var fechaActual = new Date();
 
-										console.log(req.user.id);
-
                                         Alerta.find({ $expr: { $and: [ { $eq: [ { $year: "$fechaCreacion" }, fechaActual.getFullYear()] }, {$eq: [{ $month: "$fechaCreacion" }, fechaActual.getMonth()+1]}, {$eq: [{ $dayOfMonth: "$fechaCreacion" }, fechaActual.getDate()] }]} }, function(err, alertas){
                                             if (err) return res.json(err);
-                                            console.log('Alertas: ' + alertas.length);
 
                                             var listaAlertas = [];
-                                            var crearAlerta = true;
+                                            var crearAlertas = true;
 
 											alertas.forEach(function(alerta) {
-												console.log('alerta: ' + alerta);
+												// console.log('alerta: ' + alerta);
 												if(alerta.usuario.toString() === req.user.id.toString()){
-													crearAlerta = false;
+                                                    crearAlertas = false;
 													listaAlertas.push(alerta);
 												}
 											});
 
-                                            if (crearAlerta) {
+                                            if (crearAlertas) {
 
 												var horaEntrada = '';
 												var horaSalida = '';
-
+                                                var minutosEntrada = '';
+                                                var minutosSalida = '';
 
 												if(req.user.horarioFijo){
-
 													HorarioFijo.findOne({_id: req.user.horarioFijo}, function(err, horarioFijo){
 														if (err) return res.json(err);
+														console.log(horarioFijo);
+                                                        console.log(horarioFijo.horaEntrada.split(":")[0]);
+                                                        console.log(horarioFijo.horaSalida.split(":")[0]);
+                                                        console.log(horarioFijo.horaEntrada.split(":")[1]);
+                                                        console.log(horarioFijo.horaSalida.split(":")[1]);
+
+
 														horaEntrada = horarioFijo.horaEntrada.split(":")[0];
 														horaSalida = horarioFijo.horaSalida.split(":")[0];
+                                                        minutosEntrada = horarioFijo.horaEntrada.split(":")[1];
+                                                        minutosSalida = horarioFijo.horaSalida.split(":")[1] === '00' ? '59' : horarioFijo.horaSalida.split(":")[1];
+
+                                                        let i;
+                                                        for (i = 0; i < cantidadAlertas.valor; i++) {
+                                                            listaAlertas.push(crearAlerta(horaEntrada, horaSalida, minutosEntrada, minutosSalida));
+                                                        }
+
+                                                        return retornarRender(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify(listaAlertas), tiempoRespuesta.valor);
+
 													});
 												} else if(req.user.horario){
-
 													Horario.findOne({_id: req.user.horario}, function(err, horario){
 														if (err) return res.json(err);
 														horaEntrada = fechaActual.getHours().toString();
+														console.log("horaEntrada: " + horaEntrada);
 														horaSalida = (fechaActual.getHours() + Number(horario.rangoJornada.split(":")[0])).toString();
+                                                        console.log("horaSalida: " + horaSalida);
+                                                        minutosEntrada = fechaActual.getMinutes().toString();
+                                                        console.log("minutosEntrada: " + minutosEntrada);
+                                                        minutosSalida = '59';
+                                                        console.log("minutosSalida: " + minutosSalida);
+
+                                                        let i;
+                                                        for (i = 0; i < cantidadAlertas.valor; i++) {
+                                                            listaAlertas.push(crearAlerta(horaEntrada, horaSalida, minutosEntrada, minutosSalida));
+                                                        }
+
+                                                        return retornarRender(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify(listaAlertas), tiempoRespuesta.valor);
+
 													});
 												} else if(req.user.horarioEmpleado){
-
 													HorarioPersonalizado.findOne({_id: req.user.horarioEmpleado}, function(err, horarioPersonalizado){
 														if (err) return res.json(err);
-
+                                                        console.log(horarioPersonalizado);
 														switch (fechaActual.getDay()) {
 															case 0:
 																horaEntrada = horarioPersonalizado.domingo.entrada.hora.toString();
 																horaSalida = horarioPersonalizado.domingo.salida.hora.toString();
+                                                                minutosEntrada = horarioPersonalizado.domingo.entrada.minutos.toString();
+                                                                minutosSalida = horarioPersonalizado.domingo.salida.minutos.toString() === '0' ? '59' : horarioPersonalizado.domingo.salida.minutos.toString();
 																break;
 															case 1:
 																horaEntrada = horarioPersonalizado.lunes.entrada.hora.toString();
 																horaSalida = horarioPersonalizado.lunes.salida.hora.toString();
+                                                                minutosEntrada = horarioPersonalizado.lunes.entrada.minutos.toString();
+                                                                minutosSalida = horarioPersonalizado.lunes.salida.minutos.toString() === '0' ? '59' : horarioPersonalizado.lunes.salida.minutos.toString();
 																break;
 															case 2:
 																horaEntrada = horarioPersonalizado.martes.entrada.hora.toString();
 																horaSalida = horarioPersonalizado.martes.salida.hora.toString();
+                                                                minutosEntrada = horarioPersonalizado.martes.entrada.minutos.toString();
+                                                                minutosSalida = horarioPersonalizado.martes.salida.minutos.toString() === '0' ? '59' : horarioPersonalizado.martes.salida.minutos.toString();
 																break;
 															case 3:
 																horaEntrada = horarioPersonalizado.miercoles.entrada.hora.toString();
 																horaSalida = horarioPersonalizado.miercoles.salida.hora.toString();
+                                                                minutosEntrada = horarioPersonalizado.miercoles.entrada.minutos.toString();
+                                                                minutosSalida = horarioPersonalizado.miercoles.salida.minutos.toString() === '0' ? '59' : horarioPersonalizado.miercoles.salida.minutos.toString();
 																break;
 															case 4:
 																horaEntrada = horarioPersonalizado.jueves.entrada.hora.toString();
 																horaSalida = horarioPersonalizado.jueves.salida.hora.toString();
+                                                                minutosEntrada = horarioPersonalizado.jueves.entrada.minutos.toString();
+                                                                minutosSalida = horarioPersonalizado.jueves.salida.minutos.toString() === '0' ? '59' : horarioPersonalizado.jueves.salida.minutos.toString();
 																break;
 															case 5:
 																horaEntrada = horarioPersonalizado.viernes.entrada.hora.toString();
 																horaSalida = horarioPersonalizado.viernes.salida.hora.toString();
+                                                                minutosEntrada = horarioPersonalizado.viernes.entrada.minutos.toString();
+                                                                minutosSalida = horarioPersonalizado.viernes.salida.minutos.toString() === '0' ? '59' : horarioPersonalizado.viernes.salida.minutos.toString();
 																break;
 															case  6:
 																horaEntrada = horarioPersonalizado.sabado.entrada.hora.toString();
 																horaSalida = horarioPersonalizado.sabado.salida.hora.toString();
+                                                                minutosEntrada = horarioPersonalizado.sabado.entrada.minutos.toString();
+                                                                minutosSalida = horarioPersonalizado.sabado.salida.minutos.toString() === '0' ? '59' : horarioPersonalizado.sabado.salida.minutos.toString();
 														}
+
+                                                        let i;
+                                                        for (i = 0; i < cantidadAlertas.valor; i++) {
+                                                            listaAlertas.push(crearAlerta(horaEntrada, horaSalida, minutosEntrada, minutosSalida));
+                                                        }
+
+                                                        return retornarRender(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify(listaAlertas), tiempoRespuesta.valor);
 													});
 												}
 
-                                                let i;
-                                                for (i = 0; i < cantidadAlertas.valor; i++) {
-
-                                                    var alerta = new Alerta({
-                                                        usuario: req.user.id,
-                                                        fechaCreacion: fechaAleatoria(horaEntrada, horaSalida - 1)
-                                                    });
-
-                                                    alerta.save(function (err, alerta) {
-                                                        if (err) console.log(err);
-														console.log(alerta);
-														listaAlertas.push(alerta);
-                                                    });
-                                                }
-
+                                            } else {
+                                                return retornarRender(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify(listaAlertas), tiempoRespuesta.valor );
                                             }
-											console.log('listaAlertas: '+listaAlertas.length);
-
-                                            return res.render('escritorio', {
-                                                title: 'Escritorio Empleado | SIGUCA',
-                                                usuario: req.user,
-                                                marcas: arrayMarcas,
-                                                justificaciones : arrayJust,
-                                                textos:contenido,
-                                                alertas: JSON.stringify(listaAlertas),
-                                                tiempoRespuesta : tiempoRespuesta.valor
-                                            });
                                         });
                                     });
                                 });
                             } else {
-                                return res.render('escritorio', {
-                                    title: 'Escritorio Empleado | SIGUCA',
-                                    usuario: req.user,
-                                    marcas: arrayMarcas,
-                                    justificaciones : arrayJust,
-                                    textos:contenido,
-                                    alertas: listaAlertas.join(),
-                                    tiempoRespuesta : tiempoRespuesta.valor
-                                });
+                                return retornarRender(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify([]), 0);
                             }
 						}
 					);
@@ -312,17 +327,58 @@ module.exports = {
 		res.redirect('/');
 	}
 
-    function fechaAleatoria(horaInicial, horaFinal) {
+    function crearAlerta(horaEntrada, horaSalida, minutosEntrada, minutosSalida) {
+
+        var nuevaAlerta = new Alerta({
+            usuario: req.user.id,
+            fechaCreacion: fechaAleatoria(Number(horaEntrada), Number(horaSalida - 1), Number(minutosEntrada), Number(minutosSalida)),
+            mostrada: false
+        });
+
+        nuevaAlerta.save(function (err, respuesta) {
+            if (err) console.log(err);
+        });
+
+        return nuevaAlerta;
+    }
+
+    function retornarRender(usuario, marcas, justificaciones, textos, alertas, tiempoRespuesta){
+
+        return res.render('escritorio', {
+            title: 'Escritorio Empleado | SIGUCA',
+            usuario: usuario,
+            marcas: marcas,
+            justificaciones: justificaciones,
+            textos: textos,
+            alertas: alertas,
+            tiempoRespuesta: tiempoRespuesta
+        });
+
+    }
+
+    function fechaAleatoria(horaInicial, horaFinal, minutosInicial, minutosfinal) {
+
+        console.log('horaInicial: ' + horaInicial);
+        console.log('horaFinal: ' + horaFinal);
+        console.log('minutosInicial: ' + minutosInicial);
+        console.log('minutosfinal: ' + minutosfinal);
+
         var fecha = new Date();
-        var hora = horaInicial + Math.random() * (horaFinal - horaInicial) | 0;
-		var minutos = Math.random() * (59) | 0;
-		console.log('Año: ' + fecha.getFullYear());
-		console.log('Mes: ' + fecha.getMonth());
-		console.log('Dia: ' + fecha.getDate());
-		console.log('Hora: ' + hora);
-		console.log('Minutos: ' + minutos);
-        fecha.setHours(hora);
-        fecha.setMinutes(minutos);
+        var horaAleatoria = Math.floor(Math.random()*(horaFinal-horaInicial+1)+horaInicial) ;
+		var minutosAleatorio = Math.floor(Math.random() * minutosfinal) + minutosInicial;
+
+        console.log('horaAleatoria: ' + horaAleatoria);
+        console.log('minutosAleatorio: ' + minutosAleatorio);
+
+		fecha.setHours(horaAleatoria);
+        fecha.setMinutes(minutosAleatorio);
+
+        console.log('Año: ' + fecha.getFullYear());
+        console.log('Mes: ' + fecha.getMonth());
+        console.log('Dia: ' + fecha.getDate());
+        console.log('Hora: ' + fecha.getHours());
+        console.log('Minutos: ' + fecha.getMinutes());
+
         return fecha;
     }
 },

@@ -61,7 +61,6 @@ function marca (ipOrigen,tipoUsuario, marca, cb) {
 
 		marca.ipOrigen=ipOrigen;
 		var newMarca = Marca(marca);
-		console.log(newMarca.usuario);
 		Red.find({nombreRed:tempRed},function(err,redes){
 			if(!err &&redes.length>0 ){
 				if(redes.length>0){
@@ -364,27 +363,24 @@ function marca (ipOrigen,tipoUsuario, marca, cb) {
 									"vuelva a intentarlo o contacto con el administrador");
 							});
 
-						if(newMarca.tipoMarca=="Salida al Almuerzo" || newMarca.tipoMarca=="Salida a Receso"){
+						if(newMarca.tipoMarca === "Salida al Almuerzo" || newMarca.tipoMarca === "Salida a Receso"){
 
 							Alerta.find({usuario: marca.usuario}, function (error, alertas) {
 								if(error) console.log(error);
 
 								if(alertas && alertas.length > 0){
 									var fechaActual = new Date();
-
-									fechaActual.setMinutes(fechaActual.getMinutes() - fechaActual.getTimezoneOffset());
 									var fechaActualHoraAdelante = new Date();
 									var fechaActualHoraAdelanteTemp = new Date();
-									fechaActualHoraAdelante.setMinutes(fechaActualHoraAdelante.getMinutes() - fechaActualHoraAdelante.getTimezoneOffset());
+
 									fechaActualHoraAdelante.setMinutes(fechaActualHoraAdelante.getMinutes() + 60);
 									fechaActualHoraAdelanteTemp.setMinutes(fechaActualHoraAdelanteTemp.getMinutes() + 60);
 
 									alertas.forEach(function(alerta) {
-										var fechaAlerta = new Date(alerta.fechaCreacion + 'T' + alerta.hora + 'Z');
 
-										console.log("fechaAlerta " + fechaAlerta);
+										console.log("fechaAlerta: " + alerta.fechaCreacion);
 
-										if ( fechaAlerta >= fechaActual && fechaAlerta <= fechaActualHoraAdelante && !alerta.mostrada) {
+										if ( alerta.fechaCreacion >= fechaActual && alerta.fechaCreacion <= fechaActualHoraAdelante && !alerta.mostrada) {
 											alerta.hora = pad(fechaActualHoraAdelanteTemp.getHours()) + ":" + pad(fechaActualHoraAdelanteTemp.getMinutes()) + ":00";
 											alerta.save(function (err, respuesta) {
 												if (err) console.log(err);
