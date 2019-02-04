@@ -289,8 +289,51 @@ $('#selectFiltro').change(function(){
 });
 
 $('#selectMotivo').change(function (){
+    if($('#selectMotivo').val() != 'Vacaciones')  $("#selectOpcionesDepartamento").attr('style','display:none') &&
+    $("#divPeriodoDescontar").attr('style','display:none'); $("#divDerechoDisfrutarPorPeriodo").attr('style','display:none');
+    $("#divDiasDisfrutadosPorPeriodo").attr('style','display:none') && $("#divTotalDiasDisponibles").attr('style','display:none') &&
+    $("#divDiasSolicitadosVacaciones").attr('style','display:none') && $("#divSaldoDisfrutarVacaciones").attr('style','display:none');
+    if($('#selectMotivo').val() != 'articulo') $("#selectOpcionesArticulo").attr('style','display:none') && $("#divInciso").attr('style','display:none')&&
+    $("#divcantidadDiasDisfrutados").attr('style','display:none') && $("#divcantidadDiasDisponibles").attr('style','display:none') &&
+    $("#divcantidadDiasSolicitados").attr('style','display:none') && $("#divsaldoDiasDisfrutar").attr('style','display:none') &&
+    $("#divanno").attr('style','display:none');
+    if($('#selectMotivo').val() != 'otro') $("#motivoOtro").attr('disabled','disabled') ;
     if($('#selectMotivo').val() == 'otro') $("#motivoOtro").removeAttr('disabled');
-    else $("#motivoOtro").attr('disabled','disabled');
+    else if($('#selectMotivo').val() == 'articulo')  $("#selectOpcionesArticulo").attr('style','display:block');
+    else if($('#selectMotivo').val() == 'Vacaciones')  $("#selectOpcionesDepartamento").attr('style','display:block') &&
+    $("#divPeriodoDescontar").attr('style','display:block') && $("#divDerechoDisfrutarPorPeriodo").attr('style','display:block') &&
+    $("#divDiasDisfrutadosPorPeriodo").attr('style','display:block') && $("#divTotalDiasDisponibles").attr('style','display:block') &&
+    $("#divDiasSolicitadosVacaciones").attr('style','display:block') && $("#divSaldoDisfrutarVacaciones").attr('style','display:block');
+});
+
+$('#selectDerechoDisfrutar').change(function (){
+    if($('#selectDerechoDisfrutar').val() != 'diligencias') $("#divInciso").attr('style','display:none') && $("#divcantidadDiasDisfrutados").attr('style','display:none') &&
+    $("#divcantidadDiasDisponibles").attr('style','display:none') && $("#divcantidadDiasSolicitados").attr('style','display:none') &&
+    $("#divsaldoDiasDisfrutar").attr('style','display:none') && $("#divanno").attr('style','display:none');
+    if($('#selectDerechoDisfrutar').val() == 'matrimonio') $("#selectInciso").val('incisoA') && $("#divInciso").attr('style','display:block');
+    else if($('#selectDerechoDisfrutar').val() == 'fallecimiento') $("#divInciso").attr('style','display:block') && $("#selectInciso").val('incisoA');
+    else if($('#selectDerechoDisfrutar').val() == 'nacimientoHijo') $("#divInciso").attr('style','display:block') && $("#selectInciso").val('incisoB');
+    else if($('#selectDerechoDisfrutar').val() == 'diligencias') { $("#divInciso").attr('style','display:block') && $("#selectInciso").val('incisoC') &&
+    $("#divcantidadDiasDisfrutados").attr('style','display:block') && $("#divcantidadDiasDisponibles").attr('style','display:block') &&
+    $("#divcantidadDiasSolicitados").attr('style','display:block') && $("#divsaldoDiasDisfrutar").attr('style','display:block') &&
+    $("#divanno").attr('style','display:block');
+        var usuario = $('#btn-marca').val();
+        $.get('/solicitud/inciso', {id: usuario}, function( data ) {
+            var cantidad = data.quantity.length;
+            var dias = new Array();
+            data.quantity.forEach(function (objeto, index) {
+                if(objeto.estado == 'Aceptada'){
+                    dias[index] = objeto.diaInicio;
+                }
+            });
+            var diasT = dias.toString();
+            $("#cantidadDiasDisfrutados" ).val(cantidad);
+            $("#saldoDiasDisfrutar" ).val("Dias solicitados:" + diasT);
+            if(cantidad >= 3){
+                $("#cantidadDiasDisponibles" ).val(0);
+            } else  $("#cantidadDiasDisponibles" ).val(3 - cantidad);
+        });
+    }
 });
 
 $('#selectMotivoJust').change(function (){

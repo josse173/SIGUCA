@@ -2,6 +2,7 @@
 
 var mongoose = require('mongoose'),
     Usuario = mongoose.model('Usuario'),
+    Articulo51 	= require('../models/Articulo51'),
     Horario = require('../models/Horario');
 
 Usuario.findOne({ 'tipo' :  'Administrador' }, function (err, user) {
@@ -46,5 +47,13 @@ Usuario.findOne({ 'tipo' :  'Administrador' }, function (err, user) {
             if (err) console.log(err);
             console.log("Se ha creado el usuario administrador por defecto admin:admin");
         });
+
     }
 });//Busca Usuario
+
+//crea articulo
+var newArticulo51 = new Articulo51({
+});
+newArticulo51.save(function (err, art) {
+    if (err) console.log(err);
+});

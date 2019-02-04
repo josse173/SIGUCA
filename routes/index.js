@@ -22,8 +22,8 @@
  var crudUsuario = require('./crudUsuario');
  var crudSolicitud = require('./crudSolicitud');
  var crudJustificaciones = require('./crudJustificaciones');
- 
 
+ var crudPeriodo = require('./crudPeriodo');
  var crudHorario = require('./crudHorario');
  var crudMarca = require('./crudMarca');
  var crudDepartamento = require('./crudDepartamento');
@@ -50,8 +50,11 @@ var HorarioPersonalizado = require('../models/HorarioEmpleado');
 var Departamento = require('../models/Departamento');
 var Justificaciones = require('../models/Justificaciones');
 var Solicitudes = require('../models/Solicitudes');
+var PeriodoVacaciones = require('../models/PeriodoVacaciones');
+var PeriodoSolicitud = require('../models/PeriodoSolicitud');
 var Cierre = require('../models/Cierre');
 var emailSIGUCA = 'siguca@greencore.co.cr';
+var Articulo51 = require('../models/Articulo51');
 
 //***************************************
 //var multer=require('multer');
@@ -295,6 +298,18 @@ module.exports = function(app, io) {
     *  Carga la información de una solicitud tipo hora extra
     */
     app.get('/solicitud/edit/:id', autentificado, solicitud_actions.editar);
+
+    /*
+    *  Carga la información de una solicitud de tipo inciso C
+    */
+    app.get('/solicitud/inciso', autentificado, function (req, res) {
+        Solicitudes.find({usuario: req.user.id, "inciso":"incisoC"}).exec(function (err, quantity) {
+            console.log(quantity);
+            var size = quantity.length;
+            res.json({ quantity});
+
+        });
+    });
 
     /*
     *  Actualiza una solicitud tipo hora extra
@@ -744,7 +759,51 @@ module.exports = function(app, io) {
             res.json(user);
         });
     });
+    //******************************************************************************
+    //Periodos de un usuario
+    /*
+    *  Crea un nuevo periodo
+    */
+    app.post('/periodo', autentificado, function (req, res) {
+        if (req.session.name == "Administrador") {
+            crudPeriodo.addPeriodo(req.body, function() {
+                if (req.session.name == "Administrador"){
+                    res.redirect('/periodo');
+                }
+            });//Busca Usuario
+        } else {
+            req.logout();
+            res.redirect('/');
+        }
+    });
 
+    /*
+    */
+    app.get('/periodo', autentificado, function (req, res) {
+        PeriodoVacaciones.find(req.params.id, function(err, periodos){
+            if(err){
+                return res.jason(err);
+            }else{
+                req.user.tipo = req.session.name;
+
+                return res.render('periodo', {
+                    title: 'Nuevo Periodo | SIGUCA',
+                    periodo:periodos,
+                    usuario:req.user
+                });
+            }
+        });
+    });
+
+    /*
+   *  Modifica el estado de Activo a Inactivo de un periodo en específico
+   */
+    app.get('/periodo/delete/:id', autentificado, function (req, res) {
+        crudPeriodo.deleteUsuario(req.params.id, function (err, msj) {
+            if (err) res.json(err);
+            res.send(msj);
+        });
+    });
 
     //******************************************************************************
     /*

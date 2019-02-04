@@ -552,6 +552,94 @@ $("button[data-target=#editHorarioFijo]").click( function() {
     });
 });
 
+ $("button[data-target=#editPeriodo]").click( function() {
+     var id = $(this).val();
+     $('.formUpdate').attr('action', '/empleado/'+id);
+
+     $.get('/empleado/edit/'+id, function( data ) {
+         if(contador>0){
+
+             $('#estadoEmpleado').find('option').remove();
+             $('#estadoEmpleado').find('option').remove();
+         }else{
+             contador++;
+         }
+
+
+         var x = document.getElementById("estadoEmpleado");
+         var option = document.createElement("option");
+         option.text = data.estado;
+         x.add(option);
+
+         if(data.estado=="Activo"){
+             var x = document.getElementById("estadoEmpleado");
+             var option = document.createElement("option");
+             option.text = "Inactivo";
+             x.add(option);
+
+         }else{
+             var x = document.getElementById("estadoEmpleado");
+             var option = document.createElement("option");
+             option.text = "Activo";
+             x.add(option);
+         }
+
+         //Se crea la fecha
+         if(data.fechaIngreso>0){
+             var fechaIngesoTem = new Date((data.fechaIngreso*1000));
+             var result = fechaIngesoTem.getDate() + "/" + (fechaIngesoTem.getMonth()+1) + "/" + fechaIngesoTem.getFullYear();
+         }else{
+             var result = "";
+         }
+
+         $('#nombre').val(data.nombre);
+         if(data.teleTrabajo=="on"){
+             $('#teleTrabajo').attr("checked",true);
+
+         }else {
+             $('#teleTrabajo').attr("checked",false);
+         }
+
+         $('#cedula').val(data.cedula);
+         $('#apellido1').val(data.apellido1);
+         $('#fechaIngreso').val(result);
+         $('#vacaciones').val(data.vacaciones);
+         $('#apellido2').val(data.apellido2);
+         $('#email').val(data.email);
+         $('#codTarjeta').val(data.codTarjeta);
+         $('#username').val(data.username);
+         $('#selectTipo').selectpicker('val', data.tipo);
+         $('#selectHorario').selectpicker('val', data.horario);
+         $('#selectHorarioFijo').selectpicker('val', data.horarioFijo);
+         $('#HorarioEmpleado').selectpicker('val', data.horarioEmpleado);
+         $('#selectDepartamentos').selectpicker('val', data.horario);
+         $('#idEmpleado').val(data._id);
+         $("#idEmpleado").css('display','none');
+
+         var val = [];
+         for (var i = 0; i < data.departamentos.length; i++) {
+             val.push(data.departamentos[i].departamento);
+         }
+         $('#selectDepartamentos').selectpicker('val', val);
+         $('#selectDepartamentos').selectpicker('refresh');
+         $('#selectHorario').selectpicker('refresh');
+         $('#selectHorarioFijo').selectpicker('refresh');
+         $('#HorarioEmpleado').selectpicker('refresh');
+         $('#selectTipo').selectpicker('refresh');
+         $('#estadoEmpleado').refresh();
+
+     });
+ });
+
+ $('.btnDescargaPdf').click(function(){
+
+     var doc = new jsPDF();
+     doc.autoTable({html: '#solicitudesTable'});
+     doc.save("table.pdf");
+
+     console.log("DESCARGA EL PDF");
+     alertify.dialog('confirm')
+ });
 
  $('.btnCancelar').click(function(){
     $('#selectMotivoJust').val("");
@@ -580,17 +668,57 @@ $("#extraLink").click(function(){
   $('#date_timepicker_end').val("");
   $('#clienteSoli').val("");
 });
-
  $("#btn-permiso").click(function(){
+     var val = $('#selectMotivo').val();
+     var inciso = $('#selectInciso').val();
+     var cantidadDias = $('#cantidadDias').val();
+
+     if(val == 'seleccionar') {
+         alertify.error('Motivo no valido');
+         return false;
+     }else if(val == 'articulo') {
+         if(inciso == 'incisoA'){
+             if(cantidadDias > 5){
+                 alertify.error('No puede ingresar un incisoA debido que la cantidad maxima a solicitar son 5 dias');
+                 return false;
+             }else{
+                 $('.formSoli').attr('action', '/solicitud_permisos/');
+                 $("#btn-permiso").submit();
+             }
+         }else if(inciso =='incisoB'){
+             if(cantidadDias != 1){
+                 alertify.error('No puede ingresar incisoB cantidad maxima a solicitar es 1 dia');
+                 return false;
+             }else{
+                 $('.formSoli').attr('action', '/solicitud_permisos/');
+                 $("#btn-permiso").submit();
+             }
+         }else if(inciso =='incisoC'){
+             if(cantidadDias != 1){
+                 alertify.error('No puede ingresar incisoC cantidad maxima a solicitar es 1 dia');
+                 return false;
+             }else{
+                 $('.formSoli').attr('action', '/solicitud_permisos/');
+                 $("#btn-permiso").submit();
+             }
+         }
+     }else {
+         $('.formSoli').attr('action', '/solicitud_permisos/');
+         $("#btn-permiso").submit();
+     }
+ });
+
+ /*$("#btn-permiso").click(function(){
     var val = $('#selectMotivo').val();
+    var inciso = $('#selectDerechoDisfrutar').val();
     if(val == 'seleccionar') {
         alertify.error('Motivo no valido');
         return false;
-    } else {
+    }else {
         $('.formSoli').attr('action', '/solicitud_permisos/');
         $("#btn-permiso").submit();
     }
-});
+});*/
 
  $("#btn-permiso-cancelar").click(function(){
        $("#diaInicio").val("");
@@ -599,6 +727,7 @@ $("#extraLink").click(function(){
        $("#cantidadDias").val("");  
        $("#motivoOtro ").val("");
        $("#detalle").val("");
+       //$("#selectDerechoDisfrutar").val("seleccionar");
  });
 
  $("#btn-just").click(function(){

@@ -1,0 +1,86 @@
+
+extends layout
+
+block content
+  .container
+    
+    br
+    h3 Lista de feriados
+    button.btn.btn-success(type='button',data-toggle="modal" data-target="#crearPeriodo") Crear Nuevo Periodo
+    table.footable.tableFeriado
+        thead
+          tr
+            th Nombre
+            th Numero del Periodo
+            th Cantidad de Dias Restantes
+            th Dias Disfrutados
+            th Periodo Completado
+            th(data-hide="phone,small" data-sort-ignore="true") Editar
+            th(data-hide="phone,small" data-sort-ignore="true") Eliminar
+            
+        tbody 
+          each periodoCurrent, i in periodo
+            tr
+              td #{periodoCurrent.nombrePeriodo}
+              td #{periodoCurrent.numeroPeriodo}
+              td #{periodoCurrent.cantidadDiasRestantes}
+              td #{periodoCurrent.diasDisfrutados}
+              td #{periodoCurrent.periodoCompletado}
+              td
+                button.btn.btn-default(data-toggle="modal" data-target="#editFeriado" value=periodoCurrent.usuario)
+                  i.icon-pencil.icon-large.i-success
+
+              td
+                button.feriadoDelete.btn.btn-default(value=periodoCurrent.nombrePeriodo+','+periodoCurrent.usuario)
+                  i.icon-trash.icon-large.i-danger
+    
+     #editFeriado.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+      .modal-dialog
+          .modal-content
+            .modal-header
+              button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+              h4#myModalLabel.modal-title Actualizar Periodo
+            .modal-body
+              form.formUpdateFeriado(action='/feriadoUpdate', method='post')#login-form.well.span4
+                .form-group
+                  label(for='nombre' style="float:left") Nombre del feriado:
+                  input#nombreFeriado.form-control( type="text", name="nombreFeriado")      
+
+                  label.labelFiltro(for='fecha') Fecha:
+                  div.input-group
+                    input#date_range_end.form-control.epoch(type='text', name='epoch')
+                    span.input-group-addon
+                      i.icon-calendar 
+               
+                button.btn.btn-success(type='submit') Actualizar
+                alertify.myAlert("Browser dialogs made easy!")
+                button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
+
+     #crearPeriodo.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+       .modal-dialog
+         .modal-content
+           .modal-header
+             button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+             h4#myModalLabel.modal-title Crear Periodo
+           .modal-body
+             form#agregarPeriodoFormulario(role='form', method="POST", action="/periodo")
+               .form-group
+                  h3 Información Básica
+                  label(for='nombrePeriodo') Nombre del Periodo:
+                    input#nombrePeriodo.form-control(type= 'text', name= 'nombrePeriodo')
+                  label(for='numeroPeriodo') Numero del Periodo:
+                    input#numeroPeriodo.form-control(type= 'text', readonly="readonly", name='numeroPeriodo')
+               .form-group
+                  label(for='diasDisfrutados') Dias Disfrutados:
+                    input#diasDisfrutados.form-control(type= 'text', name= 'diasDisfrutados')
+                  label(for='cantidadDiasRestantes') Cantidad de Dias Restantes:
+                    input#cantidadDiasRestantes.form-control(type= 'text', name='cantidadDiasRestantes')
+                  label(for='periodoCompletado') Status :
+                    input#periodoCompletado.form-control(type= 'text', name='periodoCompletado')
+               button.btn.btn-success(type='submit') Crear
+               button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
+
+
+
+block sigucaJS
+  

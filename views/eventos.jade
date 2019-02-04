@@ -150,20 +150,20 @@ block content
       if(permisos.length != 0)
         br
         h3 #{textos[27].titulo}
-      
-        table.footable(data-page-navigation=".pagination")
+
+        table#solicitudesTable.footable(data-page-navigation=".pagination")
             thead
               tr
                 th(data-type="numeric" data-sort-initial="descending") #{textos[28].titulo}
                 th #{textos[29].titulo}
                 th #{textos[30].titulo}
-                th(data-hide="phone,small,medium") #{textos[31].titulo}
+                //th(data-hide="phone,small,medium") #{textos[31].titulo}
                 th(data-hide="phone,small,medium") #{textos[32].titulo}
                 th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[33].titulo}
                 th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[34].titulo}
                 th #{textos[35].titulo}
                 th(data-hide="phone,small" data-sort-ignore="true") #{textos[36].titulo}
-            tbody 
+            tbody
               each permiso, i in permisos
                 tr
                   td(data-value=permiso.fechaCreada) #{permiso.fecha.str} 
@@ -182,9 +182,10 @@ block content
               tr
                 td(colspan='9')
                   .pagination.pagination-centered.hide-if-no-paging
-    
+              button.btnDescargaPdf.btn.btn-default(type='button', data-dismiss='modal')  Descargar pdf
 
-    #editJust.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+
+  #editJust.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
       .modal-dialog
         .modal-content
           .modal-header
