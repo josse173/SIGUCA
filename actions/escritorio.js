@@ -17,6 +17,7 @@ var config 			= require('../config');
 var HorarioFijo = require('../models/HorarioFijo');
 var HorarioPersonalizado = require('../models/HorarioEmpleado');
 var Configuracion = require('../models/Configuracion');
+var Alerta = require('../models/Alerta');
 
 module.exports = {
 	escritorio : function (req, res) {
@@ -162,36 +163,147 @@ module.exports = {
 						{usuario: req.user.id, estado:'Incompleto', tipoUsuario: req.session.name}
 						).exec(function(err, justificaciones) {
 							if (err) return res.json(err);
-							var supervisor = {departamentos: [1]};
-							var arrayMarcas = util.eventosAjuste(marcas, supervisor, "escritorioEmpl");
-							var arrayJust = util.unixTimeToRegularDate(justificaciones, true);
 
-							//En caso de ser profesor no se pasan las justificaciones
-							if(req.user.tipo.length > 1 && req.session.name == config.empleadoProfesor){
-								arrayJust = new Array();
-							}
+                            var supervisor = {departamentos: [1]};
+                            var arrayMarcas = util.eventosAjuste(marcas, supervisor, "escritorioEmpl");
+                            var arrayJust = util.unixTimeToRegularDate(justificaciones, true);
 
-							//Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
-							req.user.tipo = req.session.name;
+                            //En caso de ser profesor no se pasan las justificaciones
+                            if(req.user.tipo.length > 1 && req.session.name == config.empleadoProfesor){
+                                arrayJust = new Array();
+                            }
 
-							return res.render('escritorio', {
-								title: 'Escritorio Empleado | SIGUCA',
-								usuario: req.user,
-								marcas: arrayMarcas,
-								justificaciones : arrayJust,
-								textos:contenido,
-                                tiempoEsperaRespuesta: 1,
-                                CantidadNotificacionesTeletrabajo: 2
-							});
+                            //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
+                            req.user.tipo = req.session.name;
+
+							if(req.user.teleTrabajo && req.user.teleTrabajo === 'on'){
+
+                                Configuracion.findOne({nombreUnico:"cantidadAlertas"}, function(err,cantidadAlertas){
+                                    if (err) return res.json(err);
+                                    Configuracion.findOne({nombreUnico:"tiempoRespuesta"}, function(err,tiempoRespuesta){
+                                        if (err) return res.json(err);
+
+                                        var fechaActual = new Date();
+
+										console.log(req.user.id);
+
+                                        Alerta.find({ $expr: { $and: [ { $eq: [ { $year: "$fechaCreacion" }, fechaActual.getFullYear()] }, {$eq: [{ $month: "$fechaCreacion" }, fechaActual.getMonth()+1]}, {$eq: [{ $dayOfMonth: "$fechaCreacion" }, fechaActual.getDate()] }]} }, function(err, alertas){
+                                            if (err) return res.json(err);
+                                            console.log('Alertas: ' + alertas.length);
+
+                                            var listaAlertas = [];
+                                            var crearAlerta = true;
+
+											alertas.forEach(function(alerta) {
+												console.log('alerta: ' + alerta);
+												if(alerta.usuario.toString() === req.user.id.toString()){
+													crearAlerta = false;
+													listaAlertas.push(alerta);
+												}
+											});
+
+                                            if (crearAlerta) {
+
+												var horaEntrada = '';
+												var horaSalida = '';
+
+
+												if(req.user.horarioFijo){
+
+													HorarioFijo.findOne({_id: req.user.horarioFijo}, function(err, horarioFijo){
+														if (err) return res.json(err);
+														horaEntrada = horarioFijo.horaEntrada.split(":")[0];
+														horaSalida = horarioFijo.horaSalida.split(":")[0];
+													});
+												} else if(req.user.horario){
+
+													Horario.findOne({_id: req.user.horario}, function(err, horario){
+														if (err) return res.json(err);
+														horaEntrada = fechaActual.getHours().toString();
+														horaSalida = (fechaActual.getHours() + Number(horario.rangoJornada.split(":")[0])).toString();
+													});
+												} else if(req.user.horarioEmpleado){
+
+													HorarioPersonalizado.findOne({_id: req.user.horarioEmpleado}, function(err, horarioPersonalizado){
+														if (err) return res.json(err);
+
+														switch (fechaActual.getDay()) {
+															case 0:
+																horaEntrada = horarioPersonalizado.domingo.entrada.hora.toString();
+																horaSalida = horarioPersonalizado.domingo.salida.hora.toString();
+																break;
+															case 1:
+																horaEntrada = horarioPersonalizado.lunes.entrada.hora.toString();
+																horaSalida = horarioPersonalizado.lunes.salida.hora.toString();
+																break;
+															case 2:
+																horaEntrada = horarioPersonalizado.martes.entrada.hora.toString();
+																horaSalida = horarioPersonalizado.martes.salida.hora.toString();
+																break;
+															case 3:
+																horaEntrada = horarioPersonalizado.miercoles.entrada.hora.toString();
+																horaSalida = horarioPersonalizado.miercoles.salida.hora.toString();
+																break;
+															case 4:
+																horaEntrada = horarioPersonalizado.jueves.entrada.hora.toString();
+																horaSalida = horarioPersonalizado.jueves.salida.hora.toString();
+																break;
+															case 5:
+																horaEntrada = horarioPersonalizado.viernes.entrada.hora.toString();
+																horaSalida = horarioPersonalizado.viernes.salida.hora.toString();
+																break;
+															case  6:
+																horaEntrada = horarioPersonalizado.sabado.entrada.hora.toString();
+																horaSalida = horarioPersonalizado.sabado.salida.hora.toString();
+														}
+													});
+												}
+
+                                                let i;
+                                                for (i = 0; i < cantidadAlertas.valor; i++) {
+
+                                                    var alerta = new Alerta({
+                                                        usuario: req.user.id,
+                                                        fechaCreacion: fechaAleatoria(horaEntrada, horaSalida - 1)
+                                                    });
+
+                                                    alerta.save(function (err, alerta) {
+                                                        if (err) console.log(err);
+														console.log(alerta);
+														listaAlertas.push(alerta);
+                                                    });
+                                                }
+
+                                            }
+											console.log('listaAlertas: '+listaAlertas.length);
+
+                                            return res.render('escritorio', {
+                                                title: 'Escritorio Empleado | SIGUCA',
+                                                usuario: req.user,
+                                                marcas: arrayMarcas,
+                                                justificaciones : arrayJust,
+                                                textos:contenido,
+                                                alertas: JSON.stringify(listaAlertas),
+                                                tiempoRespuesta : tiempoRespuesta.valor
+                                            });
+                                        });
+                                    });
+                                });
+                            } else {
+                                return res.render('escritorio', {
+                                    title: 'Escritorio Empleado | SIGUCA',
+                                    usuario: req.user,
+                                    marcas: arrayMarcas,
+                                    justificaciones : arrayJust,
+                                    textos:contenido,
+                                    alertas: listaAlertas.join(),
+                                    tiempoRespuesta : tiempoRespuesta.valor
+                                });
+                            }
 						}
 					);
 				}
 			);
-		});
-
-		Configuracion.find({nombreUnico:"cantidadAlertasDia"},function(err,configuracion){
-			console.dir(err);
-			console.dir(configuracion.nombre);
 		});
 
 		//Buscar las justificaciones que se llamen "Pendiente "
@@ -199,6 +311,20 @@ module.exports = {
 		req.logout();
 		res.redirect('/');
 	}
+
+    function fechaAleatoria(horaInicial, horaFinal) {
+        var fecha = new Date();
+        var hora = horaInicial + Math.random() * (horaFinal - horaInicial) | 0;
+		var minutos = Math.random() * (59) | 0;
+		console.log('Año: ' + fecha.getFullYear());
+		console.log('Mes: ' + fecha.getMonth());
+		console.log('Dia: ' + fecha.getDate());
+		console.log('Hora: ' + hora);
+		console.log('Minutos: ' + minutos);
+        fecha.setHours(hora);
+        fecha.setMinutes(minutos);
+        return fecha;
+    }
 },
 	escritorioAdmin : function (req, res) {
 		req.user.tipo = req.session.name;

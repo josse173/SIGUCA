@@ -6,8 +6,8 @@
       img.img-responsive(src="/uploads/"+usuario.codTarjeta+".png" border="5" alt="#{textos[0].titulo}")
 
       h3.text-success #{textos[1].titulo}
-      input(type="hidden" id="tiempoEsperaRespuesta" value="#{tiempoEsperaRespuesta}")
-      input(type="hidden" id="CantidadNotificacionesTeletrabajo" value="#{CantidadNotificacionesTeletrabajo}")
+      input(type="hidden" id="tiempoRespuesta" value="#{tiempoRespuesta}")
+      input(type="hidden" id="alertas" value="#{alertas}")
 
       table.table-responsive.tableInfo
 
@@ -115,8 +115,6 @@
           span.badge #{justCount}
           |   #{textos[56].titulo}
 
-
-
     h4.headerFont #{textos[57].titulo}
     ul.list-group
       a(href='/justificacionesPendientes')
@@ -171,6 +169,18 @@
           .modal-body
             #bodyMensaje.well.span4
               label#lblMensajeMarca
+
+#mensajeConfirmacionConexion.modal.fade
+  .modal-dialog
+    .modal-content
+      .modal-header
+        button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+        h3#myModalLabel.modal-title Confirmación de Conexión
+      .modal-body
+        .row.text-center
+          div.col-md-12
+            button#btnPresente.btnPresente.btn.btn-success.btn-lg(style="width: 95%;", value = 'Presente' ) Presente
+            input(type="hidden" id="idEventoTeletrabajo" value="")
 
 #addMarca.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
     .modal-dialog

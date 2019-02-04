@@ -54,6 +54,8 @@ var Solicitudes = require('../models/Solicitudes');
 var Cierre = require('../models/Cierre');
 var emailSIGUCA = 'siguca@greencore.co.cr';
 var Configuracion = require('../models/Configuracion');
+var Alerta = require('../models/Alerta');
+var EventosTeletrabajo = require('../models/EventosTeletrabajo');
 
 //***************************************
 //var multer=require('multer');
@@ -272,14 +274,7 @@ module.exports = function(app, io) {
             }
             res.json({result:"Empleado"});
         }
-
-
-
-
     });
-
-
-
 
     /*
     *  El supervisor elimina una justificación y se le envia un correo al dueño de la justificación
@@ -338,10 +333,6 @@ module.exports = function(app, io) {
         res.json({});
 
     });
-
-
-
-
 
     /*
     *  Actualiza una solicitud tipo permiso anticipado
@@ -402,6 +393,92 @@ module.exports = function(app, io) {
             function(msj, msjJust){
                 res.json({result:msj, justificacion:msjJust});
             });
+    });
+
+    app.post('/alertaMostrada', autentificado, function (req, res) {
+
+        var alertaActualizada = {
+            mostrada : true
+        };
+
+        Alerta.findByIdAndUpdate(req.body.id, alertaActualizada, function(err, alerta){
+            if (err) console.log(err);
+        });
+
+        Usuario.findOne({ _id: req.body.usuario }, function (error, usuario) {
+            if(error) console.log(error);
+            if (usuario){
+
+                Correo.find({},function(errorCritico, listaCorreos){
+                    if (!errorCritico && listaCorreos.length > 0 ) {
+                        var transporter = nodemailer.createTransport('smtps://'+listaCorreos[0].nombreCorreo+':'+listaCorreos[0].password+'@'+listaCorreos[0].dominioCorreo);
+                        transporter.sendMail({
+                            from: listaCorreos[0].nombreCorreo,
+                            to: usuario.email,
+                            subject: 'Alerta de Validación de Presencia',
+                            text: "Estimado(a) funcionario:<br> Usted ha recibido una alerta de validación de presencia en SIGUCA: <br><br>"+
+                                "Se le recuerda que debe atender esta solicitud en los proximos " + tiempoEspera + "minutos. Haga clic en el siguiente enlace para ir al sitio:<br><br>" +
+                                "URL<br><br>" +
+                                "Atentamente,<br><br>" +
+                                "Recursos Humanos"
+                        });
+                    } else {
+                        console.log("error al enviar correo de solicitud de confirmación de conexión");
+                    }
+                });
+
+                var nombreUsuario = usuario.nombre + ' ' + usuario.apellido1 + ' ' + usuario.apellido2;
+
+                var eventosTeletrabajo = new EventosTeletrabajo({
+                    usuario: req.body.usuario,
+                    nombreUsuario: nombreUsuario
+                });
+
+                eventosTeletrabajo.save(function (err, respuesta) {
+                    if (err) console.log(err);
+                    res.json({id: respuesta._id});
+                });
+            }
+        });
+    });
+
+    app.post('/presente', autentificado, function (req, res) {
+
+        var fechaActual = new Date();
+        var eventosTeletrabajo = {
+            presente : true,
+            fechaAceptacion: fechaActual
+        };
+
+        EventosTeletrabajo.findByIdAndUpdate(req.body.id, eventosTeletrabajo, function(err, respuesta){
+            if (err) console.log(err);
+        });
+
+        res.json({result:"ok"});
+    });
+
+    app.post('/validarPresente', autentificado, function (req, res) {
+
+        EventosTeletrabajo.findById(req.body.id, function(err, respuesta){
+            if (err) console.log(err);
+            if(!respuesta.presente){
+                Correo.find({},function(errorCritico,listaCorreos){
+                    if(!errorCritico &&listaCorreos.length>0){
+                        var transporter = nodemailer.createTransport('smtps://'+listaCorreos[0].nombreCorreo+':'+listaCorreos[0].password+'@'+listaCorreos[0].dominioCorreo);
+                        transporter.sendMail({
+                            from: listaCorreos[0].nombreCorreo,
+                            to: 'rsoto07@gmail.com',
+                            subject: 'Se ha solicitado una confirmación de conexión',
+                            text: " Estimado(a) usuario se le ha solicitado una confirmación de conexión"
+                        });
+                    }else{
+                        console.log("error al enviar correo de solicitud de confirmación de conexión");
+                    }
+                });
+            }
+        });
+
+        res.json({result:"ok"});
     });
 
     //check de marcas de usuario
@@ -1312,6 +1389,24 @@ module.exports = function(app, io) {
                     title: 'Nuevo Contenido | SIGUCA',
                     configuraciones:configuraciones,
                     usuario:req.user
+                });
+            }
+        });
+    });
+
+    app.get('/reporteConfirmacionPresencia',autentificado,function(req,res){
+        EventosTeletrabajo.find(function(err,eventosTeletrabajo){
+            if (err) {
+                return res.jason(err);
+            } else {
+
+                req.user.tipo = req.session.name;
+
+                return res.render('reporteConfirmacionPresencia', {
+                    title: 'Reporte Confirmación Presencia | SIGUCA',
+                    eventosTeletrabajo: eventosTeletrabajo,
+                    usuario:req.user,
+                    moment: require( 'moment' )
                 });
             }
         });

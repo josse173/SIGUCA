@@ -1,0 +1,23 @@
+extends layout
+
+block content
+  .container
+
+    br
+    h3 Reporte Confirmación Presencia
+    table.footable.tableContenido(data-page-navigation=".pagination" ,data-page-size="25")
+        thead
+          tr
+            th Usuario
+            th Fecha de la alerta
+            th Fecha Aceptación
+            th Presente
+
+        tbody
+          each eventoTeletrabajo, i in eventosTeletrabajo
+            tr
+              td #{eventoTeletrabajo.nombreUsuario}
+              td #{moment(eventoTeletrabajo.fecha).format("YYYY-MM-DD hh:mm:ss")}
+              td #{moment(eventoTeletrabajo.fechaAceptacion).format("YYYY-MM-DD hh:mm:ss")}
+              td #{eventoTeletrabajo.presente ? 'Si' : 'No'}
+block sigucaJS

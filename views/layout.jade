@@ -20,7 +20,7 @@ html
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
 
     //Style sheets used
-    <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet"> 
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
     link(rel='stylesheet' href='/stylesheets/font-awesome.min.css')
     link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
     link(rel='stylesheet', href='/stylesheets/bootstrap-theme.min.css')
@@ -36,20 +36,20 @@ html
     link(rel='stylesheet', href='/stylesheets/bootstrap-datepicker.min.css')
     link(rel='stylesheet', href='/stylesheets/bootstrap-timepicker.min.css')
     link(rel='stylesheet', href='/stylesheets/sigucaFont.css')
- 
- 
+
+
     title SIGUCA
 
     block sigucaCSS
-    
-    
+
+
   .container-fluid
     // Brand and toggle get grouped for better mobile display
 
-   //- Extend block sigucaNavbarItems in external views to add Navigation Elements to Navbar 
+   //- Extend block sigucaNavbarItems in external views to add Navigation Elements to Navbar
    //- Agregue a este bloque elementos de la barra de navegación en páginas internas
 
- 
+
   body
     nav.navbar-nav.navbar-default.navbar-fixed-top.mainT(role='navigation')
       .navbar-header.mainT
@@ -91,9 +91,9 @@ html
 
                     li
                       div.dropdown
-                        button.btn.dropdown-toggle.text-primary.father-1.dropMain(type='button',data-toggle="dropdown") 
+                        button.btn.dropdown-toggle.text-primary.father-1.dropMain(type='button',data-toggle="dropdown")
                           i.icon-edit.icon-large
-                            |&nbsp;Reportes 
+                            |&nbsp;Reportes
                           span.caret
                         ul.dropdown-menu
                           li
@@ -106,29 +106,31 @@ html
                             a.activeControl.son-1(href="/reportes/extras") Solicitudes
                           li
                             a.activeControl.son-1(href="/reportes/vacaciones") Vacaciones
-                          li 
+                          li
                             a.activeControl.son-1(href="/reportes/Feriados") Feriados
+                          li
+                            a.activeControl.son-1(href="/reporteConfirmacionPresencia") Confirmación de Presencia
                   if(usuario.tipo == 'Supervisor' || usuario.tipo == 'Empleado' || usuario.tipo == config.empleadoProfesor)
                     li
                       a.activeControl(href="/eventos")
-                        i.icon-book.icon-large  
-                        |&nbsp;Mis Eventos 
+                        i.icon-book.icon-large
+                        |&nbsp;Mis Eventos
                   li
                     a.activeControl(href="/configuracion")
                       i.icon-cog.icon-large
                       |&nbsp;Configuración
                   li
                     a.activeControl(href='/Ayuda')
-                      i.icon-question-sign.icon-large     
-                      |&nbsp;Acerca de SIGUCA  
+                      i.icon-question-sign.icon-large
+                      |&nbsp;Acerca de SIGUCA
                   li
                     a.activeControl(href='/logout')
-                      i.icon-off.icon-large     
-                      |&nbsp;Cerrar Sessión 
-                      
+                      i.icon-off.icon-large
+                      |&nbsp;Cerrar Sessión
+
     footer
       div.footerStyle
-        p.text-center GreenCore Solutions SRL, San José, Costa Rica.          
+        p.text-center GreenCore Solutions SRL, San José, Costa Rica.
           img(src='/images/logo-greencore.png',  href="/Ayuda")#sigucaLogo
           img(src='/images/logo-siguca.png',  href="/Ayuda")#sigucaLogo
     block content
@@ -136,14 +138,14 @@ html
     script(src="https://code.jquery.com/jquery-1.12.3.js")
     script(src="/js/components/jquery-2.0.3.min.js")
     script(src="/js/components/bootstrap.min.js")
-    script(src='/js/components/respond-min.js')  
+    script(src='/js/components/respond-min.js')
     script(src="/js/components/bootstrap-datepicker.min.js")
     script(src="/js/components/bootstrap-timepicker.min.js")
     script(src="/js/components/bootstrap-select.min.js")
     script(src="/js/components/footable.js")
-    script(src="/js/components/footable.paginate.min.js") 
-    script(src="/js/components/footable.sort.min.js") 
-    script(src="/js/components/footable.filter.min.js") 
+    script(src="/js/components/footable.paginate.min.js")
+    script(src="/js/components/footable.sort.min.js")
+    script(src="/js/components/footable.filter.min.js")
     script(src="/js/components/alertify.min.js")
     script(src="/js/components/jquery.datetimepicker.js")
     script(src="/js/components/moment.min.js")
@@ -160,7 +162,7 @@ html
     script(src="/js/components/jquery.validate.min.js")
     script(src="https://unpkg.com/jspdf")
     script(src="https://unpkg.com/jspdf-autotable")
-    
+
     //-Controla cual o cuales opciones del menú deberían estar activas
     script(src="/js/app/mainActive.js")
     block sigucaJS

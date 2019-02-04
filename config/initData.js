@@ -52,29 +52,29 @@ Usuario.findOne({ 'tipo' :  'Administrador' }, function (err, user) {
     }
 });//Busca Usuario
 
-Configuracion.findOne({ 'nombreUnico' :  'cantidadAlertasDia' }, function (err, configuracion) {
+Configuracion.findOne({ nombreUnico :  'cantidadAlertas' }, function (err, configuracion) {
     if (!configuracion) {
         var configuracionCantidadAlertas = new Configuracion({
-            nombreUnico: 'cantidadAlertasDia',
+            nombreUnico: 'cantidadAlertas',
             nombre: 'Cantidad Alertas por día',
-            valor: 3
+            valor: 2
         });
 
-        configuracionCantidadAlertas.save(function (err, configuracionCantidadAlertas) {
+        configuracionCantidadAlertas.save(function (err, respuesta) {
             if (err) console.log(err);
         });
     }
 });
 
-Configuracion.findOne({ 'nombreUnico' :  'cantidadAlertasDia' }, function (err, configuracion) {
+Configuracion.findOne({ nombreUnico :  'tiempoRespuesta' }, function (err, configuracion) {
     if (!configuracion) {
         var configuracionMinutosRespuesta = new Configuracion({
-            nombreUnico: 'MinutosRespuesta',
-            nombre: 'Minutos Respuesta',
-            valor: 10
+            nombreUnico: 'tiempoRespuesta',
+            nombre: 'Tiempo Respuesta en minutos',
+            valor: 1
         });
 
-        configuracionMinutosRespuesta.save(function (err, configuracionMinutosRespuesta) {
+        configuracionMinutosRespuesta.save(function (err, respuesta) {
             if (err) console.log(err);
         });
     }

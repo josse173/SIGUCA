@@ -4,10 +4,11 @@ moment 				= require('moment'),
 Usuario 			= require('../models/Usuario'),
 cierre 				= require('../actions/tareas.js'),
 Marca 				= require('../models/Marca'),
-Usuario 				= require('../models/Usuario'),
+Usuario 			= require('../models/Usuario'),
 Horario 			= require('../models/Horario'),
-Red 			= require('../models/Red'),
+Red 			    = require('../models/Red'),
 HorarioFijo 		= require('../models/HorarioFijo'),
+Alerta             = require('../models/Alerta'),
 util 				= require('../util/util'),
 crudHorario 		= require('./crudHorario'),
 crud 				= require('./crud'),
@@ -20,7 +21,7 @@ var contador=0;
 //		Métodos Marcas
 //---------------------------------------------------------------------
 exports.addMarca = function(ipOrigen,tipoUsuario,m, cb){
-	
+
 	marca(ipOrigen,tipoUsuario, m, cb);
 }
 
@@ -35,7 +36,7 @@ function saveMarca(m, cb, msg){
 }
 
 function marca (ipOrigen,tipoUsuario, marca, cb) {
-	
+
 	if(marca.tipoMarca != 'error') {
 		var date = moment(),
 		epochTime = date.unix(),
@@ -45,7 +46,7 @@ function marca (ipOrigen,tipoUsuario, marca, cb) {
 		if(!marca.dispositivo){
 			marca.dispositivo="Computadora";
 		}
-		
+
 		var arrayOrigen=ipOrigen.split(".");
 		var tempRed;
 		if(arrayOrigen.length>=3){
@@ -55,7 +56,7 @@ function marca (ipOrigen,tipoUsuario, marca, cb) {
 				else
 				tempRed=tempRed+"."+arrayOrigen[i];
 			}
-		
+
 		}
 
 		marca.ipOrigen=ipOrigen;
@@ -71,12 +72,12 @@ function marca (ipOrigen,tipoUsuario, marca, cb) {
 			}else if(marca.ipOrigen==""){
 				newMarca.red="Desconocida";
 			}
-		
-			
+
+
 		if(newMarca.red=="local"){
 			Marca.find(
 				{
-					epoch:{'$gte': epochTimeGte, '$lte': epochTimeLte}, 
+					epoch:{'$gte': epochTimeGte, '$lte': epochTimeLte},
 					usuario: newMarca.usuario,
 					tipoUsuario: tipoUsuario
 				}).sort({epoch: 1}).exec(function (err, marcas){
@@ -109,10 +110,10 @@ function marca (ipOrigen,tipoUsuario, marca, cb) {
 									saveMarca(newMarca,cb,msg);
 									cierre.ejecutarCierrePorUsuarioAlMarcarSalida(tipoUsuario,newMarca.usuario);
 									//cierre.ejecutarCierre();
-								
+
 								});
-							
-							
+
+
 							return msgTem;
 						}
 						else cb("La marca de salida no fue registrada, ya que fue registrada anteriormente,"+
@@ -191,7 +192,7 @@ function marca (ipOrigen,tipoUsuario, marca, cb) {
 					else if(newMarca.tipoMarca=="Entrada a extras"){
 						if(
 							(marcas.entrada && marcas.salida) ||
-							(!marcas.entrada && !marcas.salida) 
+							(!marcas.entrada && !marcas.salida)
 							){
 								//
 							return saveMarca(newMarca,cb);
@@ -203,7 +204,7 @@ function marca (ipOrigen,tipoUsuario, marca, cb) {
 					else if(newMarca.tipoMarca=="Salida de extras"){
 						if(
 							(marcas.entrada && marcas.salida) ||
-							(!marcas.entrada && !marcas.salida) 
+							(!marcas.entrada && !marcas.salida)
 							){
 								//Falta validar que se haya entrado a las horas extras primero
 								//
@@ -222,7 +223,7 @@ function marca (ipOrigen,tipoUsuario, marca, cb) {
 					if(empleado.teleTrabajo=="on"){
 						Marca.find(
 							{
-								epoch:{'$gte': epochTimeGte, '$lte': epochTimeLte}, 
+								epoch:{'$gte': epochTimeGte, '$lte': epochTimeLte},
 								usuario: newMarca.usuario,
 								tipoUsuario: tipoUsuario
 							}).sort({epoch: 1}).exec(function (err, marcas){
@@ -255,10 +256,10 @@ function marca (ipOrigen,tipoUsuario, marca, cb) {
 												saveMarca(newMarca,cb,msg);
 												cierre.ejecutarCierrePorUsuarioAlMarcarSalida(tipoUsuario,newMarca.usuario);
 												//cierre.ejecutarCierre();
-											
+
 											});
-										
-										
+
+
 										return msgTem;
 									}
 									else cb("La marca de salida no fue registrada, ya que fue registrada anteriormente,"+
@@ -337,7 +338,7 @@ function marca (ipOrigen,tipoUsuario, marca, cb) {
 								else if(newMarca.tipoMarca=="Entrada a extras"){
 									if(
 										(marcas.entrada && marcas.salida) ||
-										(!marcas.entrada && !marcas.salida) 
+										(!marcas.entrada && !marcas.salida)
 										){
 											//
 										return saveMarca(newMarca,cb);
@@ -349,7 +350,7 @@ function marca (ipOrigen,tipoUsuario, marca, cb) {
 								else if(newMarca.tipoMarca=="Salida de extras"){
 									if(
 										(marcas.entrada && marcas.salida) ||
-										(!marcas.entrada && !marcas.salida) 
+										(!marcas.entrada && !marcas.salida)
 										){
 											//Falta validar que se haya entrado a las horas extras primero
 											//
@@ -362,15 +363,51 @@ function marca (ipOrigen,tipoUsuario, marca, cb) {
 								else return cb("Surgió un error no contemplado con la marca,"+
 									"vuelva a intentarlo o contacto con el administrador");
 							});
+
+						if(newMarca.tipoMarca=="Salida al Almuerzo" || newMarca.tipoMarca=="Salida a Receso"){
+
+							Alerta.find({usuario: marca.usuario}, function (error, alertas) {
+								if(error) console.log(error);
+
+								if(alertas && alertas.length > 0){
+									var fechaActual = new Date();
+
+									fechaActual.setMinutes(fechaActual.getMinutes() - fechaActual.getTimezoneOffset());
+									var fechaActualHoraAdelante = new Date();
+									var fechaActualHoraAdelanteTemp = new Date();
+									fechaActualHoraAdelante.setMinutes(fechaActualHoraAdelante.getMinutes() - fechaActualHoraAdelante.getTimezoneOffset());
+									fechaActualHoraAdelante.setMinutes(fechaActualHoraAdelante.getMinutes() + 60);
+									fechaActualHoraAdelanteTemp.setMinutes(fechaActualHoraAdelanteTemp.getMinutes() + 60);
+
+									alertas.forEach(function(alerta) {
+										var fechaAlerta = new Date(alerta.fechaCreacion + 'T' + alerta.hora + 'Z');
+
+										console.log("fechaAlerta " + fechaAlerta);
+
+										if ( fechaAlerta >= fechaActual && fechaAlerta <= fechaActualHoraAdelante && !alerta.mostrada) {
+											alerta.hora = pad(fechaActualHoraAdelanteTemp.getHours()) + ":" + pad(fechaActualHoraAdelanteTemp.getMinutes()) + ":00";
+											alerta.save(function (err, respuesta) {
+												if (err) console.log(err);
+											});
+										}
+									});
+								}
+							});
+						}
+
+						function pad(d) {
+							return (d < 10) ? '0' + d.toString() : d.toString();
+						}
+
 					}else{
 						return cb("El usuario no tiene permiso para marcar de manera remota");
 					}
 				}
 			});
 		}
-		
+
 	});//Consulta redes
-	
+
 	}
 }
 
@@ -383,13 +420,13 @@ function verificarRed(tempRed,cb){
 				cb("remota");
 			}
 		}
-		
+
 	});
 
 }
 
 exports.deleteMarca = function(id,tipoMarca,usuarioId, tipoUsuario, cb){
-	
+
 
 
 	var date = new Date();
@@ -406,24 +443,24 @@ exports.deleteMarca = function(id,tipoMarca,usuarioId, tipoUsuario, cb){
 
 
 	Marca.findById(id, function (err, marca) {
-		
+
 		var epoch = moment().unix();
 		if(!marca){
 			return cb('La marca había sido eliminada anteriormente');
-		} 
+		}
 		else if(marca && epoch - marca.epoch <= 600){
 			Marca.findByIdAndRemove(id, function (err, marca) {
 				if (err) cb(err);
 			if(tipoMarca=="Salida"){
-				
-			
+
+
 				cierrePersonal.remove({'usuario':usuarioId, tipoUsuario:tipoUsuario, epoch: { "$gte": epochMin.unix(),"$lte":epochMax.unix()}},function(err,cierre){
-					
+
 				});
 				crudJustificaciones.deleteJustificationExit(usuarioId,epoch1,epochMax.unix());
 				/*
 				justificaciones.remove({'usuario':usuarioId,fechaCreada: { "$gte": epoch1 ,"$lte":epochMax.unix()}},function(err,marcaE){
-					
+
 				});
 				*/
 
@@ -433,7 +470,7 @@ exports.deleteMarca = function(id,tipoMarca,usuarioId, tipoUsuario, cb){
 				justificaciones.remove({'usuario':usuarioId,fechaCreada: { "$gte": epochMin.unix(),"$lte":epochMax.unix()}},function(err,marcaE){});
 				*/
 			}
-		
+
 				return cb('Se eliminó correctamente.');
 			});
 		} else {
@@ -446,7 +483,6 @@ exports.find = function(query, cb){
 		cb(err, marcas);
 	});
 }
-
 
 exports.rfidReader = function(tipoUsuario, codTarjeta, tipoMarca, ip, cb) {
 	Usuario.findOne({codTarjeta: codTarjeta}, function (err, usuario) {
@@ -465,20 +501,20 @@ exports.rfidReader = function(tipoUsuario, codTarjeta, tipoMarca, ip, cb) {
 			tipo = 'Salida';
 		} else tipo = 'error';
 
-		marca(ip, tipoUsuario, {usuario: usuario.id, tipoMarca: tipo,tipoUsuario: tipoUsuario,dispositivo:"Pi"}, 
-			function(msj){					
+		marca(ip, tipoUsuario, {usuario: usuario.id, tipoMarca: tipo,tipoUsuario: tipoUsuario,dispositivo:"Pi"},
+			function(msj){
 				return cb(msj);
 			});
 	});
 }
 
 function revisarMarca(tipoUsuario, _idUser, marca, cb){
-	
+
 
 	var epochMin = moment();
 	epochMin.hours(0);
 	epochMin.minutes(0);
-	
+
 	var epochMax = moment();
 	epochMax.hours(23);
 	epochMax.minutes(59);
@@ -486,17 +522,17 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 	Usuario.findById(_idUser,{_id:1, nombre:1, horarioEmpleado:1,horarioFijo: 1, tipo:1}).exec(
 		function(err, usuario){
 			if(!err && usuario.horarioEmpleado && usuario.horarioEmpleado!=""){
-				crudHorario.getById(usuario.horarioEmpleado, 
+				crudHorario.getById(usuario.horarioEmpleado,
 					function(error, horario){
 						if(!error && horario){
 							var today = moment();
-							var dia = ["domingo", "lunes", "martes", "miercoles", 
+							var dia = ["domingo", "lunes", "martes", "miercoles",
 							"jueves", "viernes", "sabado"][today.day()];
 							var tiempoDia = horario[dia];
 							var horarioOriginal={minutos:tiempoDia.entrada.minutos,
 												hora:tiempoDia.entrada.hora};
-							
-							
+
+
 							/**
 							 * Se agrega el tiempo de grancia para la marca de entrada y de salida
 							 */
@@ -530,17 +566,17 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 							{
 								//console.log(marca);
 								if(marca.tipoMarca=="Entrada"){
-							
+
 									var mIn = moment.unix(marca.epoch);
 									var mReal = tiempoDia.entrada;
-							
+
 									if(util.compararHoras(mIn.hour(), mIn.minutes(),mReal.hora,mReal.minutos)==1){
 										if(
 											(usuario.tipo.length > 1 && tipoUsuario != config. empleadoProfesor) ||
 											(usuario.tipo.length == 1)
 										){
-										
-											addJustIncompleta(_idUser, "Entrada tardía", 
+
+											addJustIncompleta(_idUser, "Entrada tardía",
 												"Hora de entrada: "+ util.horaStr(horarioOriginal.hora, horarioOriginal.minutos)+
 												" - Hora de marca: "+ util.horaStr(mIn.hour(), mIn.minutes()),cb);
 
@@ -548,22 +584,22 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 									}
 									else cb("");
 								} else if(marca.tipoMarca=="Salida"){
-										
+
 									var mOut= moment.unix(marca.epoch);
 									var mReal = tiempoDia.salida;
-									
+
 									if(
 											(usuario.tipo.length > 1 && tipoUsuario != config. empleadoProfesor) ||
 											(usuario.tipo.length == 1)
 										){
-										
+
 											workedHour(_idUser, tiempoDia, mOut, mReal,cb);
 										}
 										else cb("");
-									
-								
-									
-								} 
+
+
+
+								}
 								else cb("");
                         		//Evaluar si se pasó el tiempo de receso o almuerzo
                         	}
@@ -574,15 +610,15 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 				//
 			}
 			else if(!err && usuario.horarioFijo && usuario.horarioFijo!=""){
-				
+
 				HorarioFijo.findById(usuario.horarioFijo,function(error,horarioFijo){
 					if(!error && horarioFijo!="" && horarioFijo){
 							var mOut= moment.unix(marca.epoch);
 							var today = moment();
-							var dia = ["Domingo", "Lunes", "Martes", "Miercoles", 
+							var dia = ["Domingo", "Lunes", "Martes", "Miercoles",
 							"Jueves", "Viernes", "Sabado"][today.day()];
 							var tiempoDia = horarioFijo[dia];
-							
+
 
 							var horarioOriginal={minutos:parseInt(String(horarioFijo.horaEntrada).substr(3,2)),
 								hora:parseInt(String(horarioFijo.horaEntrada).substr(0,2))};
@@ -626,47 +662,47 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 									)
 								)
 							{
-	
+
 								if(marca.tipoMarca=="Entrada"){
 								var mIn = moment.unix(marca.epoch);
-								
+
 								if(usuario.tipo.length>1 && tipoUsuario==="Profesor"){
 									return cb("");
 								}else{
-								
+
 									if(util.compararHoras(mIn.hour(), mIn.minutes(),horaEntrada,minutosEntrada)==1){
 										if(
 											(usuario.tipo.length > 1 && tipoUsuario != config. empleadoProfesor) ||
 											(usuario.tipo.length == 1)
 										){
-											addJustIncompleta(_idUser, "Entrada tardía", 
+											addJustIncompleta(_idUser, "Entrada tardía",
 												"Hora de entrada: "+ util.horaStr(horarioOriginal.hora, horarioOriginal.minutos)+
 												" - Hora de marca: "+ util.horaStr(mIn.hour(), mIn.minutes()),cb);
-	
+
 										}else{
-										
+
 											return cb("");
-										} 
+										}
 								}else{
 									return cb("");
 								}
-									
+
 								}
 								}else if(marca.tipoMarca=="Salida"){
 									var mOut= moment.unix(marca.epoch);
 									workedHourFix(_idUser,horaEntrada,minutosEntrada,horaSalida,minutosSalida, mOut,cb,usuario.tipo.length,tipoUsuario);
 								}
 							}
-								
+
 							}
 							else{
 								return cb("");
 							}
 
-								
+
 					}
 				});
-				
+
 			}
 			else if(marca.tipoMarca=="Salida") {
 				Usuario.findById(_idUser,{_id:1, nombre:1, horario:1, tipo:1}).exec(
@@ -680,28 +716,27 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 									var mOut= moment.unix(marca.epoch);
 									workedHourSchedule(_idUser,horarioEmpleado,mOut,cb,usuario.tipo,usuario.tipo.length);
 								}
-								
-								
+
+
 							}
 							else {
 								cb("");
 							}
-						
-							
+
+
 						});
-					
+
 					}else{
 						return cb("");
 					}
 				});
-				
+
 			}else{
 				cb("");
 			}//fin else
 		});
 	//
 }
-
 
 function workedHourSchedule(_idUser,horarioEmpleado,mOut,cb,tipoUsuario,cantidadUsuarios){
 
@@ -720,7 +755,7 @@ function workedHourSchedule(_idUser,horarioEmpleado,mOut,cb,tipoUsuario,cantidad
 		"$gte":epochGte.unix(),
 		"$lte":epochLte.unix()
 	}}, function (err, marcas) {
-		
+
 
 	var m2 ="ok";
 	if(err) m2 = err;
@@ -732,7 +767,7 @@ function workedHourSchedule(_idUser,horarioEmpleado,mOut,cb,tipoUsuario,cantidad
 		obj.tipoMarca = ml[x].tipoMarca;
 		mcs.push(obj);
 	}
-	
+
 
 		for(m in mcs){
 			if(mcs[m].tipoMarca=='Entrada'){
@@ -758,15 +793,15 @@ function workedHourSchedule(_idUser,horarioEmpleado,mOut,cb,tipoUsuario,cantidad
 
 		finMinutos =moment().format();
 		finMinutos=parseInt(String(finMinutos).substr(14,2));
-						
+
 		inicioMinutos = parseInt(tiempoEntrada.substr(3,2));
-			
+
 		inicioHoras = parseInt(String(tiempoEntrada).substr(0,2));
-		
+
 		finHoras=moment().format();
 		finHoras = parseInt(String(finHoras).substr(11,2));
 
-		
+
 		var transcurridoMinutos = finMinutos - inicioMinutos;
 		var transcurridoHoras = finHoras - inicioHoras;  //bloque de salida y entrada
 
@@ -776,7 +811,7 @@ function workedHourSchedule(_idUser,horarioEmpleado,mOut,cb,tipoUsuario,cantidad
 		var finRecesoMinutos = parseInt(String(tiempoEntradaReceso).substr(3,2));
 		var finRecesoHoras = parseInt(String(tiempoEntradaReceso).substr(0,2));
 		var transcurridoRecesoMinutos = finRecesoMinutos - inicioRecesoMinutos;
-		var transcurridoRecesoHoras = finRecesoHoras - inicioRecesoHoras;//bloque para recesos 
+		var transcurridoRecesoHoras = finRecesoHoras - inicioRecesoHoras;//bloque para recesos
 		}else{
 			transcurridoRecesoHoras = 0;
 			transcurridoRecesoMinutos = 0;
@@ -795,16 +830,16 @@ function workedHourSchedule(_idUser,horarioEmpleado,mOut,cb,tipoUsuario,cantidad
 
 		var transcurridoHorasTotal = transcurridoHoras - transcurridoRecesoHoras - transcurridoAlmuerzoHoras;
 		var transcurridoMinutosTotal = transcurridoMinutos - transcurridoRecesoMinutos - transcurridoAlmuerzoMinutos;
-		
+
 
 		if (transcurridoMinutosTotal < 0) {
 			transcurridoHorasTotal--;
 			transcurridoMinutosTotal = 60 + transcurridoMinutosTotal;
 		}
-		
+
 
 		var horasTrabajadas = transcurridoHorasTotal;
-		var minutosTrabajados = transcurridoMinutosTotal;	
+		var minutosTrabajados = transcurridoMinutosTotal;
 		var vectorHorario=horarioEmpleado.rangoJornada.split(":");
 		var almuerzo=horarioEmpleado.tiempoAlmuerzo.split(":");
 		var receso=horarioEmpleado.tiempoReceso.split(":");
@@ -817,8 +852,8 @@ function workedHourSchedule(_idUser,horarioEmpleado,mOut,cb,tipoUsuario,cantidad
 
 		var horasTrabajadasFinal=parseInt(vectorHorario[0])-horaDescanso;
 		var minutosTrabajadosFinal=parseInt(vectorHorario[1])-minutoDescanso;
-	
-		
+
+
 
 		if(minutosTrabajadosFinal<0){
 			minutosTrabajadosFinal=60-minutosTrabajadosFinal;
@@ -830,7 +865,7 @@ function workedHourSchedule(_idUser,horarioEmpleado,mOut,cb,tipoUsuario,cantidad
 			minutosTrabajados=minutosTrabajados-60;
 		}
 
-		
+
 		if(horasTrabajadas>horasTrabajadasFinal){
 			return cb("");
 		}else if(horasTrabajadas==horasTrabajadasFinal && minutosTrabajados>=minutosTrabajadosFinal){
@@ -838,15 +873,15 @@ function workedHourSchedule(_idUser,horarioEmpleado,mOut,cb,tipoUsuario,cantidad
 		}else{
 			if((cantidadUsuarios > 1 && tipoUsuario != config. empleadoProfesor) ||
 				(cantidadUsuarios == 1)){
-					addJustIncompleta(_idUser, "Jornada laborada menor que la establecida", 
+					addJustIncompleta(_idUser, "Jornada laborada menor que la establecida",
 					"Horas trabajadas: "+ util.horaStr(horasTrabajadas,minutosTrabajados)+
 					" - Horas establecidas: "+ util.horaStr(horasTrabajadasFinal,minutosTrabajadosFinal),cb);
 			}
-			
+
 		}
 
 	});
-					
+
 
 }
 
@@ -867,8 +902,8 @@ function workedHourFix(_idUser,horaEntradaP,minutosEntradaP,horaSalidaP,minutosS
 			"$gte":epochGte.unix(),
 			"$lte":epochLte.unix()
 		}}, function (err, marcas) {
-			
-	
+
+
 		var m2 ="ok";
 		if(err) m2 = err;
 		varepoch: mcs = [];
@@ -879,8 +914,8 @@ function workedHourFix(_idUser,horaEntradaP,minutosEntradaP,horaSalidaP,minutosS
 			obj.tipoMarca = ml[x].tipoMarca;
 			mcs.push(obj);
 		}
-		
-	
+
+
 			for(m in mcs){
 				if(mcs[m].tipoMarca=='Entrada'){
 					var tiempoEntrada = mcs[m].fecha.hora;
@@ -901,20 +936,20 @@ function workedHourFix(_idUser,horaEntradaP,minutosEntradaP,horaSalidaP,minutosS
 					var tiempoEntradaAlmuerzo =mcs[m].fecha.hora ;
 				}
 		}
-					
-				
+
+
 
 				finMinutos =moment().format();
 				finMinutos=parseInt(String(finMinutos).substr(14,2));
-			
+
 				inicioMinutos = parseInt(tiempoEntrada.substr(3,2));
-			
+
 				inicioHoras = parseInt(String(tiempoEntrada).substr(0,2));
-				
+
 				finHoras=moment().format();
 				finHoras = parseInt(String(finHoras).substr(11,2));
 
-				
+
 				var transcurridoMinutos = finMinutos - inicioMinutos;
 				var transcurridoHoras = finHoras - inicioHoras;  //bloque de salida y entrada
 
@@ -924,7 +959,7 @@ function workedHourFix(_idUser,horaEntradaP,minutosEntradaP,horaSalidaP,minutosS
 				var finRecesoMinutos = parseInt(String(tiempoEntradaReceso).substr(3,2));
 				var finRecesoHoras = parseInt(String(tiempoEntradaReceso).substr(0,2));
 				var transcurridoRecesoMinutos = finRecesoMinutos - inicioRecesoMinutos;
-				var transcurridoRecesoHoras = finRecesoHoras - inicioRecesoHoras;//bloque para recesos 
+				var transcurridoRecesoHoras = finRecesoHoras - inicioRecesoHoras;//bloque para recesos
 				}else{
 					transcurridoRecesoHoras = 0;
 					transcurridoRecesoMinutos = 0;
@@ -943,38 +978,38 @@ function workedHourFix(_idUser,horaEntradaP,minutosEntradaP,horaSalidaP,minutosS
 
 				var transcurridoHorasTotal = transcurridoHoras - transcurridoRecesoHoras - transcurridoAlmuerzoHoras;
 				var transcurridoMinutosTotal = transcurridoMinutos - transcurridoRecesoMinutos - transcurridoAlmuerzoMinutos;
-				
+
 
 				if (transcurridoMinutosTotal < 0) {
 					transcurridoHorasTotal--;
 					transcurridoMinutosTotal = 60 + transcurridoMinutosTotal;
 				}
-				
+
 
 				var horas = transcurridoHorasTotal;
 				var minutos = transcurridoMinutosTotal;
-				
+
 				var obj=new Object();
 				obj.horas=horas;
 				obj.minutos=minutos;
-				
-				
+
+
 
 				var horaSalida= parseInt(horaSalidaP-config.periodoLibreTrabajo);
 				var horaEntrada= parseInt(horaEntradaP);
 				var minutoSalida=parseInt(minutosSalidaP);
 				var minutoEntrada=parseInt(minutosEntradaP-config.rangoMarcaEntrada);
 
-				
-				
+
+
 				temporalMinutoSalida=minutoSalida;
 				temporalHoraSalida=horaSalida;
 
 				horaSalida=horaSalida-horaEntrada;
 				minutoSalida=minutoSalida-minutoEntrada;
 
-			
-				
+
+
 
 				if(horaSalida>0 && minutoSalida<0 ){
 					horaSalida--;
@@ -985,59 +1020,52 @@ function workedHourFix(_idUser,horaEntradaP,minutosEntradaP,horaSalidaP,minutosS
 					horaSalida=0;
 					minutoSalida=minutoEntrada-temporalMinutoSalida;
 				}
-				
-			
+
+
 				if(obj.minutos>59){
 					obj.horas++;
 					obj.minutos=obj.minutos-60;
 				}
-				
-				
+
+
 				if(cantidadUsuario>1 && tipoUsuario==="Profesor"){
 					cb("");
 				}else{
 					if(horaSalida>obj.horas){
-					
-						addJustIncompleta(_idUser, "Jornada laborada menor que la establecida", 
+
+						addJustIncompleta(_idUser, "Jornada laborada menor que la establecida",
 						"Horas trabajadas: "+ util.horaStr(obj.horas,obj.minutos)+
 						" - Horas establecidas: "+ util.horaStr(horaSalida, minutoSalida), function(){});
-			
+
 					}else if(obj.horas==horaSalida){
-			
+
 						if(minutoSalida>obj.minutos){
-							addJustIncompleta(_idUser, "Jornada laborada menor que la establecida", 
+							addJustIncompleta(_idUser, "Jornada laborada menor que la establecida",
 							"Horas trabajadas: "+ util.horaStr(obj.horas,obj.minutos)+
 							" - Horas establecidas: "+ util.horaStr(horaSalida, minutoSalida), function(){});
 						}
-					
+
 					}
-					
+
 				}
 
 				if(horaSalidaP>mOut.hour()){
 
-					addJustIncompleta(_idUser, "Salida antes de hora establecida", 
+					addJustIncompleta(_idUser, "Salida antes de hora establecida",
 					"Hora de salida: "+ util.horaStr(horaSalidaP,minutosSalidaP)+
 					" - Hora de marca: "+ util.horaStr(mOut.hour(), mOut.minutes()), function(){});
 				}else if(horaSalidaP==mOut.hour()&& minutosSalidaP>mOut.minutes()){
-					addJustIncompleta(_idUser, "Salida antes de hora establecida", 
+					addJustIncompleta(_idUser, "Salida antes de hora establecida",
 					"Hora de salida: "+ util.horaStr(horaSalidaP,minutosSalidaP)+
 					" - Hora de marca: "+ util.horaStr(mOut.hour(), mOut.minutes()), function(){});
 				}
-				cb("");	
+				cb("");
 
 		});
-	
+
 
 
 }
-
-
-
-
-
-
-
 
 function workedHour(_idUser,horario, mOut, mReal,cb){
 
@@ -1056,8 +1084,8 @@ function workedHour(_idUser,horario, mOut, mReal,cb){
 			"$gte":epochGte.unix(),
 			"$lte":epochLte.unix()
 		}}, function (err, marcas) {
-			
-	
+
+
 		var m2 ="ok";
 		if(err) m2 = err;
 		varepoch: mcs = [];
@@ -1068,8 +1096,8 @@ function workedHour(_idUser,horario, mOut, mReal,cb){
 			obj.tipoMarca = ml[x].tipoMarca;
 			mcs.push(obj);
 		}
-		
-	
+
+
 			for(m in mcs){
 				if(mcs[m].tipoMarca=='Entrada'){
 					var tiempoEntrada = mcs[m].fecha.hora;
@@ -1090,20 +1118,20 @@ function workedHour(_idUser,horario, mOut, mReal,cb){
 					var tiempoEntradaAlmuerzo =mcs[m].fecha.hora ;
 				}
 		}
-					
-				
+
+
 
 				finMinutos =moment().format();
 				finMinutos=parseInt(String(finMinutos).substr(14,2));
-			
+
 				inicioMinutos = parseInt(tiempoEntrada.substr(3,2));
-			
+
 				inicioHoras = parseInt(String(tiempoEntrada).substr(0,2));
-				
+
 				finHoras=moment().format();
 				finHoras = parseInt(String(finHoras).substr(11,2));
 
-				
+
 				var transcurridoMinutos = finMinutos - inicioMinutos;
 				var transcurridoHoras = finHoras - inicioHoras;  //bloque de salida y entrada
 
@@ -1113,7 +1141,7 @@ function workedHour(_idUser,horario, mOut, mReal,cb){
 				var finRecesoMinutos = parseInt(String(tiempoEntradaReceso).substr(3,2));
 				var finRecesoHoras = parseInt(String(tiempoEntradaReceso).substr(0,2));
 				var transcurridoRecesoMinutos = finRecesoMinutos - inicioRecesoMinutos;
-				var transcurridoRecesoHoras = finRecesoHoras - inicioRecesoHoras;//bloque para recesos 
+				var transcurridoRecesoHoras = finRecesoHoras - inicioRecesoHoras;//bloque para recesos
 				}else{
 					transcurridoRecesoHoras = 0;
 					transcurridoRecesoMinutos = 0;
@@ -1132,38 +1160,38 @@ function workedHour(_idUser,horario, mOut, mReal,cb){
 
 				var transcurridoHorasTotal = transcurridoHoras - transcurridoRecesoHoras - transcurridoAlmuerzoHoras;
 				var transcurridoMinutosTotal = transcurridoMinutos - transcurridoRecesoMinutos - transcurridoAlmuerzoMinutos;
-				
+
 
 				if (transcurridoMinutosTotal < 0) {
 					transcurridoHorasTotal--;
 					transcurridoMinutosTotal = 60 + transcurridoMinutosTotal;
 				}
-				
+
 
 				var horas = transcurridoHorasTotal;
 				var minutos = transcurridoMinutosTotal;
-				
+
 				var obj=new Object();
 				obj.horas=horas;
 				obj.minutos=minutos;
-				
-				
+
+
 
 				var horaSalida= parseInt(horario.salida.hora-config.periodoLibreTrabajo);
 				var horaEntrada= parseInt(horario.entrada.hora);
 				var minutoSalida=parseInt(horario.salida.minutos);
 				var minutoEntrada=parseInt(horario.entrada.minutos-config.rangoMarcaEntrada);
 
-				
-				
+
+
 				temporalMinutoSalida=minutoSalida;
 				temporalHoraSalida=horaSalida;
 
 				horaSalida=horaSalida-horaEntrada;
 				minutoSalida=minutoSalida-minutoEntrada;
 
-			
-				
+
+
 
 				if(horaSalida>0 && minutoSalida<0 ){
 					horaSalida--;
@@ -1174,40 +1202,40 @@ function workedHour(_idUser,horario, mOut, mReal,cb){
 					horaSalida=0;
 					minutoSalida=minutoEntrada-temporalMinutoSalida;
 				}
-				
-			
+
+
 				if(obj.minutos>59){
 					obj.horas++;
 					obj.minutos=obj.minutos-60;
 				}
-				
-				
+
+
 				if(horaSalida>obj.horas){
-					addJustIncompleta(_idUser, "Jornada laborada menor que la establecida", 
-					"Horas trabajadas: "+ util.horaStr(obj.horas,obj.minutos)+
-					" - Horas establecidas: "+ util.horaStr(horaSalida, minutoSalida), function(){});
-				
-				}else if(obj.horas==horaSalida &&minutoSalida>obj.minutos){
-		
-					addJustIncompleta(_idUser, "Jornada laborada menor que la establecida", 
+					addJustIncompleta(_idUser, "Jornada laborada menor que la establecida",
 					"Horas trabajadas: "+ util.horaStr(obj.horas,obj.minutos)+
 					" - Horas establecidas: "+ util.horaStr(horaSalida, minutoSalida), function(){});
 
-				
+				}else if(obj.horas==horaSalida &&minutoSalida>obj.minutos){
+
+					addJustIncompleta(_idUser, "Jornada laborada menor que la establecida",
+					"Horas trabajadas: "+ util.horaStr(obj.horas,obj.minutos)+
+					" - Horas establecidas: "+ util.horaStr(horaSalida, minutoSalida), function(){});
+
+
 
 				}
 
 				if(mOut.hour()<mReal.hora){
-					addJustIncompleta(_idUser, "Salida antes de hora establecida", 
+					addJustIncompleta(_idUser, "Salida antes de hora establecida",
 					"Hora de salida: "+ util.horaStr(mReal.hora, mReal.minutos)+
 					" - Hora de marca: "+ util.horaStr(mOut.hour(), mOut.minutes()),function(){});
 				}else if(mOut.hour()==mReal.hora &&mOut.minutes()< mReal.minutos){
-					addJustIncompleta(_idUser, "Salida antes de hora establecida", 
+					addJustIncompleta(_idUser, "Salida antes de hora establecida",
 					"Hora de salida: "+ util.horaStr(mReal.hora, mReal.minutos)+
 					" - Hora de marca: "+ util.horaStr(mOut.hour(), mOut.minutes()), function(){});
 				}
-				
-				
+
+
 				cb("");
 
 		});
@@ -1224,5 +1252,5 @@ function addJustIncompleta(_idUser, motivo, informacion, cb){
 			if(!err) cb(motivo);
 			else cb("");
 		}
-		); 
+		);
 }

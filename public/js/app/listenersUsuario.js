@@ -4,28 +4,98 @@ var urlHorario = 'asignarHorario';
 // A $( document ).ready() block.
 $( document ).ready(function() {
 
-    $("#mensajeMarca").modal("show");
-    var fechaActual = new Date();
-    console.log(document.getElementById("tiempoEsperaRespuesta").value);
-    console.log(document.getElementById("CantidadNotificacionesTeletrabajo").value);
-    console.log(fechaActual);
-    fechaActual.setMinutes ( fechaActual.getMinutes() + 5);
-    console.log(fechaActual);
-     myFunction();
+    var alertas = document.getElementById("alertas").value;
+    if(alertas && !(alertas === 'undefined')){
+        setInterval(validarAlertas, 10000);
+    }
 
-    function myFunction() {
-        var min = 5,
-            max = 10;
-        var rand = Math.floor(Math.random() * (max - min + 1) + min);
-        console.dir('Wait for ' + rand + ' seconds');
+    function validarAlertas() {
 
-        setTimeout(closeModal, document.getElementById("tiempoEsperaRespuesta").value * 10000);
+        var fechaActual = new Date();
 
+        var tiempoRespuesta = document.getElementById("tiempoRespuesta").value;
+        var alertas = document.getElementById("alertas").value;
+
+        if(alertas && !(alertas === 'undefined') && tiempoRespuesta && !(tiempoRespuesta === 'undefined')){
+            var listaAlertas = JSON.parse(alertas);
+            var listaAlertasActivas = [];
+            listaAlertas.forEach(function(alerta) {
+                console.log('Fecha Alerta: '+alerta.fechaCreacion.toString());
+                console.log('Fecha Alerta Hora: '+new Date(alerta.fechaCreacion).getHours());
+                console.log('Fecha Alerta Minutos: '+new Date(alerta.fechaCreacion).getMinutes());
+                if ( alerta.fechaCreacion <= fechaActual && !alerta.mostrada) {
+
+                    $("#mensajeConfirmacionConexion").modal("show");
+
+                    blinkTab("Confirmación de Conexión");
+
+                    var audio = new Audio('https://www.soundjay.com/button/beep-06.wav');
+                    audio.type = 'audio/wav';
+
+                    var playPromise = audio.play();
+
+                    if (playPromise !== undefined) {
+                        playPromise.then(function () {
+                        }).catch(function (error) {
+                        });
+                    }
+                    setInterval(closeModal, tiempoRespuesta * 60000);
+
+                    $.ajax({
+                        url: "alertaMostrada",
+                        type: "POST",
+                        dataType : "json",
+                        data: {id : alerta._id, usuario: alerta.usuario},
+                        success: function(data) {
+                            document.getElementById("idEventoTeletrabajo").value = data.id;
+                        },
+                        error: function(){
+                        }
+                    });
+                } else{
+                    listaAlertasActivas.push(alerta)
+                }
+            });
+
+            document.getElementById("alertas").value = JSON.stringify(listaAlertasActivas);
+        }
     }
 
     function closeModal(){
-        $("#mensajeMarca").modal("hide");
+        $("#mensajeConfirmacionConexion").modal("hide");
+
+        setTimeout(validarPresente, 1000);
     }
+
+    function validarPresente() {
+
+        $.ajax({
+            url: "validarPresente",
+            type: "POST",
+            dataType : "json",
+            data: {id : document.getElementById("idEventoTeletrabajo").value},
+            success: function(data) {},
+            error: function(){}
+        });
+
+    }
+
+    var blinkTab = function(message) {
+        var oldTitle = document.title,
+            timeoutId,
+            blink = function() { document.title = document.title == message ? ' ' : message; },
+            clear = function() {
+                clearInterval(timeoutId);
+                document.title = oldTitle;
+                window.onmousemove = null;
+                timeoutId = null;
+            };
+
+        if (!timeoutId) {
+            timeoutId = setInterval(blink, 1000);
+            window.onmousemove = clear;
+        }
+    };
 
     function getIPs(callback){
 
@@ -177,6 +247,24 @@ $.each([".btnEntrada",".btnSalida",
             //
         });
 });
+
+$.each([".btnPresente"],
+    function (i, id) {
+        $(id).click(function() {
+            $.ajax({
+                url: "presente",
+                type: "POST",
+                dataType : "json",
+                data: {id: document.getElementById("idEventoTeletrabajo").value},
+                success: function(data) {
+                    $("#mensajeConfirmacionConexion").modal("hide");
+                },
+                error: function(){
+                    $("#mensajeConfirmacionConexion").modal("hide");
+                }
+            });
+        });
+    });
 
 
 
