@@ -12,7 +12,7 @@ $( document ).ready(function() {
     function validarAlertas() {
 
         var fechaActual = new Date();
-        console.log('Hora Actual: ' + fechaActual.getHours() + ':' + fechaActual.getMinutes() + "(" + fechaActual.getTime() + ")");
+        console.log('Hora Actual: ' + fechaActual.getDate() + ' ' + fechaActual.getHours() + ':' + fechaActual.getMinutes() + "(" + fechaActual.getTime() + ")");
 
         var tiempoRespuesta = document.getElementById("tiempoRespuesta").value;
         var alertas = document.getElementById("alertas").value;
@@ -23,7 +23,7 @@ $( document ).ready(function() {
             listaAlertas.forEach(function(alerta) {
                 // console.log(alerta);
                 var fechaAlerta = new Date(alerta.fechaCreacion);
-                console.log('Hora Alerta: '+ fechaAlerta.getHours() + ':' + fechaAlerta.getMinutes() + "(" + fechaAlerta.getTime() + ")");
+                console.log('Hora Alerta: '+ fechaAlerta.getDate() + ' ' + fechaAlerta.getHours() + ':' + fechaAlerta.getMinutes() + "(" + fechaAlerta.getTime() + ")");
                 if ( fechaAlerta.getTime() <= fechaActual.getTime() && alerta.mostrada === false) {
 
                     $.ajax({
@@ -51,7 +51,7 @@ $( document ).ready(function() {
                                     }
                                 });
                             } else {
-                                fechaAlerta.setTime(fechaActual.getTime() + (15*60000));
+                                fechaAlerta.setMinutes(fechaActual.getMinutes() + 10 );
                                 alerta.fechaCreacion = fechaAlerta;
                                 listaAlertasActivas.push(alerta);
                                 document.getElementById("alertas").value = JSON.stringify(listaAlertasActivas);

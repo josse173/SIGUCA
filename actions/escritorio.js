@@ -215,7 +215,6 @@ module.exports = {
                                                         console.log(horarioFijo.horaEntrada.split(":")[1]);
                                                         console.log(horarioFijo.horaSalida.split(":")[1]);
 
-
 														horaEntrada = horarioFijo.horaEntrada.split(":")[0];
 														horaSalida = horarioFijo.horaSalida.split(":")[0];
                                                         minutosEntrada = horarioFijo.horaEntrada.split(":")[1];
@@ -332,7 +331,7 @@ module.exports = {
         var nuevaAlerta = new Alerta({
             usuario: req.user.id,
             fechaCreacion: fechaAleatoria(Number(horaEntrada), Number(horaSalida - 1), Number(minutosEntrada), Number(minutosSalida)),
-            mostrada: false
+            mostrada: false,
         });
 
         nuevaAlerta.save(function (err, respuesta) {
