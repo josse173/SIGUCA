@@ -4,15 +4,15 @@ var urlHorario = 'asignarHorario';
 // A $( document ).ready() block.
 $( document ).ready(function() {
 
-    var alertas = document.getElementById("alertas").value;
-    if(alertas && !(alertas === 'undefined')){
+    var alertasPrincipal = document.getElementById("alertas").value;
+    if(alertasPrincipal && !(alertasPrincipal === 'undefined')){
         setInterval(validarAlertas, 10000);
     }
 
     function validarAlertas() {
 
         var fechaActual = new Date();
-        console.log('Hora Actual: ' + fechaActual.getHours() + ':' + fechaActual.getMinutes());
+        console.log('Hora Actual: ' + fechaActual.getHours() + ':' + fechaActual.getMinutes() + "(" + fechaActual.getTime() + ")");
 
         var tiempoRespuesta = document.getElementById("tiempoRespuesta").value;
         var alertas = document.getElementById("alertas").value;
@@ -23,28 +23,57 @@ $( document ).ready(function() {
             listaAlertas.forEach(function(alerta) {
                 // console.log(alerta);
                 var fechaAlerta = new Date(alerta.fechaCreacion);
-                console.log('Hora Alerta: '+ fechaAlerta.getHours() + ':' + fechaAlerta.getMinutes());
-                if ( fechaAlerta <= fechaActual && !alerta.mostrada) {
-
-                    $("#mensajeConfirmacionConexion").modal("show");
-
-                    var intervalId = blinkTab("Confirmación de Conexión");
-
-                    setInterval(closeModal, tiempoRespuesta * 60000, intervalId);
+                console.log('Hora Alerta: '+ fechaAlerta.getHours() + ':' + fechaAlerta.getMinutes() + "(" + fechaAlerta.getTime() + ")");
+                if ( fechaAlerta.getTime() <= fechaActual.getTime() && alerta.mostrada === false) {
 
                     $.ajax({
-                        url: "alertaMostrada",
+                        url: "usuarioDisponibleVerAlerta",
                         type: "POST",
                         dataType : "json",
-                        data: {id : alerta._id, usuario: alerta.usuario},
+                        data: {usuario: alerta.usuario},
                         success: function(data) {
-                            document.getElementById("idEventoTeletrabajo").value = data.id;
+                            console.log(data.result);
+                            if (data.result && data.result === true) {
+                                $("#mensajeConfirmacionConexion").modal("show");
+                                var intervalId = blinkTab("Confirmación de Conexión");
+
+                                setInterval(closeModal, tiempoRespuesta * 60000, intervalId);
+
+                                $.ajax({
+                                    url: "alertaMostrada",
+                                    type: "POST",
+                                    dataType : "json",
+                                    data: {id : alerta._id, usuario: alerta.usuario, tiempoRespuesta: tiempoRespuesta},
+                                    success: function(data) {
+                                        document.getElementById("idEventoTeletrabajo").value = data.id;
+                                    },
+                                    error: function(){
+                                    }
+                                });
+                            } else {
+                                fechaAlerta.setTime(fechaActual.getTime() + (15*60000));
+                                alerta.fechaCreacion = fechaAlerta;
+                                listaAlertasActivas.push(alerta);
+                                document.getElementById("alertas").value = JSON.stringify(listaAlertasActivas);
+
+                                $.ajax({
+                                    url: "actualizarAlerta",
+                                    type: "POST",
+                                    dataType : "json",
+                                    data: {id : alerta._id, alerta: alerta},
+                                    success: function(data) {},
+                                    error: function(){}
+                                });
+                            }
                         },
                         error: function(){
                         }
                     });
-                } else{
-                    listaAlertasActivas.push(alerta)
+
+                } else {
+                    if (alerta.mostrada === false) {
+                        listaAlertasActivas.push(alerta)
+                    }
                 }
             });
 
@@ -96,7 +125,7 @@ $( document ).ready(function() {
             };
 
         if (!timeoutId) {
-            timeoutId = setInterval(blink, 1000);
+            timeoutId = setInterval(blink, 1200);
             window.onmousemove = clear;
         }
 

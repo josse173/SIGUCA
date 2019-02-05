@@ -363,38 +363,6 @@ function marca (ipOrigen,tipoUsuario, marca, cb) {
 									"vuelva a intentarlo o contacto con el administrador");
 							});
 
-						if(newMarca.tipoMarca === "Salida al Almuerzo" || newMarca.tipoMarca === "Salida a Receso"){
-
-							Alerta.find({usuario: marca.usuario}, function (error, alertas) {
-								if(error) console.log(error);
-
-								if(alertas && alertas.length > 0){
-									var fechaActual = new Date();
-									var fechaActualHoraAdelante = new Date();
-									var fechaActualHoraAdelanteTemp = new Date();
-
-									fechaActualHoraAdelante.setMinutes(fechaActualHoraAdelante.getMinutes() + 60);
-									fechaActualHoraAdelanteTemp.setMinutes(fechaActualHoraAdelanteTemp.getMinutes() + 60);
-
-									alertas.forEach(function(alerta) {
-
-										console.log("fechaAlerta: " + alerta.fechaCreacion);
-
-										if ( alerta.fechaCreacion >= fechaActual && alerta.fechaCreacion <= fechaActualHoraAdelante && !alerta.mostrada) {
-											alerta.hora = pad(fechaActualHoraAdelanteTemp.getHours()) + ":" + pad(fechaActualHoraAdelanteTemp.getMinutes()) + ":00";
-											alerta.save(function (err, respuesta) {
-												if (err) console.log(err);
-											});
-										}
-									});
-								}
-							});
-						}
-
-						function pad(d) {
-							return (d < 10) ? '0' + d.toString() : d.toString();
-						}
-
 					}else{
 						return cb("El usuario no tiene permiso para marcar de manera remota");
 					}

@@ -482,6 +482,52 @@ module.exports = function(app, io) {
         res.json({result:"ok"});
     });
 
+    app.post('/usuarioDisponibleVerAlerta', autentificado, function (req, res) {
+
+        var date = moment();
+
+        date.hours(0);
+        date.minutes(0);
+        date.seconds(0);
+
+        var epochTime = date.unix();
+
+        // console.log(epochTime);
+
+        Marca.find({usuario: req.user.id, epoch:{"$gte": epochTime}, tipoUsuario: req.session.name}, {_id:0, tipoMarca:1, epoch:1, dispositivo:1, red:1}).exec(
+            function(error, marcas) {
+                if (error) return res.json(error);
+
+                var estaDisponible = false;
+
+                var entrada = marcas.filter(x => x.tipoMarca === 'Entrada');
+                // console.log('entrada: ' + entrada.length);
+                var salidaReceso = marcas.filter(x => x.tipoMarca === 'Salida a Receso');
+                // console.log('salidaReceso: ' + salidaReceso.length);
+                var entradaReceso = marcas.filter(x => x.tipoMarca === 'Entrada de Receso');
+                // console.log('entradaReceso: ' + entradaReceso.length);
+                var salidaAlmuerzo = marcas.filter(x => x.tipoMarca === 'Salida al Almuerzo');
+                // console.log('salidaAlmuerzo: ' + salidaAlmuerzo.length);
+                var entradaAlmuerzo = marcas.filter(x => x.tipoMarca === 'Entrada de Almuerzo');
+                // console.log('entradaAlmuerzo: ' + entradaAlmuerzo.length);
+                var salida = marcas.filter(x => x.tipoMarca === 'Salida');
+                // console.log('salida: ' + salida.length);
+
+                if(entrada.length === 1 && salidaReceso.length === entradaReceso.length && salidaAlmuerzo.length === entradaAlmuerzo.length && salida.length === 0){
+                    estaDisponible = true;
+                }
+
+                res.json({result: estaDisponible});
+            }
+        );
+    });
+
+    app.post('/actualizarAlerta', autentificado, function (req, res) {
+
+        Alerta.findByIdAndUpdate(req.body.id, req.body.alerta, function(err,alerta){
+        });
+    });
+
     //check de marcas de usuario
     app.post('/marcaCheck', autentificado, function (req, res) {
 
