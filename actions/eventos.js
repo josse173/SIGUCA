@@ -68,6 +68,7 @@ module.exports = {
                 /*cierreQuery.usuarios = {};
                 cierreQuery.usuarios.usuario = queryUsers;*/
               }
+
               getInformacionRender(req, res, titulo, usuarios.concat(supervisores), departamentos, marcaQuery,
                 justQuery, extraQuery, permisosQuery, cierreQuery, populateQuery,
                 ((!err && usuario) ? (usuario.apellido1+" "+usuario.apellido2+", "+usuario.nombre) : null));
@@ -237,7 +238,7 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos,
             //Se asigna el tipo de usuario con el cual ha iniciado sesion
             req.user.tipo = req.session.name;
             return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, null,
-              justificaciones, extras, permisos, null, nombreUsuario);
+              justificaciones, extras, permisos, null, nombreUsuario, null);
           }
           else {
             Marca.find(marcaQuery).populate(populateQuery).exec(function(error, marcas){
@@ -260,8 +261,7 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos,
                       //Se asigna el tipo de usuario con el cual ha iniciado sesion
                       req.user.tipo = req.session.name;
 
-                      EventosTeletrabajo.find().exec(function(error, eventosTeletrabajo) {
-                        console.log(eventosTeletrabajo);
+                      EventosTeletrabajo.find(marcaQuery).exec(function(error, eventosTeletrabajo) {
                           return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, marcas,
                             justificaciones, extras, permisos, cierres, nombreUsuario, eventosTeletrabajo);
                           });
@@ -439,7 +439,6 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
 
   //|| filtrado=== "extras" || filtrado=== "justificaciones"
   console.log(filtrado);
-  console.log('Rolo');
   if(filtrado==="todosEventos" || req.route.path.substring(0, 9) =='/gestiona'){
     Contenido.find({seccion:"todosEventos"},function(error,contenido){
       if(!error &&contenido.length>0){

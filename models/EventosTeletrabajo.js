@@ -20,6 +20,10 @@ var SchemaEventosTeletrabajo = new Schema({
         type: Date,
         default: Date.now()
     },
+    epoch: {
+        type: Number,
+        default: 0
+    },
     fechaAceptacion: {
         type: Date,
         default: null

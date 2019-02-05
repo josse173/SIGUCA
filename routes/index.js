@@ -417,7 +417,7 @@ module.exports = function(app, io) {
                             to: usuario.email,
                             subject: 'Alerta de Validación de Presencia',
                             text: "Estimado(a) funcionario:<br> Usted ha recibido una alerta de validación de presencia en SIGUCA: <br><br>"+
-                                "Se le recuerda que debe atender esta solicitud en los proximos " + tiempoEspera + "minutos. Haga clic en el siguiente enlace para ir al sitio:<br><br>" +
+                                "Se le recuerda que debe atender esta solicitud en los proximos " + req.body.tiempoRespuesta + " minuto(s). Haga clic en el siguiente enlace para ir al sitio:<br><br>" +
                                 "URL<br><br>" +
                                 "Atentamente,<br><br>" +
                                 "Recursos Humanos"
@@ -428,10 +428,12 @@ module.exports = function(app, io) {
                 });
 
                 var nombreUsuario = usuario.nombre + ' ' + usuario.apellido1 + ' ' + usuario.apellido2;
+                var date = moment();
 
                 var eventosTeletrabajo = new EventosTeletrabajo({
                     usuario: req.body.usuario,
-                    nombreUsuario: nombreUsuario
+                    nombreUsuario: nombreUsuario,
+                    epoch: date.unix()
                 });
 
                 eventosTeletrabajo.save(function (err, respuesta) {
