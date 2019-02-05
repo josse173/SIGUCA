@@ -14,14 +14,15 @@ var Cierre = require('../models/Cierre');
 var util = require('../util/util');
 var CierrePersonal = require('../models/CierrePersonal');
 var crudUsuario = require('../routes/crudUsuario');
+var EventosTeletrabajo = require('../models/EventosTeletrabajo');
 
 module.exports = {
   filtrarEventos : function (req, res) {
-    if (req.session.name == "Supervisor") { 
+    if (req.session.name == "Supervisor") {
       var usuarioId;
       var option;
       if(req.body.filtro){
-        option = req.body.filtro.split('|');  
+        option = req.body.filtro.split('|');
         usuarioId = req.body.filtro.split('|')[0];
       }
 
@@ -44,7 +45,7 @@ module.exports = {
         populateQuery.match = {departamentos:{$elemMatch:{departamento:req.body.filtro_departamento}}};
       }
       if(JSON.stringify(queryEpoch) !== JSON.stringify({})){
-        cierreQuery.epoch = marcaQuery.epoch = justQuery.fechaCreada = extraQuery.fechaCreada = permisosQuery.fechaCreada =  queryEpoch;  
+        cierreQuery.epoch = marcaQuery.epoch = justQuery.fechaCreada = extraQuery.fechaCreada = permisosQuery.fechaCreada =  queryEpoch;
       }
       if(usuarioId && usuarioId != 'todos'){
         justQuery.usuario = extraQuery.usuario = permisosQuery.usuario = marcaQuery.usuario = usuarioId;
@@ -59,7 +60,7 @@ module.exports = {
           tipo:"Supervisor"
         };
         crudUsuario.get(querrySupervisores, function (err, supervisores){
-          crudUsuario.getEmpleadoPorSupervisor(req.user.id, usuarioQuery, 
+          crudUsuario.getEmpleadoPorSupervisor(req.user.id, usuarioQuery,
             function(error, usuarios, departamentos){
               if(!usuarioId || usuarioId == 'todos'){
                 var queryUsers = {"$in":util.getIdsList(usuarios.concat(supervisores))};
@@ -67,8 +68,9 @@ module.exports = {
                 /*cierreQuery.usuarios = {};
                 cierreQuery.usuarios.usuario = queryUsers;*/
               }
-              getInformacionRender(req, res, titulo, usuarios.concat(supervisores), departamentos, marcaQuery, 
-                justQuery, extraQuery, permisosQuery, cierreQuery, populateQuery, 
+
+              getInformacionRender(req, res, titulo, usuarios.concat(supervisores), departamentos, marcaQuery,
+                justQuery, extraQuery, permisosQuery, cierreQuery, populateQuery,
                 ((!err && usuario) ? (usuario.apellido1+" "+usuario.apellido2+", "+usuario.nombre) : null));
             });
         });
@@ -77,7 +79,7 @@ module.exports = {
       //
       req.logout();
       res.redirect('/');
-    } 
+    }
   },
 
   //*************************************************************************************************************
@@ -113,7 +115,7 @@ module.exports = {
                 }
 
                 //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
-                req.user.tipo = req.session.name;	
+                req.user.tipo = req.session.name;
                 if (error) return res.json(error);
                 Contenido.find({seccion:"Eventos"},function(errorContenido,contenido){
                   return res.render('eventos', {
@@ -134,7 +136,7 @@ module.exports = {
           });
           //
         });
-        // 
+        //
       });
       //
     } else {
@@ -161,7 +163,7 @@ module.exports = {
         var epochHasta = (date2.getTime() - date2.getMilliseconds())/1000;
 
         var fechaCreada = {
-          "$gte": epochDesde, 
+          "$gte": epochDesde,
           "$lt": epochHasta
         }
 
@@ -170,7 +172,7 @@ module.exports = {
         extraQuery.fechaCreada = fechaCreada;
         permisosQuery.fechaCreada = fechaCreada;
         cierreQuery.epoch = fechaCreada;
-      } 
+      }
       Marca.find(marcaQuery).exec(function(error, marcas) {
         Justificaciones.find(justQuery).exec(function(error, justificaciones) {
           Solicitudes.find(extraQuery).exec(function(error, extras) {
@@ -196,7 +198,7 @@ module.exports = {
                 }
 
                 //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
-                req.user.tipo = req.session.name;	
+                req.user.tipo = req.session.name;
 
                 if (error) return res.json(error);
                 Contenido.find({seccion:"Eventos"},function(errorContenido,contenido){
@@ -211,7 +213,7 @@ module.exports = {
                     textos:contenido
                   });//render
                 });
-                
+
               });//CierrePersonal
             });//Permisos
           });//Extras
@@ -225,18 +227,18 @@ module.exports = {
   }
 };
 
-function getInformacionRender(req, res, titulo, usuarios, departamentos, 
+function getInformacionRender(req, res, titulo, usuarios, departamentos,
   marcaQuery, justQuery, extraQuery, permisosQuery, cierreQuery, populateQuery, nombreUsuario){
   //Filtrar -departamento -usuario -fecha
-  
+
     Justificaciones.find(justQuery).populate(populateQuery).exec(function(error, justificaciones){
       Solicitudes.find(extraQuery).populate(populateQuery).exec(function(error, extras) {
         Solicitudes.find(permisosQuery).populate(populateQuery).exec(function(error, permisos) {
           if(req.route.path.substring(0, 9) !=='/reportes'){
             //Se asigna el tipo de usuario con el cual ha iniciado sesion
             req.user.tipo = req.session.name;
-            return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, null, 
-              justificaciones, extras, permisos, null, nombreUsuario);
+            return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, null,
+              justificaciones, extras, permisos, null, nombreUsuario, null);
           }
           else {
             Marca.find(marcaQuery).populate(populateQuery).exec(function(error, marcas){
@@ -244,7 +246,7 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos,
               var usuarioQueryFiltrado = {};
               //Si se realizo un filtrado por departamento
               if(req.body.filtro_departamento && req.body.filtro_departamento!="todos"){
-                usuarioQueryFiltrado.departamentos = {$elemMatch:{departamento:{"$in":req.body.filtro_departamento}}}; 
+                usuarioQueryFiltrado.departamentos = {$elemMatch:{departamento:{"$in":req.body.filtro_departamento}}};
               }
 
               Usuario.find(usuarioQueryFiltrado).exec(function(error, usuariosFiltradoDepartamento){
@@ -258,11 +260,14 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos,
                 CierrePersonal.find(cierreQuery).populate("usuario").exec(function(error, cierres) {
                       //Se asigna el tipo de usuario con el cual ha iniciado sesion
                       req.user.tipo = req.session.name;
-                      return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, marcas, 
-                        justificaciones, extras, permisos, cierres, nombreUsuario);
+
+                      EventosTeletrabajo.find(marcaQuery).exec(function(error, eventosTeletrabajo) {
+                          return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, marcas,
+                            justificaciones, extras, permisos, cierres, nombreUsuario, eventosTeletrabajo);
+                          });
                     });
               });//Fin usuarios filtrados por departamento
-            
+
             });//Marcas
           }
         });//Solicitudes permisos
@@ -271,8 +276,8 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos,
 }
 
 
-function renderFiltro(req, res, titulo, usuario, departamentos, 
-  usuarios, marcas, justificaciones, extras, permisos, cierre, nombreUsuario){
+function renderFiltro(req, res, titulo, usuario, departamentos,
+  usuarios, marcas, justificaciones, extras, permisos, cierre, nombreUsuario, eventosTeletrabajo){
   var cList = [];
   if(cierre){
     cList = util.unixTimeToRegularDate(cierre.filter(
@@ -280,13 +285,13 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
         return m.usuario;
       }), true);
   }
-    
+
   /*
   * Se hace el calculo de las horas trabajadas
   */
   var listaSumada = null;
   if(cierre){
-    
+
     var listaSumada = new Array(),
     revisado = false;
 
@@ -294,21 +299,21 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
     //for(var i = 0; i < cierre.length;i++){
 
       revisado = false;
-      
+
       for(var p = 0; p < listaSumada.length;p++){
         if(listaSumada[p].tipoUsuario == original.tipoUsuario
         && listaSumada[p].usuario._id==original.usuario._id){//Si existe lo suma
           //Suma el tiempo trabajado analizando que si esta en el minuto 59 debe sumar la hora
-          
+
           listaSumada[p].tipoUsuario = original.tipoUsuario;
           listaSumada[p].tiempo.horas += original.tiempo.horas;
           listaSumada[p].tiempo.minutos += original.tiempo.minutos;
-          
+
           if(listaSumada[p].tiempo.minutos > 59){
             listaSumada[p].tiempo.minutos = listaSumada[p].tiempo.minutos -60;
             listaSumada[p].tiempo.horas++;
           }
-         
+
           revisado = true;
         }
       }//Fin de la busqueda del elemento a analizar en la lista de elementos analizados
@@ -327,7 +332,7 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
 
 
   //Filtrado seleccionado por el usuario. En caso de que no se reciba, se usa por defecto marcas
-  var filtrado = req.params.filtrado || 'marcas';	
+  var filtrado = req.params.filtrado || 'marcas';
 
   //En caso de no recibir rango de fechas se pasa la fecha de hoy
   var fechaDesde, fechaHasta;
@@ -340,7 +345,7 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
     dia = "0" + dia;
   if(mes < 10)
     mes = "0" + mes;
-    
+
   fechaDesde = dia + "/" + mes + "/" + fecha.getFullYear();
   fechaHasta = dia + "/" + mes + "/" + fecha.getFullYear();
   if(req.body.fechaDesde != "" && req.body.fechaDesde != null){
@@ -354,7 +359,7 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
   //Se declara el json en el que se envia la información a la vista
   var filtro = {
     title: titulo,
-    usuario: usuario,    
+    usuario: usuario,
     usuarios: usuarios,//También se usa para mostrar las vacaciones
     departamentos: departamentos,
     nombreUsuario: nombreUsuario,
@@ -363,7 +368,9 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
     rangoFecha: {
       fechaDesde: fechaDesde,
       fechaHasta: fechaHasta
-    }
+    },
+    eventosTeletrabajo: eventosTeletrabajo,
+    moment: require( 'moment' )
   };
 
   //Se especifica el valor por defecto de los select para filtrado por usuario
@@ -388,7 +395,7 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
         marcasPorDias(filtro.marcas, function (marcasPorDia){
           filtro.marcasPorDia=marcasPorDia;
         });
-        
+
   }
 
   console.log(req.route.path.substring(0, 9));
@@ -401,7 +408,7 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
   if(filtrado && filtrado == "horas" || filtrado=="todosEventos" ){
     filtro.horasEmpleado = listaSumada;
     filtro.cierreUsuarios = cList;
-    
+
   }
 
   //Si el filtrado es por justificaciones
@@ -410,10 +417,10 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
       return m.usuario;
     }), true);
   }
-    
+
   //Si el filtrado es por extras
   if(filtrado && filtrado == "extras"  || filtrado=="todosEventos" ){
-    
+
     filtro.extras = util.unixTimeToRegularDate(extras.filter(function(m){
       return m.usuario;
     }), true);
@@ -427,7 +434,7 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
       crudFeriado.listaFeriados(function (feriados){
         filtro.feriado=feriados;
       });
-   
+
   }
 
   //|| filtrado=== "extras" || filtrado=== "justificaciones"
@@ -447,8 +454,8 @@ function renderFiltro(req, res, titulo, usuario, departamentos,
       }
     });
   }
-  
-  //return (titulo === 'Reportes | SIGUCA') ? res.render('reportes', filtro) : res.render('gestionarEventos', filtro); 
+
+  //return (titulo === 'Reportes | SIGUCA') ? res.render('reportes', filtro) : res.render('gestionarEventos', filtro);
 }
 
 
@@ -471,18 +478,18 @@ function marcasPorDias(marcas,cb){
         primeraVez++ ;
     }else{
 
-      
+
       for (var j = 0; j <temporal.length; j++){
         entro=false;;
-        if (temporal[j].nombre==marcas[i].usuario.nombre && 
-          temporal[j].apellido1==marcas[i].usuario.apellido1 && temporal[j].dia==marcas[i].fecha.dia 
+        if (temporal[j].nombre==marcas[i].usuario.nombre &&
+          temporal[j].apellido1==marcas[i].usuario.apellido1 && temporal[j].dia==marcas[i].fecha.dia
           && temporal[j].mes==marcas[i].fecha.mes  && temporal[j].año==marcas[i].fecha.año
         &&temporal[j].tipoUsuario==marcas[i].tipoUsuario){
           entro=true;
           j=temporal.length;
         }
       }
-            
+
       if(entro==false){
         var objMarcas = new Object();
         objMarcas.nombre=marcas[i].usuario.nombre;
@@ -491,7 +498,7 @@ function marcasPorDias(marcas,cb){
         objMarcas.año=marcas[i].fecha.año;
         objMarcas.apellido1=marcas[i].usuario.apellido1;
         objMarcas.tipoUsuario=marcas[i].tipoUsuario;
-        temporal.push(objMarcas);    
+        temporal.push(objMarcas);
       }
     }
   }
@@ -501,8 +508,8 @@ function marcasPorDias(marcas,cb){
     var marcasOrdenadas = new Object();
     for(var m=0;m<marcas.length;m++){
       if (temporal[r].nombre==marcas[m].usuario.nombre &&
-         temporal[r].apellido1==marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia 
-         && temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año 
+         temporal[r].apellido1==marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia
+         && temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año
          && marcas[m].tipoMarca=="Entrada" && temporal[r].tipoUsuario==marcas[m].tipoUsuario){
 
         marcasOrdenadas.nombre=marcas[m].usuario.nombre;
@@ -510,33 +517,33 @@ function marcasPorDias(marcas,cb){
         marcasOrdenadas.apellido1=marcas[m].usuario.apellido1;
         marcasOrdenadas.entrada=marcas[m].fecha.str;
 
-      }else if (temporal[r].nombre==marcas[m].usuario.nombre && 
+      }else if (temporal[r].nombre==marcas[m].usuario.nombre &&
         temporal[r].apellido1==marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia
-         && temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año 
+         && temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año
          && marcas[m].tipoMarca=="Salida" && temporal[r].tipoUsuario==marcas[m].tipoUsuario){
         marcasOrdenadas.salida=marcas[m].fecha.str;
       }
       else if (temporal[r].nombre==marcas[m].usuario.nombre && temporal[r].apellido1==
-        marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia && 
-        temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año 
+        marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia &&
+        temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año
         && marcas[m].tipoMarca=="Salida a Receso" && temporal[r].tipoUsuario==marcas[m].tipoUsuario){
 
         marcasOrdenadas.salidaReceso=marcas[m].fecha.str;
 
-      }else if (temporal[r].nombre==marcas[m].usuario.nombre && 
-        temporal[r].apellido1==marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia 
-        && temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año 
+      }else if (temporal[r].nombre==marcas[m].usuario.nombre &&
+        temporal[r].apellido1==marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia
+        && temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año
         && marcas[m].tipoMarca=="Entrada de Receso" && temporal[r].tipoUsuario==marcas[m].tipoUsuario){
         marcasOrdenadas.entradaReceso=marcas[m].fecha.str;
 
-      }else if (temporal[r].nombre==marcas[m].usuario.nombre && 
-        temporal[r].apellido1==marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia 
-        && temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año 
+      }else if (temporal[r].nombre==marcas[m].usuario.nombre &&
+        temporal[r].apellido1==marcas[m].usuario.apellido1 && temporal[r].dia==marcas[m].fecha.dia
+        && temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año
         && marcas[m].tipoMarca=="Salida al Almuerzo" && temporal[r].tipoUsuario==marcas[m].tipoUsuario){
         marcasOrdenadas.salidaAlmuerzo=marcas[m].fecha.str;
       }
       else if (temporal[r].nombre==marcas[m].usuario.nombre && temporal[r].apellido1==marcas[m].usuario.apellido1
-         && temporal[r].dia==marcas[m].fecha.dia && temporal[r].mes==marcas[m].fecha.mes && 
+         && temporal[r].dia==marcas[m].fecha.dia && temporal[r].mes==marcas[m].fecha.mes &&
          temporal[r].año==marcas[m].fecha.año && marcas[m].tipoMarca=="Entrada de Almuerzo"
          && temporal[r].tipoUsuario==marcas[m].tipoUsuario){
         marcasOrdenadas.entradaAlmuerzo=marcas[m].fecha.str;
@@ -551,8 +558,8 @@ function marcasPorDias(marcas,cb){
 }
 
 function ordenarTardias(marcas, cb){
- 
-  
+
+
   var temporal =new Array();
   var hEmpleado=0;
   for(var x=0;x<marcas.length;x++){
@@ -574,17 +581,17 @@ function ordenarTardias(marcas, cb){
     var arregloTardias=new Array();
     HorarioEmpleado.find({_id: {$in:temporal}}, function(err,horarioEmpleado){
       if(horarioEmpleado) {
-        
+
         for(var p=0;p<marcas.length;p++){
           var obj=new Object();
           for(var x=0;x<horarioEmpleado.length;x++){
             if(marcas[p].usuario.horarioEmpleado){
 
-            
+
               if(marcas[p].tipoMarca=="Entrada" && marcas[p].usuario.horarioEmpleado.equals(horarioEmpleado[x]._id) ){
-                
+
                 if(marcas[p].fecha.dia=="Lunes"){
-                  
+
                   if(parseInt(horarioEmpleado[x].lunes.entrada.hora)!=0){
                     if(parseInt(String(marcas[p].fecha.hora).substr(0,2))>parseInt(horarioEmpleado[x].lunes.entrada.hora)
                     ||(parseInt(String(marcas[p].fecha.hora).substr(0,2))==parseInt(horarioEmpleado[x].lunes.entrada.hora)&&
@@ -597,10 +604,10 @@ function ordenarTardias(marcas, cb){
                     obj.horarioMinutos=horarioEmpleado[x].lunes.entrada.minutos;
                     obj.horarioHora=horarioEmpleado[x].lunes.entrada.hora;
                     obj.tipoUsuario=marcas[p].tipoUsuario;
-                      
+
                     }
                   }
-                  
+
                 }else if(marcas[p].fecha.dia=="Martes"){
                   if(parseInt(horarioEmpleado[x].martes.entrada.hora)!=0){
                     if(parseInt(String(marcas[p].fecha.hora).substr(0,2))>parseInt(horarioEmpleado[x].martes.entrada.hora)
@@ -614,11 +621,11 @@ function ordenarTardias(marcas, cb){
                     obj.horarioMinutos=horarioEmpleado[x].martes.entrada.minutos;
                     obj.horarioHora=horarioEmpleado[x].martes.entrada.hora;
                     obj.tipoUsuario=marcas[p].tipoUsuario;
-                    
+
                   }
                   }
-                  
-                  
+
+
                 }
                 else if(marcas[p].fecha.dia=="Miércoles"){
                   if(parseInt(horarioEmpleado[x].miercoles.entrada.hora)!=0){
@@ -635,8 +642,8 @@ function ordenarTardias(marcas, cb){
                     obj.tipoUsuario=marcas[p].tipoUsuario;
                   }
                   }
-                  
-                  
+
+
                 }
                 else if(marcas[p].fecha.dia=="Jueves"){
                   if(parseInt(horarioEmpleado[x].jueves.entrada.hora)!=0){
@@ -653,7 +660,7 @@ function ordenarTardias(marcas, cb){
                     obj.tipoUsuario=marcas[p].tipoUsuario;
                   }
                   }
-                  
+
                 }
                 else if(marcas[p].fecha.dia=="Viernes"){
                   if(parseInt(horarioEmpleado[x].viernes.entrada.hora)!=0){
@@ -662,16 +669,16 @@ function ordenarTardias(marcas, cb){
                     parseInt(String(marcas[p].fecha.hora).substr(3,2))>parseInt(horarioEmpleado[x].viernes.entrada.minutos)
                   ))
                   {
-                    
+
                     obj.fecha=marcas[p].fecha.str;
                     obj.nombre=marcas[p].usuario.nombre;
                     obj.apellido=marcas[p].usuario.apellido1;
                     obj.horarioMinutos=horarioEmpleado[x].viernes.entrada.minutos;
-                    obj.horarioHora=horarioEmpleado[x].viernes.entrada.hora;  
+                    obj.horarioHora=horarioEmpleado[x].viernes.entrada.hora;
                     obj.tipoUsuario=marcas[p].tipoUsuario;
                   }
                   }
-                  
+
                 }
                 else if(marcas[p].fecha.dia=="Sábado"){
                   if(parseInt(horarioEmpleado[x].sabado.entrada.hora)!=0){
@@ -686,13 +693,13 @@ function ordenarTardias(marcas, cb){
                     obj.horarioMinutos=horarioEmpleado[x].sabado.entrada.minutos;
                     obj.horarioHora=horarioEmpleado[x].sabado.entrada.hora;
                     obj.tipoUsuario=marcas[p].tipoUsuario;
-                  
+
                     }
                   }
-                  
+
                 }
                 else if(marcas[p].fecha.dia=="Domingo"){
-                  
+
                   if(parseInt(horarioEmpleado[x].domingo.entrada.hora)!=0){
                     if(parseInt(String(marcas[p].fecha.hora).substr(0,2))>parseInt(horarioEmpleado[x].domingo.entrada.hora)
                     ||(parseInt(String(marcas[p].fecha.hora).substr(0,2))==parseInt(horarioEmpleado[x].domingo.entrada.hora)&&
@@ -707,7 +714,7 @@ function ordenarTardias(marcas, cb){
                     obj.tipoUsuario=marcas[p].tipoUsuario;
                   }
                   }
-                  
+
                 }
 
               }
@@ -716,24 +723,24 @@ function ordenarTardias(marcas, cb){
           if(obj.fecha){
             arregloTardias.push(obj);
           }
-        }  
-         
+        }
+
       }
-      
+
   });
   HorarioFijo.find({_id: {$in:temporal}}, function(err,horarioFijo){
-    
+
     if(horarioFijo){
-      
+
       for(var i=0;i<marcas.length;i++){
         var obj=new Object();
-    
+
         for(var j=0;j<horarioFijo.length;j++){
-          
+
           if( marcas[i].usuario.horarioFijo){
             if(marcas[i].tipoMarca=="Entrada" && marcas[i].usuario.horarioFijo.equals(horarioFijo[j]._id) ){
-             
-             
+
+
               if(marcas[i].fecha.dia=="Sábado"){
                 marcas[i].fecha.dia="Sabado";
               }else if(marcas[i].fecha.dia=="Miércoles"){
@@ -753,7 +760,7 @@ function ordenarTardias(marcas, cb){
                 obj.horarioMinutos=parseInt(String(horarioFijo[j].horaEntrada).substr(3,2));
                 obj.horarioHora=parseInt(String(horarioFijo[j].horaEntrada).substr(0,2));
                 obj.tipoUsuario=marcas[i].tipoUsuario;
-               
+
               }else if(horarioFijo[j].Martes==marcas[i].fecha.dia){
                 obj.fecha=marcas[i].fecha.str;
                 obj.nombre=marcas[i].usuario.nombre;
@@ -761,7 +768,7 @@ function ordenarTardias(marcas, cb){
                 obj.horarioMinutos=parseInt(String(horarioFijo[j].horaEntrada).substr(3,2));
                 obj.horarioHora=parseInt(String(horarioFijo[j].horaEntrada).substr(0,2));
                 obj.tipoUsuario=marcas[i].tipoUsuario;
-               
+
               }else if(horarioFijo[j].Miercoles==marcas[i].fecha.dia){
                 obj.fecha=marcas[i].fecha.str;
                 obj.nombre=marcas[i].usuario.nombre;
@@ -769,7 +776,7 @@ function ordenarTardias(marcas, cb){
                 obj.horarioMinutos=parseInt(String(horarioFijo[j].horaEntrada).substr(3,2));
                 obj.horarioHora=parseInt(String(horarioFijo[j].horaEntrada).substr(0,2));
                 obj.tipoUsuario=marcas[i].tipoUsuario;
-               
+
               }
               else if(horarioFijo[j].Jueves==marcas[i].fecha.dia){
                 obj.fecha=marcas[i].fecha.str;
@@ -778,7 +785,7 @@ function ordenarTardias(marcas, cb){
                 obj.horarioMinutos=parseInt(String(horarioFijo[j].horaEntrada).substr(3,2));
                 obj.horarioHora=parseInt(String(horarioFijo[j].horaEntrada).substr(0,2));
                 obj.tipoUsuario=marcas[i].tipoUsuario;
-               
+
               }
               else if(horarioFijo[j].Viernes==marcas[i].fecha.dia){
                 obj.fecha=marcas[i].fecha.str;
@@ -787,7 +794,7 @@ function ordenarTardias(marcas, cb){
                 obj.horarioMinutos=parseInt(String(horarioFijo[j].horaEntrada).substr(3,2));
                 obj.horarioHora=parseInt(String(horarioFijo[j].horaEntrada).substr(0,2));
                 obj.tipoUsuario=marcas[i].tipoUsuario;
-               
+
               }else if(horarioFijo[j].Sabado==marcas[i].fecha.dia){
                 obj.fecha=marcas[i].fecha.str;
                 obj.nombre=marcas[i].usuario.nombre;
@@ -795,28 +802,28 @@ function ordenarTardias(marcas, cb){
                 obj.horarioMinutos=parseInt(String(horarioFijo[j].horaEntrada).substr(3,2));
                 obj.horarioHora=parseInt(String(horarioFijo[j].horaEntrada).substr(0,2));
                 obj.tipoUsuario=marcas[i].tipoUsuario;
-               
+
               }
             }
           }//fin del if que pregunta si tiene horario fijo
-            
+
         }
         if(obj.fecha){
           arregloTardias.push(obj);
-        
+
         }
-      
+
       }
     }
 
     cb(arregloTardias);
-    
+
   });
-  
- 
+
+
  cb(arregloTardias);
-  
-  
+
+
   }
 
 }
@@ -837,7 +844,7 @@ function filtrarPorFecha(req){
       var date2 = new Date(splitDate2[2], splitDate2[1]-1, parseInt(splitDate2[0])+1);
       var epochHasta = (date2.getTime() - date2.getMilliseconds())/1000;
       return {
-        '$gte': epochDesde, 
+        '$gte': epochDesde,
         '$lte': epochHasta
       }
     }
@@ -852,27 +859,27 @@ function filtrarPorFecha(req){
   diaGte.milliseconds(0);
   /*var epochDesde = (diaGte.getTime() - diaGte.getMilliseconds())/1000 - 86400*7;
   var epochHasta = (diaLt.getTime() - diaLt.getMilliseconds())/1000;*/
-  
-  
+
+
    //Si corresponde a las justificaciones envia todos los registros
 
   if(req.route.path.substring(0, 9) !=='/reportes'){
     return {};
   }
-  
+
   //Si es la vista de reportes solo envia los registros del día
   return {
     '$gte': diaGte.unix() //Se comenta para que traiga todos los elementos cuando no se indica rango de fechas
   };
   //return {};
-  
+
 }
 
 function getTitulo(option){
   //Si es un reporte lo que se quiere, se buscan los que NO están pendientes
   if(option  === '/reportes'){
     return 'Reportes | SIGUCA';
-  } 
+  }
   return 'Gestionar eventos | SIGUCA';
 }
 

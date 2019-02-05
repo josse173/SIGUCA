@@ -1,0 +1,48 @@
+extends layout
+
+block content
+  .container
+
+    br
+    h3 Configuración de Alertas
+    table.footable.tableContenido(data-page-navigation=".pagination" ,data-page-size="25")
+        thead
+          tr
+            th Nombre
+            th Valor
+            th Editar
+
+        tbody
+          each configuracion, i in configuraciones
+            tr
+              td #{configuracion.nombre}
+              td #{configuracion.valor}
+              td
+                button.btn.btn-default(data-toggle="modal" data-target="#editConfiguracion" value=configuracion._id)
+                  i.icon-pencil.icon-large.i-success
+
+
+     #editConfiguracion.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+      .modal-dialog
+          .modal-content
+            .modal-header
+              button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+              h4#myModalLabel.modal-title Actualizar configuración
+            .modal-body
+              form.formUpdateConfiguracion(action='/configuracionAlertasUpdate', method='post')#login-form.well.span4
+                .form-group
+                  label(for='nombreUnico' style="float:left") Nombre Unico:
+                  input#nombreUnico.form-control( type="text", name="nombreUnico", disabled)
+
+                  label(for='nombre' style="float:left") Nombre:
+                  input#nombre.form-control( type="text", name="nombre")
+
+                  label(for='valor' style="float:left") Valor:
+                  input#valor.form-control( type="text", name="valor" )
+
+                button.btn.btn-success(type='submit') Actualizar
+                alertify.myAlert("Browser dialogs made easy!")
+                button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
+
+
+block sigucaJS
