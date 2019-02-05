@@ -461,21 +461,43 @@ module.exports = function(app, io) {
 
     app.post('/validarPresente', autentificado, function (req, res) {
 
-        EventosTeletrabajo.findById(req.body.id, function(err, respuesta){
+        EventosTeletrabajo.findById(req.body.id, function(err, evento){
             if (err) console.log(err);
-            console.log(respuesta)
-            if(!respuesta.presente){
-                Correo.find({},function(errorCritico,listaCorreos){
-                    if(!errorCritico &&listaCorreos.length>0){
-                        var transporter = nodemailer.createTransport('smtps://'+listaCorreos[0].nombreCorreo+':'+listaCorreos[0].password+'@'+listaCorreos[0].dominioCorreo);
-                        transporter.sendMail({
-                            from: listaCorreos[0].nombreCorreo,
-                            to: 'rsoto07@gmail.com',
-                            subject: 'Se ha solicitado una confirmación de conexión',
-                            text: " Estimado(a) usuario se le ha solicitado una confirmación de conexión"
+            if(!evento.presente){
+
+                Usuario.findById(evento.usuario, function(err, usuario){
+                    if (err) console.log(err);
+                    if (usuario){
+                        usuario.departamentos.forEach(function(departamento) {
+                            Usuario.find({departamentos: {$elemMatch: {departamento: ObjectId(departamento.departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisores){
+                                if (error) console.log(error);
+
+                                if(supervisores && supervisores.length > 0){
+                                    supervisores.forEach(function(supervisor) {
+
+                                        Correo.find({},function(error,listaCorreos){
+                                            if (!error && listaCorreos.length > 0 ) {
+                                                var transporter = nodemailer.createTransport('smtps://'+listaCorreos[0].nombreCorreo+':'+listaCorreos[0].password+'@'+listaCorreos[0].dominioCorreo);
+                                                transporter.sendMail({
+                                                    from: listaCorreos[0].nombreCorreo,
+                                                    to: supervisor.email,
+                                                    subject: 'Verificación de presencia fallida',
+                                                    text: "Estimado Funcionario: <br> Usted ha recibido una notificación de no comprobación de presencia en modalidad de teletrabajo de: <br><br>" +
+                                                           usuario.nombre + " " + usuario.apellido1 + " " + usuario.apellido2 + "<br><br>" +
+                                                           "Haga clic en el siguiente enlace para ir al sitio:<br>" +
+                                                           "<URL-SIGUCA>" + "<br><br>" +
+                                                            "Atentamente,<br>" + "Recursos Humanos"
+                                                });
+                                            } else {
+                                                console.log("error al enviar correo de solicitud de confirmación de conexión");
+                                            }
+                                        });
+
+                                    });
+                                }
+                            });
+
                         });
-                    }else{
-                        console.log("error al enviar correo de solicitud de confirmación de conexión");
                     }
                 });
             }

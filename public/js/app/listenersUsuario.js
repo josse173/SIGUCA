@@ -12,7 +12,7 @@ $( document ).ready(function() {
     function validarAlertas() {
 
         var fechaActual = new Date();
-        console.log('Hora Actual: ' + fechaActual.getDate() + ' ' + fechaActual.getHours() + ':' + fechaActual.getMinutes() + "(" + fechaActual.getTime() + ")");
+        // console.log('Hora Actual: ' + fechaActual.getDate() + ' ' + fechaActual.getHours() + ':' + fechaActual.getMinutes() + "(" + fechaActual.getTime() + ")");
 
         var tiempoRespuesta = document.getElementById("tiempoRespuesta").value;
         var alertas = document.getElementById("alertas").value;
@@ -23,7 +23,7 @@ $( document ).ready(function() {
             listaAlertas.forEach(function(alerta) {
                 // console.log(alerta);
                 var fechaAlerta = new Date(alerta.fechaCreacion);
-                console.log('Hora Alerta: '+ fechaAlerta.getDate() + ' ' + fechaAlerta.getHours() + ':' + fechaAlerta.getMinutes() + "(" + fechaAlerta.getTime() + ")");
+                // console.log('Hora Alerta: '+ fechaAlerta.getDate() + ' ' + fechaAlerta.getHours() + ':' + fechaAlerta.getMinutes() + "(" + fechaAlerta.getTime() + ")");
                 if ( fechaAlerta.getTime() <= fechaActual.getTime() && alerta.mostrada === false) {
 
                     $.ajax({
@@ -32,7 +32,7 @@ $( document ).ready(function() {
                         dataType : "json",
                         data: {usuario: alerta.usuario},
                         success: function(data) {
-                            console.log(data.result);
+                            // console.log(data.result);
                             if (data.result && data.result === true) {
                                 $("#mensajeConfirmacionConexion").modal("show");
                                 var intervalId = blinkTab("Confirmación de Conexión");
