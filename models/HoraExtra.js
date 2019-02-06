@@ -13,7 +13,7 @@ var SchemaHorasExtra = new Schema({
         ref: 'Usuario'
     },
     fechaCreada: {
-        type: String,
+        type: Number,
         default: ''
     },
     fechaInicial: {

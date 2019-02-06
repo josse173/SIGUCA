@@ -32,7 +32,7 @@ module.exports = {
       var queryEpoch = filtrarPorFecha(req);
       var titulo = getTitulo(req.route.path.substring(0, 9));
       var justQuery = {};
-      var extraQuery = {tipoSolicitudes:'Extras'};
+      var extraQuery = {};
       var permisosQuery = {tipoSolicitudes:'Permisos'};
       //var cierresQuery = {};
       var marcaQuery = {};
@@ -69,7 +69,6 @@ module.exports = {
                 /*cierreQuery.usuarios = {};
                 cierreQuery.usuarios.usuario = queryUsers;*/
               }
-              console.log(extraQuery);
               getInformacionRender(req, res, titulo, usuarios.concat(supervisores), departamentos, marcaQuery,
                 justQuery, extraQuery, permisosQuery, cierreQuery, populateQuery,
                 ((!err && usuario) ? (usuario.apellido1+" "+usuario.apellido2+", "+usuario.nombre) : null));
@@ -239,7 +238,9 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos,
   //Filtrar -departamento -usuario -fecha
 
     Justificaciones.find(justQuery).populate(populateQuery).exec(function(error, justificaciones){
-      Solicitudes.find(extraQuery).populate(populateQuery).exec(function(error, extras) {
+      HoraExtra.find(extraQuery).populate(populateQuery).exec(function(error, extras) {
+        console.log(extraQuery);
+        console.log(extras);
         Solicitudes.find(permisosQuery).populate(populateQuery).exec(function(error, permisos) {
           if(req.route.path.substring(0, 9) !=='/reportes'){
             //Se asigna el tipo de usuario con el cual ha iniciado sesion
@@ -895,6 +896,6 @@ function getEstado(titulo){
     return "Pendiente";
   }
   return {
-    "$nin": ["Pendiente", "Incompleto"]
+    "$in": ["Pendiente", "Incompleto"]
   };
 }

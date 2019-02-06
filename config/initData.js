@@ -111,6 +111,27 @@ Contenido.findOne({ seccion: 'Eventos', llave: 'Titulo Solicitudes de horas extr
     }
 });
 
+Contenido.findOne({ seccion: 'Reportes', llave: 'Solicitud de horas extraordinarias etiqueta cliente'}, function (err, contenido) {
+    if (contenido) {
+        contenido.titulo = 'Ubicación:';
+
+        Contenido.findByIdAndUpdate(contenido._id, contenido, function(err, alerta){
+            if (err) console.log(err);
+        });
+    }
+});
+
+Contenido.findOne({ seccion: 'Reportes', llave: 'Titulo solicitudes horas extraordinarias'}, function (err, contenido) {
+    if (contenido) {
+        contenido.titulo = 'Reporte horas extra';
+
+        Contenido.findByIdAndUpdate(contenido._id, contenido, function(err, alerta){
+            if (err) console.log(err);
+        });
+    }
+});
+
+
 
 
 
