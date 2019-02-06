@@ -115,7 +115,7 @@ block content
         br
         h3 #{textos[17].titulo}
 
-        table.footable(data-page-navigation=".pagination")
+        table.footable(data-page-navigation=".pagination")#opcionesTablaHorasExtra
             thead
               tr
                 th(data-type="numeric" data-sort-initial="descending") #{textos[18].titulo}
@@ -146,6 +146,8 @@ block content
               tr
                 td(colspan='9')
                   .pagination.pagination-centered.hide-if-no-paging
+      else
+          span No se encontraron resultados
 
       if(permisos.length != 0)
         br

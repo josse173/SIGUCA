@@ -13,9 +13,24 @@ module.exports = {
                     list[x].cantHoras = h + ":0" + m;
                 else
                     list[x].cantHoras = h + ":" + m;
-            } 
+            }
+            if("tiempoSolicitado" in list[x]){
+                //
+                var  s = list[x].tiempoSolicitado;
+                var h  = Math.floor( s / ( 60 * 60 ) );
+                s -= h * ( 60 * 60 );
+                var m  = Math.floor( s / 60 );
+                if(m < 10)
+                    list[x].cantHoras = h + ":0" + m;
+                else
+                    list[x].cantHoras = h + ":" + m;
+            }
             if("fechaCreada" in list[x]){
                 var epochTime = list[x].fechaCreada;
+                this.epochToStr(list[x], epochTime, detail);
+            }
+            if("fechaCreacion" in list[x]){
+                var epochTime = list[x].fechaCreacion;
                 this.epochToStr(list[x], epochTime, detail);
             }
             if("epoch" in list[x]){
@@ -74,8 +89,8 @@ module.exports = {
     },
     getMes: function(m){
         var meses = [
-        "Enero", "Febrero", "Marzo", 
-        "Abril", "Mayo", "Junio", 
+        "Enero", "Febrero", "Marzo",
+        "Abril", "Mayo", "Junio",
         "Julio", "Agosto","Setiembre",
         "Octubre", "Noviembre", "Diciembre"
         ];
@@ -166,9 +181,9 @@ module.exports = {
         tiempoT = this.ajustarHoras(tiempoT, tiempoAlmuerzo);
         for(receso in marcas.recesos){
             tiempoT = this.ajustarHoras(
-                tiempoT, 
+                tiempoT,
                 this.contarHoras(
-                    marcas.recesos[receso].recesoOut, 
+                    marcas.recesos[receso].recesoOut,
                     marcas.recesos[receso].recesoIn)
                 );
         }
@@ -183,14 +198,14 @@ module.exports = {
     },
 
     determinarJustificacion : function(horario){
-       
+
 
         var horaSalida= parseInt(horario.salida.hora-config.periodoLibreTrabajo);
         var horaEntrada= parseInt(horario.entrada.hora);
         var minutoSalida=parseInt(horario.salida.minutos);
         var minutoEntrada=parseInt(horario.entrada.minutos-config.rangoMarcaEntrada);
 
-        
+
         temporalMinutoSalida=minutoSalida;
         temporalHoraSalida=horaSalida;
 
@@ -209,7 +224,7 @@ module.exports = {
 
 
         return -1;
-        
+
 
     },
 
@@ -232,8 +247,8 @@ module.exports = {
     //************************************************************************************************************
     //************************************************************************************************************
 	/*
-	*  Resultados de configuracion y reportes se filtran por supervisor, finalmente se direcciona a la página 
-	*  correspondiente, donde se gestionaran cada uno de los resultados. 
+	*  Resultados de configuracion y reportes se filtran por supervisor, finalmente se direcciona a la página
+	*  correspondiente, donde se gestionaran cada uno de los resultados.
 	*/
 	eventosAjuste: function (evento, supervisor, query){
 		var notFound = true;
@@ -248,7 +263,7 @@ module.exports = {
 	    		if("fechaCreada" in evento[x]){
 	    			var epochTime = evento[x].fechaCreada;
 	    			var fecha = new Date(0);
-	    			fecha.setUTCSeconds(epochTime); 
+	    			fecha.setUTCSeconds(epochTime);
 	    			evento[x].fecha = fecha;
 	    		}
 	    		if("cantidadHoras" in evento[x]){
@@ -261,7 +276,7 @@ module.exports = {
 	    			else
 	    				evento[x].cantHoras = h + ":" + m;
 
-	    		} 
+	    		}
 	    		if("epoch" in evento[x]){
 	    			var epochTime = evento[x].epoch;
 	    			var fecha = new Date(0);
@@ -277,39 +292,39 @@ module.exports = {
 	    				evento[x].fecha = fecha;
 	    			}
 	    		}
-	    		if("eventosEmpl" != query && 
+	    		if("eventosEmpl" != query &&
 	    			"filtrarEventosEmpl" != query &&
 	    			"escritorioEmpl" != query){
 
 	    			if(evento[x].usuario!=null){
 	    				if("reportes" == query){
-	    					if(JSON.stringify(evento[x].usuario.departamentos[0].departamento) === 
-	    						JSON.stringify(supervisor.departamentos[y].departamento) 
+	    					if(JSON.stringify(evento[x].usuario.departamentos[0].departamento) ===
+	    						JSON.stringify(supervisor.departamentos[y].departamento)
 	    						&& notFound){
 	    						count++;
 	    						//
 	    						notFound = false;
 	    						array.push(evento[x]);
-	    					} 
-	    					if(JSON.stringify(evento[x].usuario.tipo) === 
+	    					}
+	    					if(JSON.stringify(evento[x].usuario.tipo) ===
 	    						JSON.stringify("Supervisor")  && notFound){
 	    						count++;
 	    						//
 	    						notFound = false;
 	    						array.push(evento[x]);
-	    					}   
-	    				} 
+	    					}
+	    				}
 	    				else {
-	    					if(JSON.stringify(evento[x].usuario.departamentos[0].departamento) 
-	    						=== JSON.stringify(supervisor.departamentos[y].departamento) 
-	    						&& JSON.stringify(evento[x].usuario._id) 
+	    					if(JSON.stringify(evento[x].usuario.departamentos[0].departamento)
+	    						=== JSON.stringify(supervisor.departamentos[y].departamento)
+	    						&& JSON.stringify(evento[x].usuario._id)
 	    						!= JSON.stringify(supervisor._id) && notFound){
 	    						array.push(evento[x]);
 	    						//
 	    						count++;
 	    						notFound = false;
-	    					} 
-	    					if(JSON.stringify(evento[x].usuario.tipo) === JSON.stringify("Supervisor") 
+	    					}
+	    					if(JSON.stringify(evento[x].usuario.tipo) === JSON.stringify("Supervisor")
 	    						&& JSON.stringify(evento[x].usuario._id) != JSON.stringify(supervisor._id) && notFound){
 	    						array.push(evento[x]);
 	    						//
@@ -328,13 +343,13 @@ module.exports = {
                             /*if(!evento[x].departamentos){
                                 array.push(evento[x]);
                             }
-                            else*/ if(JSON.stringify(evento[x].departamentos[0].departamento) === JSON.stringify(supervisor.departamentos[y].departamento) 
+                            else*/ if(JSON.stringify(evento[x].departamentos[0].departamento) === JSON.stringify(supervisor.departamentos[y].departamento)
                              && notFound){
                              array.push(evento[x]);
 			            		//
 			            		notFound = false;
-			            	} 
-			            	else if(JSON.stringify(evento[x].tipo) === JSON.stringify("Supervisor") 
+			            	}
+			            	else if(JSON.stringify(evento[x].tipo) === JSON.stringify("Supervisor")
 			            		&& notFound){
 			            		array.push(evento[x]);
 			            		//
@@ -344,13 +359,13 @@ module.exports = {
                             /*if(!evento[x].departamentos){
                                 array.push(evento[x]);
                             }
-                            else */if(JSON.stringify(evento[x].departamentos[0].departamento) === JSON.stringify(supervisor.departamentos[y].departamento) 
+                            else */if(JSON.stringify(evento[x].departamentos[0].departamento) === JSON.stringify(supervisor.departamentos[y].departamento)
                              && JSON.stringify(evento[x]._id) != JSON.stringify(supervisor._id) && notFound){
                              array.push(evento[x]);
 			            		//
 			            		notFound = false;
-			            	} 
-			            	else if(JSON.stringify(evento[x].tipo) === JSON.stringify("Supervisor") 
+			            	}
+			            	else if(JSON.stringify(evento[x].tipo) === JSON.stringify("Supervisor")
 			            		&& JSON.stringify(evento[x]._id) != JSON.stringify(supervisor._id) && notFound){
 			            		array.push(evento[x]);
 			            		//

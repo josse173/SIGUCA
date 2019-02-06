@@ -69,7 +69,7 @@ module.exports = {
                 /*cierreQuery.usuarios = {};
                 cierreQuery.usuarios.usuario = queryUsers;*/
               }
-
+              console.log(extraQuery);
               getInformacionRender(req, res, titulo, usuarios.concat(supervisores), departamentos, marcaQuery,
                 justQuery, extraQuery, permisosQuery, cierreQuery, populateQuery,
                 ((!err && usuario) ? (usuario.apellido1+" "+usuario.apellido2+", "+usuario.nombre) : null));
@@ -156,7 +156,7 @@ module.exports = {
       var marcaQuery = {usuario: req.user.id, tipoUsuario: req.session.name};
       var justQuery = {usuario: req.user.id};
       var cierreQuery = {usuario: req.user.id};
-      var extraQuery = {usuario: req.user.id, tipoSolicitudes:'Extras', };
+      var extraQuery = {usuario: req.user.id, };
       var permisosQuery = {usuario: req.user.id, tipoSolicitudes:'Permisos'};
 
       if(req.body.fechaDesde != '' && req.body.fechaHasta != ''){
@@ -175,13 +175,13 @@ module.exports = {
 
         marcaQuery.epoch = fechaCreada;
         justQuery.fechaCreada = fechaCreada;
-        extraQuery.fechaCreada = fechaCreada;
+        extraQuery.fechaCreacion = fechaCreada;
         permisosQuery.fechaCreada = fechaCreada;
         cierreQuery.epoch = fechaCreada;
       }
       Marca.find(marcaQuery).exec(function(error, marcas) {
         Justificaciones.find(justQuery).exec(function(error, justificaciones) {
-          Solicitudes.find(extraQuery).exec(function(error, extras) {
+          HoraExtra.find(extraQuery).exec(function(error, extras) {
             Solicitudes.find(permisosQuery).exec(function(error, permisos) {
               CierrePersonal.find(cierreQuery, function (err, listaCierre) {
                 var supervisor = {departamentos: [1]};
@@ -212,11 +212,12 @@ module.exports = {
                     title: 'Solicitudes/Justificaciones | SIGUCA',
                     usuario: req.user,
                     justificaciones: arrayJust,
-                    extras: arrayExtras,
+                    horasExtra: arrayExtras,
                     permisos: arrayPermisos,
                     cierreUsuarios: listaCierre,
                     marcas: marcas,
-                    textos:contenido
+                    textos:contenido,
+                    moment: require('moment')
                   });//render
                 });
 

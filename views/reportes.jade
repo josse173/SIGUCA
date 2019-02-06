@@ -475,23 +475,23 @@ block content
                               td #{elemento.estado}
                               td.text-center #{elemento.vacaciones}
 
-          if(eventosTeletrabajo)
-            h3 Confirmación de Presencia
-            table.footable.tableContenido(data-page-navigation=".pagination" ,data-page-size="25")
-              thead
-                tr
-                  th Usuario
-                  th Fecha de la alerta
-                  th Fecha Aceptación
-                  th Presente
-
-              tbody
-                each eventoTeletrabajo, i in eventosTeletrabajo
+          if(tipoReporte === 'confirmacionPresencia')
+              h3 Confirmación de Presencia
+              table.footable.tableContenido(data-page-navigation=".pagination" ,data-page-size="25")
+                thead
                   tr
-                    td #{eventoTeletrabajo.nombreUsuario}
-                    td #{moment(eventoTeletrabajo.fecha).format("YYYY-MM-DD hh:mm:ss")}
-                    td #{eventoTeletrabajo.fechaAceptacion === null ? '' : moment(eventoTeletrabajo.fechaAceptacion).format("YYYY-MM-DD hh:mm:ss")}
-                    td #{eventoTeletrabajo.presente ? 'Si' : 'No'}
+                    th Usuario
+                    th Fecha de la alerta
+                    th Fecha Aceptación
+                    th Presente
+
+                tbody
+                  each eventoTeletrabajo, i in eventosTeletrabajo
+                    tr
+                      td #{eventoTeletrabajo.nombreUsuario}
+                      td #{moment(eventoTeletrabajo.fecha).format("YYYY-MM-DD hh:mm:ss")}
+                      td #{eventoTeletrabajo.fechaAceptacion === null ? '' : moment(eventoTeletrabajo.fechaAceptacion).format("YYYY-MM-DD hh:mm:ss")}
+                      td #{eventoTeletrabajo.presente ? 'Si' : 'No'}
 block sigucaJS
   script(src="/js/app/reportes.js")
   script(src="/socket.io/socket.io.js")
