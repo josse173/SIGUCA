@@ -239,8 +239,6 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos,
 
     Justificaciones.find(justQuery).populate(populateQuery).exec(function(error, justificaciones){
       HoraExtra.find(extraQuery).populate(populateQuery).exec(function(error, extras) {
-        console.log(extraQuery);
-        console.log(extras);
         Solicitudes.find(permisosQuery).populate(populateQuery).exec(function(error, permisos) {
           if(req.route.path.substring(0, 9) !=='/reportes'){
             //Se asigna el tipo de usuario con el cual ha iniciado sesion
