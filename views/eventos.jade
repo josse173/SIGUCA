@@ -1,13 +1,13 @@
 extends layout
 
-block content  
+block content
   div.container
       .info
        h3 #{textos[0].titulo}
-       h4 #{usuario.apellido1} #{usuario.apellido2}, #{usuario.nombre}   
-      
+       h4 #{usuario.apellido1} #{usuario.apellido2}, #{usuario.nombre}
+
       div.filter
-        h3 #{textos[1].titulo}  
+        h3 #{textos[1].titulo}
         table
          form(role='form', method="POST", action="/filtrarEventosEmpl")
           td
@@ -46,14 +46,14 @@ block content
                   -   tiempo = "El usuario se ausentó o no marcó salida."
                   - }
                   tr
-                    td(data-value=cierre.epoch) #{cierre.fecha.str} 
+                    td(data-value=cierre.epoch) #{cierre.fecha.str}
                     td #{tiempo}
               tfoot
                 tr
                   td(colspan='10')
                     .pagination.pagination-centered.hide-if-no-paging
       .col-xs-12
-       
+
         if(marcas.length != 0)
           h3 #{textos[9].titulo}
           table.footable.tableMarcas(data-page-navigation=".pagination" data-page-size="6")
@@ -68,18 +68,18 @@ block content
                   tr
                     td(data-value=marca.epoch) #{marca.fecha.str}
                     td #{marca.tipoUsuario}
-                    td #{marca.tipoMarca} 
+                    td #{marca.tipoMarca}
                     td
                       - var date = new Date();
                       - var epoch = (date.getTime() - date.getMilliseconds())/1000;
                       if(epoch - marca.epoch <= 500 && i == (marcas.length-1))
                         button.btn.btn-default.marcaDelete(value=marca.fecha+","+marca.id+","+marca.tipoMarca)
-                          i.icon-trash.icon-large.i-danger 
+                          i.icon-trash.icon-large.i-danger
               tfoot
                 tr
                   td(colspan='3')
                     .pagination.pagination-centered.hide-if-no-paging
-        
+
 
       if(justificaciones.length != 0)
         .col-xs-12
@@ -93,28 +93,28 @@ block content
                   th(data-hide="phone,small" data-sort-ignore="true") #{textos[14].titulo}
                   th #{textos[15].titulo}
                   th(data-hide="phone,small" data-sort-ignore="true") #{textos[16].titulo}
-              tbody 
+              tbody
                 each justificacion, i in justificaciones
                   tr
-                    td(data-value=justificacion.fechaCreada) #{justificacion.fecha.str} 
-                    td #{justificacion.motivo} 
-                    td #{justificacion.detalle} 
-                    td #{justificacion.comentarioSupervisor} 
-                    td #{justificacion.estado} 
+                    td(data-value=justificacion.fechaCreada) #{justificacion.fecha.str}
+                    td #{justificacion.motivo}
+                    td #{justificacion.detalle}
+                    td #{justificacion.comentarioSupervisor}
+                    td #{justificacion.estado}
                     td
-                      if(justificacion.estado == 'Pendiente') 
+                      if(justificacion.estado == 'Pendiente')
                         button.btn.btn-default(data-toggle="modal" data-target="#editJust" value=justificacion._id)
-                          i.icon-pencil.icon-large.i-success 
+                          i.icon-pencil.icon-large.i-success
               tfoot
                 tr
                   td(colspan='6')
-                    .pagination.pagination-centered.hide-if-no-paging                          
+                    .pagination.pagination-centered.hide-if-no-paging
 
-        
-      if(extras.length != 0)
+
+      if(horasExtra.length != 0)
         br
         h3 #{textos[17].titulo}
-      
+
         table.footable(data-page-navigation=".pagination")
             thead
               tr
@@ -127,21 +127,21 @@ block content
                 th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[24].titulo}
                 th #{textos[25].titulo}
                 th(data-hide="phone,small" data-sort-ignore="true") #{textos[26].titulo}
-            tbody 
-              each extra, i in extras
+            tbody
+              each extra, i in horasExtra
                 tr
-                  td(data-value=extra.fechaCreada) #{extra.fecha.str} 
-                  td #{extra.diaInicio} 
-                  td #{extra.diaFinal} 
-                  td #{extra.cantHoras} 
-                  td #{extra.cliente} 
-                  td #{extra.motivo} 
-                  td #{extra.comentarioSupervisor} 
-                  td #{extra.estado} 
+                  td #{moment.unix(extra.fechaCreacion).format("YYYY-MM-DD hh:mm:ss")}
+                  td #{moment.unix(extra.fechaInicial).format("YYYY-MM-DD hh:mm:ss")}
+                  td #{moment.unix(extra.fechaFinal).format("YYYY-MM-DD hh:mm:ss")}
+                  td #{extra.tiempoSolicitadoTexto}
+                  td #{extra.ubicacion}
+                  td #{extra.motivo}
+                  td #{extra.comentarioSupervisor}
+                  td #{extra.estado}
                   td
-                    if(extra.estado == 'Pendiente') 
+                    if(extra.estado == 'Pendiente')
                       button.btn.btn-default(data-toggle="modal" data-target="#editExtra" value=extra._id)
-                        i.icon-pencil.icon-large.i-success 
+                        i.icon-pencil.icon-large.i-success
             tfoot
               tr
                 td(colspan='9')
@@ -150,7 +150,7 @@ block content
       if(permisos.length != 0)
         br
         h3 #{textos[27].titulo}
-      
+
         table.footable(data-page-navigation=".pagination")
             thead
               tr
@@ -163,26 +163,26 @@ block content
                 th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[34].titulo}
                 th #{textos[35].titulo}
                 th(data-hide="phone,small" data-sort-ignore="true") #{textos[36].titulo}
-            tbody 
+            tbody
               each permiso, i in permisos
                 tr
-                  td(data-value=permiso.fechaCreada) #{permiso.fecha.str} 
-                  td #{permiso.diaInicio} 
-                  td #{permiso.diaFinal} 
-                  td #{permiso.cantidadDias} 
-                  td #{permiso.motivo} 
-                  td #{permiso.detalle} 
-                  td #{permiso.comentarioSupervisor} 
-                  td #{permiso.estado} 
+                  td(data-value=permiso.fechaCreada) #{permiso.fecha.str}
+                  td #{permiso.diaInicio}
+                  td #{permiso.diaFinal}
+                  td #{permiso.cantidadDias}
+                  td #{permiso.motivo}
+                  td #{permiso.detalle}
+                  td #{permiso.comentarioSupervisor}
+                  td #{permiso.estado}
                   td
-                    if(permiso.estado == 'Pendiente') 
+                    if(permiso.estado == 'Pendiente')
                       button.btn.btn-default(data-toggle="modal" data-target="#editPermiso" value=permiso._id)
-                        i.icon-pencil.icon-large.i-success 
+                        i.icon-pencil.icon-large.i-success
             tfoot
               tr
                 td(colspan='9')
                   .pagination.pagination-centered.hide-if-no-paging
-    
+
 
     #editJust.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
       .modal-dialog
@@ -205,7 +205,7 @@ block content
               .form-group
                   label(for='detalles') Detalles:
                   textarea#detalles.form-control(rows="4" cols="50" name='detalle' required)
-                      
+
               button#btn-editJust.btn.btn-success(type='submit') Actualizar
               button.btnCancelar.btn.btn-default(type='button', data-dismiss='modal') Cancelar
 
@@ -229,15 +229,15 @@ block content
                         span.input-group-addon
                           i.icon-time
                   .form-group
-                    label(for='cliente') Cliente:
+                    label(for='cliente') Ubicación:
                       input#cliente.input-small.form-control(type="text", name='cliente' required )
                     label(for='motivo') Motivo:
                       textarea#motivo.form-control(rows="4" cols="50" name='motivo' required )
-                    
-                                                  
+
+
                   button.btn.btn-success(type='submit') Actualizar
                   button.btnCancelar.btn.btn-default(type='button', data-dismiss='modal') Cancelar
-      
+
     #editPermiso.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
         .modal-dialog
             .modal-content
@@ -273,6 +273,6 @@ block content
                   .form-group
                     label(for='detalle') Detalle:
                       textarea#detallePermiso.form-control(rows="4" cols="50" name='detalle' required)
-                                                                        
+
                   button#btn-editPermiso.btn.btn-success(type='submit') Enviar
-                  button.btn.btn-default(type='button', data-dismiss='modal') Cancelar                
+                  button.btn.btn-default(type='button', data-dismiss='modal') Cancelar

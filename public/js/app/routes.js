@@ -213,13 +213,15 @@ $(document).ready(function()
 
  $("button[data-target=#editExtra]").click( function() {
     var id = $(this).val();
-    $('.formUpdateExtra').attr('action', '/extra/'+id);
-    $.get('/solicitud/edit/'+id, function( data ) {
-        var epochInicio = moment.unix(data.epochInicio).format("YYYY/MM/DD HH:mm"),
-        epochTermino = moment.unix(data.epochTermino).format("YYYY/MM/DD HH:mm")
+    $('.formUpdateExtra').attr('action', '/guardarHoraExtra/'+id);
+    $.get('/horaExtra/edit/'+id, function( data ) {
+        var epochInicio = moment.unix(data.fechaInicial).format("DD/MM/YYYY HH:mm"),
+        epochTermino = moment.unix(data.fechaFinal).format("DD/MM/YYYY HH:mm");
+        console.log(epochInicio);
+        console.log(epochTermino);
         $('#date_timepicker_start').val(epochInicio);
         $('#date_timepicker_end').val(epochTermino);
-        $('#cliente').val(data.cliente);
+        $('#cliente').val(data.ubicacion);
         $('#motivo').val(data.motivo);
     });
 });

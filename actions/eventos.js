@@ -15,6 +15,7 @@ var util = require('../util/util');
 var CierrePersonal = require('../models/CierrePersonal');
 var crudUsuario = require('../routes/crudUsuario');
 var EventosTeletrabajo = require('../models/EventosTeletrabajo');
+var HoraExtra = require('../models/HoraExtra');
 
 module.exports = {
   filtrarEventos : function (req, res) {
@@ -95,38 +96,43 @@ module.exports = {
           Solicitudes.find({usuario: req.user.id, tipoSolicitudes:'Extras'}).exec(function(error, extras) {
             Solicitudes.find({usuario: req.user.id, tipoSolicitudes:'Permisos'}).exec(function(error, permisos) {
               CierrePersonal.find({usuario:req.user.id, epoch: {'$gte' : epochMin.unix()}}, function (err, listaCierre) {
-                var supervisor = {departamentos: [1]};
+                HoraExtra.find({usuario:req.user.id}, function (error, horasExtra) {
 
-                var arrayMarcas = util.eventosAjuste(marcas,supervisor,"eventosEmpl");
-                var arrayJust = util.eventosAjuste(justificaciones,supervisor,"eventosEmpl");
-                var arrayExtras = util.eventosAjuste(extras,supervisor,"eventosEmpl");
-                var arrayPermisos = util.eventosAjuste(permisos,supervisor,"eventosEmpl");
+                  var supervisor = {departamentos: [1]};
 
-                arrayMarcas = util.unixTimeToRegularDate(arrayMarcas, true);
-                arrayJust = util.unixTimeToRegularDate(arrayJust, true);
-                arrayExtras = util.unixTimeToRegularDate(arrayExtras, true);
-                arrayPermisos = util.unixTimeToRegularDate(arrayPermisos, true);
-                listaCierre = util.unixTimeToRegularDate(listaCierre, true);
+                  var arrayMarcas = util.eventosAjuste(marcas,supervisor,"eventosEmpl");
+                  var arrayJust = util.eventosAjuste(justificaciones,supervisor,"eventosEmpl");
+                  var arrayExtras = util.eventosAjuste(extras,supervisor,"eventosEmpl");
+                  var arrayPermisos = util.eventosAjuste(permisos,supervisor,"eventosEmpl");
 
-                //En caso de ser profesor no se pasan las justificaciones
-                if(req.user.tipo.length > 1 && req.session.name == config.empleadoProfesor){
-                  arrayJust = new Array();
-                  listaCierre = new Array();
-                }
+                  arrayMarcas = util.unixTimeToRegularDate(arrayMarcas, true);
+                  arrayJust = util.unixTimeToRegularDate(arrayJust, true);
+                  arrayExtras = util.unixTimeToRegularDate(arrayExtras, true);
+                  arrayPermisos = util.unixTimeToRegularDate(arrayPermisos, true);
+                  listaCierre = util.unixTimeToRegularDate(listaCierre, true);
 
-                //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
-                req.user.tipo = req.session.name;
-                if (error) return res.json(error);
-                Contenido.find({seccion:"Eventos"},function(errorContenido,contenido){
-                  return res.render('eventos', {
-                    title: 'Solicitudes/Justificaciones | SIGUCA',
-                    usuario: req.user,
-                    justificaciones: arrayJust,
-                    extras: arrayExtras,
-                    permisos: arrayPermisos,
-                    cierreUsuarios: listaCierre,
-                    marcas: marcas,
-                    textos:contenido
+                  //En caso de ser profesor no se pasan las justificaciones
+                  if(req.user.tipo.length > 1 && req.session.name == config.empleadoProfesor){
+                    arrayJust = new Array();
+                    listaCierre = new Array();
+                  }
+
+                  //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
+                  req.user.tipo = req.session.name;
+                  if (error) return res.json(error);
+                  Contenido.find({seccion:"Eventos"},function(errorContenido,contenido){
+                    return res.render('eventos', {
+                      title: 'Solicitudes/Justificaciones | SIGUCA',
+                      usuario: req.user,
+                      justificaciones: arrayJust,
+                      extras: arrayExtras,
+                      permisos: arrayPermisos,
+                      cierreUsuarios: listaCierre,
+                      marcas: marcas,
+                      textos:contenido,
+                      horasExtra: horasExtra,
+                      moment: require( 'moment' )
+                    });
                   });
                 });
               });
