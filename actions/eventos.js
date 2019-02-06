@@ -171,11 +171,11 @@ module.exports = {
         var fechaCreada = {
           "$gte": epochDesde,
           "$lt": epochHasta
-        }
+        };
 
         marcaQuery.epoch = fechaCreada;
         justQuery.fechaCreada = fechaCreada;
-        extraQuery.fechaCreacion = fechaCreada;
+        extraQuery.fechaCreada = fechaCreada;
         permisosQuery.fechaCreada = fechaCreada;
         cierreQuery.epoch = fechaCreada;
       }

@@ -29,10 +29,7 @@ module.exports = {
                 var epochTime = list[x].fechaCreada;
                 this.epochToStr(list[x], epochTime, detail);
             }
-            if("fechaCreacion" in list[x]){
-                var epochTime = list[x].fechaCreacion;
-                this.epochToStr(list[x], epochTime, detail);
-            }
+
             if("epoch" in list[x]){
                 var epochTime = list[x].epoch;
                 this.epochToStr(list[x], epochTime, detail);

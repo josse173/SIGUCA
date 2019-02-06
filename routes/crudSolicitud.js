@@ -30,7 +30,7 @@ exports.addExtra = function(extra, cb){
 
 	var horaExtra = HoraExtra({
 		usuario: extra.id,
-		fechaCreacion: epochTime,
+		fechaCreada: epochTime,
 		fechaInicial: epochInicio,
 		fechaFinal: epochTermino,
 		tiempoSolicitado: cantHoras,

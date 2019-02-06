@@ -130,7 +130,7 @@ block content
             tbody
               each extra, i in horasExtra
                 tr
-                  td #{moment.unix(extra.fechaCreacion).format("YYYY-MM-DD hh:mm:ss")}
+                  td #{moment.unix(extra.fechaCreada).format("YYYY-MM-DD hh:mm:ss")}
                   td #{moment.unix(extra.fechaInicial).format("YYYY-MM-DD hh:mm:ss")}
                   td #{moment.unix(extra.fechaFinal).format("YYYY-MM-DD hh:mm:ss")}
                   td #{extra.tiempoSolicitadoTexto}

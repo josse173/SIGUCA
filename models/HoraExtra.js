@@ -12,7 +12,7 @@ var SchemaHorasExtra = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Usuario'
     },
-    fechaCreacion: {
+    fechaCreada: {
         type: String,
         default: ''
     },
