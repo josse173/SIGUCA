@@ -51,7 +51,7 @@ var HorarioPersonalizado = require('../models/HorarioEmpleado');
 var Departamento = require('../models/Departamento');
 var Justificaciones = require('../models/Justificaciones');
 var Solicitudes = require('../models/Solicitudes');
-var PeriodoVacaciones = require('../models/Periodo');
+var PeriodoUsuario = require('../models/PeriodoUsuario');
 var PeriodoSolicitud = require('../models/PeriodoUsuario');
 var Cierre = require('../models/Cierre');
 var emailSIGUCA = 'siguca@greencore.co.cr';
@@ -936,22 +936,22 @@ module.exports = function(app, io) {
     */
     app.get('/periodo/:id', autentificado, function (req, res) {
         console.log("get del periodo pasando un id    " + req.params.id);
-        var diaDeHoy = moment().toDate() ;
-        var testing = {$week: new Date("2016-01-04")};
-        var testing2 = {$week: diaDeHoy};
-        console.log("dia de hoy" + testing2);
-        console.log("SEMANAS" + testing);
-        PeriodoVacaciones.find({usuario: req.params.id}, function(err, periodos){
+        PeriodoUsuario.find({usuario: req.params.id}, function(err, periodos){
             if(err){
                 return res.json(err);
             }else{
                 req.user.tipo = req.session.name;
-
-                return res.render('periodo', {
-                    title: 'Nuevo Periodo | SIGUCA',
-                    periodo:periodos,
-                    usuario:req.params.id
-                    //usuario:req.user
+                Usuario.findById(req.params.id, function (err, empleado) {
+                    console.log("NOMBRE USUARIO    " + empleado.nombre);
+                    if (err) return res.json(err);
+                    else{
+                        return res.render('periodo', {
+                            title: 'Nuevo Periodo | SIGUCA',
+                            periodo:periodos,
+                            usuario:req.params.id,
+                            nombreUsuario: empleado.nombre
+                        });
+                    }
                 });
             }
         });
@@ -969,7 +969,7 @@ module.exports = function(app, io) {
     });
 
     app.get('/periodo/editPeriodo/:id',function(req,res){
-        PeriodoVacaciones.findById(req.params.id,function(err,periodo){
+        PeriodoUsuario.findById(req.params.id,function(err,periodo){
             if (err) return res.json(err);
             else res.json(periodo);
         });

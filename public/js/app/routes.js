@@ -1077,9 +1077,13 @@ $("button[data-target=#editFeriado]").click( function() {
      var split = id.split(',');
      $('.formUpdatePeriodo').attr('action', '/periodoUpdate/'+ id);
      $.get('/periodo/editPeriodo/'+split[0], function( data ) {
-         $('#nombrePeriodoUpdate').val(data.nombrePeriodo);
+         $('#periodoUpdate').val(data.periodo);
+         $('#fechaCreadaUpdate').val(data.fechaCreada);
+         $('#fechaInicioUpdate').val(data.fechaInicio);
+         $('#fechaFinalUpdate').val(data.fechaFinal);
+         $('#diasAsignadosUpdate').val(data.diasAsignados);
          $('#diasDisfrutadosUpdate').val(data.diasDisfrutados);
-         $('#cantidadDiasRestantesUpdate').val(data.cantidadDiasRestantes);
+
      });
  });
 
