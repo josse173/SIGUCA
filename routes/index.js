@@ -293,10 +293,13 @@ module.exports = function(app, io) {
     */
     app.get('/solicitud/edit/:id', autentificado, solicitud_actions.editar);
 
+    app.get('/horaExtra/edit/:id', autentificado, solicitud_actions.editarExtra);
+
     /*
     *  Actualiza una solicitud tipo hora extra
     */
-    app.post('/extra/:id', autentificado, solicitud_actions.getExtra);
+
+    app.post('/guardarHoraExtra/:id', autentificado, solicitud_actions.guardarExtra);
 
     /*
     *  Crea una solicitud tipo permiso anticipado

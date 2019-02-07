@@ -31,19 +31,19 @@ var imagenGreenCore = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAA
             buttons: [
       {extend:'print',text:"Imprimir"},
       {extend:'excel',text:"Hoja de cálculo"},
-      {extend:"pdfHtml5", text: 'Exportar a PDF', orientation:"landscape", pageSize:"LEGAL",  
+      {extend:"pdfHtml5", text: 'Exportar a PDF', orientation:"landscape", pageSize:"LEGAL",
          customize: function(doc) {
           doc.content.splice(0, 1, {
                             text: [
                                     { text: 'Reporte de Marcas Realizadas',bold: 180, fontSize: 17,  color: "#00394D" ,alignment: 'center'}
-                                                                                                     
+
                                   ]
           });
        doc.defaultStyle = {  fontSize: 10, arial: true, alignment: 'center' },
         doc.content.splice( 1, 0, {
                     margin: [ -5, -45, 0, 0],
                     alignment: 'left',
-                    image:imagenGreenCore 
+                    image:imagenGreenCore
                   });//img
                 }
       }
@@ -84,19 +84,19 @@ var imagenGreenCore = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAA
             buttons: [
       {extend:'print',text:"Imprimir"},
       {extend:'excel',text:"Hoja de cálculo"},
-      {extend:"pdfHtml5", text: 'Exportar a PDF', orientation:"landscape", pageSize:"LEGAL",  
+      {extend:"pdfHtml5", text: 'Exportar a PDF', orientation:"landscape", pageSize:"LEGAL",
          customize: function(doc) {
           doc.content.splice(0, 1, {
                             text: [
                                     { text: 'Reporte de Marcas Realizadas',bold: 180, fontSize: 17,  color: "#00394D" ,alignment: 'center'}
-                                                                                                     
+
                                   ]
           });
        doc.defaultStyle = {  fontSize: 10, arial: true, alignment: 'center' },
         doc.content.splice( 1, 0, {
                     margin: [ -5, -45, 0, 0],
                     alignment: 'left',
-                    image:imagenGreenCore 
+                    image:imagenGreenCore
                   });//img
                 }
       }
@@ -134,19 +134,19 @@ var imagenGreenCore = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAA
             buttons: [
       {extend:'print',text:"Imprimir"},
       {extend:'excel',text:"Hoja de cálculo"},
-      {extend:"pdfHtml5", text: 'Exportar a PDF', orientation:"landscape", pageSize:"LEGAL",  
+      {extend:"pdfHtml5", text: 'Exportar a PDF', orientation:"landscape", pageSize:"LEGAL",
          customize: function(doc) {
           doc.content.splice(0, 1, {
                             text: [
                                     { text: 'Reporte de Marcas Realizadas',bold: 180, fontSize: 17,  color: "#00394D" ,alignment: 'center'}
-                                                                                                     
+
                                   ]
           });
        doc.defaultStyle = {  fontSize: 10, arial: true, alignment: 'center' },
         doc.content.splice( 1, 0, {
                     margin: [ -5, -45, 0, 0],
                     alignment: 'left',
-                    image:imagenGreenCore 
+                    image:imagenGreenCore
                   });//img
                 }
       }
@@ -200,14 +200,14 @@ var imagenGreenCore = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAA
           doc.content.splice(0, 1, {
                             text: [
                                     { text: 'Reporte de Justificaciones',bold: 180, fontSize: 17,  color: "#00394D" ,alignment: 'center'}
-                                                                                                     
+
                                   ]
           });
        doc.defaultStyle = {  fontSize: 10, arial: true, alignment: 'center' },
         doc.content.splice( 1, 0, {
                     margin: [ -5, -45, 0, 0],
                     alignment: 'left',
-                    image:imagenGreenCore 
+                    image:imagenGreenCore
                   });//img
                 }
       }
@@ -255,18 +255,18 @@ var imagenGreenCore = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAA
           doc.content.splice(0, 1, {
                             text: [
                                     { text: 'Reporte de Solicitudes de Horas Extraordinarias',bold: 180, fontSize: 17,  color: "#00394D" ,alignment: 'center'}
-                                                                                                     
+
                                   ]
           });
        doc.defaultStyle = {  fontSize: 10, arial: true, alignment: 'center' },
         doc.content.splice( 1, 0, {
                     margin: [ -5, -45, 0, 0],
                     alignment: 'left',
-                    image:imagenGreenCore 
+                    image:imagenGreenCore
                   });//img
                 }
       }
-    
+
     ]
     });
 
@@ -312,14 +312,14 @@ var imagenGreenCore = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAA
           doc.content.splice(0, 1, {
                             text: [
                                     { text: 'Reporte de Trámite de Permisos',bold: 180, fontSize: 17,  color: "#00394D" ,alignment: 'center'}
-                                                                                                     
+
                                   ]
           });
        doc.defaultStyle = {  fontSize: 10, arial: true, alignment: 'center' },
         doc.content.splice( 1, 0, {
                     margin: [ -5, -45, 0, 0],
                     alignment: 'left',
-                    image:imagenGreenCore 
+                    image:imagenGreenCore
                   });//img
                 }
               }
@@ -366,21 +366,21 @@ var imagenGreenCore = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAA
           doc.content.splice(0, 1, {
                             text: [
                                     { text: 'Reporte de Horas Totales Laboradas',bold: 180, fontSize: 17,  color: "#00394D" ,alignment: 'center'}
-                                                                                                     
+
                                   ]
           });
        doc.defaultStyle = {  fontSize: 10, arial: true, alignment: 'center' },
         doc.content.splice( 1, 0, {
                     margin: [ -5, -45, 0, 0],
                     alignment: 'left',
-                    image:imagenGreenCore 
+                    image:imagenGreenCore
                   });//img
        }
-      } 
+      }
 
     ]
     });
-    
+
     $('#horaTablaPDF').dataTable({
       "bDestroy": true ,
             dom:"Bfrtip",
@@ -421,52 +421,112 @@ var imagenGreenCore = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAA
           doc.content.splice(0, 1, {
                             text: [
                                     { text: 'Reporte de Horas Totales Laboradas',bold: 180, fontSize: 17,  color: "#00394D" ,alignment: 'center'}
-                                                                                                     
+
                                   ]
           });
        doc.defaultStyle = {  fontSize: 10, arial: true, alignment: 'center' },
         doc.content.splice( 1, 0, {
                     margin: [ -5, -45, 0, 0],
                     alignment: 'left',
-                    image:imagenGreenCore 
+                    image:imagenGreenCore
                   });//img
        }
-      } 
+      }
 
     ]
     });
+
     $('.buttons-pdf').removeClass( "dt-button buttons-html5 btn btn-primary" ).addClass( "btn btn-success dt-center" );
     $('.buttons-print').removeClass( "dt-button buttons-html5 btn btn-primary" ).addClass( "btn btn-success dt-center" );
     $('.buttons-excel').removeClass( "dt-button  buttons-html5 btn btn-primary" ).addClass( "btn btn-success dt-center" );
     $('.btn').css("margin-bottom","5%");
-    $('.btn').css("margin-bottom","5%");  
+    $('.btn').css("margin-bottom","5%");
     $('.buttons-pdf').css("margin-left","77%");
     $('.buttons-pdf').css("margin-top","-20.8%");
     $('.buttons-print').css("margin-left","5%");
     $('.buttons-print').css("margin-top","2%");
     $('.buttons-excel').css("margin-left","5%");
     $('.buttons-excel').css("margin-top","2%");
-    $('.dataTables_info').css("margin-left","1%");  
+    $('.dataTables_info').css("margin-left","1%");
 
     //Mover filtros de cada tabla para mejorar interfaz
     $('#marcasPDF_filter').css("margin-top","1%");
-    $('#marcasPDF_filter').css("margin-right","1%"); 
+    $('#marcasPDF_filter').css("margin-right","1%");
 
     $('#tardiasPDF_filter').css("margin-top","1%");
-    $('#tardiasPDF_filter').css("margin-right","1%"); 
+    $('#tardiasPDF_filter').css("margin-right","1%");
 
     $('#marcassPDF_filter').css("margin-top","1%");
-    $('#marcassPDF_filter').css("margin-right","1%"); 
+    $('#marcassPDF_filter').css("margin-right","1%");
 
 
     $('#horaTablaPDF_filter').css("margin-top","1%");
     $('#horaTablaPDF_filter').css("margin-right","1%");
     $('#justificacionesPDF_filter').css("margin-top","1%");
-    $('#justificacionesPDF_filter').css("margin-right","1%");     
+    $('#justificacionesPDF_filter').css("margin-right","1%");
     $('#extraPDF_filter').css("margin-top","1%");
-    $('#extraPDF_filter').css("margin-right","1%");     
+    $('#extraPDF_filter').css("margin-right","1%");
     $('#permisoPDF_filter').css("margin-top","1%");
     $('#permisoPDF_filter').css("margin-right","1%");
   });
 
+
+$(document).ready(function() {
+    $('#opcionesTablaHorasExtra').dataTable({
+        "bDestroy": true,
+        "language": {
+            "sProcessing": "Procesando...",
+            "sLengthMenu": "Mostrar _MENU_ registros",
+            "sZeroRecords": "No se encontraron resultados",
+            "sEmptyTable": "Ningún dato disponible en esta tabla",
+            "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+            "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+            "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+            "sInfoPostFix": "",
+            "sSearch": "Buscar:",
+            "sUrl": "",
+            "sInfoThousands": ",",
+            "sLoadingRecords": "Cargando...",
+            "oPaginate": {
+                "sFirst": "Primero",
+                "sLast": "Último",
+                "sNext": "Siguiente",
+                "sPrevious": "Anterior"
+            },
+            "oAria": {
+                "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+            }
+        },
+        dom: "Bfrtip",
+        buttons: [
+            {extend: 'print', text: "Imprimir"},
+            {extend: 'excel', text: "Hoja de cálculo"},
+            {
+                extend: "pdfHtml5", text: 'Exportar a PDF', orientation: "landscape", pageSize: "LEGAL",
+                customize: function (doc) {
+                    doc.content.splice(0, 1, {
+                        text: [
+                            {
+                                text: 'Reporte de Horas Extra',
+                                bold: 180,
+                                fontSize: 17,
+                                color: "#00394D",
+                                alignment: 'center'
+                            }
+
+                        ]
+                    });
+                    doc.defaultStyle = {fontSize: 10, arial: true, alignment: 'center'},
+                        doc.content.splice(1, 0, {
+                            margin: [-5, -45, 0, 0],
+                            alignment: 'left',
+                            image: imagenGreenCore
+                        });//img
+                }
+            }
+        ]
+
+    });
+});
 

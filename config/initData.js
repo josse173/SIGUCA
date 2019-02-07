@@ -3,7 +3,8 @@
 var mongoose = require('mongoose'),
     Usuario = mongoose.model('Usuario'),
     Horario = require('../models/Horario'),
-    Configuracion = mongoose.model('Configuracion');
+    Configuracion = mongoose.model('Configuracion'),
+    Contenido = mongoose.model('Contenido');
 
 Usuario.findOne({ 'tipo' :  'Administrador' }, function (err, user) {
     if (!user) {
@@ -79,6 +80,60 @@ Configuracion.findOne({ nombreUnico :  'tiempoRespuesta' }, function (err, confi
         });
     }
 });
+
+Contenido.findOne({ seccion: 'escritorioEmpl', llave: 'Modal hora extraordinaria etiqueta cliente'}, function (err, contenido) {
+    if (contenido) {
+        contenido.titulo = 'Ubicación:';
+
+        Contenido.findByIdAndUpdate(contenido._id, contenido, function(err, alerta){
+            if (err) console.log(err);
+        });
+    }
+});
+
+Contenido.findOne({ seccion: 'Eventos', llave: 'Tabla Solicitudes de horas extraordinarias etiqueta cliente'}, function (err, contenido) {
+    if (contenido) {
+        contenido.titulo = 'Ubicación:';
+
+        Contenido.findByIdAndUpdate(contenido._id, contenido, function(err, alerta){
+            if (err) console.log(err);
+        });
+    }
+});
+
+Contenido.findOne({ seccion: 'Eventos', llave: 'Titulo Solicitudes de horas extraordinarias'}, function (err, contenido) {
+    if (contenido) {
+        contenido.titulo = 'Horas extra solicitadas:';
+
+        Contenido.findByIdAndUpdate(contenido._id, contenido, function(err, alerta){
+            if (err) console.log(err);
+        });
+    }
+});
+
+Contenido.findOne({ seccion: 'Reportes', llave: 'Solicitud de horas extraordinarias etiqueta cliente'}, function (err, contenido) {
+    if (contenido) {
+        contenido.titulo = 'Ubicación:';
+
+        Contenido.findByIdAndUpdate(contenido._id, contenido, function(err, alerta){
+            if (err) console.log(err);
+        });
+    }
+});
+
+Contenido.findOne({ seccion: 'Reportes', llave: 'Titulo solicitudes horas extraordinarias'}, function (err, contenido) {
+    if (contenido) {
+        contenido.titulo = 'Reporte horas extra';
+
+        Contenido.findByIdAndUpdate(contenido._id, contenido, function(err, alerta){
+            if (err) console.log(err);
+        });
+    }
+});
+
+
+
+
 
 
 
