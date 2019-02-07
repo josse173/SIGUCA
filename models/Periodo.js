@@ -34,4 +34,4 @@ var SchemaPeriodo = new Schema({
     }
 });
 
-module.exports = mongoose.model('Periodo', SchemaPeriodo);
+module.exports = mongoose.model('periodo', SchemaPeriodo);
