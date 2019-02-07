@@ -306,8 +306,7 @@ module.exports = function(app, io) {
         Solicitudes.find({usuario: req.user.id, "inciso":"incisoC"}).exec(function (err, quantity) {
             console.log(quantity);
             var size = quantity.length;
-            res.json({ quantity});
-
+            res.json({quantity});
         });
     });
 
@@ -764,11 +763,14 @@ module.exports = function(app, io) {
     /*
     *  Crea un nuevo periodo
     */
-    app.post('/periodo', autentificado, function (req, res) {
+    app.post('/periodo/:id', autentificado, function (req, res) {
+        console.log("post de periodo mandando el id " + req.params.id);
+        //console.log("ESTE ES usuario dentro del post     " + req.user);
         if (req.session.name == "Administrador") {
+            req.body.usuario = req.params.id;
             crudPeriodo.addPeriodo(req.body, function() {
                 if (req.session.name == "Administrador"){
-                    res.redirect('/periodo');
+                    res.redirect('/periodo/'+ req.params.id);
                 }
             });//Busca Usuario
         } else {
@@ -779,17 +781,24 @@ module.exports = function(app, io) {
 
     /*
     */
-    app.get('/periodo', autentificado, function (req, res) {
-        PeriodoVacaciones.find(req.params.id, function(err, periodos){
+    app.get('/periodo/:id', autentificado, function (req, res) {
+        console.log("get del periodo pasando un id    " + req.params.id);
+        var diaDeHoy = moment().toDate() ;
+        var testing = {$week: new Date("2016-01-04")};
+        var testing2 = {$week: diaDeHoy};
+        console.log("dia de hoy" + testing2);
+        console.log("SEMANAS" + testing);
+        PeriodoVacaciones.find({usuario: req.params.id}, function(err, periodos){
             if(err){
-                return res.jason(err);
+                return res.json(err);
             }else{
                 req.user.tipo = req.session.name;
 
                 return res.render('periodo', {
                     title: 'Nuevo Periodo | SIGUCA',
                     periodo:periodos,
-                    usuario:req.user
+                    usuario:req.params.id
+                    //usuario:req.user
                 });
             }
         });
@@ -799,7 +808,41 @@ module.exports = function(app, io) {
    *  Modifica el estado de Activo a Inactivo de un periodo en específico
    */
     app.get('/periodo/delete/:id', autentificado, function (req, res) {
-        crudPeriodo.deleteUsuario(req.params.id, function (err, msj) {
+        console.log("ESTE ES id a eliminar   " + req.params.id);
+        crudPeriodo.deletePeriodo(req.params.id, function (err, msj) {
+            if (err) res.json(err);
+            res.send(msj);
+        });
+    });
+
+    app.get('/periodo/editPeriodo/:id',function(req,res){
+        PeriodoVacaciones.findById(req.params.id,function(err,periodo){
+            if (err) return res.json(err);
+            else res.json(periodo);
+        });
+    });
+
+    /*
+    */
+
+    app.get('/periodos/numero/:id', autentificado, function (req, res) {
+        PeriodoVacaciones.findOne({usuario: req.params.id}).sort('-numeroPeriodo').exec(function(err,periodo){
+            if (err) return res.json(err);
+            else res.json(periodo);
+        });
+    });
+
+    app.post('/periodoUpdate/:id',autentificado, crudPeriodo.actualizarPeriodo);
+
+    app.get('/periodos/vacacionesAcumuladas/:id', autentificado, function (req, res) {
+        crudPeriodo.vacacionesAcumuladas(req.params.id, function (err, acumulado) {
+            if (err) res.json(err);
+            else res.json(acumulado);
+        });
+    });
+
+    app.get('/periodos/cantidadVacaciones/:id', autentificado, function (req, res) {
+        crudPeriodo.cantidadVacacionesPorUsuario(req.params.id, function (err, msj) {
             if (err) res.json(err);
             res.send(msj);
         });
@@ -1409,8 +1452,6 @@ module.exports = function(app, io) {
             else res.json(feriado);
         });
      });
-
-     
 
 
     app.post('/correoUpdate/:id',autentificado, crudCorreo.actualizarCorreo);

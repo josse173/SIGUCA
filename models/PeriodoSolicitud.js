@@ -18,7 +18,7 @@ var SchemaPeriodoSolicitud = new Schema({
     },
     periodo: {
         type: Schema.Types.ObjectId,
-        ref: 'PeriodoSolicitud'
+        ref: 'PeriodoVacaciones'
     },
     cantidadDias: {
         type: String,

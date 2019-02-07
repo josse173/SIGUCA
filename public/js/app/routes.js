@@ -552,85 +552,6 @@ $("button[data-target=#editHorarioFijo]").click( function() {
     });
 });
 
- $("button[data-target=#editPeriodo]").click( function() {
-     var id = $(this).val();
-     $('.formUpdate').attr('action', '/empleado/'+id);
-
-     $.get('/empleado/edit/'+id, function( data ) {
-         if(contador>0){
-
-             $('#estadoEmpleado').find('option').remove();
-             $('#estadoEmpleado').find('option').remove();
-         }else{
-             contador++;
-         }
-
-
-         var x = document.getElementById("estadoEmpleado");
-         var option = document.createElement("option");
-         option.text = data.estado;
-         x.add(option);
-
-         if(data.estado=="Activo"){
-             var x = document.getElementById("estadoEmpleado");
-             var option = document.createElement("option");
-             option.text = "Inactivo";
-             x.add(option);
-
-         }else{
-             var x = document.getElementById("estadoEmpleado");
-             var option = document.createElement("option");
-             option.text = "Activo";
-             x.add(option);
-         }
-
-         //Se crea la fecha
-         if(data.fechaIngreso>0){
-             var fechaIngesoTem = new Date((data.fechaIngreso*1000));
-             var result = fechaIngesoTem.getDate() + "/" + (fechaIngesoTem.getMonth()+1) + "/" + fechaIngesoTem.getFullYear();
-         }else{
-             var result = "";
-         }
-
-         $('#nombre').val(data.nombre);
-         if(data.teleTrabajo=="on"){
-             $('#teleTrabajo').attr("checked",true);
-
-         }else {
-             $('#teleTrabajo').attr("checked",false);
-         }
-
-         $('#cedula').val(data.cedula);
-         $('#apellido1').val(data.apellido1);
-         $('#fechaIngreso').val(result);
-         $('#vacaciones').val(data.vacaciones);
-         $('#apellido2').val(data.apellido2);
-         $('#email').val(data.email);
-         $('#codTarjeta').val(data.codTarjeta);
-         $('#username').val(data.username);
-         $('#selectTipo').selectpicker('val', data.tipo);
-         $('#selectHorario').selectpicker('val', data.horario);
-         $('#selectHorarioFijo').selectpicker('val', data.horarioFijo);
-         $('#HorarioEmpleado').selectpicker('val', data.horarioEmpleado);
-         $('#selectDepartamentos').selectpicker('val', data.horario);
-         $('#idEmpleado').val(data._id);
-         $("#idEmpleado").css('display','none');
-
-         var val = [];
-         for (var i = 0; i < data.departamentos.length; i++) {
-             val.push(data.departamentos[i].departamento);
-         }
-         $('#selectDepartamentos').selectpicker('val', val);
-         $('#selectDepartamentos').selectpicker('refresh');
-         $('#selectHorario').selectpicker('refresh');
-         $('#selectHorarioFijo').selectpicker('refresh');
-         $('#HorarioEmpleado').selectpicker('refresh');
-         $('#selectTipo').selectpicker('refresh');
-         $('#estadoEmpleado').refresh();
-
-     });
- });
-
  $('.btnDescargaPdf').click(function(){
 
      var doc = new jsPDF();
@@ -668,6 +589,12 @@ $("#extraLink").click(function(){
   $('#date_timepicker_end').val("");
   $('#clienteSoli').val("");
 });
+
+ $("#permiso").click(function(){
+     var testYear = moment().format('YYYY');
+     $('#anno').val(testYear);
+ });
+
  $("#btn-permiso").click(function(){
      var val = $('#selectMotivo').val();
      var inciso = $('#selectInciso').val();
@@ -747,11 +674,6 @@ $("#extraLink").click(function(){
         $("#detalles").val("")
     
  });
-
-
-
-
-
 
 
  $("#btn-editPermiso").click(function(){
@@ -1064,6 +986,29 @@ $('.tableVacaciones').footable().on('click', '.solicitudDelete', function(e) {
     }).show();    
 });
 
+ $('.tablePeriodo').footable().on('click', '.periodoDelete', function(e) {
+     var footable = $('.tablePeriodo').data('footable');
+     var row = $(this).parents('tr:first');
+
+     var periodo = $(this).val();
+     var split = periodo.split(',');
+     alertify.dialog('confirm')
+         .set({
+             'labels':{ok:'Eliminar', cancel:'Cancelar'},
+             'transition': 'slide',
+             'message': '¿Está seguro de eliminar el periodo <strong>' +  split[0] + '</strong>?' ,
+             'onok': function(){
+                 $.get('/periodo/delete/'+split[2], function (data){
+                     if(data == 'Se elimino'){
+                         footable.removeRow(row);
+                         alertify.message('Se eliminó el periodo ' +  split[0] + ' con éxito');
+                     } else {
+                         alertify.error('No se puede eliminar el periodo <strong>' +  split[0] + '</strong>');
+                     }
+                 });
+             }
+         }).show();
+ });
 
 $('.tableCorreo').footable().on('click', '.correoDelete', function(e) {
     var footable = $('.tableCorreo').data('footable');
@@ -1124,6 +1069,17 @@ $("button[data-target=#editFeriado]").click( function() {
        $('.epoch').val(moment.unix(data.epoch).format("DD/MM/YYYY"));
     });
 });
+
+ $("button[data-target=#editPeriodo]").click( function() {
+     var id = $(this).val();
+     var split = id.split(',');
+     $('.formUpdatePeriodo').attr('action', '/periodoUpdate/'+ id);
+     $.get('/periodo/editPeriodo/'+split[0], function( data ) {
+         $('#nombrePeriodoUpdate').val(data.nombrePeriodo);
+         $('#diasDisfrutadosUpdate').val(data.diasDisfrutados);
+         $('#cantidadDiasRestantesUpdate').val(data.cantidadDiasRestantes);
+     });
+ });
 
 $("button[data-target=#editContenido]").click( function() {
     var id = $(this).val();

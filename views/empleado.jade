@@ -70,7 +70,7 @@ block content
                 button.empleadoDelete.btn.btn-default(value=empleado.nombre+' '+empleado.apellido1+''+empleado.apellido2+','+empleado.id)
                   i.icon-trash.icon-large.i-danger
 
-              form(action= '/periodo')
+              form(action= '/periodo/'+empleado.id)
                 td
                   button.btn.btn-default(type = 'submit', value=empleado.id)
                     i.icon-plus.icon-large.i-success
