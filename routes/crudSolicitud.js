@@ -8,15 +8,16 @@ Usuario 		= require('../models/Usuario'),
 Correo		= require('../models/Correo'),
 util 			= require('../util/util'),
 config          = require('../config.json'),
-emailSIGUCA 	= 'siguca@greencore.co.cr';
+emailSIGUCA 	= 'siguca@greencore.co.cr',
+HoraExtra		= require('../models/HoraExtra');
 
 exports.get = function(query, cb){
 	Solicitudes.find(query, function(error, solicitudes){
 		cb(error, solicitudes);
 	});
-}
+};
 //--------------------------------------------------------------------
-//		Métodos Solicitudes Extras   
+//		Métodos Solicitudes Extras
 //---------------------------------------------------------------------
 exports.addExtra = function(extra, cb){
 
@@ -24,95 +25,94 @@ exports.addExtra = function(extra, cb){
 	epochInicio = moment(extra.epochInicio,"DD/MM/YYYY HH:mm").unix(),
 	epochTermino = moment(extra.epochTermino,"DD/MM/YYYY HH:mm").unix(),
 	cantHoras = (epochTermino - epochInicio);
+
 	if(cantHoras/3600>24 || cantHoras/3600<0)
 		return cb("Cantidad de horas inválidas");
-	var newSolicitud = Solicitudes({
-		fechaCreada: epochTime,
-		tipoSolicitudes: "Extras",
-		diaInicio: extra.epochInicio,
-		diaFinal: extra.epochTermino,
-		epochInicio: epochInicio,
-		epochTermino: epochTermino,
-		cantidadHoras: cantHoras,
-		cliente: extra.cliente,
-		motivo: extra.motivo,
+
+	var horaExtra = HoraExtra({
 		usuario: extra.id,
-		comentarioSupervisor: ""
+		fechaCreada: epochTime,
+		fechaInicial: epochInicio,
+		fechaFinal: epochTermino,
+		tiempoSolicitado: cantHoras,
+		tiempoSolicitadoTexto: convertirNumeroAHoras(cantHoras),
+		ubicacion: extra.cliente,
+		motivo: extra.motivo
 	});
 
-	Solicitudes.find({usuario: newSolicitud.usuario, fechaCreada: newSolicitud.fechaCreada}, function (err, soli){
-		if(soli.length == 0){
-			newSolicitud.save(function (err, user) {
-				if (err) console.log(err);
-				else return cb("Guardado correctamente.");
-				});//save
-		}
-		});//verificar
+	horaExtra.save(function (err, horaExtraCreada) {
+		if (err) console.log(err);
+		else return cb("Guardado correctamente.");
+	});
+};
+
+function convertirNumeroAHoras(num)
+{
+	var horasCompletas = Math.floor(num / 3600);
+	var horas = num / 3600;
+	var minutos = Math.floor((horas - horasCompletas) * 100);
+	var minutosCompletos = Math.floor((60 * minutos) / 100);
+	var h = horasCompletas < 10 ? '0' + horasCompletas : horasCompletas;
+	var m = minutosCompletos < 10 ? '0' + minutosCompletos : minutosCompletos;
+	return h + ":" + m;
 }
 
 exports.updateExtra = function(extra, cb, idUser){
-	var epochTime = moment().unix(),
 	epochInicio = moment(extra.epochInicio,"DD/MM/YYYY HH:mm").unix(),
 	epochTermino = moment(extra.epochTermino,"DD/MM/YYYY HH:mm").unix(),
 	cantHoras = epochTermino - epochInicio;
 
-	var solicitudActualizada = {
-		fechaCreada: epochTime,
-		diaInicio: extra.epochInicio,
-		diaFinal: extra.epochTermino,
-		epochInicio: epochInicio,
-		epochTermino: epochTermino,
-		cantidadHoras: cantHoras,
-		cliente: extra.cliente,
+	var extraAActualizar = {
+		fechaInicial: epochInicio,
+		fechaFinal: epochTermino,
+		tiempoSolicitado: cantHoras,
+		tiempoSolicitadoTexto: convertirNumeroAHoras(cantHoras),
+		ubicacion: extra.cliente,
 		motivo: extra.motivo
 	};
-	Solicitudes.findById(extra.id).exec(function (err, soli) { 
-		Solicitudes.findByIdAndUpdate(extra.id, solicitudActualizada).populate('usuario').exec(function (err, solicitud) { 
-			if (!err) {
-				Usuario.find({'tipo' : 'Supervisor', 'departamentos.departamento' : solicitud.usuario.departamentos[0].departamento}, {'email' : 1}).exec(function (err, supervisor) { 
-					if (err) return cb(err);
 
-					Correo.find({},function(errorCritico,listaCorreos){
-						if(!errorCritico &&listaCorreos.length>0){
-							var transporter = nodemailer.createTransport('smtps://'+listaCorreos[0].nombreCorreo+':'+listaCorreos[0].password+'@'+listaCorreos[0].dominioCorreo);
+	HoraExtra.findByIdAndUpdate(extra.id, extraAActualizar).populate('usuario').exec(function (err, extraActualizada) {
+		if (!err) {
+			Usuario.findOne({_id: extraActualizada.usuario}).exec(function (err, usuarioExtra) {
+				Usuario.find({ 'tipo': 'Supervisor', 'departamentos.departamento': extraActualizada.usuario.departamentos[0].departamento}, {'email': 1}).exec(function (err, supervisor) {
+					if (err) return cb(err);
+					Correo.find({}, function (errorCritico, listaCorreos) {
+						if (!errorCritico && listaCorreos.length > 0) {
+							var transporter = nodemailer.createTransport('smtps://' + listaCorreos[0].nombreCorreo + ':' + listaCorreos[0].password + '@' + listaCorreos[0].dominioCorreo);
 							for (var i = 0; i < supervisor.length; i++) {
 								transporter.sendMail({
-									from:listaCorreos[0].nombreCorreo,
+									from: listaCorreos[0].nombreCorreo,
 									to: supervisor[i].email,
 									subject: 'Modificación de una solicitud de hora extraordiaria en SIGUCA',
-									text: " El usuario " + solicitud.usuario.nombre + " " + solicitud.usuario.apellido1 + " " + solicitud.usuario.apellido2
-									+ " ha modificado la siguiente solicitud de hora extraordiaria: "
-									+ "\r\n Día de Inicio: " + soli.diaInicio 
-									+ "\r\n Día de termino: " + soli.diaFinal 
-									+ "\r\n Motivo: " + soli.motivo
-									+ "\r\n Detalle: " + soli.detalle
-									+ "\r\n\r\n A continuación se muestra la solicitud de hora extraordiaria modificada "
-									+ "\r\n Día de Inicio: " + solicitudActualizada.diaInicio 
-									+ "\r\n Día de termino: " + solicitudActualizada.diaFinal 
-									+ "\r\n Motivo: " + solicitudActualizada.motivo
-									+ "\r\n Detalle: " + solicitudActualizada.detalle
+									text: " El usuario " + usuarioExtra.nombre + " " + usuarioExtra.apellido1 + " " + usuarioExtra.apellido2
+										+ " ha modificado la siguiente solicitud de hora extra: "
+										+ "\r\n Día de Inicio: " + moment.unix(epochInicio).format("YYYY-MM-DD hh:mm:ss")
+										+ "\r\n Día de termino: " + moment.unix(epochTermino).format("YYYY-MM-DD hh:mm:ss")
+										+ "\r\n Motivo: " + extra.motivo
+										+ "\r\n Detalle: " + extra.detalle
+										+ "\r\n\r\n A continuación se muestran los cambios de la solicitud de hora extra modificada:"
+										+ "\r\n Día de Inicio: " + moment.unix(extraActualizada.fechaInicial).format("YYYY-MM-DD hh:mm:ss")
+										+ "\r\n Día de termino: " + moment.unix(extraActualizada.fechaFinal).format("YYYY-MM-DD hh:mm:ss")
+										+ "\r\n Motivo: " + extraActualizada.motivo
+										+ "\r\n Detalle: " + extraActualizada.detalle
 								});
-								//
 							}
 						}
 					});
-					
+
 				});
-				//
-			}
-			return cb(err);
-		});
-		//
+
+			});
+		}
+		return cb(err);
 	});
-	//
-	//}
-}
+};
 
 //--------------------------------------------------------------------
-//Métodos Solicitudes de Permisos   
+//Métodos Solicitudes de Permisos
 //--------------------------------------------------------------------
 exports.addPermiso = function(permiso, cb, idUser){
-	var epochTime = moment().unix(); 
+	var epochTime = moment().unix();
 
 	var newSolicitud = Solicitudes({
 		fechaCreada: epochTime,
@@ -243,6 +243,8 @@ articuloFunction = function(permiso, cb){
 			newSolicitud.save(function (err, soli) {
 				Usuario.find({'tipo' : 'Supervisor', 'departamentos.departamento' : permiso.usuario.departamentos[0].departamento}, {'email' : 1}).exec(function (err, supervisor) {
 					if (err) console.log(err);
+
+
 					Correo.find({},function(errorCritico,listaCorreos){
 						if(!errorCritico &&listaCorreos.length>0){
 							var transporter = nodemailer.createTransport('smtps://'+listaCorreos[0].nombreCorreo+':'+listaCorreos[0].password+'@'+listaCorreos[0].dominioCorreo);
@@ -253,17 +255,19 @@ articuloFunction = function(permiso, cb){
 									to: supervisor[i].email,
 									subject: 'Nueva solicitud de permiso anticipado en SIGUCA',
 									text: " El usuario " + permiso.usuario.nombre + " " + permiso.usuario.apellido1 + " " + permiso.usuario.apellido2 + " ha enviado el siguiente permiso anticipado: "
-										+ "\r\n Día de Inicio: " + soli.diaInicio
-										+ "\r\n Día de termino: " + soli.diaFinal
-										+ "\r\n Motivo: " + soli.motivo
-										+ "\r\n Detalle: " + soli.detalle
+									+ "\r\n Día de Inicio: " + soli.diaInicio
+									+ "\r\n Día de termino: " + soli.diaFinal
+									+ "\r\n Motivo: " + soli.motivo
+									+ "\r\n Detalle: " + soli.detalle
 								});
 							}
 						}
 					});
+
 					return cb();
-				});//supervisores
-			});//save
+					});//supervisores
+				});//save
+
 			if (permiso.motivo == 'articulo'){
 				var nuevaSolicitudArticulo51;
 				console.log(permiso.inciso);
@@ -300,11 +304,11 @@ exports.updatePermiso = function(permiso, cb, idUser){
 	else
 		solicitudActualizada.motivo = permiso.motivo;
 
-	Solicitudes.findById(permiso.id).exec(function (err, soli) { 
-		Solicitudes.findByIdAndUpdate(permiso.id, solicitudActualizada).populate('usuario').exec(function (err, solicitud) { 
+	Solicitudes.findById(permiso.id).exec(function (err, soli) {
+		Solicitudes.findByIdAndUpdate(permiso.id, solicitudActualizada).populate('usuario').exec(function (err, solicitud) {
 			if(!err) {
 				Usuario.find({'tipo' : 'Supervisor', 'departamentos.departamento' : solicitud.usuario.departamentos[0].departamento}, {'email' : 1}
-					).exec(function (err, supervisor) { 
+					).exec(function (err, supervisor) {
 						if (!err) {
 							Correo.find({},function(errorCritico,listaCorreos){
 								if(!errorCritico &&listaCorreos.length>0){
@@ -314,22 +318,22 @@ exports.updatePermiso = function(permiso, cb, idUser){
 											from: listaCorreos[0].nombreCorreo,
 											to: supervisor[i].email,
 											subject: 'Modificación de una solicitud de permiso anticipado en SIGUCA',
-											text: " El usuario " + solicitud.usuario.nombre + " " + solicitud.usuario.apellido1 + " " + solicitud.usuario.apellido2 
-											+ " ha modificado el siguiente permiso anticipado: " 
-											+ "\r\n Día de Inicio: " + soli.diaInicio 
-											+ "\r\n Día de termino: " + soli.diaFinal 
+											text: " El usuario " + solicitud.usuario.nombre + " " + solicitud.usuario.apellido1 + " " + solicitud.usuario.apellido2
+											+ " ha modificado el siguiente permiso anticipado: "
+											+ "\r\n Día de Inicio: " + soli.diaInicio
+											+ "\r\n Día de termino: " + soli.diaFinal
 											+ "\r\n Motivo: " + soli.motivo
 											+ "\r\n Detalle: " + soli.detalle
-											+ "\r\n\r\n A continuación se muestra el permiso anticipado modificado " 
-											+ "\r\n Día de Inicio: " + solicitudActualizada.diaInicio 
-											+ "\r\n Día de termino: " + solicitudActualizada.diaFinal 
+											+ "\r\n\r\n A continuación se muestra el permiso anticipado modificado "
+											+ "\r\n Día de Inicio: " + solicitudActualizada.diaInicio
+											+ "\r\n Día de termino: " + solicitudActualizada.diaFinal
 											+ "\r\n Motivo: " + solicitudActualizada.motivo
 											+ "\r\n Detalle: " + solicitudActualizada.detalle
 										});
 									}
 								}
 							});
-							
+
 						}
 					});
 }
@@ -339,21 +343,30 @@ return cb();
 }
 
 //--------------------------------------------------------------------
-//Métodos Solicitudes    
+//Métodos Solicitudes
 //---------------------------------------------------------------------*/
 exports.loadSoli = function(id, cb){
-	Solicitudes.findById(id, function (err, soli) { 
+	Solicitudes.findById(id, function (err, soli) {
 		if(soli.estado == 'Pendiente'){
-			Solicitudes.findById(id, function (err, solicitud) { 
+			Solicitudes.findById(id, function (err, solicitud) {
 				if (err) return cb(err);
 				cb(solicitud);
-			}); 
+			});
 		} else cb({motivo:'seleccionar',detalle:''});
-	}); 
-}
+	});
+};
+
+exports.loadExtra = function(id, cb){
+	HoraExtra.findById(id, function (err, extra) {
+		if(extra.estado == 'Pendiente'){
+			if (err) return cb(err);
+			cb(extra);
+		} else cb({motivo:'seleccionar',detalle:''});
+	});
+};
 
 exports.deleteSoli = function(id, cb, idUser){
-	Solicitudes.findByIdAndRemove(id).populate('usuario').exec(function (err, soli) { 
+	Solicitudes.findByIdAndRemove(id).populate('usuario').exec(function (err, soli) {
 		if (err) return cb(err,'');
 		var fecha = "";
 		if(soli.fechaCreada)
@@ -368,7 +381,7 @@ exports.deleteSoli = function(id, cb, idUser){
 						to: soli.usuario.email,
 						subject: 'Se ha eliminado una solicitud de hora extraordiaria en SIGUCA',
 						text: " Estimado(a) " + soli.usuario.nombre + " " + soli.usuario.apellido1 + " " + soli.usuario.apellido2
-						+ " \r\n Su supervisor ha eliminado una de las solicitudes de hora extraordiaria presentadas, en la cuál se indicabá lo siguiente: " 
+						+ " \r\n Su supervisor ha eliminado una de las solicitudes de hora extraordiaria presentadas, en la cuál se indicabá lo siguiente: "
 						+ " \r\n Fecha de creación: " + fecha
 						+ " \r\n Día Inicio: " + soli.diaInicio
 						+ " \r\n Hora Inicio: " + soli.horaInicio
@@ -385,7 +398,7 @@ exports.deleteSoli = function(id, cb, idUser){
 						to: soli.usuario.email,
 						subject: 'Se ha eliminado una solicitud de permiso anticipado en SIGUCA',
 						text: " Estimado(a) " + soli.usuario.nombre + " " + soli.usuario.apellido1 + " " + soli.usuario.apellido2
-						+ " \r\n Su supervisor ha eliminado una de las solicitudes de permiso anticipado presentadas, en la cuál se indicabá lo siguiente: " 
+						+ " \r\n Su supervisor ha eliminado una de las solicitudes de permiso anticipado presentadas, en la cuál se indicabá lo siguiente: "
 						+ " \r\n Fecha de creación: " + fecha
 						+ " \r\n Día Inicio: " + soli.diaInicio
 						+ " \r\n Día Final: " + soli.diaFinal
@@ -399,7 +412,7 @@ exports.deleteSoli = function(id, cb, idUser){
 			}
 		});
 
-	
+
 		return cb(err,'Se elimino');
 	});
 }
@@ -408,23 +421,23 @@ exports.deleteSoli = function(id, cb, idUser){
 //Gestionar Eventos
 //---------------------------------------------------------------------*/
 exports.gestionarSoli = function(solicitud, cb, idUser){
-	Usuario.findById(idUser, function (errUser, supervisor) { 
-		Solicitudes.findByIdAndUpdate(solicitud.id, 
+	Usuario.findById(idUser, function (errUser, supervisor) {
+		Solicitudes.findByIdAndUpdate(solicitud.id,
 		{
-			estado: solicitud.estado, 
+			estado: solicitud.estado,
 			comentarioSupervisor:solicitud.comentarioSupervisor
-		}).populate('usuario').exec(function (err, soli) { 
+		}).populate('usuario').exec(function (err, soli) {
 
 			/*
 			 * Actualiza las vacaciones, solo cuando son aceptadas
 			 */
 			if(solicitud.estado=='Aceptada' && solicitud.motivo == 'Vacaciones'){
 				Usuario.update({_id:soli.usuario}, {$inc:{vacaciones:(0-soli.cantidadDias)}},function(err){});
-				
+
 			}
 
 			/*
-			 * Envía el correo electrónico 
+			 * Envía el correo electrónico
 			 */
 
 			if (err) return cb(err, '');
@@ -446,11 +459,11 @@ exports.gestionarSoli = function(solicitud, cb, idUser){
 						from: listaCorreos[0].nombreCorreo,
 						to: soli.usuario.email,
 						subject: 'Respuesta a solicitud en SIGUCA',
-						text: " Estimado(a) " + soli.usuario.nombre 
+						text: " Estimado(a) " + soli.usuario.nombre
 						+ ",\r\n\r\nPor este medio se le notifica que "
 						+"la siguiente solicitud ha sido respondida:"
 						+ solitext
-						+ "Le informamos que la justificación fue " + solicitud.estado 
+						+ "Le informamos que la justificación fue " + solicitud.estado
 						+ " por el supervisor " + superV
 						+ ", con el siguiente comentario"
 						+ "\r\n\r\n " + solicitud.comentarioSupervisor
@@ -463,7 +476,7 @@ exports.gestionarSoli = function(solicitud, cb, idUser){
 					});
 				}
 			});
-		
+
 			return cb(err, 'Se elimino');
 
 		});

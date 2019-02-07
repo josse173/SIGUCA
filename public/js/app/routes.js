@@ -17,7 +17,7 @@
 var contador=0;
 
 $(".justificarMasaUsuario").click(function(){
-    
+
        var cantidadCheck=document.getElementsByClassName("justificarMasaUsuario");
        var contador=0;
        for(var i=0;i<cantidadCheck.length;i++){
@@ -25,17 +25,17 @@ $(".justificarMasaUsuario").click(function(){
                contador++;
            }
        }
-   
+
        if(contador>0){
            $("#detalleJustificacionMasa").css('display','block');
            $("#botonJustificacionMasa").css('display','block');
-         
+
        }else{
            $("#detalleJustificacionMasa").css('display','none');
            $("#botonJustificacionMasa").css('display','none');
-       
+
        }
-   
+
    });
 
 $("#botonJustificacionMasa").click(function() {
@@ -53,7 +53,7 @@ $("#botonJustificacionMasa").click(function() {
             arrayOrdenado.push(obj);
         }
     }
-    
+
     var entro=false;
     var primeraVez=arrayOrdenado[0].motivoOtroJust;
     for(var i=0;i<arrayOrdenado.length;i++){
@@ -68,27 +68,27 @@ $("#botonJustificacionMasa").click(function() {
             type: 'POST',
             dataType : "json",
             data:{"ordenadas":arrayOrdenado},
-            success: function(data) {    
+            success: function(data) {
                 if(data.result=="Empleado"){
                     location.href="/escritorioEmpl";
                 }else{
                     location.href="/escritorio";
-                   
-                 
+
+
                 }
-              
+
             },
             error: function(){
                 alert("Error al justificar en masa.");
             }
-        }); 
+        });
     }else{
-            
-            var notification = alertify.error('Error,seleccione justificaciones con el mismo motivo', 'success', 4, function(){ 
+
+            var notification = alertify.error('Error,seleccione justificaciones con el mismo motivo', 'success', 4, function(){
                 location.href="/escritorioEmpl";
              });
-             
-            
+
+
     }
 
 });
@@ -105,7 +105,7 @@ $(document).ready(function()
       if(size>0){
          $("#mostrarSolicitudes").modal("show");
       }
-     
+
    });
 
 
@@ -150,7 +150,7 @@ $(document).ready(function()
         format: 'd/m/Y',
         timepicker: false
     });
-     
+
 
 
     $('.footable').footable();
@@ -176,7 +176,7 @@ $(document).ready(function()
         var id = $(this).val();
         $.get('/justificacion/edit/'+id, function( data ) {
 
-            //$('#motivo').val(data.motivo);   
+            //$('#motivo').val(data.motivo);
             var optionValues = [];
 
             $('#selectMotivoJust option').each(function() {
@@ -192,7 +192,7 @@ $(document).ready(function()
                 $('#selectMotivoJust').val(data.motivo);
             }
 
-            $('#detalles').val(data.detalle);    
+            $('#detalles').val(data.detalle);
         });
     });
     $("button[data-target=#updateJustificacion]" ).click( function() {
@@ -207,19 +207,21 @@ $(document).ready(function()
             $("#updateJustificacion #identificador").val(id);
 
             $("#updateJustificacion #motivoOtroJust").val(data.motivo);
-          
+
         });
 });
 
  $("button[data-target=#editExtra]").click( function() {
     var id = $(this).val();
-    $('.formUpdateExtra').attr('action', '/extra/'+id);
-    $.get('/solicitud/edit/'+id, function( data ) {
-        var epochInicio = moment.unix(data.epochInicio).format("YYYY/MM/DD HH:mm"),
-        epochTermino = moment.unix(data.epochTermino).format("YYYY/MM/DD HH:mm")
+    $('.formUpdateExtra').attr('action', '/guardarHoraExtra/'+id);
+    $.get('/horaExtra/edit/'+id, function( data ) {
+        var epochInicio = moment.unix(data.fechaInicial).format("DD/MM/YYYY HH:mm"),
+        epochTermino = moment.unix(data.fechaFinal).format("DD/MM/YYYY HH:mm");
+        console.log(epochInicio);
+        console.log(epochTermino);
         $('#date_timepicker_start').val(epochInicio);
         $('#date_timepicker_end').val(epochTermino);
-        $('#cliente').val(data.cliente);
+        $('#cliente').val(data.ubicacion);
         $('#motivo').val(data.motivo);
     });
 });
@@ -245,7 +247,7 @@ $(document).ready(function()
             $('#selectMotivo').val(data.motivo);
         }
 
-        $('#detallePermiso').val(data.detalle); 
+        $('#detallePermiso').val(data.detalle);
     });
 });
 
@@ -254,7 +256,7 @@ $(document).ready(function()
     $('.formUpdate').attr('action', '/departamento/'+id);
 
     $.get('/departamento/editDepartamento/'+id, function( data ) {
-        $('#nombreDepa').val(data.nombre);            
+        $('#nombreDepa').val(data.nombre);
     });
 });
 
@@ -263,8 +265,8 @@ $(document).ready(function()
     $('.formUpdate').attr('action', '/horarioN/'+id);
 
     $.get('/horarioN/editHorario/'+id, function( data ) {
-        $('#nombre').val(data.nombre);            
-        $('#tipoJornada').val(data.tipo);            
+        $('#nombre').val(data.nombre);
+        $('#tipoJornada').val(data.tipo);
         if(data.tipo == 'Libre'){
             $('#tipoJornada').prop('checked', true);
             $('#timepicker input').attr('disabled','disabled');
@@ -279,12 +281,12 @@ $(document).ready(function()
             $('#rangoJornada').show();
             $('#timepicker4').show();
         }
-        $('#horaEntrada').val(data.horaEntrada);            
-        $('#horaSalida').val(data.horaSalida);            
-        $('#rangoJornada').text(data.rangoJornada);            
-        $('#inputRango').val(data.rangoJornada); 
-        $('#tiempoReceso').val(data.tiempoReceso); 
-        $('#tiempoAlmuerzo').val(data.tiempoAlmuerzo); 
+        $('#horaEntrada').val(data.horaEntrada);
+        $('#horaSalida').val(data.horaSalida);
+        $('#rangoJornada').text(data.rangoJornada);
+        $('#inputRango').val(data.rangoJornada);
+        $('#tiempoReceso').val(data.tiempoReceso);
+        $('#tiempoAlmuerzo').val(data.tiempoAlmuerzo);
     });
 });
 
@@ -295,7 +297,7 @@ $("button[data-target=#editHorarioPersonalizado]").click( function() {
 
     $.get('/horarioN/buscarPersonalizado/'+id, function( data ) {
         $('#nombreHorarioPersonalizado').val(data.nombreHorarioPersonalizado);
-       
+
 
 
         if(data.lunes.entrada.minutos<10){
@@ -303,7 +305,7 @@ $("button[data-target=#editHorarioPersonalizado]").click( function() {
         }else{
             $('#lunesEntrada').val(data.lunes.entrada.hora+":"+data.lunes.entrada.minutos)
         }
-        
+
         if(data.lunes.salida.minutos<10){
             $('#lunesSalida').val(data.lunes.salida.hora+":"+0+data.lunes.salida.minutos);
         }else{
@@ -315,7 +317,7 @@ $("button[data-target=#editHorarioPersonalizado]").click( function() {
         }else{
             $('#martesEntrada').val(data.martes.entrada.hora+":"+data.martes.entrada.minutos)
         }
-    
+
         if(data.martes.salida.minutos<10){
             $('#martesSalida').val(data.martes.salida.hora+":"+0+data.martes.salida.minutos);
         }else{
@@ -327,7 +329,7 @@ $("button[data-target=#editHorarioPersonalizado]").click( function() {
         }else{
             $('#miercolesEntrada').val(data.miercoles.entrada.hora+":"+data.miercoles.entrada.minutos)
         }
-    
+
         if(data.miercoles.salida.minutos<10){
             $('#miercolesSalida').val(data.miercoles.salida.hora+":"+0+data.miercoles.salida.minutos);
         }else{
@@ -339,7 +341,7 @@ $("button[data-target=#editHorarioPersonalizado]").click( function() {
         }else{
             $('#juevesEntrada').val(data.jueves.entrada.hora+":"+data.jueves.entrada.minutos)
         }
-    
+
         if(data.jueves.salida.minutos<10){
             $('#juevesSalida').val(data.jueves.salida.hora+":"+0+data.jueves.salida.minutos);
         }else{
@@ -391,19 +393,19 @@ $("button[data-target=#editHorarioPersonalizado]").click( function() {
             $('#tiempoAlmuerzoo').val(data.tiempoAlmuerzo.hora+":"+data.tiempoAlmuerzo.minutos)
         }
 
-        
+
         if(data.tiempoReceso.minutos<10){
             $('#tiempoRecesoo').val(data.tiempoReceso.hora+":"+0+data.tiempoReceso.minutos);
         }else{
             $('#tiempoRecesoo').val(data.tiempoReceso.hora+":"+data.tiempoReceso.minutos)
         }
 
-        
 
 
-        
-       
-        
+
+
+
+
     });
 });
 
@@ -414,18 +416,18 @@ $("button[data-target=#editHorarioFijo]").click( function() {
     $('.formUpdateFijo').attr('action', '/horarioFijoN/'+id);
 
     $.get('/horarioFijo/editHorario/'+id, function( data ) {
-        $('#nombreFijo').val(data.nombre);            
-        $('#horaEntradaFijo').val(data.horaEntrada);  
-        $('#horaSalidaFijo').val(data.horaSalida);   
-        $('#tiempoRecesoFijo').val(data.tiempoReceso);  
-        $('#tiempoAlmuerzoFijo').val(data.tiempoAlmuerzo); 
+        $('#nombreFijo').val(data.nombre);
+        $('#horaEntradaFijo').val(data.horaEntrada);
+        $('#horaSalidaFijo').val(data.horaSalida);
+        $('#tiempoRecesoFijo').val(data.tiempoReceso);
+        $('#tiempoAlmuerzoFijo').val(data.tiempoAlmuerzo);
         if(data.Lunes=="Lunes"){
             $('#Lunes').prop('checked', true);
             $('#Lunes').val('Lunes');
         }else{
             $('#Lunes').prop('checked', false);
         }
-        
+
         if(data.Martes=="Martes"){
             $('#Martes').prop('checked', true);
             $('#Martes').val('Martes');
@@ -464,9 +466,9 @@ $("button[data-target=#editHorarioFijo]").click( function() {
         }else{
              $('#Domingo').prop('checked', false);
         }
-        
 
-       
+
+
     });
 });
 
@@ -483,7 +485,7 @@ $("button[data-target=#editHorarioFijo]").click( function() {
         }else{
             contador++;
         }
-       
+
 
         var x = document.getElementById("estadoEmpleado");
         var option = document.createElement("option");
@@ -495,14 +497,14 @@ $("button[data-target=#editHorarioFijo]").click( function() {
             var option = document.createElement("option");
             option.text = "Inactivo";
             x.add(option);
-    
+
         }else{
             var x = document.getElementById("estadoEmpleado");
             var option = document.createElement("option");
             option.text = "Activo";
             x.add(option);
         }
-        
+
         //Se crea la fecha
         if(data.fechaIngreso>0){
             var fechaIngesoTem = new Date((data.fechaIngreso*1000));
@@ -511,43 +513,43 @@ $("button[data-target=#editHorarioFijo]").click( function() {
             var result = "";
         }
 
-        $('#nombre').val(data.nombre);   
+        $('#nombre').val(data.nombre);
         if(data.teleTrabajo=="on"){
             $('#teleTrabajo').attr("checked",true);
-          
+
         }else {
-            $('#teleTrabajo').attr("checked",false);       
+            $('#teleTrabajo').attr("checked",false);
         }
-        
+
         $('#cedula').val(data.cedula);
-        $('#apellido1').val(data.apellido1);            
+        $('#apellido1').val(data.apellido1);
         $('#fechaIngreso').val(result);
         $('#vacaciones').val(data.vacaciones);
-        $('#apellido2').val(data.apellido2);            
-        $('#email').val(data.email);            
-        $('#codTarjeta').val(data.codTarjeta);            
-        $('#username').val(data.username);     
-        $('#selectTipo').selectpicker('val', data.tipo);       
-        $('#selectHorario').selectpicker('val', data.horario);  
-        $('#selectHorarioFijo').selectpicker('val', data.horarioFijo);   
-        $('#HorarioEmpleado').selectpicker('val', data.horarioEmpleado);     
-        $('#selectDepartamentos').selectpicker('val', data.horario);    
-        $('#idEmpleado').val(data._id);  
+        $('#apellido2').val(data.apellido2);
+        $('#email').val(data.email);
+        $('#codTarjeta').val(data.codTarjeta);
+        $('#username').val(data.username);
+        $('#selectTipo').selectpicker('val', data.tipo);
+        $('#selectHorario').selectpicker('val', data.horario);
+        $('#selectHorarioFijo').selectpicker('val', data.horarioFijo);
+        $('#HorarioEmpleado').selectpicker('val', data.horarioEmpleado);
+        $('#selectDepartamentos').selectpicker('val', data.horario);
+        $('#idEmpleado').val(data._id);
         $("#idEmpleado").css('display','none');
-    
+
         var val = [];
         for (var i = 0; i < data.departamentos.length; i++) {
             val.push(data.departamentos[i].departamento);
         }
         $('#selectDepartamentos').selectpicker('val', val);
-        $('#selectDepartamentos').selectpicker('refresh');    
-        $('#selectHorario').selectpicker('refresh');    
-        $('#selectHorarioFijo').selectpicker('refresh'); 
-        $('#HorarioEmpleado').selectpicker('refresh'); 
-        $('#selectTipo').selectpicker('refresh');    
+        $('#selectDepartamentos').selectpicker('refresh');
+        $('#selectHorario').selectpicker('refresh');
+        $('#selectHorarioFijo').selectpicker('refresh');
+        $('#HorarioEmpleado').selectpicker('refresh');
+        $('#selectTipo').selectpicker('refresh');
         $('#estadoEmpleado').refresh();
-       
-         
+
+
 
     });
 });
@@ -574,7 +576,7 @@ $("button[data-target=#editHorarioFijo]").click( function() {
     $('#cantidadDias').val("");
     $('#selectMotivo').val("");
     $('#motivoOtro').val("");
-    $('#detallePermiso').val(""); 
+    $('#detallePermiso').val("");
 });
 
 $("#btn-soli-cancelar").click(function(){
@@ -651,7 +653,7 @@ $("#extraLink").click(function(){
        $("#diaInicio").val("");
        $("#diaFinal ").val("");
        $("#selectMotivo").val("seleccionar")
-       $("#cantidadDias").val("");  
+       $("#cantidadDias").val("");
        $("#motivoOtro ").val("");
        $("#detalle").val("");
        //$("#selectDerechoDisfrutar").val("seleccionar");
@@ -672,7 +674,7 @@ $("#extraLink").click(function(){
         $("#selectMotivoJust").val("seleccionar")
         $("#motivoOtroJust").val("")
         $("#detalles").val("")
-    
+
  });
 
 
@@ -711,7 +713,7 @@ $("#extraLink").click(function(){
     ---------------------------------------------------------------------*/
 
 
-    $('.tableSolicitudes').footable().on('click', '.row-delete', 
+    $('.tableSolicitudes').footable().on('click', '.row-delete',
         function(e) {
             e.preventDefault();
             //get the footable object
@@ -724,9 +726,9 @@ $("#extraLink").click(function(){
             var comentarioSupervisor = row.find('.comentarioSupervisor').val();
             var estadoreal = "#estado"+id;
             var estado = $(estadoreal).val();
-         
-            $.post('/getionarSolicitudAjax/'+id, 
-                {comentarioSupervisor: comentarioSupervisor, estado: estado}, 
+
+            $.post('/getionarSolicitudAjax/'+id,
+                {comentarioSupervisor: comentarioSupervisor, estado: estado},
                 function (data){
                     if(data == 'Se elimino'){
                         footable.removeRow(row);
@@ -736,7 +738,7 @@ $("#extraLink").click(function(){
 
 
 
-    $('.tableVacaciones').footable().on('click', '.row-delete', 
+    $('.tableVacaciones').footable().on('click', '.row-delete',
         function(e) {
             e.preventDefault();
             //get the footable object
@@ -765,12 +767,12 @@ $("#extraLink").click(function(){
                     (disponibles[cont]).innerHTML = parseInt((disponibles[cont]).innerHTML)-parseInt(numDias);
                 }
             }
-            
+
             /**
              * Se hace la actualización en Base de datos por medio de Ajax
              */
-            $.post('/getionarSolicitudAjax/'+id, 
-                {comentarioSupervisor: comentarioSupervisor, estado: estado, motivo: motivo}, 
+            $.post('/getionarSolicitudAjax/'+id,
+                {comentarioSupervisor: comentarioSupervisor, estado: estado, motivo: motivo},
                 function (data){
                     if(data == 'Se elimino'){
                         footable.removeRow(row);
@@ -782,7 +784,7 @@ $("#extraLink").click(function(){
             }
         });
 
-    $('.tableJustificaciones').footable().on('click', '.row-delete', 
+    $('.tableJustificaciones').footable().on('click', '.row-delete',
         function(e) {
             e.preventDefault();
             //get the footable object
@@ -795,8 +797,8 @@ $("#extraLink").click(function(){
             var comentarioSupervisor = row.find('.comentarioSupervisor').val();
             var estado = row.find('.select_picker').val();
 
-            $.post('/getionarJustificacionAjax/'+id, 
-                {comentarioSupervisor: comentarioSupervisor, estado: estado}, 
+            $.post('/getionarJustificacionAjax/'+id,
+                {comentarioSupervisor: comentarioSupervisor, estado: estado},
                 function (data){
                     if(data == 'Se elimino'){
                         footable.removeRow(row);
@@ -814,7 +816,7 @@ $("#extraLink").click(function(){
         var justificacion = $(this).val();
         var split = justificacion.split(',');
         for(var i =0;i<split.length;i++){
-         
+
             //alert( split[1]);
         }
         alertify.dialog('confirm')
@@ -822,7 +824,7 @@ $("#extraLink").click(function(){
             'labels':{ok:'Eliminar', cancel:'Cancelar'},
             'transition': 'slide',
             'message': '¿Está seguro de eliminar la justificación de <br/><strong>' +  split[0] + '</strong> creada el día <i><b> ' + split[2] + ' </b></i>?',
-            'onok': function(){ 
+            'onok': function(){
                 $.get('/justificacion/delete/'+split[1], function (data){
                     if(data == 'Se elimino'){
                         footable.removeRow(row);
@@ -832,7 +834,7 @@ $("#extraLink").click(function(){
                     }
                 });
             }
-        }).show(); 
+        }).show();
     });
 
  $('.tableSolicitudes').footable().on('click', '.solicitudDelete', function(e) {
@@ -847,7 +849,7 @@ $("#extraLink").click(function(){
         'labels':{ok:'Eliminar', cancel:'Cancelar'},
         'transition': 'slide',
         'message': '¿Está seguro de eliminar la solicitud de <br/><strong>' +  split[0] + '</strong> creada el día <i><b> ' + split[2] + ' </b></i>?',
-        'onok': function(){ 
+        'onok': function(){
             $.get('/solicitud/delete/'+split[1], function (data){
                 if(data == 'Se elimino'){
                     footable.removeRow(row);
@@ -857,7 +859,7 @@ $("#extraLink").click(function(){
                 }
             });
         }
-    }).show(); 
+    }).show();
 });
 
 
@@ -872,7 +874,7 @@ $('.tableVacaciones').footable().on('click', '.solicitudDelete', function(e) {
        'labels':{ok:'Eliminar', cancel:'Cancelar'},
        'transition': 'slide',
        'message': '¿Está seguro de eliminar la solicitud de <br/><strong>' +  split[0] + '</strong> creada el día <i><b> ' + split[2] + ' </b></i>?',
-       'onok': function(){ 
+       'onok': function(){
            $.get('/solicitud/delete/'+split[1], function (data){
                if(data == 'Se elimino'){
                    footable.removeRow(row);
@@ -882,7 +884,7 @@ $('.tableVacaciones').footable().on('click', '.solicitudDelete', function(e) {
                }
            });
        }
-   }).show(); 
+   }).show();
 });
 
  $('.tableMarcas').footable().on('click', '.marcaDelete', function(e) {
@@ -896,7 +898,7 @@ $('.tableVacaciones').footable().on('click', '.solicitudDelete', function(e) {
         'labels':{ok:'Eliminar', cancel:'Cancelar'},
         'transition': 'slide',
         'message': '¿Está seguro de eliminar la marca de <br/><strong>' +  split[0] + '</strong>?',
-        'onok': function(){ 
+        'onok': function(){
             $.get('/marca/delete/'+split[1]+'/'+split[2], function (data){
                 if(data == 'Se eliminó correctamente.'){
                     footable.removeRow(row);
@@ -906,7 +908,7 @@ $('.tableVacaciones').footable().on('click', '.solicitudDelete', function(e) {
                 }
             });
         }
-    }).show(); 
+    }).show();
 });
 
 /*--------------------------------------------------------------------
@@ -923,7 +925,7 @@ $('.tableVacaciones').footable().on('click', '.solicitudDelete', function(e) {
             'labels':{ok:'Eliminar', cancel:'Cancelar'},
             'transition': 'slide',
             'message': '¿Está seguro de eliminar el departamento de <strong>' +  split[0] + '</strong>?' ,
-            'onok': function(){ 
+            'onok': function(){
                 $.get('/departamento/delete/'+split[1], function (data){
                     if(data == 'Se elimino'){
                         footable.removeRow(row);
@@ -933,7 +935,7 @@ $('.tableVacaciones').footable().on('click', '.solicitudDelete', function(e) {
                     }
                 });
             }
-        }).show();        
+        }).show();
     });
 
  $('.tableHorario').footable().on('click', '.horarioDelete', function(e) {
@@ -947,7 +949,7 @@ $('.tableVacaciones').footable().on('click', '.solicitudDelete', function(e) {
         'labels':{ok:'Eliminar', cancel:'Cancelar'},
         'transition': 'slide',
         'message': '¿Está seguro de eliminar el horario <strong>' +  split[0] + '</strong>?' ,
-        'onok': function(){ 
+        'onok': function(){
             $.get('/horarioN/delete/'+split[1], function (data){
                 if(data == 'Se elimino'){
                     footable.removeRow(row);
@@ -957,7 +959,7 @@ $('.tableVacaciones').footable().on('click', '.solicitudDelete', function(e) {
                 }
             });
         }
-    }).show();    
+    }).show();
 });
 
 
@@ -973,7 +975,7 @@ $('.tableVacaciones').footable().on('click', '.solicitudDelete', function(e) {
         'labels':{ok:'Eliminar', cancel:'Cancelar'},
         'transition': 'slide',
         'message': '¿Está seguro de eliminar el horario <strong>' +  split[0] + '</strong>?' ,
-        'onok': function(){ 
+        'onok': function(){
             $.get('/feriado/delete/'+split[1], function (data){
                 if(data == 'Se elimino'){
                     footable.removeRow(row);
@@ -983,7 +985,7 @@ $('.tableVacaciones').footable().on('click', '.solicitudDelete', function(e) {
                 }
             });
         }
-    }).show();    
+    }).show();
 });
 
  $('.tablePeriodo').footable().on('click', '.periodoDelete', function(e) {
@@ -1021,7 +1023,7 @@ $('.tableCorreo').footable().on('click', '.correoDelete', function(e) {
         'labels':{ok:'Eliminar', cancel:'Cancelar'},
         'transition': 'slide',
         'message': '¿Está seguro de eliminar el horario <strong>' +  split[0] + '</strong>?' ,
-        'onok': function(){ 
+        'onok': function(){
             $.get('/correo/delete/'+split[1], function (data){
                 if(data == 'Se elimino'){
                     footable.removeRow(row);
@@ -1031,7 +1033,7 @@ $('.tableCorreo').footable().on('click', '.correoDelete', function(e) {
                 }
             });
         }
-    }).show();    
+    }).show();
 });
 
 $('.tableRed').footable().on('click', '.redDelete', function(e) {
@@ -1045,7 +1047,7 @@ $('.tableRed').footable().on('click', '.redDelete', function(e) {
         'labels':{ok:'Eliminar', cancel:'Cancelar'},
         'transition': 'slide',
         'message': '¿Está seguro de eliminar la red <strong>' +  split[0] + '</strong>?' ,
-        'onok': function(){ 
+        'onok': function(){
             $.get('/red/delete/'+split[1], function (data){
                 if(data == 'Se elimino'){
                     footable.removeRow(row);
@@ -1055,7 +1057,7 @@ $('.tableRed').footable().on('click', '.redDelete', function(e) {
                 }
             });
         }
-    }).show();    
+    }).show();
 });
 
 
@@ -1091,6 +1093,16 @@ $("button[data-target=#editContenido]").click( function() {
     });
 });
 
+ $("button[data-target=#editConfiguracion]").click( function() {
+     var id = $(this).val();
+     $('.formUpdateConfiguracion').attr('action', '/configuracionAlertasUpdate/'+id);
+     $.get('/configuracionAlertas/editConfiguracion/'+id, function( data ) {
+         $('#nombreUnico').val(data.nombreUnico);
+         $('#nombre').val(data.nombre);
+         $('#valor').val(data.valor);
+     });
+ });
+
 
 $("button[data-target=#editCorreo]").click( function() {
     var id = $(this).val();
@@ -1112,7 +1124,7 @@ $("button[data-target=#editRed]").click( function() {
 
 
 
-$('.tableHorarioEliminar').footable().on('click','.eliminarFijo',function(e) {  
+$('.tableHorarioEliminar').footable().on('click','.eliminarFijo',function(e) {
     var footable = $('.tableHorarioEliminar').data('footable');
     var row = $(this).parents('tr:first');
     var horario = $(this).val();
@@ -1122,7 +1134,7 @@ $('.tableHorarioEliminar').footable().on('click','.eliminarFijo',function(e) {
         'labels':{ok:'Eliminar', cancel:'Cancelar'},
         'transition': 'slide',
         'message': '¿Está seguro de eliminar el horario <strong>' +  split[0] + '</strong>?' ,
-        'onok': function(){ 
+        'onok': function(){
             $.get('/horarioFijo/delete/'+split[1], function (data){
                 if(data == 'Se elimino'){
                     footable.removeRow(row);
@@ -1132,13 +1144,13 @@ $('.tableHorarioEliminar').footable().on('click','.eliminarFijo',function(e) {
                 }
             });
         }
-    }).show(); 
-    
+    }).show();
+
 });
 
 
 
-$('.tableHorarioPersonalizado').footable().on('click','.eliminarPersonalizado',function(e) {  
+$('.tableHorarioPersonalizado').footable().on('click','.eliminarPersonalizado',function(e) {
     var footable = $('.tableHorarioPersonalizado').data('footable');
     var row = $(this).parents('tr:first');
     var horario = $(this).val();
@@ -1148,7 +1160,7 @@ $('.tableHorarioPersonalizado').footable().on('click','.eliminarPersonalizado',f
         'labels':{ok:'Eliminar', cancel:'Cancelar'},
         'transition': 'slide',
         'message': '¿Está seguro de eliminar el horario <strong>' +  split[0] + '</strong>?' ,
-        'onok': function(){ 
+        'onok': function(){
             $.get('/horarioPersonalizado/delete/'+split[1], function (data){
                 if(data == 'Se elimino'){
                     footable.removeRow(row);
@@ -1158,8 +1170,8 @@ $('.tableHorarioPersonalizado').footable().on('click','.eliminarPersonalizado',f
                 }
             });
         }
-    }).show(); 
-    
+    }).show();
+
 });
 
 
@@ -1176,7 +1188,7 @@ $('.tableHorarioPersonalizado').footable().on('click','.eliminarPersonalizado',f
         'labels':{ok:'Eliminar', cancel:'Cancelar'},
         'transition': 'slide',
         'message': '¿Está seguro de <i>eliminar</i> al empleado(a) <strong>' +  split[0] + '</strong>?' ,
-        'onok': function(){ 
+        'onok': function(){
             $.get('/empleado/delete/'+split[1], function (data){
                 if(data == 'Se elimino'){
                     footable.removeRow(row);
@@ -1186,7 +1198,7 @@ $('.tableHorarioPersonalizado').footable().on('click','.eliminarPersonalizado',f
                 }
             });
         }
-    }).show();        
+    }).show();
 });
 
 /*--------------------------------------------------------------------
@@ -1204,7 +1216,7 @@ $('.tableHorarioPersonalizado').footable().on('click','.eliminarPersonalizado',f
     // All units are in the set measurement for the document
     // This can be changed to "pt" (points), "mm" (Default), "cm", "in"
     doc.fromHTML($('body').get(0), 15, 15, {
-        'width': 170, 
+        'width': 170,
         'elementHandlers': specialElementHandlers
     });*/
 

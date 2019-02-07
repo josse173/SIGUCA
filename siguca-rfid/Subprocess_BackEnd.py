@@ -242,6 +242,8 @@ def read_rfid():
 
 #Obtiene la marca del usuario
 def obtieneMarca(dec,tipo):
+    print "Obteniendo marca para ID: " + dec + " Tipo Usuario: " + tipo
+        
     #Se crea el entorno gráfico  para realizar las marcas
     root = Tk()
     root.attributes('-fullscreen', True)
@@ -393,7 +395,9 @@ def obtieneTipoUsuario(dec,listTipo):
 while True:
     os.system('clear')
     dec=read_rfid()
+    print "RFID leído (RAW): " + dec
     dec=str(dec)
+    print "RFID leído (String): " + dec
     tipoUsuario = "None"
 
     #se verifica que la variable no este vacía

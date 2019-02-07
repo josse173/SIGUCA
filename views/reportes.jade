@@ -14,7 +14,7 @@ block content
           table
             form(role='form', method="POST", action="/reportes/"+filtradoReporte)
               td
-                select.form-control.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro") 
+                select.form-control.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro")
                   option(value= "todos|reportes") #{textos[1].titulo}
                   each user in usuarios
                     //-Se verifica si la informacion esta siendo filtrada por usuario
@@ -24,7 +24,7 @@ block content
                       option(value= user._id + "|reportes") #{user.apellido1} #{user.apellido2}, #{user.nombre}
 
               td
-                select.form-control#selectFiltro.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro_departamento") 
+                select.form-control#selectFiltro.selectpicker(data-style="btn-success", data-width="auto", type="text", name="filtro_departamento")
                   option(value= "todos") #{textos[2].titulo}
                   each dep in departamentos
                     //-Se verifica si la informacion esta siendo filtrada por departamento
@@ -51,7 +51,7 @@ block content
                       span.input-group-addon.fondoTransparente-derecha
                         i.icon-calendar
               td
-      
+
                 button.filtro.form-control.btn.btn-success.fondoTransparente(type='submit', name='gestionar') #{textos[5].titulo}
       else
         div.text-center
@@ -74,7 +74,7 @@ block content
                       td #{marcas.length}
                     else
                       td 0
-                
+
                 //-Justificiones
                 if(justificaciones)
                   tr
@@ -101,7 +101,7 @@ block content
                       td #{extras.length}
                     else
                       td 0
-                
+
                  if(feriado)
                   tr
                     td Feriados
@@ -109,7 +109,7 @@ block content
                       td #{feriado.length}
                     else
                       td 0
-                
+
                 //-Vacaciones
                 if(vacaciones)
                   tr
@@ -129,7 +129,7 @@ block content
                           - sumaHoras ++
                           - sumaMinutos = (sumaMinutos + empleadoTem.tiempo.minutos) - 60
                         else
-                          -sumaMinutos += empleadoTem.tiempo.minutos        
+                          -sumaMinutos += empleadoTem.tiempo.minutos
 
                       //- Se le da formato al tiempo sumado
                       - var tiempo ="";
@@ -139,7 +139,12 @@ block content
                       td #{tiempo}
                     else
                       td 0
-                  
+
+            if(tipoReporte === 'confirmacionPresencia')
+              tr
+                td Total de solicitudes de confirmación de presencia
+                td #{eventosTeletrabajo.length}
+
         br
         div.tablasReportes
           if(resumen && resumen.length != 0)
@@ -158,7 +163,7 @@ block content
                   tr
                     td(colspan='2')
 
-          
+
           if(horasEmpleado)
             if(horasEmpleado.length != 0)
               br
@@ -170,7 +175,7 @@ block content
                         th #{textos[40].titulo}
                         th #{textos[41].titulo}
                         th #{textos[42].titulo}
-                            
+
                     tbody
                       each empleado, p in horasEmpleado
                         - var x = JSON.stringify(empleado);
@@ -183,14 +188,14 @@ block content
                         - if(empleado.tiempo.horas<=0 && empleado.tiempo.minutos<=0) tiempo = "El usuario se ausentó o no marcó salida."
                         tr
                           td #{empleado.tipoUsuario}
-                          td #{empleado.usuario.nombre} #{empleado.usuario.apellido1} 
+                          td #{empleado.usuario.nombre} #{empleado.usuario.apellido1}
                           td #{tiempo}
-                         
+
             else
               h3  #{textos[39].titulo}
               p  #{textos[15].titulo}
 
-          
+
           //-Horas por dia
           if(cierreUsuarios)
             if(cierreUsuarios.length != 0)
@@ -204,7 +209,7 @@ block content
                         th #{textos[45].titulo}
                         th #{textos[46].titulo}
                         th #{textos[47].titulo}
-                            
+
                     tbody
                       each cierre, i in cierreUsuarios
                         - var x = JSON.stringify(cierre);
@@ -214,12 +219,12 @@ block content
                         - if(cierre.tiempo.horas<10) h = "0"+h;
                         - if(cierre.tiempo.minutos<10) m = "0"+m;
                         - tiempo = h+":"+m;
-                        - if(cierre.tiempo.horas<=0 && cierre.tiempo.minutos<=0) 
+                        - if(cierre.tiempo.horas<=0 && cierre.tiempo.minutos<=0)
                           -tiempo = "El usuario se ausentó o no marcó salida."
                         tr
-                          td(data-value=cierre.epoch) #{cierre.fecha.str} 
+                          td(data-value=cierre.epoch) #{cierre.fecha.str}
                           td #{cierre.tipoUsuario}
-                          td #{cierre.usuario.nombre} #{cierre.usuario.apellido1} 
+                          td #{cierre.usuario.nombre} #{cierre.usuario.apellido1}
                           td #{tiempo}
             else
               h3 #{textos[43].titulo}
@@ -240,16 +245,16 @@ block content
                     tbody
                       each marca, i in marcas
                         tr
-                          td(data-value=marca.epoch) #{marca.fecha.str} 
+                          td(data-value=marca.epoch) #{marca.fecha.str}
                           td #{marca.usuario.nombre} #{marca.usuario.apellido1}
-                          td #{marca.tipoMarca} 
+                          td #{marca.tipoMarca}
                           td #{marca.tipoUsuario}
             else
               h3 #{textos[10].titulo}
               p #{textos[15].titulo}
-                           
-           //-Tardias  
-        
+
+           //-Tardias
+
 
           if(arregloTardias)
             if(arregloTardias.length != 0)
@@ -262,14 +267,14 @@ block content
                         th #{textos[27].titulo}
                         th #{textos[28].titulo}
                         th #{textos[29].titulo}
-                        
-                      
+
+
                     tbody
                       -for (var g = 0; g <arregloTardias.length; g++)
                         tr
                           th #{arregloTardias[g].tipoUsuario}
                           td #{arregloTardias[g].nombre} #{arregloTardias[g].apellido}
-                         
+
                           if(arregloTardias[g].horarioMinutos < 10)
                             td #{arregloTardias[g].horarioHora+":"+arregloTardias[g].horarioMinutos+""+0}
                           else
@@ -277,8 +282,8 @@ block content
                           td #{arregloTardias[g].fecha}
             else
               h3 #{textos[25].titulo}
-              p #{textos[15].titulo} 
-             
+              p #{textos[15].titulo}
+
           if(marcasPorDia)
             if(marcasPorDia.length != 0)
                 h3 #{textos[16].titulo}
@@ -295,7 +300,7 @@ block content
                           th #{textos[23].titulo}
                           th #{textos[24].titulo}
                       tbody
-                        -for(var s=0;s<marcasPorDia.length;s++)  
+                        -for(var s=0;s<marcasPorDia.length;s++)
                           tr
                             td  #{marcasPorDia[s].tipoUsuario}
                             td  #{marcasPorDia[s].nombre} #{marcasPorDia[s].apellido1}
@@ -307,13 +312,13 @@ block content
                             td  #{marcasPorDia[s].salida}
               else
                 h3 #{textos[16].titulo}
-                p #{textos[15].titulo}          
+                p #{textos[15].titulo}
 
-          //-Justificaciones     
+          //-Justificaciones
           if(justificaciones)
             if(justificaciones.length != 0)
               h3 #{textos[30].titulo}
-              .tableJustificaciones  
+              .tableJustificaciones
                 table#justificacionesPDF
                     thead
                       tr
@@ -327,22 +332,22 @@ block content
                     tbody
                       each justificacion, i in justificaciones
                         tr
-                          td(data-value=justificacion.fechaCreada) #{justificacion.fecha.str} 
+                          td(data-value=justificacion.fechaCreada) #{justificacion.fecha.str}
                           if(justificacion.usuario)
                             td #{justificacion.usuario.nombre} #{justificacion.usuario.apellido1}
-                          td #{justificacion.tipoUsuario} 
-                          td #{justificacion.motivo}    
-                          td #{justificacion.detalle} 
-                          td #{justificacion.comentarioSupervisor} 
-                          td #{justificacion.estado}  
+                          td #{justificacion.tipoUsuario}
+                          td #{justificacion.motivo}
+                          td #{justificacion.detalle}
+                          td #{justificacion.comentarioSupervisor}
+                          td #{justificacion.estado}
                           td
                             if(justificacion.usuario)
-                              button.btn.btn-default.justificacionDelete(value=justificacion.usuario.nombre+' '+justificacion.usuario.apellido1+' '+justificacion.usuario.apellido2+','+justificacion.id+','+justificacion.fecha.str, name='eliminar') 
-                                i.icon-trash.icon-large.i-danger 
+                              button.btn.btn-default.justificacionDelete(value=justificacion.usuario.nombre+' '+justificacion.usuario.apellido1+' '+justificacion.usuario.apellido2+','+justificacion.id+','+justificacion.fecha.str, name='eliminar')
+                                i.icon-trash.icon-large.i-danger
             else
               h3 #{textos[30].titulo}
-              p #{textos[15].titulo}        
-                       
+              p #{textos[15].titulo}
+
           //-Solicitudes Horas Extraordinarias
           if(extras)
             if(extras.length != 0)
@@ -365,24 +370,24 @@ block content
                     tbody
                       each extra, i in extras
                         tr
-                          td(data-value=extra.fechaCreada) #{extra.fecha.str} 
+                          td(data-value=extra.fechaCreada) #{extra.fecha.str}
                           if(extra.usuario)
-                          td #{extra.usuario.nombre} #{extra.usuario.apellido1} 
-                          td #{extra.diaInicio} 
-                          td #{extra.diaFinal} 
-                          td #{extra.cantHoras} 
-                          td #{extra.cliente} 
-                          td #{extra.motivo} 
-                          td #{extra.comentarioSupervisor} 
-                          td #{extra.estado} 
+                          td #{extra.usuario.nombre} #{extra.usuario.apellido1}
+                          td #{moment.unix(extra.fechaInicial).format("YYYY-MM-DD hh:mm:ss")}
+                          td #{moment.unix(extra.fechaFinal).format("YYYY-MM-DD hh:mm:ss")}
+                          td #{extra.cantHoras}
+                          td #{extra.ubicacion}
+                          td #{extra.motivo}
+                          td #{extra.comentarioSupervisor}
+                          td #{extra.estado}
                           td
                             if(extra.usuario)
-                              button.btn.btn-default.solicitudDelete(value=extra.usuario.nombre+' '+extra.usuario.apellido1+' '+extra.usuario.apellido2+','+extra.id+','+extra.fecha.str, name='eliminar') 
-                              i.icon-trash.icon-large.i-danger 
+                              button.btn.btn-default.solicitudDelete(value=extra.usuario.nombre+' '+extra.usuario.apellido1+' '+extra.usuario.apellido2+','+extra.id+','+extra.fecha.str, name='eliminar')
+                              i.icon-trash.icon-large.i-danger
             else
               h3 #{textos[48].titulo}
               p #{textos[15].titulo}
-          
+
           //-Solicitudes Permisos
           if(permisos)
             if(permisos.length != 0)
@@ -395,7 +400,7 @@ block content
                         th(data-type="numeric" data-sort-initial="descending") #{textos[60].titulo}
                         th  #{textos[61].titulo}
                         th(data-hide="phone,small") #{textos[62].titulo}
-                        th(data-hide="phone,small") #{textos[63].titulo} 
+                        th(data-hide="phone,small") #{textos[63].titulo}
                         th(data-hide="phone,small") #{textos[64].titulo}
                         th(data-hide="phone,small,medium") #{textos[65].titulo}
                         th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[66].titulo}
@@ -405,20 +410,20 @@ block content
                     tbody
                       each permiso, i in permisos
                         tr
-                          td(data-value=permiso.fechaCreada) #{permiso.fecha.str} 
+                          td(data-value=permiso.fechaCreada) #{permiso.fecha.str}
                           if(permiso.usuario)
-                            td #{permiso.usuario.nombre} #{permiso.usuario.apellido1} 
-                          td #{permiso.diaInicio} 
-                          td #{permiso.diaFinal} 
-                          td #{permiso.cantidadDias} 
-                          td #{permiso.motivo} 
-                          td #{permiso.detalle} 
-                          td #{permiso.comentarioSupervisor} 
-                          td #{permiso.estado} 
+                            td #{permiso.usuario.nombre} #{permiso.usuario.apellido1}
+                          td #{permiso.diaInicio}
+                          td #{permiso.diaFinal}
+                          td #{permiso.cantidadDias}
+                          td #{permiso.motivo}
+                          td #{permiso.detalle}
+                          td #{permiso.comentarioSupervisor}
+                          td #{permiso.estado}
                           td
                             if(permiso.usuario)
-                              button.btn.btn-default.solicitudDelete(value=permiso.usuario.nombre+' '+permiso.usuario.apellido1+' '+permiso.usuario.apellido2+','+permiso.id+','+permiso.fecha.str, name='eliminar') 
-                                i.icon-trash.icon-large.i-danger 
+                              button.btn.btn-default.solicitudDelete(value=permiso.usuario.nombre+' '+permiso.usuario.apellido1+' '+permiso.usuario.apellido2+','+permiso.id+','+permiso.fecha.str, name='eliminar')
+                                i.icon-trash.icon-large.i-danger
             else
               h3 #{textos[59].titulo}
               p #{textos[15].titulo}
@@ -433,13 +438,13 @@ block content
                     tr
                       th #{textos[78].titulo}
                       th #{textos[79].titulo}
-                      
-  
-                  tbody 
+
+
+                  tbody
                     each feriadoCurrent, i in feriado
                       tr
-                        td #{feriadoCurrent.nombreFeriado} 
-                        td #{feriadoCurrent.epoch} 
+                        td #{feriadoCurrent.nombreFeriado}
+                        td #{feriadoCurrent.epoch}
             else
               h3 #{textos[77].titulo}
               p #{textos[15].titulo}
@@ -464,13 +469,30 @@ block content
                         each elemento, i in usuarios
                             tr
                               td #{elemento.nombre}
-                              td #{elemento.apellido1} #{elemento.apellido2} 
-                              td #{elemento.cedula} 
-                              td #{elemento.email} 
+                              td #{elemento.apellido1} #{elemento.apellido2}
+                              td #{elemento.cedula}
+                              td #{elemento.email}
                               td #{elemento.estado}
                               td.text-center #{elemento.vacaciones}
 
-block sigucaJS  
+          if(tipoReporte === 'confirmacionPresencia')
+              h3 Confirmación de Presencia
+              table.footable.tableContenido(data-page-navigation=".pagination" ,data-page-size="25")
+                thead
+                  tr
+                    th Usuario
+                    th Fecha de la alerta
+                    th Fecha Aceptación
+                    th Presente
+
+                tbody
+                  each eventoTeletrabajo, i in eventosTeletrabajo
+                    tr
+                      td #{eventoTeletrabajo.nombreUsuario}
+                      td #{moment(eventoTeletrabajo.fecha).format("YYYY-MM-DD hh:mm:ss")}
+                      td #{eventoTeletrabajo.fechaAceptacion === null ? '' : moment(eventoTeletrabajo.fechaAceptacion).format("YYYY-MM-DD hh:mm:ss")}
+                      td #{eventoTeletrabajo.presente ? 'Si' : 'No'}
+block sigucaJS
   script(src="/js/app/reportes.js")
   script(src="/socket.io/socket.io.js")
   script(src="/js/components/d3.min.js")

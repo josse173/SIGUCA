@@ -1,10 +1,139 @@
 var urlHorario = 'asignarHorario';
 
 
-
 // A $( document ).ready() block.
 $( document ).ready(function() {
+
+    var alertasPrincipal = document.getElementById("alertas").value;
+    if(alertasPrincipal && !(alertasPrincipal === 'undefined')){
+        setInterval(validarAlertas, 10000);
+    }
+
+    function validarAlertas() {
+
+        var fechaActual = new Date();
+        // console.log('Hora Actual: ' + fechaActual.getDate() + ' ' + fechaActual.getHours() + ':' + fechaActual.getMinutes() + "(" + fechaActual.getTime() + ")");
+
+        var tiempoRespuesta = document.getElementById("tiempoRespuesta").value;
+        var alertas = document.getElementById("alertas").value;
+
+        if(alertas && !(alertas === 'undefined') && tiempoRespuesta && !(tiempoRespuesta === 'undefined')){
+            var listaAlertas = JSON.parse(alertas);
+            var listaAlertasActivas = [];
+            listaAlertas.forEach(function(alerta) {
+                // console.log(alerta);
+                var fechaAlerta = new Date(alerta.fechaCreacion);
+                // console.log('Hora Alerta: '+ fechaAlerta.getDate() + ' ' + fechaAlerta.getHours() + ':' + fechaAlerta.getMinutes() + "(" + fechaAlerta.getTime() + ")");
+                if ( fechaAlerta.getTime() <= fechaActual.getTime() && alerta.mostrada === false) {
+
+                    $.ajax({
+                        url: "usuarioDisponibleVerAlerta",
+                        type: "POST",
+                        dataType : "json",
+                        data: {usuario: alerta.usuario},
+                        success: function(data) {
+                            // console.log(data.result);
+                            if (data.result && data.result === true) {
+                                $("#mensajeConfirmacionConexion").modal("show");
+                                var intervalId = blinkTab("Confirmación de Conexión");
+
+                                setInterval(closeModal, tiempoRespuesta * 60000, intervalId);
+
+                                $.ajax({
+                                    url: "alertaMostrada",
+                                    type: "POST",
+                                    dataType : "json",
+                                    data: {id : alerta._id, usuario: alerta.usuario, tiempoRespuesta: tiempoRespuesta},
+                                    success: function(data) {
+                                        document.getElementById("idEventoTeletrabajo").value = data.id;
+                                    },
+                                    error: function(){
+                                    }
+                                });
+                            } else {
+                                fechaAlerta.setMinutes(fechaActual.getMinutes() + 10 );
+                                alerta.fechaCreacion = fechaAlerta;
+                                listaAlertasActivas.push(alerta);
+                                document.getElementById("alertas").value = JSON.stringify(listaAlertasActivas);
+
+                                $.ajax({
+                                    url: "actualizarAlerta",
+                                    type: "POST",
+                                    dataType : "json",
+                                    data: {id : alerta._id, alerta: alerta},
+                                    success: function(data) {},
+                                    error: function(){}
+                                });
+                            }
+                        },
+                        error: function(){
+                        }
+                    });
+
+                } else {
+                    if (alerta.mostrada === false) {
+                        listaAlertasActivas.push(alerta)
+                    }
+                }
+            });
+
+            document.getElementById("alertas").value = JSON.stringify(listaAlertasActivas);
+        }
+    }
+
+    function closeModal(intervalId){
+        $("#mensajeConfirmacionConexion").modal("hide");
+
+        setTimeout(validarPresente, 1000);
+
+        clearInterval(intervalId);
+    }
+
+    function validarPresente() {
+
+        $.ajax({
+            url: "validarPresente",
+            type: "POST",
+            dataType : "json",
+            data: {id : document.getElementById("idEventoTeletrabajo").value},
+            success: function(data) {},
+            error: function(){}
+        });
+    }
+
+    var blinkTab = function(message) {
+        var oldTitle = document.title,
+            timeoutId,
+            blink = function() {
+                document.title = document.title == message ? ' ' : message;
+                var audio = new Audio('https://www.soundjay.com/button/beep-06.wav');
+                audio.type = 'audio/wav';
+
+                var playPromise = audio.play();
+
+                if (playPromise !== undefined) {
+                    playPromise.then(function () {
+                    }).catch(function (error) {
+                    });
+                }
+            },
+            clear = function() {
+                clearInterval(timeoutId);
+                document.title = oldTitle;
+                window.onmousemove = null;
+                timeoutId = null;
+            };
+
+        if (!timeoutId) {
+            timeoutId = setInterval(blink, 1200);
+            window.onmousemove = clear;
+        }
+
+        return timeoutId;
+    };
+
     function getIPs(callback){
+
         var ip_dups = {};
         //compatibility for firefox and chrome
         var RTCPeerConnection = window.RTCPeerConnection
@@ -72,11 +201,11 @@ $( document ).ready(function() {
         if (ip.match(/^(192\.168\.|169\.254\.|10\.|172\.(1[6-9]|2\d|3[01]))/)){
 
             //document.getElementsByTagName("ul")[0].appendChild(li);
-            
+
             //alert(ip);
         }
         //IPv6 addresses
-    
+
     });
 });
 
@@ -85,10 +214,10 @@ $.each([".btnEntrada",".btnSalida",
     ".btnSalidaAlmuerzo",".btnEntradaAlmuerzo",
     ".btnSalidaReceso",".btnEntradaReceso"],
     function(i, id){
-        
-        
+
+
         var cerrado = false;
-        $(id).click(function() { 
+        $(id).click(function() {
             $.ajax({
                 url: "marca",
                 type: "POST",
@@ -99,7 +228,7 @@ $.each([".btnEntrada",".btnSalida",
                     $("#mensajeMarca").modal("show");
                     $("#mensajeMarca").fadeIn(1);
                     $("#closeMensajeMarca").click(function(){
-                        cerrado = true; 
+                        cerrado = true;
                         if(data.result!="Marca registrada correctamente."){
                             if($(".marcaResponsive").is(":visible")){
                                 $("#addMarcaResponsive").modal("show");
@@ -109,7 +238,7 @@ $.each([".btnEntrada",".btnSalida",
                                 $("#addMarca").fadeIn(1000);
                             }
 
-                        } 
+                        }
                         else {
                             window.location.replace(window.location.href);
                         }
@@ -154,11 +283,29 @@ $.each([".btnEntrada",".btnSalida",
         });
 });
 
+$.each([".btnPresente"],
+    function (i, id) {
+        $(id).click(function() {
+            $.ajax({
+                url: "presente",
+                type: "POST",
+                dataType : "json",
+                data: {id: document.getElementById("idEventoTeletrabajo").value},
+                success: function(data) {
+                    $("#mensajeConfirmacionConexion").modal("hide");
+                },
+                error: function(){
+                    $("#mensajeConfirmacionConexion").modal("hide");
+                }
+            });
+        });
+    });
+
 
 
 
 $("#solicitud-extra-form").submit(function(e){
-    e.preventDefault();  
+    e.preventDefault();
     $.ajax({
         url: 'solicitud_extra',
         type: 'POST',
@@ -170,11 +317,11 @@ $("#solicitud-extra-form").submit(function(e){
             $("#mensajeMarca").fadeIn(1);
             var cerrado = false;
             $("#closeMensajeMarca").click(function(){
-                cerrado = true; 
+                cerrado = true;
                 if(data.result!="Guardado correctamente."){
                     $("#horaExtra").modal("show");
                     $("#horaExtra").fadeIn(1000);
-                } 
+                }
                 else {
                     window.location.replace(window.location.href);
                 }
@@ -204,7 +351,7 @@ $("#solicitud-extra-form").submit(function(e){
 
 
 $("#diaFinal,#diaInicio").change(function(e){
-    
+
     try{
         var fecha1 = new Date(document.getElementById("diaInicio").value);
         var fecha2 = new Date(document.getElementById("diaFinal").value);
