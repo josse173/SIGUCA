@@ -10,7 +10,7 @@ var mongoose = require('mongoose'),
 var SchemaPeriodo = new Schema({
     fechaCreada: {
         type: Number,
-        default: 0
+        default: Date.now()
     },
     nombre: {
         type: String,
@@ -34,4 +34,4 @@ var SchemaPeriodo = new Schema({
     }
 });
 
-module.exports = mongoose.model('periodo', SchemaPeriodo);
+module.exports = mongoose.model('Periodo', SchemaPeriodo);

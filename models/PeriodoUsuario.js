@@ -10,7 +10,7 @@ var mongoose = require('mongoose'),
 var SchemaPeriodoUsuario = new Schema({
     fechaCreada: {
         type: Number,
-        default: ''
+        default: Date.now()
     },
     usuario: {
         type: Schema.Types.ObjectId,
@@ -22,20 +22,20 @@ var SchemaPeriodoUsuario = new Schema({
     },
     fechaInicio: {
         type: Number,
-        default: ''
+        default: 0
     },
     fechaFinal: {
         type: Number,
-        default: ''
+        default: 0
     },
     diasAsignados: {
         type: Number,
-        default: ''
+        default: 0
     },
     diasDisfrutados: {
         type: Number,
-        default: ''
+        default: 0
     }
 });
 
-module.exports = mongoose.model('periodoUsuario', SchemaPeriodoSolicitud);
+module.exports = mongoose.model('PeriodoUsuario', SchemaPeriodoUsuario);
