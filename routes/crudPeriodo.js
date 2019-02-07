@@ -59,11 +59,9 @@ exports.actualizarPeriodo = function(req,res){
     console.log(ids);
     var split = ids.split(',');
     var obj={
-        nombrePeriodo:req.body.nombrePeriodo,
-        diasDisfrutados:req.body.diasDisfrutados,
-        cantidadDiasRestantes:req.body.cantidadDiasRestantes
+        diasDisfrutados:req.body.diasDisfrutados
     };
-    PeriodoVacaciones.findByIdAndUpdate(split[0],obj,function(err,periodo){
+    PeriodoUsuario.findByIdAndUpdate(split[0],obj,function(err,periodo){
         res.redirect('periodo/'+ split[1]);
     });
 };
