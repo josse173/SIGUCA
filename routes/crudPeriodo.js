@@ -1,6 +1,7 @@
 var mongoose 		= require('mongoose');
 PeriodoVacaciones 	= require('../models/Periodo');
 Usuario 		= require('../models/Usuario');
+PeriodoUsuario 	= require('../models/PeriodoUsuario');
 var moment = require('moment');
 
 
