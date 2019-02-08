@@ -18,7 +18,6 @@ block content
             th Dias Asignados
             th Dias Disfrutados
             th(data-hide="phone,small" data-sort-ignore="true") Editar
-            th(data-hide="phone,small" data-sort-ignore="true") Eliminar
 
         tbody
           each periodoCurrent, i in periodo
@@ -34,9 +33,6 @@ block content
                 button.btn.btn-default(data-toggle="modal" data-target="#editPeriodo", value=periodoCurrent._id+','+usuario)
                   i.icon-pencil.icon-large.i-success
 
-              td
-                button.periodoDelete.btn.btn-default(value=periodoCurrent.periodo+','+periodoCurrent.usuario+','+periodoCurrent._id)
-                  i.icon-trash.icon-large.i-danger
 
      #editPeriodo.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
       .modal-dialog
