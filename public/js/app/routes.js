@@ -554,6 +554,15 @@ $("button[data-target=#editHorarioFijo]").click( function() {
     });
 });
 
+ $('.btnDescargaPdf').click(function(){
+
+     var doc = new jsPDF();
+     doc.autoTable({html: '#solicitudesTable'});
+     doc.save("table.pdf");
+
+     console.log("DESCARGA EL PDF");
+     alertify.dialog('confirm')
+ });
 
  $('.btnCancelar').click(function(){
     $('#selectMotivoJust').val("");
@@ -583,16 +592,62 @@ $("#extraLink").click(function(){
   $('#clienteSoli').val("");
 });
 
+ $("#permiso").click(function(){
+     var testYear = moment().format('YYYY');
+     $('#anno').val(testYear);
+ });
+
  $("#btn-permiso").click(function(){
+     var val = $('#selectMotivo').val();
+     var inciso = $('#selectInciso').val();
+     var cantidadDias = $('#cantidadDias').val();
+
+     if(val == 'seleccionar') {
+         alertify.error('Motivo no valido');
+         return false;
+     }else if(val == 'articulo') {
+         if(inciso == 'incisoA'){
+             if(cantidadDias > 5){
+                 alertify.error('No puede ingresar un incisoA debido que la cantidad maxima a solicitar son 5 dias');
+                 return false;
+             }else{
+                 $('.formSoli').attr('action', '/solicitud_permisos/');
+                 $("#btn-permiso").submit();
+             }
+         }else if(inciso =='incisoB'){
+             if(cantidadDias != 1){
+                 alertify.error('No puede ingresar incisoB cantidad maxima a solicitar es 1 dia');
+                 return false;
+             }else{
+                 $('.formSoli').attr('action', '/solicitud_permisos/');
+                 $("#btn-permiso").submit();
+             }
+         }else if(inciso =='incisoC'){
+             if(cantidadDias != 1){
+                 alertify.error('No puede ingresar incisoC cantidad maxima a solicitar es 1 dia');
+                 return false;
+             }else{
+                 $('.formSoli').attr('action', '/solicitud_permisos/');
+                 $("#btn-permiso").submit();
+             }
+         }
+     }else {
+         $('.formSoli').attr('action', '/solicitud_permisos/');
+         $("#btn-permiso").submit();
+     }
+ });
+
+ /*$("#btn-permiso").click(function(){
     var val = $('#selectMotivo').val();
+    var inciso = $('#selectDerechoDisfrutar').val();
     if(val == 'seleccionar') {
         alertify.error('Motivo no valido');
         return false;
-    } else {
+    }else {
         $('.formSoli').attr('action', '/solicitud_permisos/');
         $("#btn-permiso").submit();
     }
-});
+});*/
 
  $("#btn-permiso-cancelar").click(function(){
        $("#diaInicio").val("");
@@ -601,6 +656,7 @@ $("#extraLink").click(function(){
        $("#cantidadDias").val("");
        $("#motivoOtro ").val("");
        $("#detalle").val("");
+       //$("#selectDerechoDisfrutar").val("seleccionar");
  });
 
  $("#btn-just").click(function(){
@@ -620,11 +676,6 @@ $("#extraLink").click(function(){
         $("#detalles").val("")
 
  });
-
-
-
-
-
 
 
  $("#btn-editPermiso").click(function(){
@@ -937,6 +988,29 @@ $('.tableVacaciones').footable().on('click', '.solicitudDelete', function(e) {
     }).show();
 });
 
+ $('.tablePeriodo').footable().on('click', '.periodoDelete', function(e) {
+     var footable = $('.tablePeriodo').data('footable');
+     var row = $(this).parents('tr:first');
+
+     var periodo = $(this).val();
+     var split = periodo.split(',');
+     alertify.dialog('confirm')
+         .set({
+             'labels':{ok:'Eliminar', cancel:'Cancelar'},
+             'transition': 'slide',
+             'message': '¿Está seguro de eliminar el periodo <strong>' +  split[0] + '</strong>?' ,
+             'onok': function(){
+                 $.get('/periodo/delete/'+split[2], function (data){
+                     if(data == 'Se elimino'){
+                         footable.removeRow(row);
+                         alertify.message('Se eliminó el periodo ' +  split[0] + ' con éxito');
+                     } else {
+                         alertify.error('No se puede eliminar el periodo <strong>' +  split[0] + '</strong>');
+                     }
+                 });
+             }
+         }).show();
+ });
 
 $('.tableCorreo').footable().on('click', '.correoDelete', function(e) {
     var footable = $('.tableCorreo').data('footable');
@@ -997,6 +1071,21 @@ $("button[data-target=#editFeriado]").click( function() {
        $('.epoch').val(moment.unix(data.epoch).format("DD/MM/YYYY"));
     });
 });
+
+ $("button[data-target=#editPeriodo]").click( function() {
+     var id = $(this).val();
+     var split = id.split(',');
+     $('.formUpdatePeriodo').attr('action', '/periodoUpdate/'+ id);
+     $.get('/periodo/editPeriodo/'+split[0], function( data ) {
+         $('#periodoUpdate').val(data.periodo);
+         $('#fechaCreadaUpdate').val(data.fechaCreada);
+         $('#fechaInicioUpdate').val(data.fechaInicio);
+         $('#fechaFinalUpdate').val(data.fechaFinal);
+         $('#diasAsignadosUpdate').val(data.diasAsignados);
+         $('#diasDisfrutadosUpdate').val(data.diasDisfrutados);
+
+     });
+ });
 
 $("button[data-target=#editContenido]").click( function() {
     var id = $(this).val();

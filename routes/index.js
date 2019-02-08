@@ -23,7 +23,7 @@
  var crudSolicitud = require('./crudSolicitud');
  var crudJustificaciones = require('./crudJustificaciones');
 
-
+ var crudPeriodo = require('./crudPeriodo');
  var crudHorario = require('./crudHorario');
  var crudMarca = require('./crudMarca');
  var crudDepartamento = require('./crudDepartamento');
@@ -51,8 +51,11 @@ var HorarioPersonalizado = require('../models/HorarioEmpleado');
 var Departamento = require('../models/Departamento');
 var Justificaciones = require('../models/Justificaciones');
 var Solicitudes = require('../models/Solicitudes');
+var PeriodoUsuario = require('../models/PeriodoUsuario');
+var PeriodoSolicitud = require('../models/PeriodoUsuario');
 var Cierre = require('../models/Cierre');
 var emailSIGUCA = 'siguca@greencore.co.cr';
+var Articulo51 = require('../models/Articulo51');
 var Configuracion = require('../models/Configuracion');
 var Alerta = require('../models/Alerta');
 var EventosTeletrabajo = require('../models/EventosTeletrabajo');
@@ -292,6 +295,17 @@ module.exports = function(app, io) {
     *  Carga la información de una solicitud tipo hora extra
     */
     app.get('/solicitud/edit/:id', autentificado, solicitud_actions.editar);
+
+    /*
+    *  Carga la información de una solicitud de tipo inciso C
+    */
+    app.get('/solicitud/inciso', autentificado, function (req, res) {
+        Solicitudes.find({usuario: req.user.id, "inciso":"incisoC"}).exec(function (err, quantity) {
+            console.log(quantity);
+            var size = quantity.length;
+            res.json({quantity});
+        });
+    });
 
     app.get('/horaExtra/edit/:id', autentificado, solicitud_actions.editarExtra);
 
@@ -897,7 +911,96 @@ module.exports = function(app, io) {
             res.json(user);
         });
     });
+    //******************************************************************************
+    //Periodos de un usuario
+    /*
+    *  Crea un nuevo periodo
+    */
+    app.post('/periodo/:id', autentificado, function (req, res) {
+        console.log("post de periodo mandando el id " + req.params.id);
+        //console.log("ESTE ES usuario dentro del post     " + req.user);
+        if (req.session.name == "Administrador") {
+            req.body.usuario = req.params.id;
+            crudPeriodo.addPeriodo(req.body, function() {
+                if (req.session.name == "Administrador"){
+                    res.redirect('/periodo/'+ req.params.id);
+                }
+            });//Busca Usuario
+        } else {
+            req.logout();
+            res.redirect('/');
+        }
+    });
 
+    /*
+    */
+    app.get('/periodo/:id', autentificado, function (req, res) {
+        console.log("get del periodo pasando un id    " + req.params.id);
+        PeriodoUsuario.find({usuario: req.params.id}).sort({fechaCreacion: 1}).exec(function(err, periodos){
+            if(err){
+                return res.json(err);
+            }else{
+                req.user.tipo = req.session.name;
+                Usuario.findById(req.params.id, function (err, empleado) {
+                    console.log("NOMBRE USUARIO    " + empleado.nombre);
+                    if (err) return res.json(err);
+                    else{
+                        return res.render('periodo', {
+                            title: 'Nuevo Periodo | SIGUCA',
+                            periodo:periodos,
+                            usuario:req.params.id,
+                            nombreUsuario: empleado.nombre,
+                            moment: moment
+                        });
+                    }
+                });
+            }
+        });
+    });
+
+    /*
+   *  Modifica el estado de Activo a Inactivo de un periodo en específico
+   */
+    app.get('/periodo/delete/:id', autentificado, function (req, res) {
+        console.log("ESTE ES id a eliminar   " + req.params.id);
+        crudPeriodo.deletePeriodo(req.params.id, function (err, msj) {
+            if (err) res.json(err);
+            res.send(msj);
+        });
+    });
+
+    app.get('/periodo/editPeriodo/:id',function(req,res){
+        PeriodoUsuario.findById(req.params.id,function(err,periodo){
+            if (err) return res.json(err);
+            else res.json(periodo);
+        });
+    });
+
+    /*
+    */
+
+    app.get('/periodos/numero/:id', autentificado, function (req, res) {
+        PeriodoVacaciones.findOne({usuario: req.params.id}).sort('-numeroPeriodo').exec(function(err,periodo){
+            if (err) return res.json(err);
+            else res.json(periodo);
+        });
+    });
+
+    app.post('/periodoUpdate/:id',autentificado, crudPeriodo.actualizarPeriodo);
+
+    app.get('/periodos/vacacionesAcumuladas/:id', autentificado, function (req, res) {
+        crudPeriodo.vacacionesAcumuladas(req.params.id, function (err, acumulado) {
+            if (err) res.json(err);
+            else res.json(acumulado);
+        });
+    });
+
+    app.get('/periodos/cantidadVacaciones/:id', autentificado, function (req, res) {
+        crudPeriodo.cantidadVacacionesPorUsuario(req.params.id, function (err, msj) {
+            if (err) res.json(err);
+            res.send(msj);
+        });
+    });
 
     //******************************************************************************
     /*
@@ -1549,7 +1652,6 @@ module.exports = function(app, io) {
             else res.json(feriado);
         });
      });
-
 
 
 

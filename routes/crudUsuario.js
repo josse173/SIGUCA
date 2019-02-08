@@ -14,8 +14,11 @@ Marcas 	= require('../models/Marca'),
 HorasTrabajadas 	= require('../models/CierrePersonal'),
 Cierre 			= require('../models/Cierre'),
 util 			= require('../util/util'),
-emailSIGUCA 	= 'siguca@greencore.co.cr';
+emailSIGUCA 	= 'siguca@greencore.co.cr',
+Periodo = require('../models/Periodo'),
+PeriodoUsuario = require('../models/PeriodoUsuario');
 var config 			= require('../config');
+
 
 //--------------------------------------------------------------------
 //	Métodos Usuario
@@ -24,11 +27,11 @@ exports.addUsuario = function(us, cb){
 	if(!us.teleTrabajo){
 		us.teleTrabajo="off";
 	}
-	
+
 	var arrayTipo = [];
 	if(us.tipo instanceof Array){
 		for( var t in us.tipo){
-			arrayTipo.push(us.tipo[t]); 
+			arrayTipo.push(us.tipo[t]);
 		}
 	} else {
 		arrayTipo.push(us.tipo);
@@ -38,7 +41,7 @@ exports.addUsuario = function(us, cb){
 	var array = [];
 	if(us.idDepartamento instanceof Array){
 		for( var i in us.idDepartamento){
-			array.push({departamento: us.idDepartamento[i]}); 
+			array.push({departamento: us.idDepartamento[i]});
 		}
 	} else {
 		array.push({departamento: us.idDepartamento});
@@ -48,7 +51,7 @@ exports.addUsuario = function(us, cb){
 		if (!user) {
 			if(us.idHorario){
 				var newUser = new Usuario({
-				username: us.username, 
+				username: us.username,
 				tipo: arrayTipo,
 				estado: "Activo",
 				nombre: us.nombre,
@@ -60,12 +63,12 @@ exports.addUsuario = function(us, cb){
 				departamentos: array,
 				horario: us.idHorario,
 				teleTrabajo:us.teleTrabajo
-				
+
 				});
 			}else if(us.horarioFijo){
-				
+
 				var newUser = new Usuario({
-				username: us.username, 
+				username: us.username,
 				tipo: arrayTipo,
 				estado: "Activo",
 				nombre: us.nombre,
@@ -80,7 +83,7 @@ exports.addUsuario = function(us, cb){
 				});
 			}else if(us.personalizado){
 				var newUser = new Usuario({
-				username: us.username, 
+				username: us.username,
 				tipo: arrayTipo,
 				estado: "Activo",
 				nombre: us.nombre,
@@ -95,7 +98,7 @@ exports.addUsuario = function(us, cb){
 				});
 			}else{
 				var newUser = new Usuario({
-				username: us.username, 
+				username: us.username,
 				tipo: arrayTipo,
 				estado: "Activo",
 				nombre: us.nombre,
@@ -111,32 +114,77 @@ exports.addUsuario = function(us, cb){
 
 			//Se pasa la fecha a epoch
 			var splitDate1 = us.fechaIngreso.split('/');
-
+			console.log(us.fechaIngreso);
 			var day = splitDate1[0];
 			if(parseInt(day) > 28){
 				day = 28;
 			}
     		var date1 = new Date(splitDate1[2], splitDate1[1]-1, day);
-			var epoch = (date1.getTime() - date1.getMilliseconds())/1000;
-			newUser.fechaIngreso = epoch;
-			
+			var fechaIngresoEpoch = (date1.getTime() - date1.getMilliseconds())/1000;
+			newUser.fechaIngreso = fechaIngresoEpoch;
+
 			newUser.password = Usuario.generateHash(us.password);
-			newUser.save(function (err, user) {
+			newUser.save(function (err, usuarioCreado) {
 				if (err) console.log(err);
-				return cb()
-                alert("Se ha creado un Nuevo Usuario Exitosamente");
-				console.log("El usuario se creo ");
+				Periodo.find({}).sort({ "numeroPeriodo" : 1}).exec(function(error, periodos){
+
+					var fechaActual = moment().unix();
+					var cantidadSemanas = moment.unix(fechaIngresoEpoch).diff(fechaActual, 'week');
+
+					// console.log('fechaActual: '+ moment.unix(fechaActual).format("YYYY-MM-DD hh:mm:ss"));
+					// console.log('fechaIngresoEpoch: '+ moment.unix(fechaIngresoEpoch).format("YYYY-MM-DD hh:mm:ss"));
+					// console.log('cantidadSemanas: '+ cantidadSemanas);
+
+					if(cantidadSemanas > 50){
+						crearPeriodo(periodos, fechaActual, usuarioCreado._id, fechaIngresoEpoch, 50);
+					}
+
+				});
+
+				return cb();
+
             });//Crea Usuario
 		}
 	});//Busca Usuario
-	
-	
-}
+
+	function crearPeriodo(periodos, fechaActual, usuario, fechaIngreso, cantidadSemanas) {
+
+		var fechaPeriodo = fechaIngreso + 30240000;
+
+		// console.log('fechaIngreso: '+ moment.unix(fechaIngreso).format("YYYY-MM-DD hh:mm:ss"));
+		// console.log('fechaPeriodo: '+ moment.unix(fechaPeriodo).format("YYYY-MM-DD hh:mm:ss"));
+		// console.log('cantidadSemanas: '+ cantidadSemanas);
+
+		if(fechaPeriodo < fechaActual){
+			periodos.forEach(function(periodo) {
+				if(cantidadSemanas >= periodo.rangoInicial && cantidadSemanas < periodo.rangoFinal){
+
+					var periodoUsuario = new PeriodoUsuario({
+                        fechaCreada: fechaActual,
+						usuario: usuario,
+						periodo: periodo._id,
+                        nombrePeriodoPadre: periodo.nombre,
+						fechaInicio: fechaIngreso,
+						fechaFinal: fechaPeriodo,
+						diasAsignados: periodo.cantidadDias
+					});
+
+					periodoUsuario.save(function (err, respuesta) {
+						if (err) console.log(err);
+					});
+
+					crearPeriodo(periodos, fechaActual, usuario, fechaPeriodo, (cantidadSemanas + 50));
+				}
+			});
+		}
+
+	}
+};
 
 exports.get = function(query, cb){
 	Usuario.find(query).exec(function (err, empleados){
 		cb(err, empleados);
-    });//Usuario 
+    });//Usuario
 }
 
 exports.listUsuarios = function(cb){
@@ -147,7 +195,7 @@ exports.listUsuarios = function(cb){
 					HorarioPersonalizado.find().exec(function(error,personalizado){
 						var render = {
 							title: 'Gestionar empleados | SIGUCA',
-							empleados: empleados, 
+							empleados: empleados,
 							horarios: horarios,
 							departamentos: departamentos,
 							tipoEmpleado: config.empleado2,
@@ -157,33 +205,33 @@ exports.listUsuarios = function(cb){
 						};
 				return cb(err, render);
 					});
-						
+
 				});//horarioFijo
             });//Departamento
         });//Horario
-    });//Usuario 
+    });//Usuario
 }
 
 exports.loadUsuarios = function(id, cb){
-	Usuario.findById(id, function (err, empleado) { 
+	Usuario.findById(id, function (err, empleado) {
 		return cb(err, empleado);
-	}); 
+	});
 }
 
 exports.getById = function(id, cb){
-	Usuario.findById(id, function (err, empleado) { 
+	Usuario.findById(id, function (err, empleado) {
 		return cb(err, empleado);
-	}); 
+	});
 }
 
 
 exports.updateUsuario = function(data, cb){
-	
+
 	if(!data.empleado.teleTrabajo){
 		data.empleado.teleTrabajo="off";
 	}
 	delete data.empleado._id;
-	
+
 	//Se pasa la fecha a epoch
 	if(data.empleado.fechaIngreso != ""){
 		var splitDate1 = data.empleado.fechaIngreso.split('/');
@@ -210,11 +258,11 @@ exports.updateUsuario = function(data, cb){
 	data.empleado.horarioEmpleado && data.empleado.horarioEmpleado!="Sin horario"){
 		delete data.empleado.horario;
 	}
-	
+
 
 	if(data.empleado.horarioFijo && data.empleado.horarioFijo!="Sin horario") {
-		
-		
+
+
 
 		Usuario.update({_id:data.id},{ $unset: {horario: ""}},function(error,correcto){});
 		delete data.empleado.horario;
@@ -225,7 +273,7 @@ exports.updateUsuario = function(data, cb){
 		var arrayTipo = [];
 		if(data.empleado.tipo instanceof Array){
 			for( var t in data.empleado.tipo){
-				arrayTipo.push(data.empleado.tipo[t]); 
+				arrayTipo.push(data.empleado.tipo[t]);
 			}
 		} else {
 			arrayTipo.push(data.empleado.tipo);
@@ -248,14 +296,14 @@ exports.updateUsuario = function(data, cb){
 		} else {
 			delete data.empleado.password;
 		}
-		Usuario.findByIdAndUpdate(data.id, data.empleado, function (err, empleado) { 
+		Usuario.findByIdAndUpdate(data.id, data.empleado, function (err, empleado) {
 			return cb(err, empleado);
 		});
 
 	}
 	else if(data.empleado.horario && data.empleado.horario!="Sin horario"){
-		
-	
+
+
 
 		Usuario.update({_id:data.id},{ $unset: {horarioFijo: ""}},function(error,correcto){});
 		delete data.empleado.horarioFijo;
@@ -266,7 +314,7 @@ exports.updateUsuario = function(data, cb){
 		var arrayTipo = [];
 		if(data.empleado.tipo instanceof Array){
 			for( var t in data.empleado.tipo){
-				arrayTipo.push(data.empleado.tipo[t]); 
+				arrayTipo.push(data.empleado.tipo[t]);
 			}
 		} else {
 			arrayTipo.push(data.empleado.tipo);
@@ -290,7 +338,7 @@ exports.updateUsuario = function(data, cb){
 			delete data.empleado.password;
 		}
 
-		Usuario.findByIdAndUpdate(data.id, data.empleado, function (err, empleado) { 
+		Usuario.findByIdAndUpdate(data.id, data.empleado, function (err, empleado) {
 			return cb(err, empleado);
 		});
 	}
@@ -298,9 +346,9 @@ exports.updateUsuario = function(data, cb){
 
 
 	else if(data.empleado.horarioEmpleado && data.empleado.horarioEmpleado!="Sin horario"){
-		
 
-	
+
+
 
 		Usuario.update({_id:data.id},{ $unset: {horarioFijo: ""}},function(error,correcto){});
 		delete data.empleado.horarioFijo;
@@ -311,7 +359,7 @@ exports.updateUsuario = function(data, cb){
 		var arrayTipo = [];
 		if(data.empleado.tipo instanceof Array){
 			for( var t in data.empleado.tipo){
-				arrayTipo.push(data.empleado.tipo[t]); 
+				arrayTipo.push(data.empleado.tipo[t]);
 			}
 		} else {
 			arrayTipo.push(data.empleado.tipo);
@@ -335,7 +383,7 @@ exports.updateUsuario = function(data, cb){
 			delete data.empleado.password;
 		}
 
-		Usuario.findByIdAndUpdate(data.id, data.empleado, function (err, empleado) { 
+		Usuario.findByIdAndUpdate(data.id, data.empleado, function (err, empleado) {
 			return cb(err, empleado);
 		});
 	}
@@ -344,7 +392,7 @@ exports.updateUsuario = function(data, cb){
 
 
 	else if(data.empleado.horario==="Sin horario" && data.empleado.horarioFijo==="Sin horario" && data.empleado.horarioEmpleado==="Sin horario"){
-	
+
 
 
 		Usuario.update({_id:data.id},{ $unset: {horario: ""}},function(error,correcto){});
@@ -357,7 +405,7 @@ exports.updateUsuario = function(data, cb){
 		var arrayTipo = [];
 		if(data.empleado.tipo instanceof Array){
 			for( var t in data.empleado.tipo){
-				arrayTipo.push(data.empleado.tipo[t]); 
+				arrayTipo.push(data.empleado.tipo[t]);
 			}
 		} else {
 			arrayTipo.push(data.empleado.tipo);
@@ -380,7 +428,7 @@ exports.updateUsuario = function(data, cb){
 		} else {
 			delete data.empleado.password;
 		}
-		Usuario.findByIdAndUpdate(data.id, data.empleado, function (err, empleado) { 
+		Usuario.findByIdAndUpdate(data.id, data.empleado, function (err, empleado) {
 			return cb(err, empleado);
 		});
 	}else{
@@ -397,12 +445,12 @@ exports.updateUsuario = function(data, cb){
 		if(data.empleado.horarioEmpleado==="Sin horario"){
 			delete data.empleado.horarioEmpleado;
 		}
-		
+
 
 		var arrayTipo = [];
 		if(data.empleado.tipo instanceof Array){
 			for( var t in data.empleado.tipo){
-				arrayTipo.push(data.empleado.tipo[t]); 
+				arrayTipo.push(data.empleado.tipo[t]);
 			}
 		} else {
 			arrayTipo.push(data.empleado.tipo);
@@ -426,12 +474,12 @@ exports.updateUsuario = function(data, cb){
 			delete data.empleado.password;
 		}
 
-	
-		Usuario.findByIdAndUpdate(data.id, data.empleado, function (err, empleado) { 
+
+		Usuario.findByIdAndUpdate(data.id, data.empleado, function (err, empleado) {
 			return cb(err, empleado);
 		});
 	}
-		
+
 }
 
 exports.reset=function(){
@@ -439,7 +487,7 @@ exports.reset=function(){
 	    array.push('Supervisor');
 	    array.push('Administrador');
 	    var newUser = new Usuario({
-	        username: 'admingreencore', 
+	        username: 'admingreencore',
 	        tipo: array,
 	        estado: 'Activo',
 	        nombre: 'admin',
@@ -452,7 +500,7 @@ exports.reset=function(){
 	        password:'$2a$10$SdewSlSm/hT/d6fvzmjNgOs4Mss3YIt6yjtF3B2AtI1EBpuehgEKG'
 	        
 	        });
-	
+
 	        newUser.save(function (err, user) {
 	            if (err) console.log(err);
 	        
@@ -461,31 +509,31 @@ exports.reset=function(){
 	}
 
 exports.deleteUsuario = function(id, cb){
-	
-	HorasTrabajadas.remove({usuario:id}, function (err, horas) { 
+
+	HorasTrabajadas.remove({usuario:id}, function (err, horas) {
 	});
 
-	Justificaciones.remove({usuario:id}, function (err, justificaciones) { 
+	Justificaciones.remove({usuario:id}, function (err, justificaciones) {
 	});
 
-	Marcas.remove({usuario:id}, function (err, marcas) { 
+	Marcas.remove({usuario:id}, function (err, marcas) {
 	});
-	
-	Solicitudes.remove({usuario:id}, function (err, solicitudes) { 
-	});	
 
-	Usuario.remove({_id:id}, function (err, empleados) { 
+	Solicitudes.remove({usuario:id}, function (err, solicitudes) {
+	});
+
+	Usuario.remove({_id:id}, function (err, empleados) {
 		if (err) return cb(err, '');
 		return cb(err, 'Se elimino');
 	});
-	/*Usuario.findByIdAndUpdate(id, {estado:'Inactivo'}, function (err, empleados) { 
+	/*Usuario.findByIdAndUpdate(id, {estado:'Inactivo'}, function (err, empleados) {
 		if (err) return cb(err, '');
 		return cb(err, 'Se elimino');
 	});*/
 }
 
 exports.changeUsername = function(user, cb){
-	Usuario.findByIdAndUpdate(user.id, {username: user.username}, function (err, user) { 
+	Usuario.findByIdAndUpdate(user.id, {username: user.username}, function (err, user) {
 		return cb();
 	});
 }
@@ -494,10 +542,10 @@ exports.changePassword = function(data, cb){
 	var currentPassword = Usuario.generateHash(data.currentPassword);
 	Usuario.findById(data.id, function (err, user){
 		if(!user.validPassword(currentPassword)){
-			if(data.newPassword != "" && data.newPassword != null && data.newPassword === data.repeatNewPassword){                    
+			if(data.newPassword != "" && data.newPassword != null && data.newPassword === data.repeatNewPassword){
 				var us = {};
 				us.password = Usuario.generateHash(data.newPassword);
-				Usuario.findByIdAndUpdate(data.id, us, function (err, user) { 
+				Usuario.findByIdAndUpdate(data.id, us, function (err, user) {
 					if (err) return cb(err);
 					console.log("Se actualizo la contraseña con exito");
 					return cb();
@@ -531,12 +579,12 @@ exports.updateVacaciones = function(){
 
 	//Obtiene usuarios activos
 	Usuario.find({estado: "Activo", fechaIngreso: {$exists: true, $ne:0}, tipo: {$ne:"Supervisor"}}).populate("departamentos").exec(function(err, listUserTem){
-		
+
 		/**
 		 * Validaciones para optener los usuarios a los que se les debe aumentar vacaciones
 		 */
 		Usuario.find({estado:"Activo", tipo:"Supervisor"}).populate("departamentos").exec(function(err, listSupervisor){
-			
+
 			var listIdUser = [];
 			var listUser = [];
 			for (var i = 0, len = listUserTem.length; i < len; i++) {
@@ -566,7 +614,7 @@ exports.updateVacaciones = function(){
 				for (var cont = 0; cont < listUser.length; cont++) {
 					var user = listUser[cont];
 					if(user.vacaciones >= 11){//11 porque La lista utilizada no tiene el aumento de vacaciones
-												
+
 						/**
 						 * Envío de correo a empleados.
 						 */
@@ -574,15 +622,15 @@ exports.updateVacaciones = function(){
 							from: emailSIGUCA,
 							to: user.email,
 							subject: 'Acumulación de vacaciones',
-							text: " Señor " + user.nombre + " " + user.apellido1 
+							text: " Señor " + user.nombre + " " + user.apellido1
 							+ ", usted dispone de " + (user.vacaciones+1) + " días de vacaciones, se recomienda no exceder 12 días,"
-							+ " favor contactar a su supervisor.\n\n ¡Saludos!" 
+							+ " favor contactar a su supervisor.\n\n ¡Saludos!"
 						});
 
 						//Recorre departamentos del usuario
 						for (var index = 0; index < user.departamentos.length; index++) {
 							var dpt = user.departamentos[index];
-							
+
 							//Recorre supervisores
 							for (var insts = 0; insts < listSupervisor.length; insts++) {
 								var spv = listSupervisor[insts];
@@ -590,7 +638,7 @@ exports.updateVacaciones = function(){
 								//Recorre los dpts de cada supervisor
 								for (var instd = 0; instd < spv.departamentos.length; instd++) {
 									var dptSpv = spv.departamentos[instd];
-									
+
 									//Verifica el departamento del usuario con el departamento del supervisor
 									if((dpt.departamento+"") == (dptSpv.departamento+"")){
 
@@ -631,9 +679,9 @@ exports.updateVacaciones = function(){
 							}
 						}
 					}
-				}			
-				
-				
+				}
+
+
 				/**
 				 * Envía correos a los supervisores
 				 */
@@ -643,10 +691,10 @@ exports.updateVacaciones = function(){
 						from: emailSIGUCA,
 						to: email.emailSpv,
 						subject: 'Acumulación de vacaciones',
-						text: "Estimado(a) " + email.nameSpv +", se le informa que la siguiente lista de usuarios ha superado 11 días de vacaciones acumulados:\n" 
+						text: "Estimado(a) " + email.nameSpv +", se le informa que la siguiente lista de usuarios ha superado 11 días de vacaciones acumulados:\n"
 						+ email.message + "\n\n ¡Saludos!"
 					});
-					
+
 				}
 			});
 		});

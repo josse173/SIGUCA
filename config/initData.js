@@ -2,9 +2,11 @@
 
 var mongoose = require('mongoose'),
     Usuario = mongoose.model('Usuario'),
+    Articulo51 	= require('../models/Articulo51'),
     Horario = require('../models/Horario'),
     Configuracion = mongoose.model('Configuracion'),
-    Contenido = mongoose.model('Contenido');
+    Contenido = mongoose.model('Contenido'),
+    Periodo = mongoose.model('Periodo');
 
 Usuario.findOne({ 'tipo' :  'Administrador' }, function (err, user) {
     if (!user) {
@@ -131,9 +133,50 @@ Contenido.findOne({ seccion: 'Reportes', llave: 'Titulo solicitudes horas extrao
     }
 });
 
+Periodo.findOne({ nombre: 'Periodo 1', numeroPeriodo: '1'}, function (err, periodo) {
+    if (!periodo) {
+        var periodo = new Periodo({
+            nombre: 'Periodo 1',
+            numeroPeriodo: 1,
+            rangoInicial: 50,
+            rangoFinal: 250,
+            cantidadDias: 15
+        });
 
+        periodo.save(function (err, respuesta) {
+            if (err) console.log(err);
+        });
+    }
+});
 
+Periodo.findOne({ nombre: 'Periodo 2', numeroPeriodo: '2'}, function (err, periodo) {
+    if (!periodo) {
+        var periodo = new Periodo({
+            nombre: 'Periodo 2',
+            numeroPeriodo: 2,
+            rangoInicial: 250,
+            rangoFinal: 500,
+            cantidadDias: 20
+        });
 
+        periodo.save(function (err, respuesta) {
+            if (err) console.log(err);
+        });
+    }
+});
 
+Periodo.findOne({ nombre: 'Periodo 3', numeroPeriodo: '3'}, function (err, periodo) {
+    if (!periodo) {
+        var periodo = new Periodo({
+            nombre: 'Periodo 3',
+            numeroPeriodo: 3,
+            rangoInicial: 500,
+            rangoFinal: 5214,
+            cantidadDias: 26
+        });
 
-
+        periodo.save(function (err, respuesta) {
+            if (err) console.log(err);
+        });
+    }
+});

@@ -48,5 +48,11 @@ module.exports = {
 			if (err) res.json(err);
 			else res.send(msj);
 		});
+	},
+	obtenerCantidadInciso:function (req, res) {
+		crudSolicitud.getAllIncisoC(function (qty) {
+			console.log("LOG DE SOLI2   ss    " + qty)
+			res.json(qty);
+		});
 	}
 }

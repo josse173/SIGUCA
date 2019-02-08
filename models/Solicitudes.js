@@ -71,6 +71,10 @@ var SchemaSolicitudes = new Schema({
     cantidadDias: { 
         type: String,
         default: ''
+    },
+    inciso:{
+        type: String,
+        default: ''
     }
 });
 

@@ -163,9 +163,13 @@ block content
                     th #{textos[27].titulo}
                     th #{textos[28].titulo}
                     th #{textos[29].titulo}
-                    th #{textos[30].titulo}
-                    th #{textos[31].titulo}
-                    th(data-sort-ignore="true") #{textos[32].titulo}
+                    //th #{textos[30].titulo}
+                    th Cantidad de dias
+                    //th #{textos[31].titulo}
+                    th #{textos[32].titulo}
+                    th Inciso
+                    //th(data-sort-ignore="true") #{textos[32].titulo}
+                    th(data-sort-ignore="true") Detalle
                     th(data-sort-ignore="true") #{textos[33].titulo}
                     th(data-sort-ignore="true") #{textos[34].titulo}
                     th(data-sort-ignore="true") #{textos[35].titulo}
@@ -181,6 +185,10 @@ block content
                           td #{permiso.diaFinal}
                           td #{permiso.cantidadDias}
                           td #{permiso.motivo}
+                          if(permiso.inciso == 'seleccionar')
+                            td N/A
+                          else
+                            td #{permiso.inciso}
                           td #{permiso.detalle}
                           td
                             textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
@@ -213,9 +221,11 @@ block content
                     th #{textos[27].titulo}
                     th #{textos[28].titulo}
                     th #{textos[29].titulo}
-                    th #{textos[30].titulo}
-                    th #{textos[31].titulo}
+                    //th #{textos[30].titulo}
+                    th Cantidad de dias
+                    //th #{textos[31].titulo}
                     th(data-sort-ignore="true") #{textos[32].titulo}
+                    th(data-sort-ignore="true") Detalle
                     th(data-sort-ignore="true") #{textos[33].titulo}
                     th(data-sort-ignore="true") #{textos[41].titulo}
                     th(data-sort-ignore="true") #{textos[34].titulo}

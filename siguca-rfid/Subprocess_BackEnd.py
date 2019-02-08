@@ -40,8 +40,8 @@ import UtilImg
 
 #SETTINGS AND CONFIGURATIONS
 #IP OF NODE JS SERVER WHERE SIGUCA IS RUNNING
-server_IP='siguca.greencore.int'
-#server_IP='192.168.1.8'
+#server_IP='siguca.greencore.int'
+server_IP='192.168.1.8'
 #PORT OF THE MONGODB
 port='27017'
 #PORT OF OF SIGUCA NODE JS PORT

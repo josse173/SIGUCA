@@ -26,7 +26,7 @@ block content
               td
                 button.feriadoDelete.btn.btn-default(value=feriadoCurrent.nombreFeriado+','+feriadoCurrent._id)
                   i.icon-trash.icon-large.i-danger
-    
+
      #editFeriado.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
       .modal-dialog
           .modal-content
@@ -37,17 +37,17 @@ block content
               form.formUpdateFeriado(action='/feriadoUpdate', method='post')#login-form.well.span4
                 .form-group
                   label(for='nombre' style="float:left") Nombre del feriado:
-                  input#nombreFeriado.form-control( type="text", name="nombreFeriado")      
+                  input#nombreFeriado.form-control( type="text", name="nombreFeriado")
 
                   label.labelFiltro(for='fecha') Fecha:
                   div.input-group
                     input#date_range_end.form-control.epoch(type='text', name='epoch')
                     span.input-group-addon
-                      i.icon-calendar 
-               
+                      i.icon-calendar
+
                 button.btn.btn-success(type='submit') Actualizar
                 alertify.myAlert("Browser dialogs made easy!")
-                button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar 
+                button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
 
 
 block sigucaJS

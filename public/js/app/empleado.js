@@ -23,10 +23,7 @@ $('#btnActualizarEmpleado').click(function(){
         }
     }); 
 });
- 
- 
- 
- 
+
  $('[name="horario"]').change(function () {
         if($('[name="horario"]').val()!="Sin horario"){
             document.getElementsByName("horarioFijo")[0].disabled = true;
