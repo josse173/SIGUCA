@@ -2,8 +2,8 @@ extends layout
 
 block content
   .container
-    
-   
+
+
     h3 Lista de Empleados
     table.footable.tableEmpleado(data-page-navigation=".pagination" data-page-size="20")
         thead
@@ -20,14 +20,14 @@ block content
             th(data-hide="phone,small") Estado
             th(data-hide="phone,small" data-sort-ignore="true") Editar
             th(data-hide="phone,small" data-sort-ignore="true") Eliminar
-            th(data-hide="phone,small" data-sort-ignore="true") Periodo
+            // th(data-hide="phone,small" data-sort-ignore="true") Periodo
 
         tbody
           each empleado, i in empleados
             tr
               td #{empleado.codTarjeta}
               td #{empleado.nombre}
-              td #{empleado.apellido1} #{empleado.apellido2} 
+              td #{empleado.apellido1} #{empleado.apellido2}
               td #{empleado.cedula}
               td
                 each tipo, t in empleado.tipo
@@ -36,7 +36,7 @@ block content
                       li #{tipo}
                     else
                       li No tiene tipos de usuario asignados
-              td 
+              td
                 each departamentos, i in empleado.departamentos
                   ul
                     if(departamentos.departamento)
@@ -44,25 +44,25 @@ block content
                     else
                       li No tiene departamento asignado
               if(empleado.horario)
-                td #{empleado.horario.nombre} 
-                
+                td #{empleado.horario.nombre}
+
               else
                 td No tiene horario asignado
-                
+
               if(empleado.horarioFijo)
-                td #{empleado.horarioFijo.nombre} 
-                
+                td #{empleado.horarioFijo.nombre}
+
               else
                 td No tiene horario asignado
 
               if(empleado.horarioEmpleado)
-                td #{empleado.horarioEmpleado.nombreHorarioPersonalizado} 
-                
+                td #{empleado.horarioEmpleado.nombreHorarioPersonalizado}
+
               else
                 td No tiene horario asignado
 
 
-               td #{empleado.estado} 
+               td #{empleado.estado}
               td
                 button.btn.btn-default(data-toggle="modal", data-target="#editEmpl", value=empleado.id)
                   i.icon-pencil.icon-large.i-success
@@ -70,10 +70,10 @@ block content
                 button.empleadoDelete.btn.btn-default(value=empleado.nombre+' '+empleado.apellido1+''+empleado.apellido2+','+empleado.id)
                   i.icon-trash.icon-large.i-danger
 
-              form(action= '/periodo/'+empleado.id)
-                td
-                  button.btn.btn-default(type = 'submit', value=empleado.id)
-                    i.icon-plus.icon-large.i-success
+              //form(action= '/periodo/'+empleado.id)
+                //td
+                  //button.btn.btn-default(type = 'submit', value=empleado.id)
+                    //i.icon-plus.icon-large.i-success
         tfoot
           tr
             td(colspan='11')
@@ -84,7 +84,7 @@ block content
         .modal-dialog
           .modal-content
             .modal-body
-              button.close(type='button', data-dismiss='modal', aria-hidden='true') × 
+              button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
               h3#myModalLabel.modal-title Actualizar Empleado
               form.formUpdate(role='form', method="POST", action="/empleado")#actualizarEmpleado
                   .form-group
@@ -92,65 +92,65 @@ block content
                     label(for='nombre') Nombre:
                       input#nombre.form-control(type= 'text', placeholder='Carlos', name= 'nombre')
                     label(for='cedula') Cédula:
-                     input#cedula.form-control(type= 'text', placeholder='110459625', name='cedula') 
+                     input#cedula.form-control(type= 'text', placeholder='110459625', name='cedula')
                   .form-group
                     label(for='apellido1') Primer Apellido:
                       input#apellido1.form-control(type= 'text', placeholder='Corella', name= 'apellido1')
                     label(for='apellido2') Segundo Apellido:
-                     input#apellido2.form-control(type= 'text', placeholder='Sandi', name='apellido2')   
+                     input#apellido2.form-control(type= 'text', placeholder='Sandi', name='apellido2')
                     label(for='email') Correo Eléctronico:
                       input#email.form-control(type= 'email', placeholder='alguien@ejemplo.com', name='email')
-                     
 
-                  .form-group 
+
+                  .form-group
                     h3 Información Laboral
                     label(for="usernameInput")
                        |Usuario:
                        input.form-control#username(type="text", name="username", placeholder="Usuario")
                     label(for='codTarjeta') Código de Empleado:
                       input#codTarjeta.form-control(type= 'text', placeholder='Código de Empleado', name='codTarjeta')
-                    
-                  .form-group    
+
+                  .form-group
                     label(for='horario') Horario libre:
                       br
-                      select.form-control#selectHorario.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="horario") 
+                      select.form-control#selectHorario.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="horario")
                         option(value="Sin horario") Sin horario
                         each horario, i in horarios
-                            option(value= horario.id) #{horario.nombre} 
+                            option(value= horario.id) #{horario.nombre}
 
                     label(for='horario') Horario fijo:
                       br
-                      select.form-control#selectHorarioFijo.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="horarioFijo") 
+                      select.form-control#selectHorarioFijo.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="horarioFijo")
                           option(value="Sin horario") Sin horario
                           each horario, i in horarioFijo
-                              option(value= horario._id) #{horario.nombre}         
-                    
+                              option(value= horario._id) #{horario.nombre}
+
                     label(for='horario') Horario personalizado:
                       br
-                      select.form-control#HorarioEmpleado.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="horarioEmpleado") 
+                      select.form-control#HorarioEmpleado.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="horarioEmpleado")
                           option(value="Sin horario") Sin horario
                           each horario, i in horarioPersonalizado
-                              option(value= horario._id) #{horario.nombreHorarioPersonalizado} 
+                              option(value= horario._id) #{horario.nombreHorarioPersonalizado}
 
 
-                    br   
+                    br
                     label(for="tipoInput") Tipo de Usuario:
                       br
-                      select.form-control#selectTipo.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="tipo" , multiple="multiple") 
+                      select.form-control#selectTipo.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="tipo" , multiple="multiple")
                         option Empleado
                         option Supervisor
                         option Administrador
-                        option #{tipoEmpleado} 
+                        option #{tipoEmpleado}
                         option #{empleadoProfesor}
 
                     label(for='estado') Estado:
                       br
-                      select.form-control#estadoEmpleado(data-style="btn-inverse", data-width="140px", name="estadoEmpleado") 
-                          
+                      select.form-control#estadoEmpleado(data-style="btn-inverse", data-width="140px", name="estadoEmpleado")
+
 
                     label(for='departamento') Departamento:
                       br
-                      select.form-control#selectDepartamentos.selectpicker(data-style="btn-success", data-width="200px", data-selected-text-format="count>2", type="text", name="departamentos", multiple="multiple") 
+                      select.form-control#selectDepartamentos.selectpicker(data-style="btn-success", data-width="200px", data-selected-text-format="count>2", type="text", name="departamentos", multiple="multiple")
                         each departamento, i in departamentos
                             option(value= departamento.id) #{departamento.nombre}
 
@@ -167,7 +167,7 @@ block content
                        |Contraseña:
                        input.form-control#passInput(type='text', size='18', name="password", placeholder="Contraseña")
                        button.btn.btn-default(type='button', onclick='generatepass(8)') Generar Contraseña
-                       input#idEmpleado.form-control(type= 'text',name="_id")    
+                       input#idEmpleado.form-control(type= 'text',name="_id")
                   button.btn.btn-success#btnActualizarEmpleado(type='button') Actualizar
                   button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
 
