@@ -126,20 +126,16 @@ exports.addUsuario = function(us, cb){
 			newUser.password = Usuario.generateHash(us.password);
 			newUser.save(function (err, usuarioCreado) {
 				if (err) console.log(err);
-
-				console.log("El usuario se creo");
-
+				// console.log("El usuario se creo");
 				Periodo.find({}).sort({ "numeroPeriodo" : 1}).exec(function(error, periodos){
 
 					console.log(periodos);
 
 					var fechaActual = moment().unix();
-					console.log('fechaActual: '+ moment.unix(fechaActual).format("YYYY-MM-DD hh:mm:ss"));
-					console.log('fechaIngresoEpoch: '+ moment.unix(fechaIngresoEpoch).format("YYYY-MM-DD hh:mm:ss"));
+					// console.log('fechaActual: '+ moment.unix(fechaActual).format("YYYY-MM-DD hh:mm:ss"));
+					// console.log('fechaIngresoEpoch: '+ moment.unix(fechaIngresoEpoch).format("YYYY-MM-DD hh:mm:ss"));
 
 					var cantidadSemanas = moment.unix(fechaIngresoEpoch).diff(fechaActual, 'week');
-
-					console.log('cantidadSemanas: ' + cantidadSemanas);
 
 					if(cantidadSemanas > 50){
 						crearPeriodo(periodos, fechaActual, usuarioCreado._id, fechaIngresoEpoch, 50);
