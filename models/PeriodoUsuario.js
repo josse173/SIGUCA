@@ -10,7 +10,7 @@ var mongoose = require('mongoose'),
 var SchemaPeriodoUsuario = new Schema({
     fechaCreada: {
         type: Number,
-        default: Date.now()
+        default: 0
     },
     usuario: {
         type: Schema.Types.ObjectId,
@@ -19,6 +19,10 @@ var SchemaPeriodoUsuario = new Schema({
     periodo: {
         type: Schema.Types.ObjectId,
         ref: 'Periodo'
+    },
+    nombrePeriodoPadre: {
+        type: String,
+        ref: ''
     },
     fechaInicio: {
         type: Number,

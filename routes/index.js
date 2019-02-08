@@ -936,7 +936,7 @@ module.exports = function(app, io) {
     */
     app.get('/periodo/:id', autentificado, function (req, res) {
         console.log("get del periodo pasando un id    " + req.params.id);
-        PeriodoUsuario.find({usuario: req.params.id}, function(err, periodos){
+        PeriodoUsuario.find({usuario: req.params.id}).sort({fechaCreacion: 1}).exec(function(err, periodos){
             if(err){
                 return res.json(err);
             }else{
@@ -949,7 +949,8 @@ module.exports = function(app, io) {
                             title: 'Nuevo Periodo | SIGUCA',
                             periodo:periodos,
                             usuario:req.params.id,
-                            nombreUsuario: empleado.nombre
+                            nombreUsuario: empleado.nombre,
+                            moment: moment
                         });
                     }
                 });

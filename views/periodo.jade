@@ -3,7 +3,7 @@ extends layout
 
 block content
   .container
-    
+
     br
     h3 Lista de Periodos
     //button.btn.btn-success#btnAgregarPeriodo(value=usuario ,type='button',data-toggle="modal" data-target="#crearPeriodo") Crear Nuevo Periodo
@@ -19,15 +19,15 @@ block content
             th Dias Disfrutados
             th(data-hide="phone,small" data-sort-ignore="true") Editar
             th(data-hide="phone,small" data-sort-ignore="true") Eliminar
-            
-        tbody 
+
+        tbody
           each periodoCurrent, i in periodo
             tr
               td #{nombreUsuario}
-              td #{periodoCurrent.fechaCreada}
-              td #{periodoCurrent.periodo}
-              td #{periodoCurrent.fechaInicio}
-              td #{periodoCurrent.fechaFinal}
+              td #{moment.unix(periodoCurrent.fechaCreada).format("YYYY-MM-DD hh:mm:ss")}
+              td #{periodoCurrent.nombrePeriodoPadre}
+              td #{moment.unix(periodoCurrent.fechaInicio).format("YYYY-MM-DD hh:mm:ss")}
+              td #{moment.unix(periodoCurrent.fechaFinal).format("YYYY-MM-DD hh:mm:ss")}
               td #{periodoCurrent.diasAsignados}
               td #{periodoCurrent.diasDisfrutados}
               td
@@ -37,7 +37,7 @@ block content
               td
                 button.periodoDelete.btn.btn-default(value=periodoCurrent.periodo+','+periodoCurrent.usuario+','+periodoCurrent._id)
                   i.icon-trash.icon-large.i-danger
-    
+
      #editPeriodo.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
       .modal-dialog
           .modal-content

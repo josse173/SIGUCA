@@ -162,8 +162,10 @@ exports.addUsuario = function(us, cb){
 				if(cantidadSemanas >= periodo.rangoInicial && cantidadSemanas < periodo.rangoFinal){
 
 					var periodoUsuario = new PeriodoUsuario({
+                        fechaCreada: fechaActual,
 						usuario: usuario,
 						periodo: periodo._id,
+                        nombrePeriodoPadre: periodo.nombre,
 						fechaInicio: fechaIngreso,
 						fechaFinal: fechaPeriodo,
 						diasAsignados: periodo.cantidadDias
