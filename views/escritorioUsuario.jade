@@ -282,7 +282,8 @@
                 div(style='display:none').form-group#selectOpcionesDepartamento
                   label(for='selectDepartamento') Departamento :
                     select#selectDepartamento.form-control(type= 'text', name= 'departamento' style='float:left' required)
-                      option(value='seleccionar') Seleccione una opción
+                      each departamento, i in departamentos
+                        option(value= departamento.id) #{departamento.nombre}
               .form-group
                 div(style='display:none').form-group#divPeriodoDescontar
                   label#lblPeriodoDescontar(for='periodoDescontar') Cargo al Periodo :
