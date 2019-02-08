@@ -395,9 +395,8 @@ def obtieneTipoUsuario(dec,listTipo):
 while True:
     os.system('clear')
     dec=read_rfid()
-    print "RFID leído (RAW): " + dec
     dec=str(dec)
-    print "RFID leído (String): " + dec
+    print "RFID (String): " + dec
     tipoUsuario = "None"
 
     #se verifica que la variable no este vacía
