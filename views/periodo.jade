@@ -7,7 +7,7 @@ block content
     br
     h3 Lista de Periodos
     //button.btn.btn-success#btnAgregarPeriodo(value=usuario ,type='button',data-toggle="modal" data-target="#crearPeriodo") Crear Nuevo Periodo
-    table.footable.tablePeriodo
+    table.footable(data-page-navigation=".pagination" data-page-size="10").tablePeriodo
         thead
           tr
             th Nombre
@@ -37,7 +37,10 @@ block content
               td
                 button.periodoDelete.btn.btn-default(value=periodoCurrent.periodo+','+periodoCurrent.usuario+','+periodoCurrent._id)
                   i.icon-trash.icon-large.i-danger
-
+        tfoot
+          tr
+            td(colspan='12')
+              .pagination.pagination-centered.hide-if-no-paging
      #editPeriodo.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
       .modal-dialog
           .modal-content
