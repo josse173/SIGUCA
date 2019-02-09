@@ -215,7 +215,7 @@ exports.addPermiso = function(permiso, cb, idUser){
 		});//verificar
 	}
 	return cb();
-}
+};
 
 articuloFunction = function(permiso, cb){
 	var epochTime = moment().unix();

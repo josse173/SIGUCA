@@ -77,7 +77,7 @@ block content
                           i.icon-trash.icon-large.i-danger
               tfoot
                 tr
-                  td(colspan='3')
+                  td(colspan='4')
                     .pagination.pagination-centered.hide-if-no-paging
 
 
@@ -164,6 +164,7 @@ block content
                 th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[34].titulo}
                 th #{textos[35].titulo}
                 th(data-hide="phone,small" data-sort-ignore="true") #{textos[36].titulo}
+                th(data-sort-ignore="true") Editar
             tbody
               each permiso, i in permisos
                 tr

@@ -286,28 +286,28 @@
                         option(value= departamento.id) #{departamento.nombre}
               .form-group
                 div(style='display:none').form-group#divPeriodoDescontar
-                  label#lblPeriodoDescontar(for='periodoDescontar') Cargo al Periodo :
-                  input#periodoDescontar.form-control(type= 'text', name= 'periodoDescontar', disabled)
+                  label#lblPeriodoDescontar(for='periodoDescontar') Cargo a los Periodos :
+                  input#periodoDescontar.form-control(type= 'text', name= 'periodoDescontar', disabled, value=infoPeriodos.cargoAlosPeriodos)
               .form-group
                 div(style='display:none').form-group#divDerechoDisfrutarPorPeriodo
-                  label#lblDerechoDisfrutarPorPeriodo(for='derechoDisfrutarPorPeriodo') Derecho a disfrutar :
-                  input#derechoDisfrutarPorPeriodo.form-control(type= 'text', name= 'derechoDisfrutarPorPeriodo', disabled)
+                  label#lblDerechoDisfrutarPorPeriodo(for='derechoDisfrutarPorPeriodo') Días con derecho a disfrutar :
+                  input#derechoDisfrutarPorPeriodo.form-control(type= 'text', name= 'derechoDisfrutarPorPeriodo', disabled, value=infoPeriodos.diasDerechoDisfrutar)
               .form-group
                 div(style='display:none').form-group#divDiasDisfrutadosPorPeriodo
-                  label#lblDiasDisfrutadosPorPeriodo(for='diasDisfrutadosPorPeriodo') Dias disfrutados:
-                  input#diasDisfrutadosPorPeriodo.form-control(type= 'text', name= 'diasDisfrutadosPorPeriodo' disabled)
+                  label#lblDiasDisfrutadosPorPeriodo(for='diasDisfrutadosPorPeriodo') Días disfrutados:
+                  input#diasDisfrutadosPorPeriodo.form-control(type= 'text', name= 'diasDisfrutadosPorPeriodo' disabled, value=infoPeriodos.diasDisfrutados)
               .form-group
                 div(style='display:none').form-group#divTotalDiasDisponibles
-                  label#lblTotalDiasDisponibles(for='totalDiasDisponibles') Total de dias disponibles :
-                  input#totalDiasDisponibles.form-control(type= 'text', name= 'totalDiasDisponibles', disabled)
+                  label#lblTotalDiasDisponibles(for='totalDiasDisponibles') Total de días disponibles :
+                  input#totalDiasDisponibles.form-control(type= 'text', name= 'totalDiasDisponibles', disabled, value=infoPeriodos.diasDisponibles)
               .form-group
                 div(style='display:none').form-group#divDiasSolicitadosVacaciones
-                  label#lblDiasSolicitadosVacaciones(for='diasSolicitadosVacaciones') Dias solicitados:
-                  input#diasSolicitadosVacaciones.form-control(type= 'text', name= 'diasSolicitadosVacaciones' disabled)
+                  label#lblDiasSolicitadosVacaciones(for='diasSolicitadosVacaciones') Días solicitados:
+                  input#diasSolicitadosVacaciones.form-control(type= 'text', name= 'diasSolicitadosVacaciones' disabled, value=infoPeriodos.diasDisfrutados)
               .form-group
                 div(style='display:none').form-group#divSaldoDisfrutarVacaciones
-                  label#lblSaldoDisfrutarVacaciones(for='saldoDisfrutarVacaciones') Saldo por Disfrutar:
-                  input#saldoDisfrutarVacaciones.form-control(type= 'text', name= 'saldoDisfrutarVacaciones' disabled)
+                  label#lblSaldoDisfrutarVacaciones(for='saldoDisfrutarVacaciones') Saldo días por Disfrutar:
+                  input#saldoDisfrutarVacaciones.form-control(type= 'text', name= 'saldoDisfrutarVacaciones' disabled, value=infoPeriodos.diasDisponibles)
               .form-group
                 div(style='display:none').form-group#divInciso
                   label(for='inciso') Inciso:

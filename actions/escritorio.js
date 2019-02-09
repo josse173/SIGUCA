@@ -165,13 +165,32 @@ module.exports = {
 						depIds.push(departamento.departamento.toString());
 					});
 
-					console.log(depIds);
-
-					Departamento.find({_id:{"$in": depIds}}).exec(function(error, departamentos){
+					Departamento.find({_id:{"$in": depIds}}).exec(function(error, departamentosUsuario){
 						if (error) return res.json(err);
-						console.log(departamentos);
 						PeriodoUsuario.find({usuario: req.user.id}).exec(function(error, periodos){
 							if (error) return res.json(err);
+
+							var infoPeriodo = {
+								cargoAlosPeriodos: [],
+								diasDerechoDisfrutar: 0,
+								diasDisfrutados: 0,
+								diasDisponibles: 0
+							};
+
+							periodos.forEach(function (periodo) {
+								if(!(periodo.diasDisfrutados === periodo.diasAsignados)){
+									infoPeriodo.cargoAlosPeriodos.push(periodo.numeroPeriodo)
+								}
+								infoPeriodo.diasDerechoDisfrutar = infoPeriodo.diasDerechoDisfrutar + periodo.diasAsignados;
+								infoPeriodo.diasDisfrutados = infoPeriodo.diasDisfrutados + periodo.diasDisfrutados;
+
+							});
+
+							// console.log('cargoAlosPeriodos: ' + infoPeriodo.cargoAlosPeriodos);
+							// console.log('diasDerechoDisfrutar: ' + infoPeriodo.diasDerechoDisfrutar);
+							// console.log('diasDisfrutados: ' + infoPeriodo.diasDisfrutados);
+							infoPeriodo.diasDisponibles = infoPeriodo.diasDerechoDisfrutar-infoPeriodo.diasDisfrutados;
+							// console.log('saldoPorDisfrutar: ' + infoPeriodo.diasDisponibles);
 
 							var supervisor = {departamentos: [1]};
 							var arrayMarcas = util.eventosAjuste(marcas, supervisor, "escritorioEmpl");
@@ -234,7 +253,7 @@ module.exports = {
 															listaAlertas.push(crearAlerta(horaEntrada, horaSalida, minutosEntrada, minutosSalida));
 														}
 
-														return retornarRender(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify(listaAlertas), tiempoRespuesta.valor);
+														return retornarRender(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify(listaAlertas), tiempoRespuesta.valor, departamentosUsuario, infoPeriodo);
 
 													});
 												} else if(req.user.horario){
@@ -254,7 +273,7 @@ module.exports = {
 															listaAlertas.push(crearAlerta(horaEntrada, horaSalida, minutosEntrada, minutosSalida));
 														}
 
-														return retornarRender(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify(listaAlertas), tiempoRespuesta.valor);
+														return retornarRender(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify(listaAlertas), tiempoRespuesta.valor, departamentosUsuario, infoPeriodo);
 
 													});
 												} else if(req.user.horarioEmpleado){
@@ -310,19 +329,19 @@ module.exports = {
 															listaAlertas.push(crearAlerta(horaEntrada, horaSalida, minutosEntrada, minutosSalida));
 														}
 
-														return retornarRender(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify(listaAlertas), tiempoRespuesta.valor, departamentos, periodos);
+														return retornarRender(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify(listaAlertas), tiempoRespuesta.valor, departamentosUsuario, infoPeriodo);
 													});
 												}
 
 											} else {
-												return retornarRender(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify(listaAlertas), tiempoRespuesta.valor, departamentos, periodos);
+												return retornarRender(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify(listaAlertas), tiempoRespuesta.valor, departamentosUsuario, infoPeriodo);
 											}
 										});
 									});
 								});
 
 							} else {
-								return retornarRender(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify([]), 0, departamentos, periodos);
+								return retornarRender(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify([]), 0, departamentosUsuario, infoPeriodo);
 							}
 						});
 					});
@@ -351,7 +370,7 @@ module.exports = {
         return nuevaAlerta;
     }
 
-    function retornarRender(usuario, marcas, justificaciones, textos, alertas, tiempoRespuesta, departamentos, periodos){
+    function retornarRender(usuario, marcas, justificaciones, textos, alertas, tiempoRespuesta, departamentos, infoPeriodos){
 
         return res.render('escritorio', {
             title: 'Escritorio Empleado | SIGUCA',
@@ -362,7 +381,7 @@ module.exports = {
             alertas: alertas,
             tiempoRespuesta: tiempoRespuesta,
 			departamentos: departamentos,
-			periodos: periodos
+			infoPeriodos: infoPeriodos
         });
 
     }
