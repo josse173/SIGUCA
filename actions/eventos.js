@@ -43,15 +43,16 @@ module.exports = {
       var populateQuery = {
         path: 'usuario'
       };
+      var periodosUsuarioQuery = {};
 
       if(req.body.filtro_departamento && req.body.filtro_departamento!="todos"){
         populateQuery.match = {departamentos:{$elemMatch:{departamento:req.body.filtro_departamento}}};
       }
       if(JSON.stringify(queryEpoch) !== JSON.stringify({})){
-        cierreQuery.epoch = marcaQuery.epoch = justQuery.fechaCreada = extraQuery.fechaCreada = permisosQuery.fechaCreada =  queryEpoch;
+        cierreQuery.epoch = marcaQuery.epoch = justQuery.fechaCreada = extraQuery.fechaCreada = permisosQuery.fechaCreada = periodosUsuarioQuery.fechaCreada =  queryEpoch;
       }
       if(usuarioId && usuarioId != 'todos'){
-        justQuery.usuario = extraQuery.usuario = permisosQuery.usuario = marcaQuery.usuario = usuarioId;
+        justQuery.usuario = extraQuery.usuario = permisosQuery.usuario = marcaQuery.usuario = periodosUsuarioQuery.usuario = usuarioId;
         cierreQuery.usuario = usuarioId;
       }
       justQuery.estado = extraQuery.estado = permisosQuery.estado = getEstado(titulo);
@@ -71,7 +72,7 @@ module.exports = {
               }
               getInformacionRender(req, res, titulo, usuarios.concat(supervisores), departamentos, marcaQuery,
                 justQuery, extraQuery, permisosQuery, cierreQuery, populateQuery,
-                ((!err && usuario) ? (usuario.apellido1+" "+usuario.apellido2+", "+usuario.nombre) : null));
+                ((!err && usuario) ? (usuario.apellido1+" "+usuario.apellido2+", "+usuario.nombre) : null), periodosUsuarioQuery);
             });
         });
       });
@@ -239,7 +240,7 @@ module.exports = {
 };
 
 function getInformacionRender(req, res, titulo, usuarios, departamentos,
-  marcaQuery, justQuery, extraQuery, permisosQuery, cierreQuery, populateQuery, nombreUsuario){
+  marcaQuery, justQuery, extraQuery, permisosQuery, cierreQuery, populateQuery, nombreUsuario, periodosUsuarioQuery){
   //Filtrar -departamento -usuario -fecha
 
     Justificaciones.find(justQuery).populate(populateQuery).exec(function(error, justificaciones){
@@ -275,13 +276,11 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos,
 
           permisos = permisosTemp;
 
-          // console.log(permisos);
-
           if(req.route.path.substring(0, 9) !=='/reportes'){
             //Se asigna el tipo de usuario con el cual ha iniciado sesion
             req.user.tipo = req.session.name;
             return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, null,
-              justificaciones, extras, permisos, null, nombreUsuario, null);
+              justificaciones, extras, permisos, null, nombreUsuario, null, null);
           }
           else {
             Marca.find(marcaQuery).populate(populateQuery).exec(function(error, marcas){
@@ -303,11 +302,14 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos,
                 CierrePersonal.find(cierreQuery).populate("usuario").exec(function(error, cierres) {
                       //Se asigna el tipo de usuario con el cual ha iniciado sesion
                       req.user.tipo = req.session.name;
-
+                      console.log(periodosUsuarioQuery);
                       EventosTeletrabajo.find(marcaQuery).exec(function(error, eventosTeletrabajo) {
+                        PeriodoUsuario.find(periodosUsuarioQuery).populate('usuario').populate('periodo').exec(function(error, periodoUsuarios) {
+                          console.log(periodoUsuarios);
                           return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, marcas,
-                            justificaciones, extras, permisos, cierres, nombreUsuario, eventosTeletrabajo);
-                          });
+                            justificaciones, extras, permisos, cierres, nombreUsuario, eventosTeletrabajo, periodoUsuarios);
+                        });
+                      });
                     });
               });//Fin usuarios filtrados por departamento
 
@@ -319,7 +321,7 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos,
 }
 
 
-function renderFiltro(req, res, titulo, usuario, departamentos, usuarios, marcas, justificaciones, extras, permisos, cierre, nombreUsuario, eventosTeletrabajo){
+function renderFiltro(req, res, titulo, usuario, departamentos, usuarios, marcas, justificaciones, extras, permisos, cierre, nombreUsuario, eventosTeletrabajo, periodoUsuarios){
   var cList = [];
   if(cierre){
     cList = util.unixTimeToRegularDate(cierre.filter(
@@ -412,7 +414,8 @@ function renderFiltro(req, res, titulo, usuario, departamentos, usuarios, marcas
       fechaHasta: fechaHasta
     },
     eventosTeletrabajo: eventosTeletrabajo,
-    moment: require( 'moment' )
+    moment: require( 'moment' ),
+    periodosUsuario : periodoUsuarios
   };
 
   //Se especifica el valor por defecto de los select para filtrado por usuario
