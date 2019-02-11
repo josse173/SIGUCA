@@ -301,8 +301,20 @@ module.exports = function(app, io) {
     */
     app.get('/solicitud/inciso', autentificado, function (req, res) {
         console.log('INCISO PRUEBA ID    ' + req.user.id)
-        Solicitudes.find({usuario: req.user.id, "inciso":"incisoC"}).exec(function (err, quantity) {
+        Solicitudes.find({usuario: req.user.id, "inciso":"Inciso C"}).exec(function (err, quantity) {
             console.log(quantity);
+            var size = quantity.length;
+            res.json({quantity});
+        });
+    });
+
+    app.get('/solicitud/solicitudAyer/:test', autentificado, function (req, res) {
+        var split = req.params.test.split(',');
+        console.log('SPLIT1    ' + split[1]);
+        console.log('solicitud FECHA    ' + req.params.test);
+        console.log('solicitud para ID    ' + req.user.id);
+        Solicitudes.find({usuario: req.user.id, "inciso":"Inciso C"}).exec(function (err, quantity) {
+            console.log("CANTIDAD   " + quantity);
             var size = quantity.length;
             res.json({quantity});
         });

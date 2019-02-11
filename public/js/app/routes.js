@@ -601,6 +601,14 @@ $("#extraLink").click(function(){
      var val = $('#selectMotivo').val();
      var inciso = $('#selectInciso').val();
      var cantidadDias = $('#cantidadDias').val();
+     var fechaInicio = $('#diaInicio').val();
+     var usuario = $('#btn-marca').val();
+     var test =usuario+","+fechaInicio;
+
+     $.get('/solicitud/solicitudAyer/'+test, function( data ) {
+         var solicitudAyer = data;
+         console.log(solicitudAyer);
+     });
 
      if(val == 'seleccionar') {
          alertify.error('Motivo no valido');
