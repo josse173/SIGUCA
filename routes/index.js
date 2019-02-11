@@ -300,6 +300,7 @@ module.exports = function(app, io) {
     *  Carga la información de una solicitud de tipo inciso C
     */
     app.get('/solicitud/inciso', autentificado, function (req, res) {
+        console.log('INCISO PRUEBA ID    ' + req.user.id)
         Solicitudes.find({usuario: req.user.id, "inciso":"incisoC"}).exec(function (err, quantity) {
             console.log(quantity);
             var size = quantity.length;

@@ -293,13 +293,13 @@ $('#selectMotivo').change(function (){
     $("#divPeriodoDescontar").attr('style','display:none'); $("#divDerechoDisfrutarPorPeriodo").attr('style','display:none');
     $("#divDiasDisfrutadosPorPeriodo").attr('style','display:none') && $("#divTotalDiasDisponibles").attr('style','display:none') &&
     $("#divDiasSolicitadosVacaciones").attr('style','display:none') && $("#divSaldoDisfrutarVacaciones").attr('style','display:none');
-    if($('#selectMotivo').val() != 'articulo') $("#selectOpcionesArticulo").attr('style','display:none') && $("#divInciso").attr('style','display:none')&&
+    if($('#selectMotivo').val() != 'Articulo') $("#selectOpcionesArticulo").attr('style','display:none') && $("#divInciso").attr('style','display:none')&&
     $("#divcantidadDiasDisfrutados").attr('style','display:none') && $("#divcantidadDiasDisponibles").attr('style','display:none') &&
     $("#divcantidadDiasSolicitados").attr('style','display:none') && $("#divsaldoDiasDisfrutar").attr('style','display:none') &&
     $("#divanno").attr('style','display:none');
     if($('#selectMotivo').val() != 'otro') $("#motivoOtro").attr('disabled','disabled') ;
     if($('#selectMotivo').val() == 'otro') $("#motivoOtro").removeAttr('disabled');
-    else if($('#selectMotivo').val() == 'articulo')  $("#selectOpcionesArticulo").attr('style','display:block');
+    else if($('#selectMotivo').val() == 'Articulo')  $("#selectOpcionesArticulo").attr('style','display:block');
     else if($('#selectMotivo').val() == 'Vacaciones')  $("#selectOpcionesDepartamento").attr('style','display:block') &&
     $("#divPeriodoDescontar").attr('style','display:block') && $("#divDerechoDisfrutarPorPeriodo").attr('style','display:block') &&
     $("#divDiasDisfrutadosPorPeriodo").attr('style','display:block') && $("#divTotalDiasDisponibles").attr('style','display:block') &&
@@ -310,10 +310,10 @@ $('#selectDerechoDisfrutar').change(function (){
     if($('#selectDerechoDisfrutar').val() != 'diligencias') $("#divInciso").attr('style','display:none') && $("#divcantidadDiasDisfrutados").attr('style','display:none') &&
     $("#divcantidadDiasDisponibles").attr('style','display:none') && $("#divcantidadDiasSolicitados").attr('style','display:none') &&
     $("#divsaldoDiasDisfrutar").attr('style','display:none') && $("#divanno").attr('style','display:none');
-    if($('#selectDerechoDisfrutar').val() == 'matrimonio') $("#selectInciso").val('incisoA') && $("#divInciso").attr('style','display:block');
-    else if($('#selectDerechoDisfrutar').val() == 'fallecimiento') $("#divInciso").attr('style','display:block') && $("#selectInciso").val('incisoA');
-    else if($('#selectDerechoDisfrutar').val() == 'nacimientoHijo') $("#divInciso").attr('style','display:block') && $("#selectInciso").val('incisoB');
-    else if($('#selectDerechoDisfrutar').val() == 'diligencias') { $("#divInciso").attr('style','display:block') && $("#selectInciso").val('incisoC') &&
+    if($('#selectDerechoDisfrutar').val() == 'matrimonio') $("#selectInciso").val('Inciso A') && $("#divInciso").attr('style','display:block');
+    else if($('#selectDerechoDisfrutar').val() == 'fallecimiento') $("#divInciso").attr('style','display:block') && $("#selectInciso").val('Inciso A');
+    else if($('#selectDerechoDisfrutar').val() == 'nacimientoHijo') $("#divInciso").attr('style','display:block') && $("#selectInciso").val('Inciso B');
+    else if($('#selectDerechoDisfrutar').val() == 'diligencias') { $("#divInciso").attr('style','display:block') && $("#selectInciso").val('Inciso C') &&
     $("#divcantidadDiasDisfrutados").attr('style','display:block') && $("#divcantidadDiasDisponibles").attr('style','display:block') &&
     $("#divcantidadDiasSolicitados").attr('style','display:block') && $("#divsaldoDiasDisfrutar").attr('style','display:block') &&
     $("#divanno").attr('style','display:block');

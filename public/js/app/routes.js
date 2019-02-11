@@ -605,26 +605,26 @@ $("#extraLink").click(function(){
      if(val == 'seleccionar') {
          alertify.error('Motivo no valido');
          return false;
-     }else if(val == 'articulo') {
-         if(inciso == 'incisoA'){
+     }else if(val == 'Articulo') {
+         if(inciso == 'Inciso A'){
              if(cantidadDias > 5){
-                 alertify.error('No puede ingresar un incisoA debido que la cantidad maxima a solicitar son 5 dias');
+                 alertify.error('No puede ingresar un Inciso A debido que la cantidad maxima a solicitar son 5 dias');
                  return false;
              }else{
                  $('.formSoli').attr('action', '/solicitud_permisos/');
                  $("#btn-permiso").submit();
              }
-         }else if(inciso =='incisoB'){
+         }else if(inciso =='Inciso B'){
              if(cantidadDias != 1){
-                 alertify.error('No puede ingresar incisoB cantidad maxima a solicitar es 1 dia');
+                 alertify.error('No puede ingresar Inciso B cantidad maxima a solicitar es 1 dia');
                  return false;
              }else{
                  $('.formSoli').attr('action', '/solicitud_permisos/');
                  $("#btn-permiso").submit();
              }
-         }else if(inciso =='incisoC'){
+         }else if(inciso =='Inciso C'){
              if(cantidadDias != 1){
-                 alertify.error('No puede ingresar incisoC cantidad maxima a solicitar es 1 dia');
+                 alertify.error('No puede ingresar Inciso C cantidad maxima a solicitar es 1 dia');
                  return false;
              }else{
                  $('.formSoli').attr('action', '/solicitud_permisos/');

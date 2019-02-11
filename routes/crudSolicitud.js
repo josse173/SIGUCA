@@ -125,9 +125,9 @@ exports.addPermiso = function(permiso, cb, idUser){
 		comentarioSupervisor: "",
 		inciso: permiso.inciso
 	});
-	if (permiso.motivo == 'articulo') {
+	if (permiso.motivo == 'Articulo') {
 		var validInsert = 0;
-		if (permiso.inciso == "incisoA") {
+		if (permiso.inciso == "Inciso A") {
 			if (permiso.cantidadDias <= 5) {
 				validInsert = 1;
 				articuloFunction(permiso, function (err, msj) {
@@ -135,18 +135,18 @@ exports.addPermiso = function(permiso, cb, idUser){
 					//else return cb();
 				});
 			} else {
-				console.log("No puede ingresar incisoA debido que la cantidad maxima a solicitar son 5 dias");
+				console.log("No puede ingresar Inciso A debido que la cantidad maxima a solicitar son 5 dias");
 			}
-		} else if (permiso.inciso == "incisoB") {
+		} else if (permiso.inciso == "Inciso B") {
 			if (permiso.cantidadDias == 1) {
 				validInsert = 1;
 				articuloFunction(permiso, function (err, msj) {
 					if (err) res.json(err);
 				});
 			} else {
-				console.log("No puede ingresar incisoB cantidad maxima a solicitar es 1");
+				console.log("No puede ingresar Inciso B cantidad maxima a solicitar es 1");
 			}
-		} else if (permiso.inciso == "incisoC") {
+		} else if (permiso.inciso == "Inciso C") {
 			if (permiso.cantidadDias == 1) {
 				var fecha = new Date();
 				var ayer = new Date();
@@ -157,20 +157,20 @@ exports.addPermiso = function(permiso, cb, idUser){
 				var fechaInicio = anno +'/01/01';
 				var fechaLimite = anno +'/31/12';
 
-				Solicitudes.find({usuario: permiso.usuario.id, "inciso": "incisoC"}).exec(function (err, quantity) {
+				Solicitudes.find({usuario: permiso.usuario.id, "inciso": "Inciso C"}).exec(function (err, quantity) {
 					var size = quantity.length;
-					console.log("cantidad de incisos C" + size);
+					console.log("cantidad de Incisos C" + size);
 					if(size <= 3){
 						articuloFunction(permiso, function (err, msj) {
 							if (err) res.json(err);
 							//else return cb();
 						});
 					}else{
-						console.log("No puede ingresar incisoC debido a que ya ha solicitado mas de 3 en este anno");
+						console.log("No puede ingresar Inciso C debido a que ya ha solicitado mas de 3 en este anno");
 					}
 				});
 			}else {
-				console.log("No puede ingresar incisoB cantidad maxima a solicitar es 1");
+				console.log("No puede ingresar Inciso B cantidad maxima a solicitar es 1");
 			}
 		}
 	}else {
