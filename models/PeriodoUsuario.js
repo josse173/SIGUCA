@@ -20,6 +20,10 @@ var SchemaPeriodoUsuario = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Periodo'
     },
+    numeroPeriodo: {
+        type: Number,
+        ref: 0
+    },
     nombrePeriodoPadre: {
         type: String,
         ref: ''

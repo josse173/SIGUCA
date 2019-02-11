@@ -145,6 +145,11 @@ block content
                 td Total de solicitudes de confirmación de presencia
                 td #{eventosTeletrabajo.length}
 
+            if(tipoReporte === 'periodosUsuario')
+              tr
+                td Total de periodos
+                td #{periodosUsuario.length}
+
         br
         div.tablasReportes
           if(resumen && resumen.length != 0)
@@ -477,7 +482,7 @@ block content
 
           if(tipoReporte === 'confirmacionPresencia')
               h3 Confirmación de Presencia
-              table.footable.tableContenido(data-page-navigation=".pagination" ,data-page-size="25")
+              table.footable.tableContenido(data-page-navigation=".pagination" ,data-page-size="25")#opcionesTablaConfirmacionPresencia
                 thead
                   tr
                     th Usuario
@@ -492,6 +497,32 @@ block content
                       td #{moment(eventoTeletrabajo.fecha).format("YYYY-MM-DD hh:mm:ss")}
                       td #{eventoTeletrabajo.fechaAceptacion === null ? '' : moment(eventoTeletrabajo.fechaAceptacion).format("YYYY-MM-DD hh:mm:ss")}
                       td #{eventoTeletrabajo.presente ? 'Si' : 'No'}
+
+          if(tipoReporte === 'periodosUsuario')
+            h3 Periodos de los empleados
+            table.footable.tableContenido(data-page-navigation=".pagination" ,data-page-size="25")#opcionesTablaPeriodosUsuario
+              thead
+                tr
+                  th Usuario
+                  th Número Periodo
+                  th Fecha de creación
+                  th Inicio del periodo
+                  th Fin del periodo
+                  th Tipo de periodo
+                  th Días asignados
+                  th Días disfrutados
+
+              tbody
+                each periodoUsuario, i in periodosUsuario
+                  tr
+                    td #{periodoUsuario.usuario.nombre + ' ' + periodoUsuario.usuario.apellido1+ ' ' + periodoUsuario.usuario.apellido2}
+                    td #{periodoUsuario.numeroPeriodo}
+                    td #{moment.unix(periodoUsuario.fechaCreada).format("YYYY-MM-DD hh:mm:ss")}
+                    td #{moment.unix(periodoUsuario.fechaInicio).format("YYYY-MM-DD hh:mm:ss")}
+                    td #{moment.unix(periodoUsuario.fechaFinal).format("YYYY-MM-DD hh:mm:ss")}
+                    td #{periodoUsuario.periodo.nombre}
+                    td #{periodoUsuario.diasAsignados}
+                    td #{periodoUsuario.diasDisfrutados}
 block sigucaJS
   script(src="/js/app/reportes.js")
   script(src="/socket.io/socket.io.js")
