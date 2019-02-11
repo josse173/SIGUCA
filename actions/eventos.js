@@ -99,7 +99,7 @@ module.exports = {
               CierrePersonal.find({usuario:req.user.id, epoch: {'$gte' : epochMin.unix()}}, function (err, listaCierre) {
                 HoraExtra.find({usuario:req.user.id}, function (error, horasExtra) {
                   PeriodoUsuario.find({usuario:req.user.id}).populate('periodo').exec(function (error, periodos) {
-                    console.log(periodos);
+
                     var supervisor = {departamentos: [1]};
 
                     var mayorPeriodo = {};
