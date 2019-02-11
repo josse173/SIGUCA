@@ -136,7 +136,7 @@ exports.addUsuario = function(us, cb){
 					// console.log('cantidadSemanas: '+ cantidadSemanas);
 
 					if(cantidadSemanas > 50){
-						crearPeriodo(periodos, fechaActual, usuarioCreado._id, fechaIngresoEpoch, 50);
+						crearPeriodo(periodos, fechaActual, usuarioCreado._id, fechaIngresoEpoch, 50, 1);
 					}
 
 				});
@@ -147,7 +147,7 @@ exports.addUsuario = function(us, cb){
 		}
 	});//Busca Usuario
 
-	function crearPeriodo(periodos, fechaActual, usuario, fechaIngreso, cantidadSemanas) {
+	function crearPeriodo(periodos, fechaActual, usuario, fechaIngreso, cantidadSemanas, numeroPeriodo) {
 
 		var fechaPeriodo = fechaIngreso + 30240000;
 
@@ -166,14 +166,15 @@ exports.addUsuario = function(us, cb){
                         nombrePeriodoPadre: periodo.nombre,
 						fechaInicio: fechaIngreso,
 						fechaFinal: fechaPeriodo,
-						diasAsignados: periodo.cantidadDias
+						diasAsignados: periodo.cantidadDias,
+						numeroPeriodo: numeroPeriodo
 					});
 
 					periodoUsuario.save(function (err, respuesta) {
 						if (err) console.log(err);
 					});
 
-					crearPeriodo(periodos, fechaActual, usuario, fechaPeriodo, (cantidadSemanas + 50));
+					crearPeriodo(periodos, fechaActual, usuario, fechaPeriodo, (cantidadSemanas + 50), (numeroPeriodo + 1));
 				}
 			});
 		}

@@ -718,7 +718,6 @@ $("#extraLink").click(function(){
             e.preventDefault();
             //get the footable object
             var footable = $('.tableSolicitudes').data('footable');
-
             //get the row we are wanting to delete
             var row = $(this).parents('tr:first');
 
@@ -841,7 +840,6 @@ $("#extraLink").click(function(){
 
     var footable = $('.tableSolicitudes').data('footable');
     var row = $(this).parents('tr:first');
-
     var solicitud = $(this).val();
     var split = solicitud.split(',');
     alertify.dialog('confirm')
