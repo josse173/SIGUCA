@@ -185,7 +185,7 @@ block content
                   .pagination.pagination-centered.hide-if-no-paging
               //button.btnDescargaPdf.btn.btn-default(type='button', data-dismiss='modal')  Descargar pdf
 
-
+      if(periodos.length != 0)
         h3 Lista de Periodos
         //button.btn.btn-success#btnAgregarPeriodo(value=usuario ,type='button',data-toggle="modal" data-target="#crearPeriodo") Crear Nuevo Periodo
         table.footable(data-page-navigation=".pagination" data-page-size="10").tablePeriodo

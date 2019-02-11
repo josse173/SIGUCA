@@ -394,7 +394,6 @@ module.exports = {
     }
 
     function retornarRenderEmpleado(usuario, marcas, justificaciones, textos, alertas, tiempoRespuesta, departamentos, infoPeriodos, periodos){
-			console.log(periodos);
 
         return res.render('escritorio', {
             title: 'Escritorio Empleado | SIGUCA',

@@ -17,6 +17,7 @@ var crudUsuario = require('../routes/crudUsuario');
 var EventosTeletrabajo = require('../models/EventosTeletrabajo');
 var HoraExtra = require('../models/HoraExtra');
 var PeriodoUsuario = require('../models/PeriodoUsuario');
+var Periodo = require('../models/Periodo');
 
 module.exports = {
   filtrarEventos : function (req, res) {
@@ -86,7 +87,6 @@ module.exports = {
   //*************************************************************************************************************
 
   eventos : function (req, res) {
-
     var epochMin = moment();
     epochMin.hours(0);
     epochMin.minutes(0);
@@ -99,7 +99,74 @@ module.exports = {
               CierrePersonal.find({usuario:req.user.id, epoch: {'$gte' : epochMin.unix()}}, function (err, listaCierre) {
                 HoraExtra.find({usuario:req.user.id}, function (error, horasExtra) {
                   PeriodoUsuario.find({usuario:req.user.id}).populate('periodo').exec(function (error, periodos) {
+                    console.log(periodos);
                     var supervisor = {departamentos: [1]};
+
+                    var mayorPeriodo = {};
+                    var fechaActual = moment().unix();
+
+                    if(periodos && periodos.length > 0){
+                      mayorPeriodo = periodos.reduce(function(prev, current) {
+                        if (+current.numeroPeriodo > +prev.numeroPeriodo) {
+                          return current;
+                        } else {
+                          return prev;
+                        }
+                      });
+
+                      var cierreSiguientePeriodo = mayorPeriodo.fechaFinal + 30240000; // 30240000 = 50 semanas
+
+                      if(fechaActual > cierreSiguientePeriodo){
+                        // Buscar siguiente tipo periodo y crear periodoUsuario
+
+                        var semanasLaboradas = (fechaActual - req.user.fechaIngreso) /604800; // 604800 = 1 semana
+
+                        Periodo.find().sort({ "numeroPeriodo" : 1}).exec(function (error, periodos) {
+                          if (error) return res.json(error);
+                          periodos.forEach(function (periodo) {
+                            if(semanasLaboradas >= periodo.rangoInicial && semanasLaboradas < periodo.rangoFinal){
+                              var periodoUsuario = new PeriodoUsuario({
+                                fechaCreada: fechaActual,
+                                usuario: req.user.id,
+                                periodo: periodo._id,
+                                nombrePeriodoPadre: periodo.nombre,
+                                fechaInicio: mayorPeriodo.fechaFinal,
+                                fechaFinal: cierreSiguientePeriodo,
+                                diasAsignados: periodo.cantidadDias,
+                                numeroPeriodo: mayorPeriodo.numeroPeriodo + 1
+                              });
+
+                              periodoUsuario.save(function (err, respuesta) {
+                                if (err) console.log(err);
+                              });
+                            }
+                          });
+                        });
+                      }
+                    } else {
+                      var cierreFechaCreacion = req.user.fechaIngreso + 30240000; // 30240000 = 50 semanas
+
+                      if(fechaActual > cierreFechaCreacion){
+
+                        Periodo.find().sort({ "numeroPeriodo" : 1}).exec(function (error, periodos) {
+                          if (error) return res.json(error);
+                          var periodoUsuario = new PeriodoUsuario({
+                            fechaCreada: fechaActual,
+                            usuario: req.user.id,
+                            periodo: periodos[0]._id,
+                            nombrePeriodoPadre: periodos[0].nombre,
+                            fechaInicio: req.user.fechaIngreso,
+                            fechaFinal: cierreFechaCreacion,
+                            diasAsignados: periodos[0].cantidadDias,
+                            numeroPeriodo: 1
+                          });
+
+                          periodoUsuario.save(function (err, respuesta) {
+                            if (err) console.log(err);
+                          });
+                        });
+                      }
+                    }
 
                     var arrayMarcas = util.eventosAjuste(marcas,supervisor,"eventosEmpl");
                     var arrayJust = util.eventosAjuste(justificaciones,supervisor,"eventosEmpl");
@@ -189,6 +256,8 @@ module.exports = {
             Solicitudes.find(permisosQuery).exec(function(error, permisos) {
               CierrePersonal.find(cierreQuery, function (err, listaCierre) {
                 PeriodoUsuario.find(periodoQuery).populate('periodo').exec(function (error, periodos) {
+                  if (error) return res.json(error);
+
                   var supervisor = {departamentos: [1]};
 
                   var arrayMarcas = util.eventosAjuste(marcas,supervisor,"eventosEmpl");
@@ -211,7 +280,6 @@ module.exports = {
                   //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
                   req.user.tipo = req.session.name;
 
-                  if (error) return res.json(error);
                   Contenido.find({seccion:"Eventos"},function(errorContenido,contenido){
                     return res.render('eventos', {
                       title: 'Solicitudes/Justificaciones | SIGUCA',
