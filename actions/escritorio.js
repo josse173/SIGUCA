@@ -210,11 +210,11 @@ module.exports = {
 
 							});
 
-							 console.log('cargoAlosPeriodos: ' + infoPeriodo.cargoAlosPeriodos);
-							 console.log('diasDerechoDisfrutar: ' + infoPeriodo.diasDerechoDisfrutar);
-							 console.log('diasDisfrutados: ' + infoPeriodo.diasDisfrutados);
+							 // console.log('cargoAlosPeriodos: ' + infoPeriodo.cargoAlosPeriodos);
+							 // console.log('diasDerechoDisfrutar: ' + infoPeriodo.diasDerechoDisfrutar);
+							 // console.log('diasDisfrutados: ' + infoPeriodo.diasDisfrutados);
 					 		 infoPeriodo.diasDisponibles = infoPeriodo.diasDerechoDisfrutar-infoPeriodo.diasDisfrutados;
-							 console.log('saldoPorDisfrutar: ' + infoPeriodo.diasDisponibles);
+							 // console.log('saldoPorDisfrutar: ' + infoPeriodo.diasDisponibles);
 
 							var supervisor = {departamentos: [1]};
 							var arrayMarcas = util.eventosAjuste(marcas, supervisor, "escritorioEmpl");

@@ -113,7 +113,6 @@ exports.updateExtra = function(extra, cb, idUser){
 //--------------------------------------------------------------------
 exports.addPermiso = function(permiso, cb, idUser){
 	var epochTime = moment().unix();
-
 	var newSolicitud = Solicitudes({
 		fechaCreada: epochTime,
 		tipoSolicitudes: "Permisos",
@@ -183,11 +182,11 @@ exports.addPermiso = function(permiso, cb, idUser){
 			fechaCreada: newSolicitud.fechaCreada
 		}).populate('usuario').exec(function (err, solicitud) {
 			if (solicitud.length == 0) {
-				console.log(newSolicitud);
+				// console.log(newSolicitud);
 				newSolicitud.save(function (err, soli) {
 					Usuario.find({
 						'tipo': 'Supervisor',
-						'departamentos.departamento': permiso.usuario.departamentos[0].departamento
+						'departamentos.departamento': permiso.departamento
 					}, {'email': 1}).exec(function (err, supervisor) {
 						if (err) console.log(err);
 						Correo.find({}, function (errorCritico, listaCorreos) {

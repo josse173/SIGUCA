@@ -29,6 +29,7 @@ module.exports = {
 	},
 	crearPermiso : function (req, res) {
 		var permiso = req.body;
+		// console.log(req);
 		permiso.usuario = req.user;
 		crudSolicitud.addPermiso(permiso, function (){
 			if (req.session.name == "Empleado" || req.session.name == config.empleadoProfesor) {
