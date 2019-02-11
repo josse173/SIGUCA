@@ -22,7 +22,7 @@ block content
         tbody
           each periodoCurrent, i in periodo
             tr
-              td #{nombreUsuario}
+              td #{periodoCurrent.nombreUsuario}
               td #{moment.unix(periodoCurrent.fechaCreada).format("YYYY-MM-DD hh:mm:ss")}
               td #{periodoCurrent.nombrePeriodoPadre}
               td #{moment.unix(periodoCurrent.fechaInicio).format("YYYY-MM-DD hh:mm:ss")}
