@@ -39,15 +39,16 @@ module.exports = {
 				tipo:"Supervisor"
 			};
 			Contenido.find({seccion:"escritorio"},function(err,contenido){
-				if (err) return res.json(error);
-			var usuarioQuery = {tipo:{'$nin': ['Administrador', "Supervisor"]}};
-			crudUsuario.get(querrySupervisores, function (err, supervisores){
-				crudUsuario.getEmpleadoPorSupervisor(req.user.id, usuarioQuery,
-					function(error, usuarios, departamentos){
+			    if (err) return res.json(error);
+			    var usuarioQuery = {tipo:{'$nin': ['Administrador', "Supervisor"]}};
+			    crudUsuario.get(querrySupervisores, function (err, supervisores){
+			        crudUsuario.getEmpleadoPorSupervisor(req.user.id, usuarioQuery,function(error, usuarios, departamentos){
+
 						var queryInUsers = {
 							usuario:{"$in":util.getIdsList(usuarios.concat(supervisores))},
 							estado:'Pendiente'
 						};
+
 						Justificaciones.find(queryInUsers).populate('usuario').exec(function(error, justCount) {
 							Solicitudes.find(queryInUsers).populate('usuario').exec(function(error, soliCount) {
 								Marca.find({usuario: req.user.id, tipoUsuario: req.session.name, epoch:{"$gte": epochGte.unix()}},{_id:0,tipoMarca:1,epoch:1,dispositivo:1,red:1}).exec(function(error, marcas){
@@ -55,77 +56,81 @@ module.exports = {
 										Solicitudes.find({estado:'Pendiente'}).populate('usuario').exec(function(error, solicitudes) {
 											Usuario.find({_id:req.user.id},{_id:0,departamentos: 1}).populate('departamentos.departamento').exec(function(error, supervisor){
 												CierrePersonal.find({epoch:{"$gte": epochYesterday.unix()}}).exec(function(err, cierres) {
-													var cierreUsuarios = [];
-													if(cierres && cierres.length>0)
-														cierreUsuarios = cierres[0];
-												//result.forEach(function(supervisor){
-													var sup = {departamentos: [1]};
-													var arrayMarcas = util.eventosAjuste(marcas, sup, "escritorioEmpl");
 
-													var array = [];
-													for(var y = 0; y < req.user.departamentos.length; y++){
-														array.push(req.user.departamentos[y].departamento);
-													}
-													just = util.eventosAjuste(justificaciones, req.user, "count");
-													soli = util.eventosAjuste(solicitudes, req.user, "count");
+                                                    var depIds = [];
+                                                    req.user.departamentos.forEach(function (departamento){
+                                                        depIds.push(departamento.departamento.toString());
+                                                    });
 
-													/*var horasSemanales;
-													(epochGte.day() === 1) ? horasSemanales = 0 : (cierres.length == 0) ? horasSemanales = '' : horasSemanales = cierres[0].horasSemanales;
-													*/
-													var arrayJust = util.unixTimeToRegularDate(justificaciones);
-													if (error) return res.json(error);
-													//console.log(cierreUsuarios);
+												    Departamento.find({_id:{"$in": depIds}}).exec(function(error, departamentosUsuario){
+                                                        if (error) return res.json(err);
+                                                        PeriodoUsuario.find({usuario: req.user.id}).exec(function(error, periodos){
+                                                            if (error) return res.json(err);
 
-													//Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
-													req.user.tipo = req.session.name;
+                                                            var infoPeriodo = {
+                                                                cargoAlosPeriodos: [],
+                                                                diasDerechoDisfrutar: 0,
+                                                                diasDisfrutados: 0,
+                                                                diasDisponibles: 0
+                                                            };
 
-													//En caso de ser profesor no se pasan las justificaciones
-													if(req.user.tipo.length > 1 && req.session.name == config.empleadoProfesor){
-														arrayJust = null;
-													}
+                                                            periodos.forEach(function (periodo) {
+                                                                if(!(periodo.diasDisfrutados === periodo.diasAsignados)){
+                                                                    infoPeriodo.cargoAlosPeriodos.push(periodo.numeroPeriodo)
+                                                                }
+                                                                infoPeriodo.diasDerechoDisfrutar = infoPeriodo.diasDerechoDisfrutar + periodo.diasAsignados;
+                                                                infoPeriodo.diasDisfrutados = infoPeriodo.diasDisfrutados + periodo.diasDisfrutados;
 
+                                                            });
 
-													crudJustificaciones.conteoJustificacionesTotal(req.user,function (conteoTotal){
+                                                            // console.log('cargoAlosPeriodos: ' + infoPeriodo.cargoAlosPeriodos);
+                                                            // console.log('diasDerechoDisfrutar: ' + infoPeriodo.diasDerechoDisfrutar);
+                                                            // console.log('diasDisfrutados: ' + infoPeriodo.diasDisfrutados);
+                                                            infoPeriodo.diasDisponibles = infoPeriodo.diasDerechoDisfrutar-infoPeriodo.diasDisfrutados;
+                                                            // console.log('saldoPorDisfrutar: ' + infoPeriodo.diasDisponibles);
 
-														if(conteoTotal&& conteoTotal>0){
-															conteoJustificacionesTotal=conteoTotal;
+                                                            var cierreUsuarios = [];
+                                                            if(cierres && cierres.length>0)
+                                                                cierreUsuarios = cierres[0];
+                                                            //result.forEach(function(supervisor){
+                                                            var sup = {departamentos: [1]};
+                                                            var arrayMarcas = util.eventosAjuste(marcas, sup, "escritorioEmpl");
 
-															return res.render('escritorio', {
-																title: 'Escritorio Supervisor | SIGUCA',
-																departamentos: supervisor[0].departamentos,
-																justificaciones: arrayJust,
-																solicitudes: soli,
-																justCount: justCount.length,
-																soliCount: soliCount.length,
-																todos: array,
-																usuario: req.user,
-																marcas: marcas,
-																cierreUsuarios: cierreUsuarios,
-																contJust:conteoJustificacionesTotal,
-																textos:contenido
-																//horasSemanales: horasSemanales
-															});
-														}else{
-															return res.render('escritorio', {
-																title: 'Escritorio Supervisor | SIGUCA',
-																departamentos: supervisor[0].departamentos,
-																justificaciones: arrayJust,
-																solicitudes: soli,
-																justCount: justCount.length,
-																soliCount: soliCount.length,
-																todos: array,
-																usuario: req.user,
-																marcas: marcas,
-																cierreUsuarios: cierreUsuarios,
-																contJust:0,
-																textos:contenido
-																//horasSemanales: horasSemanales
-															});
-														}
+                                                            var array = [];
+                                                            for(var y = 0; y < req.user.departamentos.length; y++){
+                                                                array.push(req.user.departamentos[y].departamento);
+                                                            }
+                                                            just = util.eventosAjuste(justificaciones, req.user, "count");
+                                                            soli = util.eventosAjuste(solicitudes, req.user, "count");
+
+                                                            /*var horasSemanales;
+                                                            (epochGte.day() === 1) ? horasSemanales = 0 : (cierres.length == 0) ? horasSemanales = '' : horasSemanales = cierres[0].horasSemanales;
+                                                            */
+                                                            var arrayJust = util.unixTimeToRegularDate(justificaciones);
+                                                            if (error) return res.json(error);
+                                                            //console.log(cierreUsuarios);
+
+                                                            //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
+                                                            req.user.tipo = req.session.name;
+
+                                                            //En caso de ser profesor no se pasan las justificaciones
+                                                            if(req.user.tipo.length > 1 && req.session.name == config.empleadoProfesor){
+                                                                arrayJust = null;
+                                                            }
+
+                                                            crudJustificaciones.conteoJustificacionesTotal(req.user,function (conteoTotal){
+
+                                                                if(conteoTotal&& conteoTotal>0){
+                                                                    conteoJustificacionesTotal=conteoTotal;
+
+                                                                    return retornaRenderSupervisor(supervisor[0].departamentos, arrayJust, soli, justCount.length, soliCount.length, array, req.user, marcas, cierreUsuarios, conteoJustificacionesTotal, contenido, departamentosUsuario, infoPeriodo);
+
+                                                                }else{
+                                                                    return retornaRenderSupervisor(supervisor[0].departamentos, arrayJust, soli, justCount.length, soliCount.length, array, req.user, marcas, cierreUsuarios, 0, contenido, departamentosUsuario, infoPeriodo);
+                                                                }
+                                                            });
+                                                        });
 													});
-
-
-					                               // });//Supervisor
 					                            });//Horas Semanales
 					                        });//Departamentos
 					                    });//solicitudes
@@ -136,12 +141,31 @@ module.exports = {
 			        });//Justificaciones
 				});//Justificaciones
 			});
-				//
-			} else {
-				req.logout();
-				res.redirect('/');
-			}
-		},
+        } else {
+            req.logout();
+            res.redirect('/');
+        }
+
+        function retornaRenderSupervisor(departamentos, justificaciones, solicitudes, justCount, soliCount, todos, usuario, marcas, cierreUsuarios, contJust, textos, departamentosUsuario, infoPeriodos) {
+            return res.render('escritorio', {
+                title: 'Escritorio Supervisor | SIGUCA',
+                departamentos: departamentos,
+                justificaciones: justificaciones,
+                solicitudes: solicitudes,
+                justCount: justCount,
+                soliCount: soliCount,
+                todos: todos,
+                usuario: usuario,
+                marcas: marcas,
+                cierreUsuarios: cierreUsuarios,
+                contJust: contJust,
+                textos: textos,
+                departamentosUsuario: departamentosUsuario,
+                infoPeriodos: infoPeriodos
+            });
+
+        }
+    },
 	escritorioEmpl : function (req, res) {
 		if (req.session.name == "Empleado" || req.session.name == config.empleadoProfesor) {
 		//Se toma la hora actual
@@ -186,11 +210,11 @@ module.exports = {
 
 							});
 
-							// console.log('cargoAlosPeriodos: ' + infoPeriodo.cargoAlosPeriodos);
-							// console.log('diasDerechoDisfrutar: ' + infoPeriodo.diasDerechoDisfrutar);
-							// console.log('diasDisfrutados: ' + infoPeriodo.diasDisfrutados);
-							infoPeriodo.diasDisponibles = infoPeriodo.diasDerechoDisfrutar-infoPeriodo.diasDisfrutados;
-							// console.log('saldoPorDisfrutar: ' + infoPeriodo.diasDisponibles);
+							 console.log('cargoAlosPeriodos: ' + infoPeriodo.cargoAlosPeriodos);
+							 console.log('diasDerechoDisfrutar: ' + infoPeriodo.diasDerechoDisfrutar);
+							 console.log('diasDisfrutados: ' + infoPeriodo.diasDisfrutados);
+					 		 infoPeriodo.diasDisponibles = infoPeriodo.diasDerechoDisfrutar-infoPeriodo.diasDisfrutados;
+							 console.log('saldoPorDisfrutar: ' + infoPeriodo.diasDisponibles);
 
 							var supervisor = {departamentos: [1]};
 							var arrayMarcas = util.eventosAjuste(marcas, supervisor, "escritorioEmpl");
@@ -253,7 +277,7 @@ module.exports = {
 															listaAlertas.push(crearAlerta(horaEntrada, horaSalida, minutosEntrada, minutosSalida));
 														}
 
-														return retornarRender(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify(listaAlertas), tiempoRespuesta.valor, departamentosUsuario, infoPeriodo);
+														return retornarRenderEmpleado(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify(listaAlertas), tiempoRespuesta.valor, departamentosUsuario, infoPeriodo);
 
 													});
 												} else if(req.user.horario){
@@ -273,7 +297,7 @@ module.exports = {
 															listaAlertas.push(crearAlerta(horaEntrada, horaSalida, minutosEntrada, minutosSalida));
 														}
 
-														return retornarRender(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify(listaAlertas), tiempoRespuesta.valor, departamentosUsuario, infoPeriodo);
+														return retornarRenderEmpleado(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify(listaAlertas), tiempoRespuesta.valor, departamentosUsuario, infoPeriodo);
 
 													});
 												} else if(req.user.horarioEmpleado){
@@ -329,19 +353,19 @@ module.exports = {
 															listaAlertas.push(crearAlerta(horaEntrada, horaSalida, minutosEntrada, minutosSalida));
 														}
 
-														return retornarRender(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify(listaAlertas), tiempoRespuesta.valor, departamentosUsuario, infoPeriodo);
+														return retornarRenderEmpleado(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify(listaAlertas), tiempoRespuesta.valor, departamentosUsuario, infoPeriodo);
 													});
 												}
 
 											} else {
-												return retornarRender(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify(listaAlertas), tiempoRespuesta.valor, departamentosUsuario, infoPeriodo);
+												return retornarRenderEmpleado(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify(listaAlertas), tiempoRespuesta.valor, departamentosUsuario, infoPeriodo);
 											}
 										});
 									});
 								});
 
 							} else {
-								return retornarRender(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify([]), 0, departamentosUsuario, infoPeriodo);
+								return retornarRenderEmpleado(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify([]), 0, departamentosUsuario, infoPeriodo);
 							}
 						});
 					});
@@ -370,7 +394,7 @@ module.exports = {
         return nuevaAlerta;
     }
 
-    function retornarRender(usuario, marcas, justificaciones, textos, alertas, tiempoRespuesta, departamentos, infoPeriodos){
+    function retornarRenderEmpleado(usuario, marcas, justificaciones, textos, alertas, tiempoRespuesta, departamentos, infoPeriodos){
 
         return res.render('escritorio', {
             title: 'Escritorio Empleado | SIGUCA',
@@ -380,7 +404,7 @@ module.exports = {
             textos: textos,
             alertas: alertas,
             tiempoRespuesta: tiempoRespuesta,
-			departamentos: departamentos,
+			departamentosUsuario: departamentos,
 			infoPeriodos: infoPeriodos
         });
 
