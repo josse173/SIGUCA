@@ -98,54 +98,51 @@ module.exports = {
             Solicitudes.find({usuario: req.user.id, tipoSolicitudes:'Permisos'}).exec(function(error, permisos) {
               CierrePersonal.find({usuario:req.user.id, epoch: {'$gte' : epochMin.unix()}}, function (err, listaCierre) {
                 HoraExtra.find({usuario:req.user.id}, function (error, horasExtra) {
+                  PeriodoUsuario.find({usuario:req.user.id}).populate('periodo').exec(function (error, periodos) {
+                    var supervisor = {departamentos: [1]};
 
-                  var supervisor = {departamentos: [1]};
+                    var arrayMarcas = util.eventosAjuste(marcas,supervisor,"eventosEmpl");
+                    var arrayJust = util.eventosAjuste(justificaciones,supervisor,"eventosEmpl");
+                    var arrayExtras = util.eventosAjuste(extras,supervisor,"eventosEmpl");
+                    var arrayPermisos = util.eventosAjuste(permisos,supervisor,"eventosEmpl");
 
-                  var arrayMarcas = util.eventosAjuste(marcas,supervisor,"eventosEmpl");
-                  var arrayJust = util.eventosAjuste(justificaciones,supervisor,"eventosEmpl");
-                  var arrayExtras = util.eventosAjuste(extras,supervisor,"eventosEmpl");
-                  var arrayPermisos = util.eventosAjuste(permisos,supervisor,"eventosEmpl");
+                    arrayMarcas = util.unixTimeToRegularDate(arrayMarcas, true);
+                    arrayJust = util.unixTimeToRegularDate(arrayJust, true);
+                    arrayExtras = util.unixTimeToRegularDate(arrayExtras, true);
+                    arrayPermisos = util.unixTimeToRegularDate(arrayPermisos, true);
+                    listaCierre = util.unixTimeToRegularDate(listaCierre, true);
 
-                  arrayMarcas = util.unixTimeToRegularDate(arrayMarcas, true);
-                  arrayJust = util.unixTimeToRegularDate(arrayJust, true);
-                  arrayExtras = util.unixTimeToRegularDate(arrayExtras, true);
-                  arrayPermisos = util.unixTimeToRegularDate(arrayPermisos, true);
-                  listaCierre = util.unixTimeToRegularDate(listaCierre, true);
+                    //En caso de ser profesor no se pasan las justificaciones
+                    if(req.user.tipo.length > 1 && req.session.name == config.empleadoProfesor){
+                      arrayJust = new Array();
+                      listaCierre = new Array();
+                    }
 
-                  //En caso de ser profesor no se pasan las justificaciones
-                  if(req.user.tipo.length > 1 && req.session.name == config.empleadoProfesor){
-                    arrayJust = new Array();
-                    listaCierre = new Array();
-                  }
-
-                  //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
-                  req.user.tipo = req.session.name;
-                  if (error) return res.json(error);
-                  Contenido.find({seccion:"Eventos"},function(errorContenido,contenido){
-                    return res.render('eventos', {
-                      title: 'Solicitudes/Justificaciones | SIGUCA',
-                      usuario: req.user,
-                      justificaciones: arrayJust,
-                      extras: arrayExtras,
-                      permisos: arrayPermisos,
-                      cierreUsuarios: listaCierre,
-                      marcas: marcas,
-                      textos:contenido,
-                      horasExtra: horasExtra,
-                      moment: require( 'moment' )
+                    //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
+                    req.user.tipo = req.session.name;
+                    if (error) return res.json(error);
+                    Contenido.find({seccion:"Eventos"},function(errorContenido,contenido){
+                      return res.render('eventos', {
+                        title: 'Solicitudes/Justificaciones | SIGUCA',
+                        usuario: req.user,
+                        justificaciones: arrayJust,
+                        extras: arrayExtras,
+                        permisos: arrayPermisos,
+                        cierreUsuarios: listaCierre,
+                        marcas: marcas,
+                        textos:contenido,
+                        horasExtra: horasExtra,
+                        moment: require( 'moment' ),
+                        periodos: periodos
+                      });
                     });
                   });
                 });
               });
-              //
             });
-            //
           });
-          //
         });
-        //
       });
-      //
     } else {
       req.logout();
       res.redirect('/');
@@ -163,6 +160,7 @@ module.exports = {
       var cierreQuery = {usuario: req.user.id};
       var extraQuery = {usuario: req.user.id, };
       var permisosQuery = {usuario: req.user.id, tipoSolicitudes:'Permisos'};
+      var periodoQuery = {usuario: req.user.id, };
 
       if(req.body.fechaDesde != '' && req.body.fechaHasta != ''){
         var splitDate1 = req.body.fechaDesde.split('/');
@@ -183,49 +181,52 @@ module.exports = {
         extraQuery.fechaCreada = fechaCreada;
         permisosQuery.fechaCreada = fechaCreada;
         cierreQuery.epoch = fechaCreada;
+        periodoQuery.fechaCreada = fechaCreada;
       }
       Marca.find(marcaQuery).exec(function(error, marcas) {
         Justificaciones.find(justQuery).exec(function(error, justificaciones) {
           HoraExtra.find(extraQuery).exec(function(error, extras) {
             Solicitudes.find(permisosQuery).exec(function(error, permisos) {
               CierrePersonal.find(cierreQuery, function (err, listaCierre) {
-                var supervisor = {departamentos: [1]};
+                PeriodoUsuario.find(periodoQuery).populate('periodo').exec(function (error, periodos) {
+                  var supervisor = {departamentos: [1]};
 
-                var arrayMarcas = util.eventosAjuste(marcas,supervisor,"eventosEmpl");
-                var arrayJust = util.eventosAjuste(justificaciones,supervisor,"filtrarEventosEmpl");
-                var arrayExtras = util.eventosAjuste(extras,supervisor,"filtrarEventosEmpl");
-                var arrayPermisos = util.eventosAjuste(permisos,supervisor,"filtrarEventosEmpl");
+                  var arrayMarcas = util.eventosAjuste(marcas,supervisor,"eventosEmpl");
+                  var arrayJust = util.eventosAjuste(justificaciones,supervisor,"filtrarEventosEmpl");
+                  var arrayExtras = util.eventosAjuste(extras,supervisor,"filtrarEventosEmpl");
+                  var arrayPermisos = util.eventosAjuste(permisos,supervisor,"filtrarEventosEmpl");
 
-                arrayMarcas = util.unixTimeToRegularDate(arrayMarcas, true);
-                arrayJust = util.unixTimeToRegularDate(arrayJust, true);
-                arrayExtras = util.unixTimeToRegularDate(arrayExtras, true);
-                arrayPermisos = util.unixTimeToRegularDate(arrayPermisos, true);
-                listaCierre = util.unixTimeToRegularDate(listaCierre, true);
+                  arrayMarcas = util.unixTimeToRegularDate(arrayMarcas, true);
+                  arrayJust = util.unixTimeToRegularDate(arrayJust, true);
+                  arrayExtras = util.unixTimeToRegularDate(arrayExtras, true);
+                  arrayPermisos = util.unixTimeToRegularDate(arrayPermisos, true);
+                  listaCierre = util.unixTimeToRegularDate(listaCierre, true);
 
-                //En caso de ser profesor no se pasan las justificaciones
-                if(req.user.tipo.length > 1 && req.session.name == config.empleadoProfesor){
-                  arrayJust = new Array();
-                  listaCierre =  new Array();
-                }
+                  //En caso de ser profesor no se pasan las justificaciones
+                  if(req.user.tipo.length > 1 && req.session.name == config.empleadoProfesor){
+                    arrayJust = new Array();
+                    listaCierre =  new Array();
+                  }
 
-                //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
-                req.user.tipo = req.session.name;
+                  //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
+                  req.user.tipo = req.session.name;
 
-                if (error) return res.json(error);
-                Contenido.find({seccion:"Eventos"},function(errorContenido,contenido){
-                  return res.render('eventos', {
-                    title: 'Solicitudes/Justificaciones | SIGUCA',
-                    usuario: req.user,
-                    justificaciones: arrayJust,
-                    horasExtra: arrayExtras,
-                    permisos: arrayPermisos,
-                    cierreUsuarios: listaCierre,
-                    marcas: marcas,
-                    textos:contenido,
-                    moment: require('moment')
-                  });//render
+                  if (error) return res.json(error);
+                  Contenido.find({seccion:"Eventos"},function(errorContenido,contenido){
+                    return res.render('eventos', {
+                      title: 'Solicitudes/Justificaciones | SIGUCA',
+                      usuario: req.user,
+                      justificaciones: arrayJust,
+                      horasExtra: arrayExtras,
+                      permisos: arrayPermisos,
+                      cierreUsuarios: listaCierre,
+                      marcas: marcas,
+                      textos:contenido,
+                      moment: require('moment'),
+                      periodos: periodos
+                    });//render
+                  });
                 });
-
               });//CierrePersonal
             });//Permisos
           });//Extras
