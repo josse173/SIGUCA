@@ -64,7 +64,7 @@ module.exports = {
 
 												    Departamento.find({_id:{"$in": depIds}}).exec(function(error, departamentosUsuario){
                                                         if (error) return res.json(err);
-                                                        PeriodoUsuario.find({usuario: req.user.id}).exec(function(error, periodos){
+                                                        PeriodoUsuario.find({usuario: req.user.id}).sort({numeroPeriodo: 1}).exec(function(error, periodos){
                                                             if (error) return res.json(err);
 
                                                             var infoPeriodo = {
@@ -193,7 +193,7 @@ module.exports = {
 
 					Departamento.find({_id:{"$in": depIds}}).exec(function(error, departamentosUsuario){
 						if (error) return res.json(err);
-						PeriodoUsuario.find({usuario: req.user.id}).populate('usuario').populate('periodo').exec(function(error, periodos){
+						PeriodoUsuario.find({usuario: req.user.id}).sort({numeroPeriodo: 1}).populate('usuario').populate('periodo').exec(function(error, periodos){
 							if (error) return res.json(err);
 
 							var infoPeriodo = {

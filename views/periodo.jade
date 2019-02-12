@@ -49,7 +49,7 @@ block content
               form.formUpdatePeriodo(role='form', action='/periodoUpdate/', method='post')#login-form.well.span4
                 .form-group
                   h3 Información Básica
-                  label(for='periodo') Nombre del Periodo:
+                  label(for='periodo') Número del Periodo:
                     input#periodoUpdate.form-control(type= 'text', name= 'periodo', readonly="readonly")
                   label(for='fechaCreada') Fecha de Creación :
                     input#fechaCreadaUpdate.form-control(type= 'text', name= 'fechaCreada', readonly="readonly")
@@ -61,7 +61,7 @@ block content
                 .form-group
                   label(for='diasAsignados') Dias Asignados:
                     input#diasAsignadosUpdate.form-control(type= 'text', name='diasAsignados', readonly="readonly")
-                  label(for='diasDisfrutados') Dias Disfrutados :
+                  label(for='diasDisfrutados') Días Disfrutados :
                     input#diasDisfrutadosUpdate.form-control(type= 'text', name= 'diasDisfrutados')
 
                 button.btn.btn-success(type='submit',value=usuario) Actualizar
