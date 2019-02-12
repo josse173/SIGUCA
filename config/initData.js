@@ -180,3 +180,23 @@ Periodo.findOne({ nombre: 'Rango 3', numeroPeriodo: '3'}, function (err, periodo
         });
     }
 });
+
+Contenido.findOne({ seccion: 'todosEventos', llave: 'Titulo Solicitudes horas extraordinarias'}, function (err, contenido) {
+    if (contenido) {
+        contenido.titulo = 'Solicitud de horas extra';
+
+        Contenido.findByIdAndUpdate(contenido._id, contenido, function(err, alerta){
+            if (err) console.log(err);
+        });
+    }
+});
+
+Contenido.findOne({ seccion: 'todosEventos', llave: 'Tabla solicitud de horas extraordinarias etiqueta cliente'}, function (err, contenido) {
+    if (contenido) {
+        contenido.titulo = 'Ubicación:';
+
+        Contenido.findByIdAndUpdate(contenido._id, contenido, function(err, alerta){
+            if (err) console.log(err);
+        });
+    }
+});

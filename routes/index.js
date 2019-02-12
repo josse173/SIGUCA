@@ -383,6 +383,22 @@ module.exports = function(app, io) {
         }
     });
 
+    app.post('/getionarHorasExtrasAjax/:id', autentificado, function (req, res) {
+        var horaExtra = req.body;
+        horaExtra.id = req.params.id;
+
+        var estadoreal = 'Pendiente';
+
+        if(horaExtra.estado != estadoreal) {
+            crudSolicitud.gestionarHorasExtras(horaExtra, function (err, msj) {
+                if (err) res.json(err);
+                else res.send(msj);
+            },req.user.id);
+        } else {
+            res.send('');
+        }
+    });
+
     /*
     *  Actualiza el estado y el comentario del supervisor a una justificacion en específico
     */

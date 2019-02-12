@@ -18,8 +18,8 @@ var HorarioFijo = require('../models/HorarioFijo');
 var HorarioPersonalizado = require('../models/HorarioEmpleado');
 var Configuracion = require('../models/Configuracion');
 var Alerta = require('../models/Alerta');
-var Periodo = require('../models/Periodo');
 var PeriodoUsuario = require('../models/PeriodoUsuario');
+var HoraExtra = require('../models/HoraExtra');
 
 module.exports = {
 	escritorio : function (req, res) {
@@ -48,97 +48,98 @@ module.exports = {
 							usuario:{"$in":util.getIdsList(usuarios.concat(supervisores))},
 							estado:'Pendiente'
 						};
-
 						Justificaciones.find(queryInUsers).populate('usuario').exec(function(error, justCount) {
 							Solicitudes.find(queryInUsers).populate('usuario').exec(function(error, soliCount) {
-								Marca.find({usuario: req.user.id, tipoUsuario: req.session.name, epoch:{"$gte": epochGte.unix()}},{_id:0,tipoMarca:1,epoch:1,dispositivo:1,red:1}).exec(function(error, marcas){
-									Justificaciones.find({usuario: req.user.id, estado:'Incompleto', tipoUsuario: req.session.name}).populate('usuario').exec(function(error, justificaciones) {
-										Solicitudes.find({estado:'Pendiente'}).populate('usuario').exec(function(error, solicitudes) {
-											Usuario.find({_id:req.user.id},{_id:0,departamentos: 1}).populate('departamentos.departamento').exec(function(error, supervisor){
-												CierrePersonal.find({epoch:{"$gte": epochYesterday.unix()}}).exec(function(err, cierres) {
+								HoraExtra.find(queryInUsers).populate('usuario').exec(function(error, extras) {
+									Marca.find({usuario: req.user.id, tipoUsuario: req.session.name, epoch:{"$gte": epochGte.unix()}},{_id:0,tipoMarca:1,epoch:1,dispositivo:1,red:1}).exec(function(error, marcas){
+										Justificaciones.find({usuario: req.user.id, estado:'Incompleto', tipoUsuario: req.session.name}).populate('usuario').exec(function(error, justificaciones) {
+											Solicitudes.find({estado:'Pendiente'}).populate('usuario').exec(function(error, solicitudes) {
+												Usuario.find({_id:req.user.id},{_id:0,departamentos: 1}).populate('departamentos.departamento').exec(function(error, supervisor){
+													CierrePersonal.find({epoch:{"$gte": epochYesterday.unix()}}).exec(function(err, cierres) {
 
-                                                    var depIds = [];
-                                                    req.user.departamentos.forEach(function (departamento){
-                                                        depIds.push(departamento.departamento.toString());
-                                                    });
+														var depIds = [];
+														req.user.departamentos.forEach(function (departamento){
+															depIds.push(departamento.departamento.toString());
+														});
 
-												    Departamento.find({_id:{"$in": depIds}}).exec(function(error, departamentosUsuario){
-                                                        if (error) return res.json(err);
-                                                        PeriodoUsuario.find({usuario: req.user.id}).sort({numeroPeriodo: 1}).exec(function(error, periodos){
-                                                            if (error) return res.json(err);
+														Departamento.find({_id:{"$in": depIds}}).exec(function(error, departamentosUsuario){
+															if (error) return res.json(err);
+															PeriodoUsuario.find({usuario: req.user.id}).sort({numeroPeriodo: 1}).exec(function(error, periodos){
+																if (error) return res.json(err);
 
-                                                            var infoPeriodo = {
-                                                                cargoAlosPeriodos: [],
-                                                                diasDerechoDisfrutar: 0,
-                                                                diasDisfrutados: 0,
-                                                                diasDisponibles: 0
-                                                            };
+																var infoPeriodo = {
+																	cargoAlosPeriodos: [],
+																	diasDerechoDisfrutar: 0,
+																	diasDisfrutados: 0,
+																	diasDisponibles: 0
+																};
 
-                                                            periodos.forEach(function (periodo) {
-                                                                if(!(periodo.diasDisfrutados === periodo.diasAsignados)){
-                                                                    infoPeriodo.cargoAlosPeriodos.push(periodo.numeroPeriodo)
-                                                                }
-                                                                infoPeriodo.diasDerechoDisfrutar = infoPeriodo.diasDerechoDisfrutar + periodo.diasAsignados;
-                                                                infoPeriodo.diasDisfrutados = infoPeriodo.diasDisfrutados + periodo.diasDisfrutados;
+																periodos.forEach(function (periodo) {
+																	if(!(periodo.diasDisfrutados === periodo.diasAsignados)){
+																		infoPeriodo.cargoAlosPeriodos.push(periodo.numeroPeriodo)
+																	}
+																	infoPeriodo.diasDerechoDisfrutar = infoPeriodo.diasDerechoDisfrutar + periodo.diasAsignados;
+																	infoPeriodo.diasDisfrutados = infoPeriodo.diasDisfrutados + periodo.diasDisfrutados;
 
-                                                            });
+																});
 
-                                                            crudUsuario.validarPeriodoUsuario(req.user, periodos);
+																crudUsuario.validarPeriodoUsuario(req.user, periodos);
 
-                                                            // console.log('cargoAlosPeriodos: ' + infoPeriodo.cargoAlosPeriodos);
-                                                            // console.log('diasDerechoDisfrutar: ' + infoPeriodo.diasDerechoDisfrutar);
-                                                            // console.log('diasDisfrutados: ' + infoPeriodo.diasDisfrutados);
-                                                            infoPeriodo.diasDisponibles = infoPeriodo.diasDerechoDisfrutar-infoPeriodo.diasDisfrutados;
-                                                            // console.log('saldoPorDisfrutar: ' + infoPeriodo.diasDisponibles);
+																// console.log('cargoAlosPeriodos: ' + infoPeriodo.cargoAlosPeriodos);
+																// console.log('diasDerechoDisfrutar: ' + infoPeriodo.diasDerechoDisfrutar);
+																// console.log('diasDisfrutados: ' + infoPeriodo.diasDisfrutados);
+																infoPeriodo.diasDisponibles = infoPeriodo.diasDerechoDisfrutar-infoPeriodo.diasDisfrutados;
+																// console.log('saldoPorDisfrutar: ' + infoPeriodo.diasDisponibles);
 
-                                                            var cierreUsuarios = [];
-                                                            if(cierres && cierres.length>0)
-                                                                cierreUsuarios = cierres[0];
-                                                            //result.forEach(function(supervisor){
-                                                            var sup = {departamentos: [1]};
-                                                            var arrayMarcas = util.eventosAjuste(marcas, sup, "escritorioEmpl");
+																var cierreUsuarios = [];
+																if(cierres && cierres.length>0)
+																	cierreUsuarios = cierres[0];
+																//result.forEach(function(supervisor){
+																var sup = {departamentos: [1]};
+																var arrayMarcas = util.eventosAjuste(marcas, sup, "escritorioEmpl");
 
-                                                            var array = [];
-                                                            for(var y = 0; y < req.user.departamentos.length; y++){
-                                                                array.push(req.user.departamentos[y].departamento);
-                                                            }
-                                                            just = util.eventosAjuste(justificaciones, req.user, "count");
-                                                            soli = util.eventosAjuste(solicitudes, req.user, "count");
+																var array = [];
+																for(var y = 0; y < req.user.departamentos.length; y++){
+																	array.push(req.user.departamentos[y].departamento);
+																}
+																just = util.eventosAjuste(justificaciones, req.user, "count");
+																soli = util.eventosAjuste(solicitudes, req.user, "count");
 
-                                                            /*var horasSemanales;
-                                                            (epochGte.day() === 1) ? horasSemanales = 0 : (cierres.length == 0) ? horasSemanales = '' : horasSemanales = cierres[0].horasSemanales;
-                                                            */
-                                                            var arrayJust = util.unixTimeToRegularDate(justificaciones);
-                                                            if (error) return res.json(error);
-                                                            //console.log(cierreUsuarios);
+																/*var horasSemanales;
+																(epochGte.day() === 1) ? horasSemanales = 0 : (cierres.length == 0) ? horasSemanales = '' : horasSemanales = cierres[0].horasSemanales;
+																*/
+																var arrayJust = util.unixTimeToRegularDate(justificaciones);
+																if (error) return res.json(error);
+																//console.log(cierreUsuarios);
 
-                                                            //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
-                                                            req.user.tipo = req.session.name;
+																//Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
+																req.user.tipo = req.session.name;
 
-                                                            //En caso de ser profesor no se pasan las justificaciones
-                                                            if(req.user.tipo.length > 1 && req.session.name == config.empleadoProfesor){
-                                                                arrayJust = null;
-                                                            }
+																//En caso de ser profesor no se pasan las justificaciones
+																if(req.user.tipo.length > 1 && req.session.name == config.empleadoProfesor){
+																	arrayJust = null;
+																}
 
-                                                            crudJustificaciones.conteoJustificacionesTotal(req.user,function (conteoTotal){
+																crudJustificaciones.conteoJustificacionesTotal(req.user,function (conteoTotal){
 
-                                                                if(conteoTotal&& conteoTotal>0){
-                                                                    conteoJustificacionesTotal=conteoTotal;
+																	if(conteoTotal&& conteoTotal>0){
+																		conteoJustificacionesTotal=conteoTotal;
 
-                                                                    return retornaRenderSupervisor(supervisor[0].departamentos, arrayJust, soli, justCount.length, soliCount.length, array, req.user, marcas, cierreUsuarios, conteoJustificacionesTotal, contenido, departamentosUsuario, infoPeriodo);
+																		return retornaRenderSupervisor(supervisor[0].departamentos, arrayJust, soli, justCount.length, (soliCount.length + extras.length), array, req.user, marcas, cierreUsuarios, conteoJustificacionesTotal, contenido, departamentosUsuario, infoPeriodo);
 
-                                                                }else{
-                                                                    return retornaRenderSupervisor(supervisor[0].departamentos, arrayJust, soli, justCount.length, soliCount.length, array, req.user, marcas, cierreUsuarios, 0, contenido, departamentosUsuario, infoPeriodo);
-                                                                }
-                                                            });
-                                                        });
-													});
-					                            });//Horas Semanales
-					                        });//Departamentos
-					                    });//solicitudes
-					                });//Justificaciones
-					            });//Marcas
-			                });//solicitudes
+																	}else{
+																		return retornaRenderSupervisor(supervisor[0].departamentos, arrayJust, soli, justCount.length, (soliCount.length + extras.length), array, req.user, marcas, cierreUsuarios, 0, contenido, departamentosUsuario, infoPeriodo);
+																	}
+																});
+															});
+														});
+													});//Horas Semanales
+												});//Departamentos
+											});//solicitudes
+										});//Justificaciones
+									});//Marcas
+								});
+							});//solicitudes
 			            });//Justificaciones
 			        });//Justificaciones
 				});//Justificaciones

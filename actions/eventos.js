@@ -507,7 +507,6 @@ function renderFiltro(req, res, titulo, usuario, departamentos, usuarios, marcas
       crudFeriado.listaFeriados(function (feriados){
         filtro.feriado=feriados;
       });
-
   }
 
   if (filtrado==="todosEventos" || req.route.path.substring(0, 9) =='/gestiona'){
