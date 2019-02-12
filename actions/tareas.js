@@ -122,7 +122,7 @@ const cierreHorario = (_idUser, userSchedule, mOut, userType) => {
         const currentDate = moment().format('L').split("/");
         const year = Number(currentDate[2]), month = currentDate[0] - 1, date = Number(currentDate[1]);
 
-        const epochGte = moment({year: year, month: month, hour: 0, minutes: 0, seconds: 0}).date(date).subtract(1, "days");;
+        const epochGte = moment({year: year, month: month, hour: 0, minutes: 0, seconds: 0}).date(date).subtract(1, "days");
         const epochLte = moment({year: year, month: month, hour: 23, minutes: 59, seconds: 59}).date(date);
 
         Marca.find({
@@ -293,7 +293,7 @@ const getEffectiveTime = (startMoment, schedule = {start: 0, end: 0, break: 0, l
 const executeClosingHours = () => {
     const day = WORKING_DAYS[moment().day()];
     //Dates to find information of the day
-    const epochMin = moment().set({hours: 0, minutes: 0, seconds: 0})/*.subtract(1, "days")*/;
+    const epochMin = moment().set({hours: 0, minutes: 0, seconds: 0});
     const epochMax = moment().set({hours: 23, minutes: 59, seconds: 59});
 
     //The closure is created for all users except for the administrator type
@@ -304,18 +304,19 @@ const executeClosingHours = () => {
         horario: 1,
         horarioEmpleado: 1,
         tipo: 1
-    }).populate("horarioFijo").populate('horario').populate('horarioEmpleado').then(users => {
-        CierrePersonal.find({
-            epoch: {
-                "$gte": epochMin.unix(),
-                "$lte": epochMax.unix()
-            }
-        }).then(closingMarks => {
-            closingHoursByUser(users, closingMarks, epochMin, epochMax, day)
+    }).populate("horarioFijo").populate('horario').populate('horarioEmpleado')
+        .then(users => {
+            CierrePersonal.find({
+                epoch: {
+                    "$gte": epochMin.unix(),
+                    "$lte": epochMax.unix()
+                }
+            }).then(closingMarks => {
+                closingHoursByUser(users, closingMarks, epochMin, epochMax, day)
+            }).catch(error => {
+                console.log("Error retrieving personal closing", JSON.stringify(error))
+            })
         }).catch(error => {
-            console.log("Error retrieving personal closing", JSON.stringify(error))
-        })
-    }).catch(error => {
         console.log("Error retrieving users", JSON.stringify(error))
     });
 };
@@ -327,7 +328,7 @@ const closingHoursByUser = (users, closingMarks, epochMin, epochMax, day) => {
                 if (isUserPeriodUnregistered(user, type, closingMarks)) {
                     let conditional = true;
                     if (user.horarioFijo) conditional = user.horarioFijo[day] === day;
-                    else if (user.horario) conditional = (day !== "Domingo" || day !== "Sabado");
+                    else if (user.horario) conditional = !(isWeekend(day));//For this schedule weekend is not valid to work
 
                     const schedule = user.horarioEmpleado || user.horarioFijo || user.horario;
 
@@ -336,6 +337,11 @@ const closingHoursByUser = (users, closingMarks, epochMin, epochMax, day) => {
             }
         }
     }
+};
+
+
+const isWeekend =  function(day){
+  return day === "Sabado" || day === "Domingo";
 };
 
 /**
@@ -366,7 +372,7 @@ const closePeriod = (userId, type, schedule, {mark = "Olvidó Marcar Salida.", c
             if (type !== USER_TYPES.TEACHER) {
                 addJustIncompleta(userId, mark, mark);
                 //This is only for horarioEmpleado, when the user forgot the opening mark for the day
-                if(result.addClosureMark){
+                if (result.addClosureMark) {
                     addJustIncompleta(userId, START_MARK_MISSING, START_MARK_MISSING);
                 }
             }
