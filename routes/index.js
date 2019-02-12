@@ -935,8 +935,7 @@ module.exports = function(app, io) {
     /*
     */
     app.get('/periodo/:id', autentificado, function (req, res) {
-        console.log("get del periodo pasando un id    " + req.params.id);
-        PeriodoUsuario.find({usuario: req.params.id}).sort({fechaCreacion: 1}).exec(function(err, periodos){
+        PeriodoUsuario.find({usuario: req.params.id}).sort({numeroPeriodo: 1}).exec(function(err, periodos){
             if(err){
                 return res.json(err);
             }else{

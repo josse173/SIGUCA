@@ -133,10 +133,10 @@ Contenido.findOne({ seccion: 'Reportes', llave: 'Titulo solicitudes horas extrao
     }
 });
 
-Periodo.findOne({ nombre: 'Periodo 1', numeroPeriodo: '1'}, function (err, periodo) {
+Periodo.findOne({ nombre: 'Rango 1', numeroPeriodo: '1'}, function (err, periodo) {
     if (!periodo) {
         var periodo = new Periodo({
-            nombre: 'Periodo 1',
+            nombre: 'Rango 1',
             numeroPeriodo: 1,
             rangoInicial: 50,
             rangoFinal: 250,
@@ -149,10 +149,10 @@ Periodo.findOne({ nombre: 'Periodo 1', numeroPeriodo: '1'}, function (err, perio
     }
 });
 
-Periodo.findOne({ nombre: 'Periodo 2', numeroPeriodo: '2'}, function (err, periodo) {
+Periodo.findOne({ nombre: 'Rango 2', numeroPeriodo: '2'}, function (err, periodo) {
     if (!periodo) {
         var periodo = new Periodo({
-            nombre: 'Periodo 2',
+            nombre: 'Rango 2',
             numeroPeriodo: 2,
             rangoInicial: 250,
             rangoFinal: 500,
@@ -165,10 +165,10 @@ Periodo.findOne({ nombre: 'Periodo 2', numeroPeriodo: '2'}, function (err, perio
     }
 });
 
-Periodo.findOne({ nombre: 'Periodo 3', numeroPeriodo: '3'}, function (err, periodo) {
+Periodo.findOne({ nombre: 'Rango 3', numeroPeriodo: '3'}, function (err, periodo) {
     if (!periodo) {
         var periodo = new Periodo({
-            nombre: 'Periodo 3',
+            nombre: 'Rango 3',
             numeroPeriodo: 3,
             rangoInicial: 500,
             rangoFinal: 5214,

@@ -1075,7 +1075,7 @@ $("button[data-target=#editFeriado]").click( function() {
      var split = id.split(',');
      $('.formUpdatePeriodo').attr('action', '/periodoUpdate/'+ id);
      $.get('/periodo/editPeriodo/'+split[0], function( data ) {
-         $('#periodoUpdate').val(data.nombrePeriodoPadre);
+         $('#periodoUpdate').val(data.numeroPeriodo);
          $('#fechaCreadaUpdate').val(moment.unix(data.fechaCreada).format("YYYY-MM-DD hh:mm:ss"));
          $('#fechaInicioUpdate').val(moment.unix(data.fechaInicio).format("YYYY-MM-DD hh:mm:ss"));
          $('#fechaFinalUpdate').val(moment.unix(data.fechaFinal).format("YYYY-MM-DD hh:mm:ss"));
