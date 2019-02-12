@@ -429,7 +429,7 @@ module.exports = function(app, io) {
 
                 Correo.find({},function(errorCritico, listaCorreos){
                     if (!errorCritico && listaCorreos.length > 0 ) {
-                        enviarCorreo.enviar(listaCorreos[0].nombreCorreo, usuario.email, 'Alerta de Validación de Presencia','Estimado(a) funcionario:', 'Usted ha recibido una alerta de validación de presencia en SIGUCA:<br><br>Se le recuerda que debe atender esta solicitud en los proximos' + req.body.tiempoRespuesta + ' minuto(s).');
+                        enviarCorreo.enviar(listaCorreos[0].nombreCorreo, usuario.email, 'Alerta de Validación de Presencia','Estimado(a) funcionario:', 'Usted ha recibido una alerta de validación de presencia en SIGUCA:<br><br>Se le recuerda que debe atender esta solicitud en los proximos ' + req.body.tiempoRespuesta + ' minuto(s).');
                     } else {
                         console.log("error al enviar correo de solicitud de confirmación de conexión");
                     }

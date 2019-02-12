@@ -37,7 +37,7 @@ $( document ).ready(function() {
                                 $("#mensajeConfirmacionConexion").modal("show");
                                 var intervalId = blinkTab("Confirmación de Conexión");
 
-                                setInterval(closeModal, tiempoRespuesta * 60000, intervalId);
+                                setTimeout(closeModal, tiempoRespuesta * 60000, intervalId);
 
                                 $.ajax({
                                     url: "alertaMostrada",
