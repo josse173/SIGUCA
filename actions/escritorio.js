@@ -83,6 +83,8 @@ module.exports = {
 
                                                             });
 
+                                                            crudUsuario.validarPeriodoUsuario(req.user, periodos);
+
                                                             // console.log('cargoAlosPeriodos: ' + infoPeriodo.cargoAlosPeriodos);
                                                             // console.log('diasDerechoDisfrutar: ' + infoPeriodo.diasDerechoDisfrutar);
                                                             // console.log('diasDisfrutados: ' + infoPeriodo.diasDisfrutados);
@@ -191,7 +193,7 @@ module.exports = {
 
 					Departamento.find({_id:{"$in": depIds}}).exec(function(error, departamentosUsuario){
 						if (error) return res.json(err);
-						PeriodoUsuario.find({usuario: req.user.id}).exec(function(error, periodos){
+						PeriodoUsuario.find({usuario: req.user.id}).populate('usuario').populate('periodo').exec(function(error, periodos){
 							if (error) return res.json(err);
 
 							var infoPeriodo = {
@@ -229,7 +231,6 @@ module.exports = {
 							req.user.tipo = req.session.name;
 
 							if(req.user.teleTrabajo && req.user.teleTrabajo === 'on'){
-
 								Configuracion.findOne({nombreUnico:"cantidadAlertas"}, function(err,cantidadAlertas){
 									if (err) return res.json(err);
 									Configuracion.findOne({nombreUnico:"tiempoRespuesta"}, function(err,tiempoRespuesta){
@@ -277,7 +278,7 @@ module.exports = {
 															listaAlertas.push(crearAlerta(horaEntrada, horaSalida, minutosEntrada, minutosSalida));
 														}
 
-														return retornarRenderEmpleado(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify(listaAlertas), tiempoRespuesta.valor, departamentosUsuario, infoPeriodo);
+														return retornarRenderEmpleado(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify(listaAlertas), tiempoRespuesta.valor, departamentosUsuario, infoPeriodo, periodos);
 
 													});
 												} else if(req.user.horario){
@@ -297,7 +298,7 @@ module.exports = {
 															listaAlertas.push(crearAlerta(horaEntrada, horaSalida, minutosEntrada, minutosSalida));
 														}
 
-														return retornarRenderEmpleado(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify(listaAlertas), tiempoRespuesta.valor, departamentosUsuario, infoPeriodo);
+														return retornarRenderEmpleado(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify(listaAlertas), tiempoRespuesta.valor, departamentosUsuario, infoPeriodo, periodos);
 
 													});
 												} else if(req.user.horarioEmpleado){
@@ -353,19 +354,19 @@ module.exports = {
 															listaAlertas.push(crearAlerta(horaEntrada, horaSalida, minutosEntrada, minutosSalida));
 														}
 
-														return retornarRenderEmpleado(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify(listaAlertas), tiempoRespuesta.valor, departamentosUsuario, infoPeriodo);
+														return retornarRenderEmpleado(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify(listaAlertas), tiempoRespuesta.valor, departamentosUsuario, infoPeriodo, periodos);
 													});
 												}
 
 											} else {
-												return retornarRenderEmpleado(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify(listaAlertas), tiempoRespuesta.valor, departamentosUsuario, infoPeriodo);
+												return retornarRenderEmpleado(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify(listaAlertas), tiempoRespuesta.valor, departamentosUsuario, infoPeriodo, periodos);
 											}
 										});
 									});
 								});
 
 							} else {
-								return retornarRenderEmpleado(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify([]), 0, departamentosUsuario, infoPeriodo);
+								return retornarRenderEmpleado(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify([]), 0, departamentosUsuario, infoPeriodo, periodos);
 							}
 						});
 					});
@@ -394,7 +395,7 @@ module.exports = {
         return nuevaAlerta;
     }
 
-    function retornarRenderEmpleado(usuario, marcas, justificaciones, textos, alertas, tiempoRespuesta, departamentos, infoPeriodos){
+    function retornarRenderEmpleado(usuario, marcas, justificaciones, textos, alertas, tiempoRespuesta, departamentos, infoPeriodos, periodos){
 
         return res.render('escritorio', {
             title: 'Escritorio Empleado | SIGUCA',
@@ -405,7 +406,8 @@ module.exports = {
             alertas: alertas,
             tiempoRespuesta: tiempoRespuesta,
 			departamentosUsuario: departamentos,
-			infoPeriodos: infoPeriodos
+			infoPeriodos: infoPeriodos,
+			periodos: periodos
         });
 
     }

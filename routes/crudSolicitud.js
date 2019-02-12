@@ -424,6 +424,7 @@ exports.gestionarSoli = function(solicitud, cb, idUser){
 
 	Usuario.findById(idUser, function (errUser, supervisor) {
 		Solicitudes.findByIdAndUpdate(solicitud.id,	{estado: solicitud.estado, comentarioSupervisor:solicitud.comentarioSupervisor}).populate('usuario').exec(function (err, soli) {
+
 			/*
 			 * Actualiza las vacaciones, solo cuando son aceptadas
 			 */
@@ -495,4 +496,4 @@ exports.gestionarSoli = function(solicitud, cb, idUser){
 
 		});
 });
-}
+};
