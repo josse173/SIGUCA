@@ -91,9 +91,9 @@ html
 
                     li
                       div.dropdown
-                        button.btn.dropdown-toggle.text-primary.father-1.dropMain(type='button',data-toggle="dropdown")
+                        button.btn.dropdown-toggle.text-primary.father-1.dropMain(type='button', data-toggle="dropdown", style='margin-top:3%; margin-button:0;')
                           i.icon-edit.icon-large
-                            |&nbsp;Reportes
+                            |&nbsp;Reportes&nbsp;
                           span.caret
                         ul.dropdown-menu
                           li
@@ -110,6 +110,9 @@ html
                             a.activeControl.son-1(href="/reportes/Feriados") Feriados
                           li
                             a.activeControl.son-1(href="/reportes/confirmacionPresencia") Confirmación de presencia
+                          li
+                            a.activeControl.son-1(href="/reportes/periodosUsuario") Periodos de usuario
+
                   if(usuario.tipo == 'Supervisor' || usuario.tipo == 'Empleado' || usuario.tipo == config.empleadoProfesor)
                     li
                       a.activeControl(href="/eventos")

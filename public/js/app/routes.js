@@ -718,7 +718,6 @@ $("#extraLink").click(function(){
             e.preventDefault();
             //get the footable object
             var footable = $('.tableSolicitudes').data('footable');
-
             //get the row we are wanting to delete
             var row = $(this).parents('tr:first');
 
@@ -841,7 +840,6 @@ $("#extraLink").click(function(){
 
     var footable = $('.tableSolicitudes').data('footable');
     var row = $(this).parents('tr:first');
-
     var solicitud = $(this).val();
     var split = solicitud.split(',');
     alertify.dialog('confirm')
@@ -1077,10 +1075,10 @@ $("button[data-target=#editFeriado]").click( function() {
      var split = id.split(',');
      $('.formUpdatePeriodo').attr('action', '/periodoUpdate/'+ id);
      $.get('/periodo/editPeriodo/'+split[0], function( data ) {
-         $('#periodoUpdate').val(data.periodo);
-         $('#fechaCreadaUpdate').val(data.fechaCreada);
-         $('#fechaInicioUpdate').val(data.fechaInicio);
-         $('#fechaFinalUpdate').val(data.fechaFinal);
+         $('#periodoUpdate').val(data.nombrePeriodoPadre);
+         $('#fechaCreadaUpdate').val(moment.unix(data.fechaCreada).format("YYYY-MM-DD hh:mm:ss"));
+         $('#fechaInicioUpdate').val(moment.unix(data.fechaInicio).format("YYYY-MM-DD hh:mm:ss"));
+         $('#fechaFinalUpdate').val(moment.unix(data.fechaFinal).format("YYYY-MM-DD hh:mm:ss"));
          $('#diasAsignadosUpdate').val(data.diasAsignados);
          $('#diasDisfrutadosUpdate').val(data.diasDisfrutados);
 

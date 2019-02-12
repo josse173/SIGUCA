@@ -10,19 +10,20 @@ block content
     table.footable(data-page-navigation=".pagination" data-page-size="10").tablePeriodo
         thead
           tr
+            th Numero Periodo
             th Nombre
             th Fecha Creacion
-            th Periodo
+            th Tipo Periodo
             th Fecha Inicio
             th Fecha Final
             th Dias Asignados
             th Dias Disfrutados
             th(data-hide="phone,small" data-sort-ignore="true") Editar
-            th(data-hide="phone,small" data-sort-ignore="true") Eliminar
 
         tbody
           each periodoCurrent, i in periodo
             tr
+              td #{periodoCurrent.numeroPeriodo}
               td #{nombreUsuario}
               td #{moment.unix(periodoCurrent.fechaCreada).format("YYYY-MM-DD hh:mm:ss")}
               td #{periodoCurrent.nombrePeriodoPadre}
@@ -34,9 +35,6 @@ block content
                 button.btn.btn-default(data-toggle="modal" data-target="#editPeriodo", value=periodoCurrent._id+','+usuario)
                   i.icon-pencil.icon-large.i-success
 
-              td
-                button.periodoDelete.btn.btn-default(value=periodoCurrent.periodo+','+periodoCurrent.usuario+','+periodoCurrent._id)
-                  i.icon-trash.icon-large.i-danger
         tfoot
           tr
             td(colspan='12')
