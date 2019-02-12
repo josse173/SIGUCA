@@ -186,7 +186,7 @@ exports.get = function(query, cb){
 	Usuario.find(query).exec(function (err, empleados){
 		cb(err, empleados);
     });//Usuario
-}
+};
 
 exports.listUsuarios = function(cb){
 	Usuario.find().populate('departamentos.departamento').populate('horario').populate("horarioFijo").populate("horarioEmpleado").exec(function (err, empleados){
@@ -211,20 +211,19 @@ exports.listUsuarios = function(cb){
             });//Departamento
         });//Horario
     });//Usuario
-}
+};
 
 exports.loadUsuarios = function(id, cb){
 	Usuario.findById(id, function (err, empleado) {
 		return cb(err, empleado);
 	});
-}
+};
 
 exports.getById = function(id, cb){
 	Usuario.findById(id, function (err, empleado) {
 		return cb(err, empleado);
 	});
-}
-
+};
 
 exports.updateUsuario = function(data, cb){
 
@@ -481,7 +480,7 @@ exports.updateUsuario = function(data, cb){
 		});
 	}
 
-}
+};
 
 exports.reset=function(){
 	    var array=new Array();
@@ -507,7 +506,7 @@ exports.reset=function(){
 	        
 	        });
 	    
-	}
+	};
 
 exports.deleteUsuario = function(id, cb){
 
@@ -531,13 +530,13 @@ exports.deleteUsuario = function(id, cb){
 		if (err) return cb(err, '');
 		return cb(err, 'Se elimino');
 	});*/
-}
+};
 
 exports.changeUsername = function(user, cb){
 	Usuario.findByIdAndUpdate(user.id, {username: user.username}, function (err, user) {
 		return cb();
 	});
-}
+};
 
 exports.changePassword = function(data, cb){
 	var currentPassword = Usuario.generateHash(data.currentPassword);
@@ -554,7 +553,7 @@ exports.changePassword = function(data, cb){
 			} else { console.log("Nueva contraseña inválida."); return cb();}
 		} else { console.log("Contraseña inválida."); return cb();}
 	});
-}
+};
 
 exports.getEmpleadoPorSupervisor = function(idSupervisor, usuarioQuery, callback){
 	Usuario.find({_id:idSupervisor}).exec(function(error, supervisor){
@@ -567,10 +566,10 @@ exports.getEmpleadoPorSupervisor = function(idSupervisor, usuarioQuery, callback
 			usuarioQuery.departamentos = {$elemMatch:{departamento:{"$in":depIds}}};
 			Usuario.find(usuarioQuery).exec(function(error, usuarios){
 				callback(error, usuarios, departamentos);
-			});//
-		});//
-	});//
-}
+			});
+		});
+	});
+};
 
 exports.updateVacaciones = function(){
 	//Configuración al correo
@@ -700,4 +699,72 @@ exports.updateVacaciones = function(){
 			});
 		});
 	});//Fin consulta obtiene usuarios
-}
+};
+
+exports.validarPeriodoUsuario = function (usuario, periodos) {
+	var mayorPeriodo = {};
+	var fechaActual = moment().unix();
+
+	if(periodos && periodos.length > 0){
+		mayorPeriodo = periodos.reduce(function(prev, current) {
+			if (+current.numeroPeriodo > +prev.numeroPeriodo) {
+				return current;
+			} else {
+				return prev;
+			}
+		});
+
+		var cierreSiguientePeriodo = mayorPeriodo.fechaFinal + 30240000; // 30240000 = 50 semanas
+
+		if(fechaActual > cierreSiguientePeriodo){
+			// Buscar siguiente tipo periodo y crear periodoUsuario
+
+			var semanasLaboradas = (fechaActual - usuario.fechaIngreso) /604800; // 604800 = 1 semana
+
+			Periodo.find().sort({ "numeroPeriodo" : 1}).exec(function (error, periodos) {
+				if (error) return res.json(error);
+				periodos.forEach(function (periodo) {
+					if(semanasLaboradas >= periodo.rangoInicial && semanasLaboradas < periodo.rangoFinal){
+						var periodoUsuario = new PeriodoUsuario({
+							fechaCreada: fechaActual,
+							usuario: usuario.id,
+							periodo: periodo._id,
+							nombrePeriodoPadre: periodo.nombre,
+							fechaInicio: mayorPeriodo.fechaFinal,
+							fechaFinal: cierreSiguientePeriodo,
+							diasAsignados: periodo.cantidadDias,
+							numeroPeriodo: mayorPeriodo.numeroPeriodo + 1
+						});
+
+						periodoUsuario.save(function (err, respuesta) {
+							if (err) console.log(err);
+						});
+					}
+				});
+			});
+		}
+	} else {
+		var cierreFechaCreacion = usuario.fechaIngreso + 30240000; // 30240000 = 50 semanas
+
+		if(fechaActual > cierreFechaCreacion){
+
+			Periodo.find().sort({ "numeroPeriodo" : 1}).exec(function (error, periodos) {
+				if (error) return res.json(error);
+				var periodoUsuario = new PeriodoUsuario({
+					fechaCreada: fechaActual,
+					usuario: usuario.id,
+					periodo: periodos[0]._id,
+					nombrePeriodoPadre: periodos[0].nombre,
+					fechaInicio: usuario.fechaIngreso,
+					fechaFinal: cierreFechaCreacion,
+					diasAsignados: periodos[0].cantidadDias,
+					numeroPeriodo: 1
+				});
+
+				periodoUsuario.save(function (err, respuesta) {
+					if (err) console.log(err);
+				});
+			});
+		}
+	}
+};

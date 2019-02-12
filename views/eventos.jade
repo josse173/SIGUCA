@@ -11,13 +11,13 @@ block content
         table
          form(role='form', method="POST", action="/filtrarEventosEmpl")
           td
-            label.labelFiltro(for='fechaDesde') #{textos[2].titulo}
+            label.labelFiltro(for='date_range_start') #{textos[2].titulo}
               div.input-group
                 input#date_range_start.form-control(type='text', name='fechaDesde')
                 span.input-group-addon
                   i.icon-calendar
           td
-            label.labelFiltro(for='fechaHasta') #{textos[3].titulo}
+            label.labelFiltro(for='date_range_end') #{textos[3].titulo}
               div.input-group
                 input#date_range_end.form-control(type='text', name='fechaHasta')
                 span.input-group-addon

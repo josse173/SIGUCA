@@ -87,6 +87,7 @@ module.exports = {
   //*************************************************************************************************************
 
   eventos : function (req, res) {
+
     var epochMin = moment();
     epochMin.hours(0);
     epochMin.minutes(0);
@@ -102,71 +103,7 @@ module.exports = {
 
                     var supervisor = {departamentos: [1]};
 
-                    var mayorPeriodo = {};
-                    var fechaActual = moment().unix();
-
-                    if(periodos && periodos.length > 0){
-                      mayorPeriodo = periodos.reduce(function(prev, current) {
-                        if (+current.numeroPeriodo > +prev.numeroPeriodo) {
-                          return current;
-                        } else {
-                          return prev;
-                        }
-                      });
-
-                      var cierreSiguientePeriodo = mayorPeriodo.fechaFinal + 30240000; // 30240000 = 50 semanas
-
-                      if(fechaActual > cierreSiguientePeriodo){
-                        // Buscar siguiente tipo periodo y crear periodoUsuario
-
-                        var semanasLaboradas = (fechaActual - req.user.fechaIngreso) /604800; // 604800 = 1 semana
-
-                        Periodo.find().sort({ "numeroPeriodo" : 1}).exec(function (error, periodos) {
-                          if (error) return res.json(error);
-                          periodos.forEach(function (periodo) {
-                            if(semanasLaboradas >= periodo.rangoInicial && semanasLaboradas < periodo.rangoFinal){
-                              var periodoUsuario = new PeriodoUsuario({
-                                fechaCreada: fechaActual,
-                                usuario: req.user.id,
-                                periodo: periodo._id,
-                                nombrePeriodoPadre: periodo.nombre,
-                                fechaInicio: mayorPeriodo.fechaFinal,
-                                fechaFinal: cierreSiguientePeriodo,
-                                diasAsignados: periodo.cantidadDias,
-                                numeroPeriodo: mayorPeriodo.numeroPeriodo + 1
-                              });
-
-                              periodoUsuario.save(function (err, respuesta) {
-                                if (err) console.log(err);
-                              });
-                            }
-                          });
-                        });
-                      }
-                    } else {
-                      var cierreFechaCreacion = req.user.fechaIngreso + 30240000; // 30240000 = 50 semanas
-
-                      if(fechaActual > cierreFechaCreacion){
-
-                        Periodo.find().sort({ "numeroPeriodo" : 1}).exec(function (error, periodos) {
-                          if (error) return res.json(error);
-                          var periodoUsuario = new PeriodoUsuario({
-                            fechaCreada: fechaActual,
-                            usuario: req.user.id,
-                            periodo: periodos[0]._id,
-                            nombrePeriodoPadre: periodos[0].nombre,
-                            fechaInicio: req.user.fechaIngreso,
-                            fechaFinal: cierreFechaCreacion,
-                            diasAsignados: periodos[0].cantidadDias,
-                            numeroPeriodo: 1
-                          });
-
-                          periodoUsuario.save(function (err, respuesta) {
-                            if (err) console.log(err);
-                          });
-                        });
-                      }
-                    }
+                    crudUsuario.validarPeriodoUsuario(req.user, periodos);
 
                     var arrayMarcas = util.eventosAjuste(marcas,supervisor,"eventosEmpl");
                     var arrayJust = util.eventosAjuste(justificaciones,supervisor,"eventosEmpl");
@@ -308,87 +245,108 @@ module.exports = {
   }
 };
 
-function getInformacionRender(req, res, titulo, usuarios, departamentos,
-  marcaQuery, justQuery, extraQuery, permisosQuery, cierreQuery, populateQuery, nombreUsuario, periodosUsuarioQuery){
-  //Filtrar -departamento -usuario -fecha
+function getInformacionRender(req, res, titulo, usuarios, departamentos, marcaQuery, justQuery, extraQuery, permisosQuery, cierreQuery, populateQuery, nombreUsuario, periodosUsuarioQuery){
 
-    Justificaciones.find(justQuery).populate(populateQuery).exec(function(error, justificaciones){
-      HoraExtra.find(extraQuery).populate(populateQuery).exec(function(error, extras) {
-        Solicitudes.find(permisosQuery).populate(populateQuery).exec(function(error, permisos) {
+  var usuariosTemp = [];
 
-          var permisosTemp = [];
+  usuarios.forEach(function (usuario) {
+    PeriodoUsuario.find({usuario: usuario._id}).exec(function(error, periodos) {
+      crudUsuario.validarPeriodoUsuario(usuario._id, periodos);
 
-          if(permisos && permisos.length > 0 ){
-            permisos.forEach(function (permiso) {
+      var infoPeriodo = {
+        diasDerechoDisfrutar: 0,
+        diasDisfrutados: 0,
+        diasDisponibles: 0
+      };
 
-              var infoPeriodo = {
-                diasDerechoDisfrutar: 0,
-                diasDisfrutados: 0,
-                diasDisponibles: 0
-              };
+      periodos.forEach(function (periodo) {
+        infoPeriodo.diasDerechoDisfrutar = infoPeriodo.diasDerechoDisfrutar + periodo.diasAsignados;
+        infoPeriodo.diasDisfrutados = infoPeriodo.diasDisfrutados + periodo.diasDisfrutados;
+      });
 
-              PeriodoUsuario.find({usuario: permiso.usuario._id}).exec(function(error, periodos) {
-                if (error) return res.json(err);
+      infoPeriodo.diasDisponibles = infoPeriodo.diasDerechoDisfrutar-infoPeriodo.diasDisfrutados;
+      usuario.vacaciones = infoPeriodo.diasDisponibles;
 
-                periodos.forEach(function (periodo) {
-                  infoPeriodo.diasDerechoDisfrutar = infoPeriodo.diasDerechoDisfrutar + periodo.diasAsignados;
-                  infoPeriodo.diasDisfrutados = infoPeriodo.diasDisfrutados + periodo.diasDisfrutados;
-                });
+    });
+    usuariosTemp.push(usuario)
+  });
 
-                infoPeriodo.diasDisponibles = infoPeriodo.diasDerechoDisfrutar-infoPeriodo.diasDisfrutados;
-                permiso.usuario.vacaciones = infoPeriodo.diasDisponibles;
+  usuarios = usuariosTemp;
 
+  Justificaciones.find(justQuery).populate(populateQuery).exec(function(error, justificaciones){
+    HoraExtra.find(extraQuery).populate(populateQuery).exec(function(error, extras) {
+      Solicitudes.find(permisosQuery).populate(populateQuery).exec(function(error, permisos) {
+
+        var permisosTemp = [];
+
+        if(permisos && permisos.length > 0 ){
+          permisos.forEach(function (permiso) {
+
+            var infoPeriodo = {
+              diasDerechoDisfrutar: 0,
+              diasDisfrutados: 0,
+              diasDisponibles: 0
+            };
+
+            PeriodoUsuario.find({usuario: permiso.usuario._id}).exec(function(error, periodos) {
+              if (error) return res.json(err);
+
+              periodos.forEach(function (periodo) {
+                infoPeriodo.diasDerechoDisfrutar = infoPeriodo.diasDerechoDisfrutar + periodo.diasAsignados;
+                infoPeriodo.diasDisfrutados = infoPeriodo.diasDisfrutados + periodo.diasDisfrutados;
               });
-              permisosTemp.push(permiso)
+
+              infoPeriodo.diasDisponibles = infoPeriodo.diasDerechoDisfrutar-infoPeriodo.diasDisfrutados;
+              permiso.usuario.vacaciones = infoPeriodo.diasDisponibles;
+
             });
-          }
+            permisosTemp.push(permiso)
+          });
+        }
 
-          permisos = permisosTemp;
+        permisos = permisosTemp;
 
-          if(req.route.path.substring(0, 9) !=='/reportes'){
-            //Se asigna el tipo de usuario con el cual ha iniciado sesion
-            req.user.tipo = req.session.name;
-            return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, null,
-              justificaciones, extras, permisos, null, nombreUsuario, null, null);
-          }
-          else {
-            Marca.find(marcaQuery).populate(populateQuery).exec(function(error, marcas){
+        if(req.route.path.substring(0, 9) !=='/reportes'){
+          //Se asigna el tipo de usuario con el cual ha iniciado sesion
+          req.user.tipo = req.session.name;
+          return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, null,
+            justificaciones, extras, permisos, null, nombreUsuario, null, null);
+        }
+        else {
+          Marca.find(marcaQuery).populate(populateQuery).exec(function(error, marcas){
 
-              var usuarioQueryFiltrado = {};
-              //Si se realizo un filtrado por departamento
-              if(req.body.filtro_departamento && req.body.filtro_departamento!="todos"){
-                usuarioQueryFiltrado.departamentos = {$elemMatch:{departamento:{"$in":req.body.filtro_departamento}}};
+            var usuarioQueryFiltrado = {};
+            //Si se realizo un filtrado por departamento
+            if(req.body.filtro_departamento && req.body.filtro_departamento!="todos"){
+              usuarioQueryFiltrado.departamentos = {$elemMatch:{departamento:{"$in":req.body.filtro_departamento}}};
+            }
+
+            Usuario.find(usuarioQueryFiltrado).exec(function(error, usuariosFiltradoDepartamento){
+              //Si no se filtro por usuario se hace el filtrado por departamentos
+              if(!cierreQuery.usuario && (!req.body.filtro_departamento || req.body.filtro_departamento=="todos")){
+                cierreQuery.usuario = { $in: usuarios };
+              }else if(req.body.filtro_departamento && req.body.filtro_departamento!="todos"){
+                cierreQuery.usuario = {$in: usuariosFiltradoDepartamento};
               }
 
-              Usuario.find(usuarioQueryFiltrado).exec(function(error, usuariosFiltradoDepartamento){
-                //Si no se filtro por usuario se hace el filtrado por departamentos
-                if(!cierreQuery.usuario && (!req.body.filtro_departamento || req.body.filtro_departamento=="todos")){
-                  cierreQuery.usuario = { $in: usuarios };
-                }else if(req.body.filtro_departamento && req.body.filtro_departamento!="todos"){
-                  cierreQuery.usuario = {$in: usuariosFiltradoDepartamento};
-                }
-
-                CierrePersonal.find(cierreQuery).populate("usuario").exec(function(error, cierres) {
-                      //Se asigna el tipo de usuario con el cual ha iniciado sesion
-                      req.user.tipo = req.session.name;
-                      console.log(periodosUsuarioQuery);
-                      EventosTeletrabajo.find(marcaQuery).exec(function(error, eventosTeletrabajo) {
-                        PeriodoUsuario.find(periodosUsuarioQuery).populate('usuario').populate('periodo').exec(function(error, periodoUsuarios) {
-                          console.log(periodoUsuarios);
-                          return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, marcas,
-                            justificaciones, extras, permisos, cierres, nombreUsuario, eventosTeletrabajo, periodoUsuarios);
-                        });
+              CierrePersonal.find(cierreQuery).populate("usuario").exec(function(error, cierres) {
+                    //Se asigna el tipo de usuario con el cual ha iniciado sesion
+                    req.user.tipo = req.session.name;
+                    EventosTeletrabajo.find(marcaQuery).exec(function(error, eventosTeletrabajo) {
+                      PeriodoUsuario.find(periodosUsuarioQuery).populate('usuario').populate('periodo').exec(function(error, periodoUsuarios) {
+                        return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, marcas,
+                          justificaciones, extras, permisos, cierres, nombreUsuario, eventosTeletrabajo, periodoUsuarios);
                       });
                     });
-              });//Fin usuarios filtrados por departamento
+                  });
+            });//Fin usuarios filtrados por departamento
 
-            });//Marcas
-          }
-        });//Solicitudes permisos
-      });//Solicitudes horas extra
-    });//Justificaciones
+          });//Marcas
+        }
+      });//Solicitudes permisos
+    });//Solicitudes horas extra
+  });//Justificaciones
 }
-
 
 function renderFiltro(req, res, titulo, usuario, departamentos, usuarios, marcas, justificaciones, extras, permisos, cierre, nombreUsuario, eventosTeletrabajo, periodoUsuarios){
   var cList = [];
@@ -513,7 +471,7 @@ function renderFiltro(req, res, titulo, usuario, departamentos, usuarios, marcas
     });
   }
 
-  console.log(req.route.path.substring(0, 9));
+  // console.log(req.route.path.substring(0, 9));
   //Si el filtrado es por vacaciones
   if(filtrado && filtrado == "vacaciones" && req.route.path.substring(0, 9) =='/reportes'){
     filtro.vacaciones = true;
@@ -936,10 +894,6 @@ function ordenarTardias(marcas, cb){
   }
 
 }
-
-
-
-
 
 function filtrarPorFecha(req){
   //Si el query es para un intervalo de fechas determinado, se agregan a las fechas en formato "unix"

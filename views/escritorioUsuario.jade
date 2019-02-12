@@ -285,10 +285,6 @@
                       each departamento, i in departamentosUsuario
                         option(value= departamento.id) #{departamento.nombre}
               .form-group
-                div(style='display:none').form-group#divPeriodoDescontar
-                  label#lblPeriodoDescontar(for='periodoDescontar') Cargo a los Periodos :
-                  input#periodoDescontar.form-control(type= 'text', name= 'periodoDescontar', disabled, value=infoPeriodos.cargoAlosPeriodos)
-              .form-group
                 div(style='display:none').form-group#divDerechoDisfrutarPorPeriodo
                   label#lblDerechoDisfrutarPorPeriodo(for='derechoDisfrutarPorPeriodo') Días con derecho a disfrutar :
                   input#derechoDisfrutarPorPeriodo.form-control(type= 'text', name= 'derechoDisfrutarPorPeriodo', disabled, value=infoPeriodos.diasDerechoDisfrutar)
