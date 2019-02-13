@@ -395,11 +395,6 @@ $("button[data-target=#editHorarioPersonalizado]").click( function() {
         }
 
 
-
-
-
-
-
     });
 });
 
@@ -594,30 +589,51 @@ $("#extraLink").click(function(){
      var val = $('#selectMotivo').val();
      var inciso = $('#selectInciso').val();
      var cantidadDias = $('#cantidadDias').val();
+     var fecha = $('#diaInicio').val();
+     var fechaFormateada = moment(fecha).format('MM/DD/YYYY').valueOf();
+     var nuevaFecha = moment(fechaFormateada);
+     var fechaAConfirmar = nuevaFecha.format();
+     var usuario = $('#btn-marca').val();
 
      if(val == 'seleccionar') {
          alertify.error('Motivo no valido');
          return false;
-     }else if(val == 'articulo') {
-         if(inciso == 'incisoA'){
+     }else if(val == 'Articulo') {
+         if(inciso == 'Inciso A'){
              if(cantidadDias > 5){
-                 alertify.error('No puede ingresar un incisoA debido que la cantidad maxima a solicitar son 5 dias');
+                 alertify.error('No puede ingresar un Inciso A debido que la cantidad maxima a solicitar son 5 dias');
                  return false;
              }else{
                  $('.formSoli').attr('action', '/solicitud_permisos/');
                  $("#btn-permiso").submit();
              }
-         }else if(inciso =='incisoB'){
+         }else if(inciso =='Inciso B'){
              if(cantidadDias != 1){
-                 alertify.error('No puede ingresar incisoB cantidad maxima a solicitar es 1 dia');
+                 alertify.error('No puede ingresar Inciso B cantidad maxima a solicitar es 1 dia');
                  return false;
              }else{
                  $('.formSoli').attr('action', '/solicitud_permisos/');
                  $("#btn-permiso").submit();
              }
-         }else if(inciso =='incisoC'){
+         }else if(inciso =='Inciso C'){
+             $.get('/solicitud/inciso', {id: usuario}, function( data ) {
+                 var dias = data.quantity;
+                 var cantidadDeDias = dias.length;
+                 if(cantidadDeDias >= 3){
+                     alertify.error('No se puede usar el Inciso C más de 3 veces');
+                     return false;
+                 }
+             });
+             if(fecha!= null && fecha!= ''){
+                 $.get('/solicitud/solicitudAyer/'+usuario+'/'+fechaAConfirmar, function( data ) {
+                     if(data>0){
+                         alertify.error('No puede ingresar Inciso C debido a que hizo una solicitud del mismo tipo el dia de ayer');
+                         return false;
+                     }
+                 });
+             }
              if(cantidadDias != 1){
-                 alertify.error('No puede ingresar incisoC cantidad maxima a solicitar es 1 dia');
+                 alertify.error('No puede ingresar Inciso C cantidad maxima a solicitar es 1 dia');
                  return false;
              }else{
                  $('.formSoli').attr('action', '/solicitud_permisos/');

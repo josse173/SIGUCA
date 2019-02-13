@@ -303,11 +303,22 @@ module.exports = function(app, io) {
     /*
     *  Carga la información de una solicitud de tipo inciso C
     */
+
     app.get('/solicitud/inciso', autentificado, function (req, res) {
-        Solicitudes.find({usuario: req.user.id, "inciso":"incisoC"}).exec(function (err, quantity) {
+        console.log('INCISO PRUEBA ID    ' + req.user.id)
+        Solicitudes.find({usuario: req.user.id, "inciso":"Inciso C", "estado":"Aceptada" }).exec(function (err, quantity) {
             console.log(quantity);
             var size = quantity.length;
             res.json({quantity});
+        });
+    });
+
+    app.get('/solicitud/solicitudAyer/:id/:fecha', autentificado, function (req, res) {
+        var fechaa =  req.params.fecha;
+        var fechaFormateada = moment(fechaa).subtract(1, 'day').format('YYYY/MM/DD');
+        Solicitudes.find({usuario: req.user.id, "diaInicio":fechaFormateada}).exec(function (err, quantity) {
+            var size = quantity.length;
+            res.json(size);
         });
     });
 
