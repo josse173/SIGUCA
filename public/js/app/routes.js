@@ -551,7 +551,7 @@ $("button[data-target=#editHorarioFijo]").click( function() {
  $('.btnDescargaPdf').click(function(){
 
      var doc = new jsPDF();
-     doc.autoTable({html: '#solicitudesTable'});
+     doc.autoTable({html: 'solicitudesTable'});
      doc.save("table.pdf");
 
      alertify.dialog('confirm')
@@ -1230,3 +1230,133 @@ $('.tableJustificaciones').footable().on('click', '.justificacionBoleta',
 
      req.send();
  });
+
+ $('.solicitudesTable').footable().on('click', '.solicitudesBoleta',
+     function(e) {
+
+         e.preventDefault();
+         console.log('here');
+         var parametros = $(this).val().split(';');
+
+         var req = new XMLHttpRequest();
+         req.open("POST", '/generarBoleta/{"id":"'+parametros[0]+'", "tipo":"'+parametros[1]+'"}', true);
+         req.responseType = "blob";
+
+         req.onload = function (event) {
+             var blob = req.response;
+             console.log(blob.size);
+
+             const url = window.URL.createObjectURL(new Blob([req.response]));
+             const link = document.createElement('a');
+             link.href = url;
+             link.setAttribute('download', 'Boleta-' + parametros[1] + '-' + parametros[0] + '.pdf');
+             document.body.appendChild(link);
+             link.click();
+         };
+
+         req.send();
+     });
+
+ $('.tableSolicitudes').footable().on('click', '.solicitudesBoleta',
+     function(e) {
+
+         e.preventDefault();
+         console.log('here');
+         var parametros = $(this).val().split(';');
+
+         var req = new XMLHttpRequest();
+         req.open("POST", '/generarBoleta/{"id":"'+parametros[0]+'", "tipo":"'+parametros[1]+'"}', true);
+         req.responseType = "blob";
+
+         req.onload = function (event) {
+             var blob = req.response;
+             console.log(blob.size);
+
+             const url = window.URL.createObjectURL(new Blob([req.response]));
+             const link = document.createElement('a');
+             link.href = url;
+             link.setAttribute('download', 'Boleta-' + parametros[1] + '-' + parametros[0] + '.pdf');
+             document.body.appendChild(link);
+             link.click();
+         };
+
+         req.send();
+     });
+
+ $('.tableVacaciones').footable().on('click', '.vacacionesBoleta',
+     function(e) {
+
+         e.preventDefault();
+         console.log('here');
+         var parametros = $(this).val().split(';');
+
+         var req = new XMLHttpRequest();
+         req.open("POST", '/generarBoleta/{"id":"'+parametros[0]+'", "tipo":"'+parametros[1]+'"}', true);
+         req.responseType = "blob";
+
+         req.onload = function (event) {
+             var blob = req.response;
+             console.log(blob.size);
+
+             const url = window.URL.createObjectURL(new Blob([req.response]));
+             const link = document.createElement('a');
+             link.href = url;
+             link.setAttribute('download', 'Boleta-' + parametros[1] + '-' + parametros[0] + '.pdf');
+             document.body.appendChild(link);
+             link.click();
+         };
+
+         req.send();
+     });
+
+ $('.tablaHorasExtra').footable().on('click', '.extrasBoleta',
+ function(e) {
+
+     e.preventDefault();
+     console.log('here');
+     var parametros = $(this).val().split(';');
+
+     var req = new XMLHttpRequest();
+     req.open("POST", '/generarBoleta/{"id":"'+parametros[0]+'", "tipo":"'+parametros[1]+'"}', true);
+     req.responseType = "blob";
+
+     req.onload = function (event) {
+         var blob = req.response;
+         console.log(blob.size);
+
+         const url = window.URL.createObjectURL(new Blob([req.response]));
+         const link = document.createElement('a');
+         link.href = url;
+         link.setAttribute('download', 'Boleta-' + parametros[1] + '-' + parametros[0] + '.pdf');
+         document.body.appendChild(link);
+         link.click();
+     };
+
+     req.send();
+ });
+
+ $('.tableExtras').footable().on('click', '.extrasBoleta',
+     function(e) {
+
+         e.preventDefault();
+         console.log('here');
+         var parametros = $(this).val().split(';');
+
+         var req = new XMLHttpRequest();
+         req.open("POST", '/generarBoleta/{"id":"'+parametros[0]+'", "tipo":"'+parametros[1]+'"}', true);
+         req.responseType = "blob";
+
+         req.onload = function (event) {
+             var blob = req.response;
+             console.log(blob.size);
+
+             const url = window.URL.createObjectURL(new Blob([req.response]));
+             const link = document.createElement('a');
+             link.href = url;
+             link.setAttribute('download', 'Boleta-' + parametros[1] + '-' + parametros[0] + '.pdf');
+             document.body.appendChild(link);
+             link.click();
+         };
+
+         req.send();
+     });

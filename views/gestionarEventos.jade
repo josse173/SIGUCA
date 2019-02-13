@@ -104,9 +104,9 @@ block content
             p
 
         br
-        if(extras && extras.length != 0)
+        if(extras && extras.length > 0)
           h3 #{textos[25].titulo}
-          if(extras && extras.length != 0)
+          if(extras && extras.length > 0)
             table.tableExtras.footable(data-page-navigation=".pagination" data-page-size="5" )
                 thead
                   tr
@@ -121,6 +121,7 @@ block content
                     th(data-sort-ignore="true") #{textos[34].titulo}
                     th(data-sort-ignore="true" data-name="Delete") #{textos[35].titulo}
                     th(data-sort-ignore="true") #{textos[36].titulo}
+                    th(data-hide="phone,small" data-sort-ignore="true") Boleta
                 tbody
                   each extra, i in extras
                     form(role='form', method="POST", action="/getionarSolicitud/"+extra.id)
@@ -145,17 +146,20 @@ block content
                         td
                           button.btn.btn-default.solicitudDelete(value=extra.usuario.nombre+' '+extra.usuario.apellido1+' '+extra.usuario.apellido2+','+extra.id+','+extra.fecha, name='eliminar')
                             i.icon-trash.icon-large.i-danger
+                        td
+                          button.btn.btn-default.extrasBoleta(value=extra._id + ';horaExtra')
+                            i.icon-download.icon-large.i-success
                 tfoot
                   tr
-                    td(colspan='11')
+                    td(colspan='12')
                       .pagination.pagination-centered.hide-if-no-paging
           else
             p #{textos[37].titulo}
 
         br
-        if(permisos && permisos.length != 0)
+        if(permisos && permisos.length > 0)
           h3 #{textos[38].titulo}
-          if(permisos && permisos.length != 0)
+          if(permisos && permisos.length > 0)
             table.tableSolicitudes.footable(data-page-navigation=".pagination" data-page-size="5")
                 thead
                   tr
@@ -174,6 +178,7 @@ block content
                     th(data-sort-ignore="true") #{textos[34].titulo}
                     th(data-sort-ignore="true") #{textos[35].titulo}
                     th(data-sort-ignore="true") #{textos[36].titulo}
+                    th(data-hide="phone,small" data-sort-ignore="true") Boleta
                 tbody
                   each permiso, i in permisos
                     if(permiso.motivo != "Vacaciones")
@@ -203,17 +208,20 @@ block content
                           td
                             button.btn.btn-default.solicitudDelete(value=permiso.usuario.nombre+' '+permiso.usuario.apellido1+' '+permiso.usuario.apellido2+','+permiso.id+','+permiso.fecha, name='eliminar')
                               i.icon-trash.icon-large.i-danger
+                          td
+                            button.btn.btn-default.solicitudesBoleta(value=permiso._id + ';' +permiso.motivo)
+                              i.icon-download.icon-large.i-success
                 tfoot
                   tr
-                    td(colspan='11')
+                    td(colspan='13')
                       .pagination.pagination-centered.hide-if-no-paging
           else
             p #{textos[39].titulo}
 
         br
-        if(permisos && permisos.length != 0)
+        if(permisos && permisos.length > 0)
           h3 #{textos[40].titulo}
-          if(permisos && permisos.length != 0)
+          if(permisos && permisos.length > 0)
             table.tableVacaciones.footable(data-page-navigation=".pagination" data-page-size="5")
                 thead
                   tr
@@ -231,6 +239,7 @@ block content
                     th(data-sort-ignore="true") #{textos[34].titulo}
                     th(data-sort-ignore="true") #{textos[35].titulo}
                     th(data-sort-ignore="true") #{textos[36].titulo}
+                    th(data-hide="phone,small" data-sort-ignore="true") Boleta
                 tbody
                   each permiso, i in permisos
                     if(permiso.motivo == "Vacaciones")
@@ -257,9 +266,12 @@ block content
                           td
                             button.btn.btn-default.solicitudDelete(value=permiso.usuario.nombre+' '+permiso.usuario.apellido1+' '+permiso.usuario.apellido2+','+permiso.id+','+permiso.fecha, name='eliminar')
                               i.icon-trash.icon-large.i-danger
+                          td
+                            button.btn.btn-default.vacacionesBoleta(value=permiso._id + ';Vacaciones')
+                              i.icon-download.icon-large.i-success
                 tfoot
                   tr
-                    td(colspan='11')
+                    td(colspan='13')
                       .pagination.pagination-centered.hide-if-no-paging
           else
             p #{textos[39].titulo}

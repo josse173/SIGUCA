@@ -54,7 +54,7 @@ block content
                     .pagination.pagination-centered.hide-if-no-paging
       .col-xs-12
 
-        if(marcas.length != 0)
+        if(marcas && marcas.length > 0)
           h3 #{textos[9].titulo}
           table.footable.tableMarcas(data-page-navigation=".pagination" data-page-size="6")
               thead
@@ -81,7 +81,7 @@ block content
                     .pagination.pagination-centered.hide-if-no-paging
 
 
-      if(justificaciones.length != 0)
+      if(justificaciones && justificaciones.length > 0)
         .col-xs-12
           h3 #{textos[10].titulo}
           table.tableJustificaciones.footable(data-page-navigation=".pagination" data-page-size="5")
@@ -115,11 +115,11 @@ block content
                     .pagination.pagination-centered.hide-if-no-paging
 
 
-      if(horasExtra.length != 0)
+      if(horasExtra && horasExtra.length > 0)
         br
         h3 #{textos[17].titulo}
 
-        table.footable(data-page-navigation=".pagination")#opcionesTablaHorasExtra
+        table.tablaHorasExtra.footable(data-page-navigation=".pagination")#opcionesTablaHorasExtra
             thead
               tr
                 th(data-type="numeric" data-sort-initial="descending") #{textos[18].titulo}
@@ -131,6 +131,7 @@ block content
                 th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[24].titulo}
                 th #{textos[25].titulo}
                 th(data-hide="phone,small" data-sort-ignore="true") #{textos[26].titulo}
+                th(data-hide="phone,small" data-sort-ignore="true") Boleta
             tbody
               each extra, i in horasExtra
                 tr
@@ -146,16 +147,19 @@ block content
                     if(extra.estado == 'Pendiente')
                       button.btn.btn-default(data-toggle="modal" data-target="#editExtra" value=extra._id)
                         i.icon-pencil.icon-large.i-success
+                  td
+                    button.btn.btn-default.extrasBoleta(value=extra._id + ';horaExtra')
+                      i.icon-download.icon-large.i-success
             tfoot
               tr
-                td(colspan='9')
+                td(colspan='10')
                   .pagination.pagination-centered.hide-if-no-paging
 
 
-      if(permisos.length != 0)
+      if(permisos && permisos.length > 0)
         br
         h3 #{textos[27].titulo}
-        table#solicitudesTable.footable(data-page-navigation=".pagination")
+        table.solicitudesTable.footable(data-page-navigation=".pagination")
             thead
               tr
                 th(data-type="numeric" data-sort-initial="descending") #{textos[28].titulo}
@@ -168,6 +172,7 @@ block content
                 th #{textos[35].titulo}
                 th(data-hide="phone,small" data-sort-ignore="true") #{textos[36].titulo}
                 th(data-sort-ignore="true") Editar
+                th(data-hide="phone,small" data-sort-ignore="true") Boleta
             tbody
               each permiso, i in permisos
                 tr
@@ -183,13 +188,16 @@ block content
                     if(permiso.estado == 'Pendiente')
                       button.btn.btn-default(data-toggle="modal" data-target="#editPermiso" value=permiso._id)
                         i.icon-pencil.icon-large.i-success
+                  td
+                    button.btn.btn-default.solicitudesBoleta(value=permiso._id + ';' +permiso.motivo)
+                      i.icon-download.icon-large.i-success
             tfoot
               tr
-                td(colspan='9')
+                td(colspan='10')
                   .pagination.pagination-centered.hide-if-no-paging
               //button.btnDescargaPdf.btn.btn-default(type='button', data-dismiss='modal')  Descargar pdf
 
-      if(periodos.length != 0)
+      if(periodos && periodos.length > 0)
         h3 Lista de Periodos
         //button.btn.btn-success#btnAgregarPeriodo(value=usuario ,type='button',data-toggle="modal" data-target="#crearPeriodo") Crear Nuevo Periodo
         table.footable(data-page-navigation=".pagination" data-page-size="10").tablePeriodo
