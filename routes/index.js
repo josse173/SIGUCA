@@ -8,6 +8,8 @@
  var moment = require('moment');
  var passport = require('passport');
  var enviarCorreo = require('../config/enviarCorreo');
+ var boleta = require('../config/boleta');
+ var pdf = require('html-pdf');
 
  //**********************************************
  var admin_actions = require('../actions/admin');
@@ -1630,8 +1632,6 @@ module.exports = function(app, io) {
         });
      });
 
-
-
     app.post('/correoUpdate/:id',autentificado, crudCorreo.actualizarCorreo);
 
     app.post('/feriadoUpdate/:id',autentificado, crudFeriado.actualizarFeriado);
@@ -1710,10 +1710,19 @@ module.exports = function(app, io) {
             });
         }
         */
-
-
     });
 
+    app.post('/generarBoleta/:id', autentificado, function (req, res) {
+
+        var justificacion = req.body;
+        justificacion.id = req.params.id;
+        var html = boleta.generarBoleta('Prueba', 'Prueba');
+        pdf.create(html).toStream(function (err, stream) {
+            if (err) return res.send(err);
+            res.type('pdf');
+            stream.pipe(res);
+        });
+    });
 };
 
 tareas_actions.cierreAutomatico.start();

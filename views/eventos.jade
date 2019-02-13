@@ -84,7 +84,7 @@ block content
       if(justificaciones.length != 0)
         .col-xs-12
           h3 #{textos[10].titulo}
-          table.footable(data-page-navigation=".pagination" data-page-size="5")
+          table.tableJustificaciones.footable(data-page-navigation=".pagination" data-page-size="5")
               thead
                 tr
                   th(data-type="numeric" data-sort-initial="descending") #{textos[11].titulo}
@@ -93,6 +93,7 @@ block content
                   th(data-hide="phone,small" data-sort-ignore="true") #{textos[14].titulo}
                   th #{textos[15].titulo}
                   th(data-hide="phone,small" data-sort-ignore="true") #{textos[16].titulo}
+                  th(data-hide="phone,small" data-sort-ignore="true") Boleta
               tbody
                 each justificacion, i in justificaciones
                   tr
@@ -105,9 +106,12 @@ block content
                       if(justificacion.estado == 'Pendiente')
                         button.btn.btn-default(data-toggle="modal" data-target="#editJust" value=justificacion._id)
                           i.icon-pencil.icon-large.i-success
+                    td
+                      button.btn.btn-default.justificacionBoleta(value=justificacion._id)
+                        i.icon-download.icon-large.i-success
               tfoot
                 tr
-                  td(colspan='6')
+                  td(colspan='7')
                     .pagination.pagination-centered.hide-if-no-paging
 
 

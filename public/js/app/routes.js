@@ -93,10 +93,6 @@ $("#botonJustificacionMasa").click(function() {
 
 });
 
-
-
-
-
 $(document).ready(function()
    {
 
@@ -150,8 +146,6 @@ $(document).ready(function()
         format: 'd/m/Y',
         timepicker: false
     });
-
-
 
     $('.footable').footable();
 
@@ -560,7 +554,6 @@ $("button[data-target=#editHorarioFijo]").click( function() {
      doc.autoTable({html: '#solicitudesTable'});
      doc.save("table.pdf");
 
-     console.log("DESCARGA EL PDF");
      alertify.dialog('confirm')
  });
 
@@ -982,8 +975,6 @@ $('.tableVacaciones').footable().on('click', '.solicitudDelete', function(e) {
     }).show();
 });
 
-
-
  $('.tableFeriado').footable().on('click', '.feriadoDelete', function(e) {
     var footable = $('.tableFeriado').data('footable');
     var row = $(this).parents('tr:first');
@@ -1080,9 +1071,6 @@ $('.tableRed').footable().on('click', '.redDelete', function(e) {
     }).show();
 });
 
-
-
-
 $("button[data-target=#editFeriado]").click( function() {
     var id = $(this).val();
     $('.formUpdateFeriado').attr('action', '/feriadoUpdate/'+id);
@@ -1117,7 +1105,7 @@ $("button[data-target=#editContenido]").click( function() {
     });
 });
 
- $("button[data-target=#editConfiguracion]").click( function() {
+$("button[data-target=#editConfiguracion]").click( function() {
      var id = $(this).val();
      $('.formUpdateConfiguracion').attr('action', '/configuracionAlertasUpdate/'+id);
      $.get('/configuracionAlertas/editConfiguracion/'+id, function( data ) {
@@ -1126,7 +1114,6 @@ $("button[data-target=#editContenido]").click( function() {
          $('#valor').val(data.valor);
      });
  });
-
 
 $("button[data-target=#editCorreo]").click( function() {
     var id = $(this).val();
@@ -1145,8 +1132,6 @@ $("button[data-target=#editRed]").click( function() {
        $('#nombreRed').val(data.nombreRed);
     });
 });
-
-
 
 $('.tableHorarioEliminar').footable().on('click','.eliminarFijo',function(e) {
     var footable = $('.tableHorarioEliminar').data('footable');
@@ -1172,8 +1157,6 @@ $('.tableHorarioEliminar').footable().on('click','.eliminarFijo',function(e) {
 
 });
 
-
-
 $('.tableHorarioPersonalizado').footable().on('click','.eliminarPersonalizado',function(e) {
     var footable = $('.tableHorarioPersonalizado').data('footable');
     var row = $(this).parents('tr:first');
@@ -1198,10 +1181,7 @@ $('.tableHorarioPersonalizado').footable().on('click','.eliminarPersonalizado',f
 
 });
 
-
-
-
- $('.tableEmpleado').footable().on('click', '.empleadoDelete', function(e) {
+$('.tableEmpleado').footable().on('click', '.empleadoDelete', function(e) {
     var footable = $('.tableEmpleado').data('footable');
     var row = $(this).parents('tr:first');
 
@@ -1225,27 +1205,28 @@ $('.tableHorarioPersonalizado').footable().on('click','.eliminarPersonalizado',f
     }).show();
 });
 
-/*--------------------------------------------------------------------
-    Exportar a PDF
-    ----------------------------------------------------------------    -----*/
-/*    var doc = new jsPDF();
+$('.tableJustificaciones').footable().on('click', '.justificacionBoleta',
+ function(e) {
 
-    // We'll make our own renderer to skip this editor
-    var specialElementHandlers = {
-        '#editor': function(element, renderer){
-            return true;
-        }
-    };
+     e.preventDefault();
+     var id = $(this).val();
 
-    // All units are in the set measurement for the document
-    // This can be changed to "pt" (points), "mm" (Default), "cm", "in"
-    doc.fromHTML($('body').get(0), 15, 15, {
-        'width': 170,
-        'elementHandlers': specialElementHandlers
-    });*/
+     var req = new XMLHttpRequest();
+     req.open("POST", '/generarBoleta/'+id, true);
+     req.responseType = "blob";
 
+     req.onload = function (event) {
+         var blob = req.response;
+         console.log(blob.size);
 
-/*--------------------------------------------------------------------
-    Listener
-    ---------------------------------------------------------------------*/
-//
+         const url = window.URL.createObjectURL(new Blob([req.response]));
+         const link = document.createElement('a');
+         link.href = url;
+         link.setAttribute('download', 'file.pdf');
+         document.body.appendChild(link);
+         link.click();
+     };
+
+     req.send();
+
+ });
