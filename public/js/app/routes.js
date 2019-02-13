@@ -401,11 +401,6 @@ $("button[data-target=#editHorarioPersonalizado]").click( function() {
         }
 
 
-
-
-
-
-
     });
 });
 
@@ -601,14 +596,11 @@ $("#extraLink").click(function(){
      var val = $('#selectMotivo').val();
      var inciso = $('#selectInciso').val();
      var cantidadDias = $('#cantidadDias').val();
-     var fechaInicio = $('#diaInicio').val();
+     var fecha = $('#diaInicio').val();
+     var fechaFormateada = moment(fecha).format('MM/DD/YYYY').valueOf();
+     var nuevaFecha = moment(fechaFormateada);
+     var fechaAConfirmar = nuevaFecha.format();
      var usuario = $('#btn-marca').val();
-     var test =usuario+","+fechaInicio;
-
-     $.get('/solicitud/solicitudAyer/'+test, function( data ) {
-         var solicitudAyer = data;
-         console.log(solicitudAyer);
-     });
 
      if(val == 'seleccionar') {
          alertify.error('Motivo no valido');
@@ -631,6 +623,22 @@ $("#extraLink").click(function(){
                  $("#btn-permiso").submit();
              }
          }else if(inciso =='Inciso C'){
+             $.get('/solicitud/inciso', {id: usuario}, function( data ) {
+                 var dias = data.quantity;
+                 var cantidadDeDias = dias.length;
+                 if(cantidadDeDias >= 3){
+                     alertify.error('No se puede usar el Inciso C más de 3 veces');
+                     return false;
+                 }
+             });
+             if(fecha!= null && fecha!= ''){
+                 $.get('/solicitud/solicitudAyer/'+usuario+'/'+fechaAConfirmar, function( data ) {
+                     if(data>0){
+                         alertify.error('No puede ingresar Inciso C debido a que hizo una solicitud del mismo tipo el dia de ayer');
+                         return false;
+                     }
+                 });
+             }
              if(cantidadDias != 1){
                  alertify.error('No puede ingresar Inciso C cantidad maxima a solicitar es 1 dia');
                  return false;

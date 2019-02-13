@@ -54,5 +54,11 @@ module.exports = {
 			console.log("LOG DE SOLI2   ss    " + qty)
 			res.json(qty);
 		});
-	}
+	},
+    solicitudAnterior:function (req, res) {
+        crudSolicitud.getSolicitudAnterior(function (qty) {
+            console.log("LOG    " + qty)
+            res.json(qty);
+        });
+    }
 }

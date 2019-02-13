@@ -320,11 +320,10 @@ $('#selectDerechoDisfrutar').change(function (){
         var usuario = $('#btn-marca').val();
         $.get('/solicitud/inciso', {id: usuario}, function( data ) {
             var cantidad = data.quantity.length;
+            var diasDisfrutados = data.quantity;
             var dias = new Array();
-            data.quantity.forEach(function (objeto, index) {
-                if(objeto.estado == 'Aceptada'){
+            diasDisfrutados.forEach(function (objeto, index) {
                     dias[index] = objeto.diaInicio;
-                }
             });
             var diasT = dias.toString();
             $("#cantidadDiasDisfrutados" ).val(cantidad);

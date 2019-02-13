@@ -357,12 +357,21 @@ exports.loadSoli = function(id, cb){
 };
 
 exports.loadExtra = function(id, cb){
-	HoraExtra.findById(id, function (err, extra) {
-		if(extra.estado == 'Pendiente'){
-			if (err) return cb(err);
-			cb(extra);
-		} else cb({motivo:'seleccionar',detalle:''});
-	});
+    HoraExtra.findById(id, function (err, extra) {
+        if(extra.estado == 'Pendiente'){
+            if (err) return cb(err);
+            cb(extra);
+        } else cb({motivo:'seleccionar',detalle:''});
+    });
+};
+
+exports.getSolicitudAnterior = function(id, cb){
+    HoraExtra.findById(id, function (err, extra) {
+        if(extra.estado == 'Pendiente'){
+            if (err) return cb(err);
+            cb(extra);
+        } else cb({motivo:'seleccionar',detalle:''});
+    });
 };
 
 exports.deleteSoli = function(id, cb, idUser){
