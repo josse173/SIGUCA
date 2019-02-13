@@ -10,6 +10,8 @@ util 			= require('../util/util'),
 config          = require('../config.json'),
 emailSIGUCA 	= 'siguca@greencore.co.cr',
 HoraExtra		= require('../models/HoraExtra');
+PeriodoUsuario  = require('../models/PeriodoUsuario');
+var enviarCorreo = require('../config/enviarCorreo');
 
 exports.get = function(query, cb){
 	Solicitudes.find(query, function(error, solicitudes){
@@ -113,7 +115,6 @@ exports.updateExtra = function(extra, cb, idUser){
 //--------------------------------------------------------------------
 exports.addPermiso = function(permiso, cb, idUser){
 	var epochTime = moment().unix();
-
 	var newSolicitud = Solicitudes({
 		fechaCreada: epochTime,
 		tipoSolicitudes: "Permisos",
@@ -183,11 +184,11 @@ exports.addPermiso = function(permiso, cb, idUser){
 			fechaCreada: newSolicitud.fechaCreada
 		}).populate('usuario').exec(function (err, solicitud) {
 			if (solicitud.length == 0) {
-				console.log(newSolicitud);
+				// console.log(newSolicitud);
 				newSolicitud.save(function (err, soli) {
 					Usuario.find({
 						'tipo': 'Supervisor',
-						'departamentos.departamento': permiso.usuario.departamentos[0].departamento
+						'departamentos.departamento': permiso.departamento
 					}, {'email': 1}).exec(function (err, supervisor) {
 						if (err) console.log(err);
 						Correo.find({}, function (errorCritico, listaCorreos) {
@@ -215,7 +216,7 @@ exports.addPermiso = function(permiso, cb, idUser){
 		});//verificar
 	}
 	return cb();
-}
+};
 
 articuloFunction = function(permiso, cb){
 	var epochTime = moment().unix();
@@ -430,19 +431,34 @@ exports.deleteSoli = function(id, cb, idUser){
 //Gestionar Eventos
 //---------------------------------------------------------------------*/
 exports.gestionarSoli = function(solicitud, cb, idUser){
+
 	Usuario.findById(idUser, function (errUser, supervisor) {
-		Solicitudes.findByIdAndUpdate(solicitud.id,
-		{
-			estado: solicitud.estado,
-			comentarioSupervisor:solicitud.comentarioSupervisor
-		}).populate('usuario').exec(function (err, soli) {
+		Solicitudes.findByIdAndUpdate(solicitud.id,	{estado: solicitud.estado, comentarioSupervisor:solicitud.comentarioSupervisor}).populate('usuario').exec(function (err, soli) {
 
 			/*
 			 * Actualiza las vacaciones, solo cuando son aceptadas
 			 */
 			if(solicitud.estado=='Aceptada' && solicitud.motivo == 'Vacaciones'){
-				Usuario.update({_id:soli.usuario}, {$inc:{vacaciones:(0-soli.cantidadDias)}},function(err){});
+				PeriodoUsuario.find({usuario: soli.usuario._id}).sort({numeroPeriodo:1}).exec(function(error, periodos) {
+					if (error) return res.json(err);
 
+					var cantidadDias = soli.cantidadDias;
+
+					periodos.forEach(function (periodo) {
+						var diasDisponibles = periodo.diasAsignados - periodo.diasDisfrutados;
+						if(cantidadDias > 0 && cantidadDias <= diasDisponibles){
+							periodo.diasDisfrutados = periodo.diasDisfrutados + cantidadDias;
+							periodo.save(function (error, respuesta) {});
+							cantidadDias = 0;
+						} else {
+							if(cantidadDias > 0){
+								cantidadDias = cantidadDias - diasDisponibles;
+								periodo.diasDisfrutados = periodo.diasDisfrutados + diasDisponibles;
+								periodo.save(function (error, respuesta) {});
+							}
+						}
+					});
+				});
 			}
 
 			/*
@@ -490,4 +506,46 @@ exports.gestionarSoli = function(solicitud, cb, idUser){
 
 		});
 });
-}
+};
+
+exports.gestionarHorasExtras = function(horaExtra, cb, idUser){
+
+	Usuario.findById(idUser, function (errUser, supervisor) {
+		HoraExtra.findByIdAndUpdate(horaExtra.id,	{estado: horaExtra.estado, comentarioSupervisor:horaExtra.comentarioSupervisor}).populate('usuario').exec(function (err, soli) {
+
+			/*
+			 * Envía el correo electrónico
+			 */
+
+			if (err) return cb(err, '');
+			Correo.find({},function(errorCritico,listaCorreos){
+				if(!errorCritico &&listaCorreos.length>0){
+
+					var superV = '';
+
+					if(!errUser && supervisor) {
+						superV += supervisor.nombre;
+						superV += ' ' + supervisor.apellido1;
+						superV += ' ' + supervisor.apellido2;
+					}
+
+					var text =
+					'Por este medio se le notifica que la siguiente solicitud ha sido respondida: '
+					+ '<br><br>Fecha de creación: ' + moment.unix(soli.fechaCreada).format("YYYY-MM-DD hh:mm:ss") + '<br>'
+						+ 'Motivo: ' + soli.motivo + '<br>'
+						+ 'Ubicación: '+ soli.ubicacion+ '<br><br>'
+					+ 'Le informamos que la justificación fue ' + horaExtra.estado
+					+ ' por el supervisor ' + superV
+					+ ', con el siguiente comentario: '+ horaExtra.comentarioSupervisor
+					+ '<br><br> Saludos cordiales.';
+
+					enviarCorreo.enviar(listaCorreos[0].nombreCorreo, soli.usuario.email, 'Respuesta a solicitud en SIGUCA', 'Estimado(a) ' + soli.usuario.nombre + ' '+ soli.usuario.apellido1 + ',', text);
+
+				}
+			});
+
+			return cb(err, 'Se elimino');
+
+		});
+	});
+};

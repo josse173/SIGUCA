@@ -11,13 +11,13 @@ block content
         table
          form(role='form', method="POST", action="/filtrarEventosEmpl")
           td
-            label.labelFiltro(for='fechaDesde') #{textos[2].titulo}
+            label.labelFiltro(for='date_range_start') #{textos[2].titulo}
               div.input-group
                 input#date_range_start.form-control(type='text', name='fechaDesde')
                 span.input-group-addon
                   i.icon-calendar
           td
-            label.labelFiltro(for='fechaHasta') #{textos[3].titulo}
+            label.labelFiltro(for='date_range_end') #{textos[3].titulo}
               div.input-group
                 input#date_range_end.form-control(type='text', name='fechaHasta')
                 span.input-group-addon
@@ -77,7 +77,7 @@ block content
                           i.icon-trash.icon-large.i-danger
               tfoot
                 tr
-                  td(colspan='3')
+                  td(colspan='4')
                     .pagination.pagination-centered.hide-if-no-paging
 
 
@@ -151,7 +151,6 @@ block content
       if(permisos.length != 0)
         br
         h3 #{textos[27].titulo}
-
         table#solicitudesTable.footable(data-page-navigation=".pagination")
             thead
               tr
@@ -164,6 +163,7 @@ block content
                 th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[34].titulo}
                 th #{textos[35].titulo}
                 th(data-hide="phone,small" data-sort-ignore="true") #{textos[36].titulo}
+                th(data-sort-ignore="true") Editar
             tbody
               each permiso, i in permisos
                 tr
@@ -183,7 +183,36 @@ block content
               tr
                 td(colspan='9')
                   .pagination.pagination-centered.hide-if-no-paging
-              button.btnDescargaPdf.btn.btn-default(type='button', data-dismiss='modal')  Descargar pdf
+              //button.btnDescargaPdf.btn.btn-default(type='button', data-dismiss='modal')  Descargar pdf
+
+      if(periodos.length != 0)
+        h3 Lista de Periodos
+        //button.btn.btn-success#btnAgregarPeriodo(value=usuario ,type='button',data-toggle="modal" data-target="#crearPeriodo") Crear Nuevo Periodo
+        table.footable(data-page-navigation=".pagination" data-page-size="10").tablePeriodo
+          thead
+            tr
+              th Fecha Creación
+              th Periodo
+              th Fecha Inicio
+              th Fecha Final
+              th Tipo Periodo
+              th Días Asignados
+              th Días Disfrutados
+
+          tbody
+            each periodo in periodos
+              tr
+                td #{moment.unix(periodo.fechaCreada).format("YYYY-MM-DD hh:mm:ss")}
+                td #{periodo.numeroPeriodo}
+                td #{moment.unix(periodo.fechaInicio).format("YYYY-MM-DD hh:mm:ss")}
+                td #{moment.unix(periodo.fechaFinal).format("YYYY-MM-DD hh:mm:ss")}
+                td #{periodo.periodo.nombre}
+                td #{periodo.diasAsignados}
+                td #{periodo.diasDisfrutados}
+          tfoot
+            tr
+              td(colspan='12')
+                .pagination.pagination-centered.hide-if-no-paging
 
   #editJust.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
       .modal-dialog

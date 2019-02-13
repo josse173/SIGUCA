@@ -107,7 +107,7 @@ block content
         if(extras && extras.length != 0)
           h3 #{textos[25].titulo}
           if(extras && extras.length != 0)
-            table.tableSolicitudes.footable(data-page-navigation=".pagination" data-page-size="5" )
+            table.tableExtras.footable(data-page-navigation=".pagination" data-page-size="5" )
                 thead
                   tr
                     th(data-type="numeric" data-sort-initial="descending") #{textos[26].titulo}
@@ -127,10 +127,10 @@ block content
                       tr
                         td(data-value=extra.fechaCreada) #{extra.fecha.str}
                         td #{extra.usuario.nombre} #{extra.usuario.apellido1}
-                        td #{extra.diaInicio}
-                        td #{extra.diaFinal}
+                        td #{moment.unix(extra.fechaInicial).format("YYYY-MM-DD hh:mm:ss")}
+                        td #{moment.unix(extra.fechaFinal).format("YYYY-MM-DD hh:mm:ss")}
                         td #{extra.cantHoras}
-                        td #{extra.cliente}
+                        td #{extra.ubicacion}
                         td #{extra.motivo}
                         td
                           textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")

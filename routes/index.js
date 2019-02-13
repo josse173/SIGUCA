@@ -7,6 +7,7 @@
  var nodemailer = require('nodemailer');
  var moment = require('moment');
  var passport = require('passport');
+ var enviarCorreo = require('../config/enviarCorreo');
 
  //**********************************************
  var admin_actions = require('../actions/admin');
@@ -393,6 +394,22 @@ module.exports = function(app, io) {
         }
     });
 
+    app.post('/getionarHorasExtrasAjax/:id', autentificado, function (req, res) {
+        var horaExtra = req.body;
+        horaExtra.id = req.params.id;
+
+        var estadoreal = 'Pendiente';
+
+        if(horaExtra.estado != estadoreal) {
+            crudSolicitud.gestionarHorasExtras(horaExtra, function (err, msj) {
+                if (err) res.json(err);
+                else res.send(msj);
+            },req.user.id);
+        } else {
+            res.send('');
+        }
+    });
+
     /*
     *  Actualiza el estado y el comentario del supervisor a una justificacion en específico
     */
@@ -439,17 +456,7 @@ module.exports = function(app, io) {
 
                 Correo.find({},function(errorCritico, listaCorreos){
                     if (!errorCritico && listaCorreos.length > 0 ) {
-                        var transporter = nodemailer.createTransport('smtps://'+listaCorreos[0].nombreCorreo+':'+listaCorreos[0].password+'@'+listaCorreos[0].dominioCorreo);
-                        transporter.sendMail({
-                            from: listaCorreos[0].nombreCorreo,
-                            to: usuario.email,
-                            subject: 'Alerta de Validación de Presencia',
-                            text: "Estimado(a) funcionario:<br> Usted ha recibido una alerta de validación de presencia en SIGUCA: <br><br>"+
-                                "Se le recuerda que debe atender esta solicitud en los proximos " + req.body.tiempoRespuesta + " minuto(s). Haga clic en el siguiente enlace para ir al sitio:<br><br>" +
-                                "URL<br><br>" +
-                                "Atentamente,<br><br>" +
-                                "Recursos Humanos"
-                        });
+                        enviarCorreo.enviar(listaCorreos[0].nombreCorreo, usuario.email, 'Alerta de Validación de Presencia','Estimado(a) funcionario:', 'Usted ha recibido una alerta de validación de presencia en SIGUCA:<br><br>Se le recuerda que debe atender esta solicitud en los proximos ' + req.body.tiempoRespuesta + ' minuto(s).');
                     } else {
                         console.log("error al enviar correo de solicitud de confirmación de conexión");
                     }
@@ -505,17 +512,7 @@ module.exports = function(app, io) {
 
                                         Correo.find({},function(error,listaCorreos){
                                             if (!error && listaCorreos.length > 0 ) {
-                                                var transporter = nodemailer.createTransport('smtps://'+listaCorreos[0].nombreCorreo+':'+listaCorreos[0].password+'@'+listaCorreos[0].dominioCorreo);
-                                                transporter.sendMail({
-                                                    from: listaCorreos[0].nombreCorreo,
-                                                    to: supervisor.email,
-                                                    subject: 'Verificación de presencia fallida',
-                                                    text: "Estimado Funcionario: <br> Usted ha recibido una notificación de no comprobación de presencia en modalidad de teletrabajo de: <br><br>" +
-                                                           usuario.nombre + " " + usuario.apellido1 + " " + usuario.apellido2 + "<br><br>" +
-                                                           "Haga clic en el siguiente enlace para ir al sitio:<br>" +
-                                                           "<URL-SIGUCA>" + "<br><br>" +
-                                                            "Atentamente,<br>" + "Recursos Humanos"
-                                                });
+                                                enviarCorreo.enviar(listaCorreos[0].nombreCorreo, supervisor.email, 'Verificación de presencia fallida','Estimado Funcionario:', 'Usted ha recibido una notificación de no comprobación de presencia en modalidad de teletrabajo del empleado: <br><br>' +  usuario.nombre + ' ' + usuario.apellido1 + ' ' + usuario.apellido2 + '.');
                                             } else {
                                                 console.log("error al enviar correo de solicitud de confirmación de conexión");
                                             }
@@ -791,12 +788,6 @@ module.exports = function(app, io) {
             });
         });
 
-
-
-
-
-
-
     app.post('/verificarEmpleadoActualizar',autentificado,function(req,res){
 
         Usuario.find({$or:[{'username' :  req.body.empleado.username},{'cedula':req.body.empleado.cedula},{'codTarjeta':req.body.empleado.codTarjeta}]}, function (err, user) {
@@ -822,12 +813,10 @@ module.exports = function(app, io) {
                     else{
                         res.json("El usuario ya existe");
                     }
-
                 }
             }
         });
     });
-
 
     app.post('/verificarEmpleado',autentificado,function(req,res){
         Usuario.findOne({ $or:[{'username' :  req.body.empleado.username},{'cedula':req.body.empleado.cedula},{'codTarjeta':req.body.empleado.codTarjeta}]}, function (err, user) {
@@ -946,8 +935,7 @@ module.exports = function(app, io) {
     /*
     */
     app.get('/periodo/:id', autentificado, function (req, res) {
-        console.log("get del periodo pasando un id    " + req.params.id);
-        PeriodoUsuario.find({usuario: req.params.id}).sort({fechaCreacion: 1}).exec(function(err, periodos){
+        PeriodoUsuario.find({usuario: req.params.id}).sort({numeroPeriodo: 1}).exec(function(err, periodos){
             if(err){
                 return res.json(err);
             }else{
@@ -1173,9 +1161,6 @@ module.exports = function(app, io) {
         });
     });
 
-
-
-
     //******************************************************************************
     /*
     *   Detalla los eventos del calendario por día.
@@ -1294,11 +1279,7 @@ module.exports = function(app, io) {
                 res.redirect('/escritorioAdmin');
             }
        });
-
-
     });
-
-
 
     /*
     *  Lista todos los horarios creados
@@ -1375,8 +1356,6 @@ module.exports = function(app, io) {
 
     });
 
-
-
     //Actualiza los datos de un horario fijo en especifico
      app.post('/horarioFijoN/:id',autentificado, function (req, res) {
         var data = { horario: req.body, id: req.params.id };
@@ -1410,8 +1389,6 @@ module.exports = function(app, io) {
             else res.send(msj);
         });
     });
-
-
 
     //horarioMasa
     app.get('/horarioMasa',autentificado,function(req,res){
