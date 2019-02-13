@@ -1712,16 +1712,42 @@ module.exports = function(app, io) {
         */
     });
 
-    app.post('/generarBoleta/:id', autentificado, function (req, res) {
+    app.post('/generarBoleta/:boleta', autentificado, function (req, res) {
 
-        var justificacion = req.body;
-        justificacion.id = req.params.id;
-        var html = boleta.generarBoleta('Prueba', 'Prueba');
-        pdf.create(html).toStream(function (err, stream) {
-            if (err) return res.send(err);
-            res.type('pdf');
-            stream.pipe(res);
-        });
+        var parametros = JSON.parse(req.params.boleta);
+
+        if(parametros.tipo === 'justificacion'){
+
+            Justificaciones.findById(parametros.id).populate('usuario').exec(function (err, justificacion) {
+                if(err) return err;
+                console.log(justificacion);
+                console.log(justificacion.usuario.departamentos[0].departamento);
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(justificacion.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                    if(error) return error;
+                    var mensaje = 'Nombre: ' + justificacion.usuario.nombre + ' ' + justificacion.usuario.apellido1 + ' ' + justificacion.usuario.apellido2 + '<br>';
+                    mensaje += 'Fecha: ' + moment.unix(justificacion.fechaCreada).format("YYYY-MM-DD hh:mm:ss") + '<br>';
+                    mensaje += 'Información: ' + justificacion.informacion + '<br>';
+                    mensaje += 'Detalle: ' + justificacion.detalle + '<br>';
+                    mensaje += 'Motivo: ' + justificacion.motivo + '<br>';
+                    mensaje += 'Estado: ' + justificacion.estado + '<br>';
+                    mensaje += 'Supervisor: ' + supervisor.nombre + ' ' + supervisor.apellido1 + ' ' + supervisor.apellido2 + '<br>';
+                    mensaje += 'Comentario Supervisor: ' + justificacion.comentarioSupervisor + '<br>';
+
+                    var html = boleta.generarBoleta('Boleta de justificación', mensaje);
+
+                    pdf.create(html).toStream(function (err, stream) {
+                        if (err) return res.send(err);
+                        res.type('pdf');
+                        stream.pipe(res);
+                    });
+                });
+            });
+        }
+
+
+
+
+
     });
 };
 

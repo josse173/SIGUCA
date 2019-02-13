@@ -1209,10 +1209,11 @@ $('.tableJustificaciones').footable().on('click', '.justificacionBoleta',
  function(e) {
 
      e.preventDefault();
-     var id = $(this).val();
+
+     var parametros = $(this).val().split(';');
 
      var req = new XMLHttpRequest();
-     req.open("POST", '/generarBoleta/'+id, true);
+     req.open("POST", '/generarBoleta/{"id":"'+parametros[0]+'", "tipo":"'+parametros[1]+'"}', true);
      req.responseType = "blob";
 
      req.onload = function (event) {
@@ -1222,11 +1223,10 @@ $('.tableJustificaciones').footable().on('click', '.justificacionBoleta',
          const url = window.URL.createObjectURL(new Blob([req.response]));
          const link = document.createElement('a');
          link.href = url;
-         link.setAttribute('download', 'file.pdf');
+         link.setAttribute('download', 'Boleta-' + parametros[1] + '-' + parametros[0] + '.pdf');
          document.body.appendChild(link);
          link.click();
      };
 
      req.send();
-
  });
