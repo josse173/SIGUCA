@@ -115,7 +115,7 @@ exports.updateExtra = function(extra, cb, idUser){
 //--------------------------------------------------------------------
 exports.addPermiso = function(permiso, cb, idUser){
 	var epochTime = moment().unix();
-	var newSolicitud = Solicitudes({
+    var newSolicitud = Solicitudes({
 		fechaCreada: epochTime,
 		tipoSolicitudes: "Permisos",
 		diaInicio: permiso.diaInicio,
@@ -124,7 +124,8 @@ exports.addPermiso = function(permiso, cb, idUser){
 		detalle: permiso.detalle,
 		usuario: permiso.usuario.id,
 		comentarioSupervisor: "",
-		inciso: permiso.inciso
+		inciso: permiso.inciso,
+        motivoArticulo51: permiso.motivoArticulo51
 	});
 	if (permiso.motivo == 'Articulo') {
 		var validInsert = 0;
@@ -154,9 +155,7 @@ exports.addPermiso = function(permiso, cb, idUser){
 				ayer.setDate(ayer.getDate() - 1);
 				console.log("ayer" + ayer);
 				var anno = fecha.getFullYear();
-				console.log("ANNO ACTUAL" + anno);
-				var fechaInicio = anno +'/01/01';
-				var fechaLimite = anno +'/31/12';
+
 
 				Solicitudes.find({usuario: permiso.usuario.id, "inciso": "Inciso C"}).exec(function (err, quantity) {
 					var size = quantity.length;
@@ -220,9 +219,6 @@ exports.addPermiso = function(permiso, cb, idUser){
 
 articuloFunction = function(permiso, cb){
 	var epochTime = moment().unix();
-
-	console.log("ESTA INSERTANDO DESDE EL OTRO METODO" );
-
 	var newSolicitud = Solicitudes({
 		fechaCreada: epochTime,
 		tipoSolicitudes: "Permisos",
@@ -232,8 +228,10 @@ articuloFunction = function(permiso, cb){
 		detalle: permiso.detalle,
 		usuario: permiso.usuario.id,
 		comentarioSupervisor: "",
-		inciso: permiso.inciso
-	});
+		inciso: permiso.inciso,
+        motivoArticulo51: permiso.motivoArticulo51
+
+    });
 	if(permiso.motivo == 'otro')
 		newSolicitud.motivo = permiso.motivoOtro;
 	else

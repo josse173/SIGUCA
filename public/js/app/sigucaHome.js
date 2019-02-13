@@ -285,13 +285,13 @@ $('#selectMotivo').change(function (){
 });
 
 $('#selectDerechoDisfrutar').change(function (){
-    if($('#selectDerechoDisfrutar').val() != 'diligencias') $("#divInciso").attr('style','display:none') && $("#divcantidadDiasDisfrutados").attr('style','display:none') &&
+    if($('#selectDerechoDisfrutar').val() != 'Diligencias') $("#divInciso").attr('style','display:none') && $("#divcantidadDiasDisfrutados").attr('style','display:none') &&
     $("#divcantidadDiasDisponibles").attr('style','display:none') && $("#divcantidadDiasSolicitados").attr('style','display:none') &&
     $("#divsaldoDiasDisfrutar").attr('style','display:none') && $("#divanno").attr('style','display:none');
-    if($('#selectDerechoDisfrutar').val() == 'matrimonio') $("#selectInciso").val('Inciso A') && $("#divInciso").attr('style','display:block');
-    else if($('#selectDerechoDisfrutar').val() == 'fallecimiento') $("#divInciso").attr('style','display:block') && $("#selectInciso").val('Inciso A');
-    else if($('#selectDerechoDisfrutar').val() == 'nacimientoHijo') $("#divInciso").attr('style','display:block') && $("#selectInciso").val('Inciso B');
-    else if($('#selectDerechoDisfrutar').val() == 'diligencias') { $("#divInciso").attr('style','display:block') && $("#selectInciso").val('Inciso C') &&
+    if($('#selectDerechoDisfrutar').val() == 'Matrimonio') $("#selectInciso").val('Inciso A') && $("#divInciso").attr('style','display:block');
+    else if($('#selectDerechoDisfrutar').val() == 'Fallecimiento') $("#divInciso").attr('style','display:block') && $("#selectInciso").val('Inciso A');
+    else if($('#selectDerechoDisfrutar').val() == 'Nacimiento Hijo') $("#divInciso").attr('style','display:block') && $("#selectInciso").val('Inciso B');
+    else if($('#selectDerechoDisfrutar').val() == 'Diligencias') { $("#divInciso").attr('style','display:block') && $("#selectInciso").val('Inciso C') &&
     $("#divcantidadDiasDisfrutados").attr('style','display:block') && $("#divcantidadDiasDisponibles").attr('style','display:block') &&
     $("#divcantidadDiasSolicitados").attr('style','display:block') && $("#divsaldoDiasDisfrutar").attr('style','display:block') &&
     $("#divanno").attr('style','display:block');
