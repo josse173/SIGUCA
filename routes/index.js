@@ -8,6 +8,8 @@
  var moment = require('moment');
  var passport = require('passport');
  var enviarCorreo = require('../config/enviarCorreo');
+ var boleta = require('../config/boleta');
+ var pdf = require('html-pdf');
 
  //**********************************************
  var admin_actions = require('../actions/admin');
@@ -60,6 +62,7 @@ var Articulo51 = require('../models/Articulo51');
 var Configuracion = require('../models/Configuracion');
 var Alerta = require('../models/Alerta');
 var EventosTeletrabajo = require('../models/EventosTeletrabajo');
+var HoraExtra = require('../models/HoraExtra');
 
 //***************************************
 //var multer=require('multer');
@@ -1630,8 +1633,6 @@ module.exports = function(app, io) {
         });
      });
 
-
-
     app.post('/correoUpdate/:id',autentificado, crudCorreo.actualizarCorreo);
 
     app.post('/feriadoUpdate/:id',autentificado, crudFeriado.actualizarFeriado);
@@ -1710,10 +1711,232 @@ module.exports = function(app, io) {
             });
         }
         */
-
-
     });
 
+    app.post('/generarBoleta/:boleta', autentificado, function (req, res) {
+
+        var parametros = JSON.parse(req.params.boleta);
+        console.log(parametros);
+        if (parametros.tipo === 'justificacion'){
+
+            Justificaciones.findById(parametros.id).populate('usuario').exec(function (err, justificacion) {
+                if(err) return err;
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(justificacion.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                    if(error) return error;
+                    var mensaje = 'Nombre: ' + justificacion.usuario.nombre + ' ' + justificacion.usuario.apellido1 + ' ' + justificacion.usuario.apellido2 + '<br>';
+                    mensaje += 'Fecha: ' + moment.unix(justificacion.fechaCreada).format("YYYY-MM-DD hh:mm:ss") + '<br>';
+                    mensaje += 'Información: ' + justificacion.informacion + '<br>';
+                    mensaje += 'Detalle: ' + justificacion.detalle + '<br>';
+                    mensaje += 'Motivo: ' + justificacion.motivo + '<br>';
+                    mensaje += 'Estado: ' + justificacion.estado + '<br>';
+                    mensaje += 'Supervisor: ' + supervisor.nombre + ' ' + supervisor.apellido1 + ' ' + supervisor.apellido2 + '<br>';
+                    mensaje += 'Comentario del supervisor: ' + justificacion.comentarioSupervisor + '<br>';
+
+                    var html = boleta.generarBoleta('Boleta de justificación', mensaje);
+
+                    pdf.create(html).toStream(function (err, stream) {
+                        if (err) return res.send(err);
+                        res.type('pdf');
+                        stream.pipe(res);
+                    });
+                });
+            });
+        } else if (parametros.tipo === 'Vacaciones'){
+
+            Solicitudes.findById(parametros.id).populate('usuario').exec(function (err, solicitud) {
+                if(err) return err;
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                    if(error) return error;
+                    var mensaje = 'Nombre: ' + solicitud.usuario.nombre + ' ' + solicitud.usuario.apellido1 + ' ' + solicitud.usuario.apellido2 + '<br>';
+                    mensaje += 'Solicitud de: ' + solicitud.motivo + '<br>';
+                    mensaje += 'Detalle: ' + solicitud.detalle + '<br>';
+                    mensaje += 'Fecha de solicitud: ' + moment.unix(solicitud.fechaCreada).format("YYYY-MM-DD hh:mm:ss") + '<br>';
+                    mensaje += 'Inicio de vacaciones: ' + solicitud.diaInicio + '<br>';
+                    mensaje += 'Fin de vacaciones: ' + solicitud.diaFinal + '<br>';
+                    mensaje += 'Cantidad de días: ' + solicitud.cantidadDias + '<br>';
+                    mensaje += 'Estado: ' + solicitud.estado + '<br>';
+                    mensaje += 'Supervisor: ' + supervisor.nombre + ' ' + supervisor.apellido1 + ' ' + supervisor.apellido2 + '<br>';
+                    mensaje += 'Comentario del supervisor: ' + solicitud.comentarioSupervisor + '<br>';
+
+                    var html = boleta.generarBoleta('Boleta solicitud de vacaciones', mensaje);
+
+                    pdf.create(html).toStream(function (err, stream) {
+                        if (err) return res.send(err);
+                        res.type('pdf');
+                        stream.pipe(res);
+                    });
+                });
+
+            });
+        } else if (parametros.tipo === 'Permiso Médico'){
+
+            Solicitudes.findById(parametros.id).populate('usuario').exec(function (err, solicitud) {
+                if(err) return err;
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                    if(error) return error;
+                    var mensaje = 'Nombre: ' + solicitud.usuario.nombre + ' ' + solicitud.usuario.apellido1 + ' ' + solicitud.usuario.apellido2 + '<br>';
+                    mensaje += 'Solicitud de: ' + solicitud.motivo + '<br>';
+                    mensaje += 'Detalle: ' + solicitud.detalle + '<br>';
+                    mensaje += 'Fecha de solicitud: ' + moment.unix(solicitud.fechaCreada).format("YYYY-MM-DD hh:mm:ss") + '<br>';
+                    mensaje += 'Fecha inicio: ' + solicitud.diaInicio + '<br>';
+                    mensaje += 'Fin fin: ' + solicitud.diaFinal + '<br>';
+                    mensaje += 'Cantidad de días: ' + solicitud.cantidadDias + '<br>';
+                    mensaje += 'Estado: ' + solicitud.estado + '<br>';
+                    mensaje += 'Supervisor: ' + supervisor.nombre + ' ' + supervisor.apellido1 + ' ' + supervisor.apellido2 + '<br>';
+                    mensaje += 'Comentario del supervisor: ' + solicitud.comentarioSupervisor + '<br>';
+
+                    var html = boleta.generarBoleta('Boleta solicitud de permiso médico', mensaje);
+
+                    pdf.create(html).toStream(function (err, stream) {
+                        if (err) return res.send(err);
+                        res.type('pdf');
+                        stream.pipe(res);
+                    });
+                });
+
+            });
+        } else if (parametros.tipo === 'Familiar'){
+
+            Solicitudes.findById(parametros.id).populate('usuario').exec(function (err, solicitud) {
+                if(err) return err;
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                    if(error) return error;
+                    var mensaje = 'Nombre: ' + solicitud.usuario.nombre + ' ' + solicitud.usuario.apellido1 + ' ' + solicitud.usuario.apellido2 + '<br>';
+                    mensaje += 'Solicitud de permiso: ' + solicitud.motivo + '<br>';
+                    mensaje += 'Detalle: ' + solicitud.detalle + '<br>';
+                    mensaje += 'Fecha de solicitud: ' + moment.unix(solicitud.fechaCreada).format("YYYY-MM-DD hh:mm:ss") + '<br>';
+                    mensaje += 'Fecha inicio: ' + solicitud.diaInicio + '<br>';
+                    mensaje += 'Fin fin: ' + solicitud.diaFinal + '<br>';
+                    mensaje += 'Cantidad de días: ' + solicitud.cantidadDias + '<br>';
+                    mensaje += 'Estado: ' + solicitud.estado + '<br>';
+                    mensaje += 'Supervisor: ' + supervisor.nombre + ' ' + supervisor.apellido1 + ' ' + supervisor.apellido2 + '<br>';
+                    mensaje += 'Comentario del supervisor: ' + solicitud.comentarioSupervisor + '<br>';
+
+                    var html = boleta.generarBoleta('Boleta solicitud de permiso familiar', mensaje);
+
+                    pdf.create(html).toStream(function (err, stream) {
+                        if (err) return res.send(err);
+                        res.type('pdf');
+                        stream.pipe(res);
+                    });
+                });
+
+            });
+        } else if (parametros.tipo === 'Permiso Estudio'){
+
+            Solicitudes.findById(parametros.id).populate('usuario').exec(function (err, solicitud) {
+                if(err) return err;
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                    if(error) return error;
+                    var mensaje = 'Nombre: ' + solicitud.usuario.nombre + ' ' + solicitud.usuario.apellido1 + ' ' + solicitud.usuario.apellido2 + '<br>';
+                    mensaje += 'Solicitud de: ' + solicitud.motivo + '<br>';
+                    mensaje += 'Detalle: ' + solicitud.detalle + '<br>';
+                    mensaje += 'Fecha de solicitud: ' + moment.unix(solicitud.fechaCreada).format("YYYY-MM-DD hh:mm:ss") + '<br>';
+                    mensaje += 'Fecha inicio: ' + solicitud.diaInicio + '<br>';
+                    mensaje += 'Fin fin: ' + solicitud.diaFinal + '<br>';
+                    mensaje += 'Cantidad de días: ' + solicitud.cantidadDias + '<br>';
+                    mensaje += 'Estado: ' + solicitud.estado + '<br>';
+                    mensaje += 'Supervisor: ' + supervisor.nombre + ' ' + supervisor.apellido1 + ' ' + supervisor.apellido2 + '<br>';
+                    mensaje += 'Comentario del supervisor: ' + solicitud.comentarioSupervisor + '<br>';
+
+                    var html = boleta.generarBoleta('Boleta solicitud de permiso estudio', mensaje);
+
+                    pdf.create(html).toStream(function (err, stream) {
+                        if (err) return res.send(err);
+                        res.type('pdf');
+                        stream.pipe(res);
+                    });
+                });
+
+            });
+        } else if (parametros.tipo === 'articulo'){
+
+            Solicitudes.findById(parametros.id).populate('usuario').exec(function (err, solicitud) {
+                if(err) return err;
+
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                    if(error) return error;
+                    var mensaje = 'Nombre: ' + solicitud.usuario.nombre + ' ' + solicitud.usuario.apellido1 + ' ' + solicitud.usuario.apellido2 + '<br>';
+                    mensaje += 'Solicitud de: ' + solicitud.motivo + '<br>';
+                    mensaje += 'Motivo: ' + solicitud.motivoArticulo51 + '<br>';
+                    mensaje += 'Detalle: ' + solicitud.detalle + '<br>';
+                    mensaje += 'Fecha de solicitud: ' + moment.unix(solicitud.fechaCreada).format("YYYY-MM-DD hh:mm:ss") + '<br>';
+                    mensaje += 'Fecha inicio: ' + solicitud.diaInicio + '<br>';
+                    mensaje += 'Fin fin: ' + solicitud.diaFinal + '<br>';
+                    mensaje += 'Cantidad de días: ' + solicitud.cantidadDias + '<br>';
+                    mensaje += 'Estado: ' + solicitud.estado + '<br>';
+                    mensaje += 'Supervisor: ' + supervisor.nombre + ' ' + supervisor.apellido1 + ' ' + supervisor.apellido2 + '<br>';
+                    mensaje += 'Comentario del supervisor: ' + solicitud.comentarioSupervisor + '<br>';
+
+                    var html = boleta.generarBoleta('Boleta solicitud de permiso articulo 51', mensaje);
+
+                    pdf.create(html).toStream(function (err, stream) {
+                        if (err) return res.send(err);
+                        res.type('pdf');
+                        stream.pipe(res);
+                    });
+                });
+
+            });
+        } else if (parametros.tipo === 'otro') {
+
+            Solicitudes.findById(parametros.id).populate('usuario').exec(function (err, solicitud) {
+                if(err) return err;
+
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                    if(error) return error;
+                    var mensaje = 'Nombre: ' + solicitud.usuario.nombre + ' ' + solicitud.usuario.apellido1 + ' ' + solicitud.usuario.apellido2 + '<br>';
+                    mensaje += 'Solicitud de permiso: ' + solicitud.motivo + '<br>';
+                    mensaje += 'Detalle: ' + solicitud.detalle + '<br>';
+                    mensaje += 'Fecha de solicitud: ' + moment.unix(solicitud.fechaCreada).format("YYYY-MM-DD hh:mm:ss") + '<br>';
+                    mensaje += 'Fecha inicio: ' + solicitud.diaInicio + '<br>';
+                    mensaje += 'Fin fin: ' + solicitud.diaFinal + '<br>';
+                    mensaje += 'Cantidad de días: ' + solicitud.cantidadDias + '<br>';
+                    mensaje += 'Estado: ' + solicitud.estado + '<br>';
+                    mensaje += 'Supervisor: ' + supervisor.nombre + ' ' + supervisor.apellido1 + ' ' + supervisor.apellido2 + '<br>';
+                    mensaje += 'Comentario del supervisor: ' + solicitud.comentarioSupervisor + '<br>';
+
+                    var html = boleta.generarBoleta('Boleta solicitud de permiso', mensaje);
+
+                    pdf.create(html).toStream(function (err, stream) {
+                        if (err) return res.send(err);
+                        res.type('pdf');
+                        stream.pipe(res);
+                    });
+                });
+
+            });
+        } else if(parametros.tipo === 'horaExtra'){
+
+            HoraExtra.findById(parametros.id).populate('usuario').exec(function (err, horasExtra) {
+                if(err) return err;
+                console.log(horasExtra);
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(horasExtra.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                    if(error) return error;
+                    var mensaje = 'Nombre: ' + horasExtra.usuario.nombre + ' ' + horasExtra.usuario.apellido1 + ' ' + horasExtra.usuario.apellido2 + '<br>';
+                    mensaje += 'Motivo: ' + horasExtra.motivo + '<br>';
+                    mensaje += 'Ubicación: ' + horasExtra.ubicacion + '<br>';
+                    mensaje += 'Fecha de Solicitud: ' + moment.unix(horasExtra.fechaCreada).format("YYYY-MM-DD hh:mm:ss") + '<br>';
+                    mensaje += 'Fecha de inicio: ' + moment.unix(horasExtra.fechaInicial).format("YYYY-MM-DD hh:mm:ss") + '<br>';
+                    mensaje += 'Fecha de Fin: ' + moment.unix(horasExtra.fechaFinal).format("YYYY-MM-DD hh:mm:ss") + '<br>';
+                    mensaje += 'Tiempo solicitado: ' + horasExtra.tiempoSolicitadoTexto + '<br>';
+                    mensaje += 'Estado: ' + horasExtra.estado + '<br>';
+                    mensaje += 'Supervisor: ' + supervisor.nombre + ' ' + supervisor.apellido1 + ' ' + supervisor.apellido2 + '<br>';
+                    mensaje += 'Comentario del supervisor: ' + horasExtra.comentarioSupervisor + '<br>';
+
+                    var html = boleta.generarBoleta('Boleta solicitud de horas extra', mensaje);
+
+                    pdf.create(html).toStream(function (err, stream) {
+                        if (err) return res.send(err);
+                        res.type('pdf');
+                        stream.pipe(res);
+                    });
+                });
+
+            });
+        }
+
+    });
 };
 
 tareas_actions.cierreAutomatico.start();

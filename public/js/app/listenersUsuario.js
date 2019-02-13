@@ -215,7 +215,6 @@ $.each([".btnEntrada",".btnSalida",
     ".btnSalidaReceso",".btnEntradaReceso"],
     function(i, id){
 
-
         var cerrado = false;
         $(id).click(function() {
             $.ajax({
@@ -279,7 +278,6 @@ $.each([".btnEntrada",".btnSalida",
                     $("#mensajeMarca").modal("show");
                 }
             });
-            //
         });
 });
 
@@ -300,9 +298,6 @@ $.each([".btnPresente"],
             });
         });
     });
-
-
-
 
 $("#solicitud-extra-form").submit(function(e){
     e.preventDefault();
@@ -347,8 +342,6 @@ $("#solicitud-extra-form").submit(function(e){
         }
     });
 });
-
-
 
 $("#diaFinal,#diaInicio").change(function(e){
 
