@@ -200,3 +200,13 @@ Contenido.findOne({ seccion: 'todosEventos', llave: 'Tabla solicitud de horas ex
         });
     }
 });
+
+Contenido.findOne({ seccion: 'escritorioEmpl', llave: 'Boton ir'}, function (err, contenido) {
+    if (contenido) {
+        contenido.titulo = 'Consultar';
+
+        Contenido.findByIdAndUpdate(contenido._id, contenido, function(err, alerta){
+            if (err) console.log(err);
+        });
+    }
+});
