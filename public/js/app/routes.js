@@ -93,10 +93,6 @@ $("#botonJustificacionMasa").click(function() {
 
 });
 
-
-
-
-
 $(document).ready(function()
    {
 
@@ -150,8 +146,6 @@ $(document).ready(function()
         format: 'd/m/Y',
         timepicker: false
     });
-
-
 
     $('.footable').footable();
 
@@ -401,11 +395,6 @@ $("button[data-target=#editHorarioPersonalizado]").click( function() {
         }
 
 
-
-
-
-
-
     });
 });
 
@@ -557,10 +546,9 @@ $("button[data-target=#editHorarioFijo]").click( function() {
  $('.btnDescargaPdf').click(function(){
 
      var doc = new jsPDF();
-     doc.autoTable({html: '#solicitudesTable'});
+     doc.autoTable({html: 'solicitudesTable'});
      doc.save("table.pdf");
 
-     console.log("DESCARGA EL PDF");
      alertify.dialog('confirm')
  });
 
@@ -601,30 +589,51 @@ $("#extraLink").click(function(){
      var val = $('#selectMotivo').val();
      var inciso = $('#selectInciso').val();
      var cantidadDias = $('#cantidadDias').val();
+     var fecha = $('#diaInicio').val();
+     var fechaFormateada = moment(fecha).format('MM/DD/YYYY').valueOf();
+     var nuevaFecha = moment(fechaFormateada);
+     var fechaAConfirmar = nuevaFecha.format();
+     var usuario = $('#btn-marca').val();
 
      if(val == 'seleccionar') {
          alertify.error('Motivo no valido');
          return false;
-     }else if(val == 'articulo') {
-         if(inciso == 'incisoA'){
+     }else if(val == 'Articulo') {
+         if(inciso == 'Inciso A'){
              if(cantidadDias > 5){
-                 alertify.error('No puede ingresar un incisoA debido que la cantidad maxima a solicitar son 5 dias');
+                 alertify.error('No puede ingresar un Inciso A debido que la cantidad maxima a solicitar son 5 dias');
                  return false;
              }else{
                  $('.formSoli').attr('action', '/solicitud_permisos/');
                  $("#btn-permiso").submit();
              }
-         }else if(inciso =='incisoB'){
+         }else if(inciso =='Inciso B'){
              if(cantidadDias != 1){
-                 alertify.error('No puede ingresar incisoB cantidad maxima a solicitar es 1 dia');
+                 alertify.error('No puede ingresar Inciso B cantidad maxima a solicitar es 1 dia');
                  return false;
              }else{
                  $('.formSoli').attr('action', '/solicitud_permisos/');
                  $("#btn-permiso").submit();
              }
-         }else if(inciso =='incisoC'){
+         }else if(inciso =='Inciso C'){
+             $.get('/solicitud/inciso', {id: usuario}, function( data ) {
+                 var dias = data.quantity;
+                 var cantidadDeDias = dias.length;
+                 if(cantidadDeDias >= 3){
+                     alertify.error('No se puede usar el Inciso C más de 3 veces');
+                     return false;
+                 }
+             });
+             if(fecha!= null && fecha!= ''){
+                 $.get('/solicitud/solicitudAyer/'+usuario+'/'+fechaAConfirmar, function( data ) {
+                     if(data>0){
+                         alertify.error('No puede ingresar Inciso C debido a que hizo una solicitud del mismo tipo el dia de ayer');
+                         return false;
+                     }
+                 });
+             }
              if(cantidadDias != 1){
-                 alertify.error('No puede ingresar incisoC cantidad maxima a solicitar es 1 dia');
+                 alertify.error('No puede ingresar Inciso C cantidad maxima a solicitar es 1 dia');
                  return false;
              }else{
                  $('.formSoli').attr('action', '/solicitud_permisos/');
@@ -982,8 +991,6 @@ $('.tableVacaciones').footable().on('click', '.solicitudDelete', function(e) {
     }).show();
 });
 
-
-
  $('.tableFeriado').footable().on('click', '.feriadoDelete', function(e) {
     var footable = $('.tableFeriado').data('footable');
     var row = $(this).parents('tr:first');
@@ -1080,9 +1087,6 @@ $('.tableRed').footable().on('click', '.redDelete', function(e) {
     }).show();
 });
 
-
-
-
 $("button[data-target=#editFeriado]").click( function() {
     var id = $(this).val();
     $('.formUpdateFeriado').attr('action', '/feriadoUpdate/'+id);
@@ -1117,7 +1121,7 @@ $("button[data-target=#editContenido]").click( function() {
     });
 });
 
- $("button[data-target=#editConfiguracion]").click( function() {
+$("button[data-target=#editConfiguracion]").click( function() {
      var id = $(this).val();
      $('.formUpdateConfiguracion').attr('action', '/configuracionAlertasUpdate/'+id);
      $.get('/configuracionAlertas/editConfiguracion/'+id, function( data ) {
@@ -1126,7 +1130,6 @@ $("button[data-target=#editContenido]").click( function() {
          $('#valor').val(data.valor);
      });
  });
-
 
 $("button[data-target=#editCorreo]").click( function() {
     var id = $(this).val();
@@ -1145,8 +1148,6 @@ $("button[data-target=#editRed]").click( function() {
        $('#nombreRed').val(data.nombreRed);
     });
 });
-
-
 
 $('.tableHorarioEliminar').footable().on('click','.eliminarFijo',function(e) {
     var footable = $('.tableHorarioEliminar').data('footable');
@@ -1172,8 +1173,6 @@ $('.tableHorarioEliminar').footable().on('click','.eliminarFijo',function(e) {
 
 });
 
-
-
 $('.tableHorarioPersonalizado').footable().on('click','.eliminarPersonalizado',function(e) {
     var footable = $('.tableHorarioPersonalizado').data('footable');
     var row = $(this).parents('tr:first');
@@ -1198,10 +1197,7 @@ $('.tableHorarioPersonalizado').footable().on('click','.eliminarPersonalizado',f
 
 });
 
-
-
-
- $('.tableEmpleado').footable().on('click', '.empleadoDelete', function(e) {
+$('.tableEmpleado').footable().on('click', '.empleadoDelete', function(e) {
     var footable = $('.tableEmpleado').data('footable');
     var row = $(this).parents('tr:first');
 
@@ -1225,27 +1221,158 @@ $('.tableHorarioPersonalizado').footable().on('click','.eliminarPersonalizado',f
     }).show();
 });
 
-/*--------------------------------------------------------------------
-    Exportar a PDF
-    ----------------------------------------------------------------    -----*/
-/*    var doc = new jsPDF();
+$('.tableJustificaciones').footable().on('click', '.justificacionBoleta',
+ function(e) {
 
-    // We'll make our own renderer to skip this editor
-    var specialElementHandlers = {
-        '#editor': function(element, renderer){
-            return true;
-        }
-    };
+     e.preventDefault();
 
-    // All units are in the set measurement for the document
-    // This can be changed to "pt" (points), "mm" (Default), "cm", "in"
-    doc.fromHTML($('body').get(0), 15, 15, {
-        'width': 170,
-        'elementHandlers': specialElementHandlers
-    });*/
+     var parametros = $(this).val().split(';');
 
+     var req = new XMLHttpRequest();
+     req.open("POST", '/generarBoleta/{"id":"'+parametros[0]+'", "tipo":"'+parametros[1]+'"}', true);
+     req.responseType = "blob";
 
-/*--------------------------------------------------------------------
-    Listener
-    ---------------------------------------------------------------------*/
-//
+     req.onload = function (event) {
+         var blob = req.response;
+         console.log(blob.size);
+
+         const url = window.URL.createObjectURL(new Blob([req.response]));
+         const link = document.createElement('a');
+         link.href = url;
+         link.setAttribute('download', 'Boleta-' + parametros[1] + '-' + parametros[0] + '.pdf');
+         document.body.appendChild(link);
+         link.click();
+     };
+
+     req.send();
+ });
+
+ $('.solicitudesTable').footable().on('click', '.solicitudesBoleta',
+     function(e) {
+
+         e.preventDefault();
+         console.log('here');
+         var parametros = $(this).val().split(';');
+
+         var req = new XMLHttpRequest();
+         req.open("POST", '/generarBoleta/{"id":"'+parametros[0]+'", "tipo":"'+parametros[1]+'"}', true);
+         req.responseType = "blob";
+
+         req.onload = function (event) {
+             var blob = req.response;
+             console.log(blob.size);
+
+             const url = window.URL.createObjectURL(new Blob([req.response]));
+             const link = document.createElement('a');
+             link.href = url;
+             link.setAttribute('download', 'Boleta-' + parametros[1] + '-' + parametros[0] + '.pdf');
+             document.body.appendChild(link);
+             link.click();
+         };
+
+         req.send();
+     });
+
+ $('.tableSolicitudes').footable().on('click', '.solicitudesBoleta',
+     function(e) {
+
+         e.preventDefault();
+         console.log('here');
+         var parametros = $(this).val().split(';');
+
+         var req = new XMLHttpRequest();
+         req.open("POST", '/generarBoleta/{"id":"'+parametros[0]+'", "tipo":"'+parametros[1]+'"}', true);
+         req.responseType = "blob";
+
+         req.onload = function (event) {
+             var blob = req.response;
+             console.log(blob.size);
+
+             const url = window.URL.createObjectURL(new Blob([req.response]));
+             const link = document.createElement('a');
+             link.href = url;
+             link.setAttribute('download', 'Boleta-' + parametros[1] + '-' + parametros[0] + '.pdf');
+             document.body.appendChild(link);
+             link.click();
+         };
+
+         req.send();
+     });
+
+ $('.tableVacaciones').footable().on('click', '.vacacionesBoleta',
+     function(e) {
+
+         e.preventDefault();
+         console.log('here');
+         var parametros = $(this).val().split(';');
+
+         var req = new XMLHttpRequest();
+         req.open("POST", '/generarBoleta/{"id":"'+parametros[0]+'", "tipo":"'+parametros[1]+'"}', true);
+         req.responseType = "blob";
+
+         req.onload = function (event) {
+             var blob = req.response;
+             console.log(blob.size);
+
+             const url = window.URL.createObjectURL(new Blob([req.response]));
+             const link = document.createElement('a');
+             link.href = url;
+             link.setAttribute('download', 'Boleta-' + parametros[1] + '-' + parametros[0] + '.pdf');
+             document.body.appendChild(link);
+             link.click();
+         };
+
+         req.send();
+     });
+
+ $('.tablaHorasExtra').footable().on('click', '.extrasBoleta',
+ function(e) {
+
+     e.preventDefault();
+     console.log('here');
+     var parametros = $(this).val().split(';');
+
+     var req = new XMLHttpRequest();
+     req.open("POST", '/generarBoleta/{"id":"'+parametros[0]+'", "tipo":"'+parametros[1]+'"}', true);
+     req.responseType = "blob";
+
+     req.onload = function (event) {
+         var blob = req.response;
+         console.log(blob.size);
+
+         const url = window.URL.createObjectURL(new Blob([req.response]));
+         const link = document.createElement('a');
+         link.href = url;
+         link.setAttribute('download', 'Boleta-' + parametros[1] + '-' + parametros[0] + '.pdf');
+         document.body.appendChild(link);
+         link.click();
+     };
+
+     req.send();
+ });
+
+ $('.tableExtras').footable().on('click', '.extrasBoleta',
+     function(e) {
+
+         e.preventDefault();
+         console.log('here');
+         var parametros = $(this).val().split(';');
+
+         var req = new XMLHttpRequest();
+         req.open("POST", '/generarBoleta/{"id":"'+parametros[0]+'", "tipo":"'+parametros[1]+'"}', true);
+         req.responseType = "blob";
+
+         req.onload = function (event) {
+             var blob = req.response;
+             console.log(blob.size);
+
+             const url = window.URL.createObjectURL(new Blob([req.response]));
+             const link = document.createElement('a');
+             link.href = url;
+             link.setAttribute('download', 'Boleta-' + parametros[1] + '-' + parametros[0] + '.pdf');
+             document.body.appendChild(link);
+             link.click();
+         };
+
+         req.send();
+     });

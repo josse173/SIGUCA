@@ -99,7 +99,7 @@ module.exports = {
             Solicitudes.find({usuario: req.user.id, tipoSolicitudes:'Permisos'}).exec(function(error, permisos) {
               CierrePersonal.find({usuario:req.user.id, epoch: {'$gte' : epochMin.unix()}}, function (err, listaCierre) {
                 HoraExtra.find({usuario:req.user.id}, function (error, horasExtra) {
-                  PeriodoUsuario.find({usuario:req.user.id}).populate('periodo').exec(function (error, periodos) {
+                  PeriodoUsuario.find({usuario:req.user.id}).populate('periodo').sort({numeroPeriodo: 1}).exec(function (error, periodos) {
 
                     var supervisor = {departamentos: [1]};
 
@@ -192,7 +192,7 @@ module.exports = {
           HoraExtra.find(extraQuery).exec(function(error, extras) {
             Solicitudes.find(permisosQuery).exec(function(error, permisos) {
               CierrePersonal.find(cierreQuery, function (err, listaCierre) {
-                PeriodoUsuario.find(periodoQuery).populate('periodo').exec(function (error, periodos) {
+                PeriodoUsuario.find(periodoQuery).populate('periodo').sort({numeroPeriodo: 1}).exec(function (error, periodos) {
                   if (error) return res.json(error);
 
                   var supervisor = {departamentos: [1]};
@@ -250,7 +250,7 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos, marcaQu
   var usuariosTemp = [];
 
   usuarios.forEach(function (usuario) {
-    PeriodoUsuario.find({usuario: usuario._id}).exec(function(error, periodos) {
+    PeriodoUsuario.find({usuario: usuario._id}).sort({numeroPeriodo: 1}).exec(function(error, periodos) {
       crudUsuario.validarPeriodoUsuario(usuario._id, periodos);
 
       var infoPeriodo = {
@@ -288,7 +288,7 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos, marcaQu
               diasDisponibles: 0
             };
 
-            PeriodoUsuario.find({usuario: permiso.usuario._id}).exec(function(error, periodos) {
+            PeriodoUsuario.find({usuario: permiso.usuario._id}).sort({numeroPeriodo: 1}).exec(function(error, periodos) {
               if (error) return res.json(err);
 
               periodos.forEach(function (periodo) {
@@ -333,7 +333,7 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos, marcaQu
                     //Se asigna el tipo de usuario con el cual ha iniciado sesion
                     req.user.tipo = req.session.name;
                     EventosTeletrabajo.find(marcaQuery).exec(function(error, eventosTeletrabajo) {
-                      PeriodoUsuario.find(periodosUsuarioQuery).populate('usuario').populate('periodo').exec(function(error, periodoUsuarios) {
+                      PeriodoUsuario.find(periodosUsuarioQuery).populate('usuario').populate('periodo').sort({numeroPeriodo: 1}).exec(function(error, periodoUsuarios) {
                         return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, marcas,
                           justificaciones, extras, permisos, cierres, nombreUsuario, eventosTeletrabajo, periodoUsuarios);
                       });

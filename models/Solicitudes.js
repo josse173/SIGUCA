@@ -75,6 +75,10 @@ var SchemaSolicitudes = new Schema({
     inciso:{
         type: String,
         default: ''
+    },
+    motivoArticulo51:{
+        type: String,
+        default: ''
     }
 });
 

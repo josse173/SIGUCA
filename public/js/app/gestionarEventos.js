@@ -28,13 +28,13 @@ $(".horario").click(function(){
 });
 
 $("#horarioMasa").click(function() {
-    
+
     var usuariosId=document.getElementsByClassName("horarioId");
     var hLibre= document.getElementsByClassName("hLibre");
     var hFijo= document.getElementsByClassName("hFijo");
     var hPersonalizado= document.getElementsByClassName("hPersonalizado");
     var arrayHorarios=new Array();
-   
+
 
     if(hLibre[0].value!=""){
         for(var i=0;i<usuariosId.length;i++){
@@ -43,7 +43,7 @@ $("#horarioMasa").click(function() {
                 obj.id=usuariosId[i].value;
                 obj.idHorario=hLibre[0].value;
                 arrayHorarios.push(obj);
-         
+
             }
         }
 
@@ -59,16 +59,16 @@ $("#horarioMasa").click(function() {
                 alert("Error al agregar el horario.");
             }
         });
-       
+
     }else if(hFijo[0].value!=""){
-       
+
         for(var i=0;i<usuariosId.length;i++){
             if(usuariosId[i].checked) {
                 var obj=new Object();
                 obj.id=usuariosId[i].value;
                 obj.idHorario=hFijo[0].value;
                 arrayHorarios.push(obj);
-         
+
             }
         }
         $.ajax({
@@ -85,14 +85,14 @@ $("#horarioMasa").click(function() {
         });
     }
     else if(hPersonalizado[0].value!=""){
-      
+
          for(var i=0;i<usuariosId.length;i++){
              if(usuariosId[i].checked) {
                  var obj=new Object();
                  obj.id=usuariosId[i].value;
                  obj.idHorario=hPersonalizado[0].value;
                  arrayHorarios.push(obj);
-          
+
              }
          }
          $.ajax({
@@ -107,9 +107,9 @@ $("#horarioMasa").click(function() {
                  alert("Error al agregar el horario.");
              }
          });
-     } 
-    
-    
+     }
+
+
     else if(hLibre[0].value=="" && hFijo[0].value=="" && hPersonalizado[0].value==""){
         for(var i=0;i<usuariosId.length;i++){
             if(usuariosId[i].checked) {
@@ -117,7 +117,7 @@ $("#horarioMasa").click(function() {
                 obj.id=usuariosId[i].value;
                 obj.idHorario=hFijo[0].value;
                 arrayHorarios.push(obj);
-         
+
             }
         }
         $.ajax({
@@ -140,12 +140,12 @@ $(".checkGrupoTodas").click(function(){
 
     var grupo=document.getElementsByClassName("checkGrupoTodas");
     if(grupo[0].checked){
-     
+
         $('.justificar').attr('checked', true);
         var cantidadCheck=document.getElementsByClassName("justificar");
         var contador=0;
         for(var i=0;i<cantidadCheck.length;i++){
-       
+
             if( cantidadCheck[i].checked) {
                 contador++;
             }
@@ -157,9 +157,9 @@ $(".checkGrupoTodas").click(function(){
             $("#estadoMasa").css('display','block');
             $("#justificacionDeleteMasa").css('display','block');
             $("#justificacionesTitulo").css('display','block');
-           
-        
-         
+
+
+
         }else{
             $("#comentarioDelSupervisor").css('display','none');
             $("#justificarMasa").css('display','none');
@@ -167,7 +167,7 @@ $(".checkGrupoTodas").click(function(){
             $("#justificacionDeleteMasa").css('display','none');
             $("#justificacionesTitulo").css('display','none');
         }
-    
+
     }else{
 
         $('.justificar').attr('checked',false);
@@ -178,12 +178,11 @@ $(".checkGrupoTodas").click(function(){
         $("#justificacionesTitulo").css('display','none');
     }
 
-    
+
 });
-    
 
 $(".justificar").click(function(){
- 
+
     var cantidadCheck=document.getElementsByClassName("justificar");
     var contador=0;
     for(var i=0;i<cantidadCheck.length;i++){
@@ -198,9 +197,9 @@ $(".justificar").click(function(){
         $("#estadoMasa").css('display','block');
         $("#justificacionDeleteMasa").css('display','block');
         $("#justificacionesTitulo").css('display','block');
-       
-    
-     
+
+
+
     }else{
         $("#comentarioDelSupervisor").css('display','none');
         $("#justificarMasa").css('display','none');
@@ -212,7 +211,7 @@ $(".justificar").click(function(){
 });
 
 $("#justificarMasa").click(function() {
-    
+
 
     var arrayCheck=document.getElementsByClassName("justificarArray");
     var estado=document.getElementsByClassName("estado");
@@ -222,7 +221,7 @@ $("#justificarMasa").click(function() {
     var arrayJustificaciones=new Array();
     if(estadoTemporal[0].value=="Seleccionar"){
 
-       
+
         for(var i=0;i<arrayCheck.length;i++){
             if( arrayCheck[i].checked) {
 
@@ -235,7 +234,7 @@ $("#justificarMasa").click(function() {
         }
     }
     else{
-     
+
         for(var i=0;i<arrayCheck.length;i++){
             if( arrayCheck[i].checked) {
 
@@ -261,15 +260,9 @@ $("#justificarMasa").click(function() {
             alert("Error al eliminar justificacion.");
         }
     });
-       
-      
+
+
 });
-
-
-
-
-
-
 
 $("#justificacionDeleteMasa").click(function() {
 
@@ -277,15 +270,15 @@ $("#justificacionDeleteMasa").click(function() {
     var arrayJustificaciones=new Array();
     for(var i=0;i<arrayCheck.length;i++){
             if( arrayCheck[i].checked) {
-              
+
                 var obj=new Object();
                 obj.id=arrayCheck[i].value;
-                
+
                 arrayJustificaciones.push(obj);
             }
     }
- 
-    
+
+
      $.ajax({
         url: '/justificacionDeleteMasa',
         type: 'POST',
@@ -298,9 +291,9 @@ $("#justificacionDeleteMasa").click(function() {
             alert("Error al eliminar justificacion.");
         }
     });
-   
-   
-    
-    
+
+
+
+
 
 });

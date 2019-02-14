@@ -115,7 +115,7 @@ exports.updateExtra = function(extra, cb, idUser){
 //--------------------------------------------------------------------
 exports.addPermiso = function(permiso, cb, idUser){
 	var epochTime = moment().unix();
-	var newSolicitud = Solicitudes({
+    var newSolicitud = Solicitudes({
 		fechaCreada: epochTime,
 		tipoSolicitudes: "Permisos",
 		diaInicio: permiso.diaInicio,
@@ -124,170 +124,51 @@ exports.addPermiso = function(permiso, cb, idUser){
 		detalle: permiso.detalle,
 		usuario: permiso.usuario.id,
 		comentarioSupervisor: "",
-		inciso: permiso.inciso
+		inciso: permiso.inciso,
+        motivoArticulo51: permiso.motivoArticulo51
 	});
-	if (permiso.motivo == 'articulo') {
-		var validInsert = 0;
-		if (permiso.inciso == "incisoA") {
-			if (permiso.cantidadDias <= 5) {
-				validInsert = 1;
-				articuloFunction(permiso, function (err, msj) {
-					if (err) res.json(err);
-					//else return cb();
-				});
-			} else {
-				console.log("No puede ingresar incisoA debido que la cantidad maxima a solicitar son 5 dias");
-			}
-		} else if (permiso.inciso == "incisoB") {
-			if (permiso.cantidadDias == 1) {
-				validInsert = 1;
-				articuloFunction(permiso, function (err, msj) {
-					if (err) res.json(err);
-				});
-			} else {
-				console.log("No puede ingresar incisoB cantidad maxima a solicitar es 1");
-			}
-		} else if (permiso.inciso == "incisoC") {
-			if (permiso.cantidadDias == 1) {
-				var fecha = new Date();
-				var ayer = new Date();
-				ayer.setDate(ayer.getDate() - 1);
-				console.log("ayer" + ayer);
-				var anno = fecha.getFullYear();
-				console.log("ANNO ACTUAL" + anno);
-				var fechaInicio = anno +'/01/01';
-				var fechaLimite = anno +'/31/12';
 
-				Solicitudes.find({usuario: permiso.usuario.id, "inciso": "incisoC"}).exec(function (err, quantity) {
-					var size = quantity.length;
-					console.log("cantidad de incisos C" + size);
-					if(size <= 3){
-						articuloFunction(permiso, function (err, msj) {
-							if (err) res.json(err);
-							//else return cb();
-						});
-					}else{
-						console.log("No puede ingresar incisoC debido a que ya ha solicitado mas de 3 en este anno");
-					}
-				});
-			}else {
-				console.log("No puede ingresar incisoB cantidad maxima a solicitar es 1");
-			}
-		}
-	}else {
-		if (permiso.motivo == 'otro')
-			newSolicitud.motivo = permiso.motivoOtro;
-		else
-			newSolicitud.motivo = permiso.motivo;
-		Solicitudes.find({
-			usuario: newSolicitud.usuario,
-			fechaCreada: newSolicitud.fechaCreada
-		}).populate('usuario').exec(function (err, solicitud) {
-			if (solicitud.length == 0) {
-				// console.log(newSolicitud);
-				newSolicitud.save(function (err, soli) {
-					Usuario.find({
-						'tipo': 'Supervisor',
-						'departamentos.departamento': permiso.departamento
-					}, {'email': 1}).exec(function (err, supervisor) {
-						if (err) console.log(err);
-						Correo.find({}, function (errorCritico, listaCorreos) {
-							if (!errorCritico && listaCorreos.length > 0) {
-								var transporter = nodemailer.createTransport('smtps://' + listaCorreos[0].nombreCorreo + ':' + listaCorreos[0].password + '@' + listaCorreos[0].dominioCorreo);
-								for (var i = 0; i < supervisor.length; i++) {
+    if (permiso.motivo == 'otro')
+        newSolicitud.motivo = permiso.motivoOtro;
+    else
+        newSolicitud.motivo = permiso.motivo;
+    Solicitudes.find({
+        usuario: newSolicitud.usuario,
+        fechaCreada: newSolicitud.fechaCreada
+    }).populate('usuario').exec(function (err, solicitud) {
+        if (solicitud.length == 0) {
+            // console.log(newSolicitud);
+            newSolicitud.save(function (err, soli) {
+                Usuario.find({
+                    'tipo': 'Supervisor',
+                    'departamentos.departamento': permiso.departamento
+                }, {'email': 1}).exec(function (err, supervisor) {
+                    if (err) console.log(err);
+                    Correo.find({}, function (errorCritico, listaCorreos) {
+                        if (!errorCritico && listaCorreos.length > 0) {
+                            var transporter = nodemailer.createTransport('smtps://' + listaCorreos[0].nombreCorreo + ':' + listaCorreos[0].password + '@' + listaCorreos[0].dominioCorreo);
+                            for (var i = 0; i < supervisor.length; i++) {
 
-									transporter.sendMail({
-										from: listaCorreos[0].nombreCorreo,
-										to: supervisor[i].email,
-										subject: 'Nueva solicitud de permiso anticipado en SIGUCA',
-										text: " El usuario " + permiso.usuario.nombre + " " + permiso.usuario.apellido1 + " " + permiso.usuario.apellido2 + " ha enviado el siguiente permiso anticipado: "
-											+ "\r\n Día de Inicio: " + soli.diaInicio
-											+ "\r\n Día de termino: " + soli.diaFinal
-											+ "\r\n Motivo: " + soli.motivo
-											+ "\r\n Detalle: " + soli.detalle
-									});
-								}
-							}
-						});
-						//return cb();
-					});//supervisores
-				});//save
-			}
-		});//verificar
-	}
+                                transporter.sendMail({
+                                    from: listaCorreos[0].nombreCorreo,
+                                    to: supervisor[i].email,
+                                    subject: 'Nueva solicitud de permiso anticipado en SIGUCA',
+                                    text: " El usuario " + permiso.usuario.nombre + " " + permiso.usuario.apellido1 + " " + permiso.usuario.apellido2 + " ha enviado el siguiente permiso anticipado: "
+                                        + "\r\n Día de Inicio: " + soli.diaInicio
+                                        + "\r\n Día de termino: " + soli.diaFinal
+                                        + "\r\n Motivo: " + soli.motivo
+                                        + "\r\n Detalle: " + soli.detalle
+                                });
+                            }
+                        }
+                    });
+                    //return cb();
+                });//supervisores
+            });//save
+        }
+	});//verificar
 	return cb();
 };
-
-articuloFunction = function(permiso, cb){
-	var epochTime = moment().unix();
-
-	console.log("ESTA INSERTANDO DESDE EL OTRO METODO" );
-
-	var newSolicitud = Solicitudes({
-		fechaCreada: epochTime,
-		tipoSolicitudes: "Permisos",
-		diaInicio: permiso.diaInicio,
-		diaFinal: permiso.diaFinal,
-		cantidadDias: permiso.cantidadDias,
-		detalle: permiso.detalle,
-		usuario: permiso.usuario.id,
-		comentarioSupervisor: "",
-		inciso: permiso.inciso
-	});
-	if(permiso.motivo == 'otro')
-		newSolicitud.motivo = permiso.motivoOtro;
-	else
-		newSolicitud.motivo = permiso.motivo;
-	Solicitudes.find({usuario: newSolicitud.usuario, fechaCreada: newSolicitud.fechaCreada}).populate('usuario').exec(function (err, solicitud){
-		if(solicitud.length == 0){
-			console.log(newSolicitud);
-			newSolicitud.save(function (err, soli) {
-				Usuario.find({'tipo' : 'Supervisor', 'departamentos.departamento' : permiso.usuario.departamentos[0].departamento}, {'email' : 1}).exec(function (err, supervisor) {
-					if (err) console.log(err);
-
-
-					Correo.find({},function(errorCritico,listaCorreos){
-						if(!errorCritico &&listaCorreos.length>0){
-							var transporter = nodemailer.createTransport('smtps://'+listaCorreos[0].nombreCorreo+':'+listaCorreos[0].password+'@'+listaCorreos[0].dominioCorreo);
-							for (var i = 0; i < supervisor.length; i++) {
-
-								transporter.sendMail({
-									from: listaCorreos[0].nombreCorreo,
-									to: supervisor[i].email,
-									subject: 'Nueva solicitud de permiso anticipado en SIGUCA',
-									text: " El usuario " + permiso.usuario.nombre + " " + permiso.usuario.apellido1 + " " + permiso.usuario.apellido2 + " ha enviado el siguiente permiso anticipado: "
-									+ "\r\n Día de Inicio: " + soli.diaInicio
-									+ "\r\n Día de termino: " + soli.diaFinal
-									+ "\r\n Motivo: " + soli.motivo
-									+ "\r\n Detalle: " + soli.detalle
-								});
-							}
-						}
-					});
-
-					return cb();
-					});//supervisores
-				});//save
-
-			if (permiso.motivo == 'articulo'){
-				var nuevaSolicitudArticulo51;
-				console.log(permiso.inciso);
-				console.log(permiso.derechoDisfrutar);
-				nuevaSolicitudArticulo51 = Articulo51({
-					solicitud: newSolicitud._id,
-					tipoSolicitud:  permiso.derechoDisfrutar,
-					inciso: permiso.inciso,
-					usuario: permiso.usuario.id
-				});
-				console.log(nuevaSolicitudArticulo51);
-				nuevaSolicitudArticulo51.save(function (err, soli) {
-					if (err) console.log(err);
-				});
-			}
-		}
-
-	});//verificar
-}
 
 exports.updatePermiso = function(permiso, cb, idUser){
 	console.log("adfa");
@@ -358,12 +239,21 @@ exports.loadSoli = function(id, cb){
 };
 
 exports.loadExtra = function(id, cb){
-	HoraExtra.findById(id, function (err, extra) {
-		if(extra.estado == 'Pendiente'){
-			if (err) return cb(err);
-			cb(extra);
-		} else cb({motivo:'seleccionar',detalle:''});
-	});
+    HoraExtra.findById(id, function (err, extra) {
+        if(extra.estado == 'Pendiente'){
+            if (err) return cb(err);
+            cb(extra);
+        } else cb({motivo:'seleccionar',detalle:''});
+    });
+};
+
+exports.getSolicitudAnterior = function(id, cb){
+    HoraExtra.findById(id, function (err, extra) {
+        if(extra.estado == 'Pendiente'){
+            if (err) return cb(err);
+            cb(extra);
+        } else cb({motivo:'seleccionar',detalle:''});
+    });
 };
 
 exports.deleteSoli = function(id, cb, idUser){
