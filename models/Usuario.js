@@ -12,8 +12,8 @@ bcrypt   = require('bcrypt-nodejs');
 
 var SchemaUsuario = new Schema({
   codTarjeta: {
-   type: Number,
-   default: 0
+   type: String,
+   default: ''
  },
  username : {
    type: String,

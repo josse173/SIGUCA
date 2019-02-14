@@ -40,7 +40,7 @@ import UtilImg
 
 #SETTINGS AND CONFIGURATIONS
 #IP OF NODE JS SERVER WHERE SIGUCA IS RUNNING
-#server_IP='siguca.greencore.int'
+#server_IP='siguca.gps.int'
 server_IP='192.168.1.8'
 #PORT OF THE MONGODB
 port='27017'
@@ -224,18 +224,10 @@ def read_rfid():
                 #almacenamos en la variable data la lectura realizada de RFID
                 print "Espere..."
 
-                try:
-                    dec = int(data)
-                except:
-                    print "*ERROR NO PARSE*"
-                #Se hace la validacion en el vector definido  por  la consulta a la base de datos al inicio de este archivo, ademas se pasa actualizando la lista de usuarios desde la base de datos de mongo
-
-		#codigosExistentes=list(collection.find({},{"codTarjeta": 1,"_id":0}))
-                for post in codigosExistentes:
-                    if dec == post['codTarjeta']:
-			return dec
-                ser.flushInput()
-                data.flushInput()
+ 		usuarioActual=collection.find_one({'codTarjeta': data, 'estado': 'Activo'})
+		return usuarioActual['codTarjeta']
+		ser.flushInput()
+		data.flushInput()
 
     except:
        	 pass
@@ -275,9 +267,9 @@ def obtieneMarca(dec,tipo):
         ct = str(post['codTarjeta'])
         index = ct.find('.')
         if index > 0:
-            ct = ct[0:index]
-	    if str(dec) == ct:
-        	idUser = post["_id"]
+          ct = ct[0:index]
+	if str(dec) == ct:
+          idUser = post["_id"]
 
     #Se obtienen las marcas
     dia = time.strftime("%d")
@@ -396,7 +388,7 @@ while True:
     os.system('clear')
     dec=read_rfid()
     dec=str(dec)
-    print "RFID (String): " + dec
+    print "RFID leído (String): " + dec
     tipoUsuario = "None"
 
     #se verifica que la variable no este vacía
