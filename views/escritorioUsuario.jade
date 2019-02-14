@@ -3,7 +3,7 @@
   //-Perfil personal
   div.col-md-6
     div.img-circle
-      img.img-responsive(src="/uploads/"+usuario.codTarjeta+".png" border="5" alt="#{textos[0].titulo}")
+      img.img-responsive(src="/uploads/"+usuario.codTarjeta+".png" border="5" alt="#{textos[0].titulo}" style="height:200px;")
 
       h3.text-success #{textos[1].titulo}
       input(type="hidden" id="tiempoRespuesta" value="#{tiempoRespuesta}")
@@ -35,7 +35,7 @@
 
   //-Marcas
   div.col-md-5
-    div(style="border: 2px solid green; padding: 5%;")
+    div(style="border: 2px solid #004277; padding: 5%;")
       h3.text-success #{textos[7].titulo}
       div
         label #{textos[8].titulo}
@@ -79,16 +79,17 @@
 
     h3.text-success #{textos[16].titulo}
     .form-group
-      label.labelFiltro(for='fechaHasta') #{textos[17].titulo}
+      label.labelFiltro(for='date_range_marca') #{textos[17].titulo}
         div.input-group
           input#date_range_marca.form-control(type='text')
           span.input-group-addon
             i.icon-calendar
-      label.labelFiltro(for='fechaHasta') #{textos[18].titulo}
+      label.labelFiltro(for='date_range_end') #{textos[18].titulo}
         div.input-group
           input#date_range_end.form-control(type='text')
           span.input-group-addon
             i.icon-calendar
+        br
         button#btnIr.btn-primary.btn #{textos[19].titulo}
 
     div
@@ -134,8 +135,8 @@
         | #{textos[23].titulo}
   br
   .col-xs-12
-    h4 #{textos[24].titulo}
-      span.label.label-default #{justificaciones.length}
+    h4 #{textos[24].titulo}&nbsp;
+      span(style="margin-top:-10px;").label.label-default #{justificaciones.length}
     div.justTable.table-responsive
       div.row
         table#tablaJust.footable(data-page-navigation=".pagination" data-page-size="4" )

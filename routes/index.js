@@ -1860,11 +1860,11 @@ module.exports = function(app, io) {
                 });
 
             });
-        } else if (parametros.tipo === 'articulo'){
+        } else if (parametros.tipo === 'Articulo'){
 
             Solicitudes.findById(parametros.id).populate('usuario').exec(function (err, solicitud) {
                 if(err) return err;
-
+                console.log(solicitud);
                 Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
                     if(error) return error;
                     var mensaje = 'Nombre: ' + solicitud.usuario.nombre + ' ' + solicitud.usuario.apellido1 + ' ' + solicitud.usuario.apellido2 + '<br>';
