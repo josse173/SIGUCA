@@ -143,8 +143,8 @@ footer {
 
 .activeT{
 	background-color: rgba(200,200,200,0.2);
-	border-bottom: 2px solid green;
-	color: seagreen;
+	border-bottom: 2px solid #004277;
+	color: #004277;
 }
 
 .mainT{
