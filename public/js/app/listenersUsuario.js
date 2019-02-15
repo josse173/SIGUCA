@@ -34,24 +34,9 @@ $( document ).ready(function() {
                         success: function(data) {
                             // console.log(data.result);
                             if (data.result && data.result === true) {
-                                $("#mensajeConfirmacionConexion").modal("show");
-                                var intervalId = blinkTab("Confirmación de Conexión");
-
-                                setTimeout(closeModal, tiempoRespuesta * 60000, intervalId);
-
-                                $.ajax({
-                                    url: "alertaMostrada",
-                                    type: "POST",
-                                    dataType : "json",
-                                    data: {id : alerta._id, usuario: alerta.usuario, tiempoRespuesta: tiempoRespuesta},
-                                    success: function(data) {
-                                        document.getElementById("idEventoTeletrabajo").value = data.id;
-                                    },
-                                    error: function(){
-                                    }
-                                });
+                                setTimeout(mostrarAlerta, 60000, tiempoRespuesta, alerta);
                             } else {
-                                fechaAlerta.setMinutes(fechaActual.getMinutes() + 10 );
+                                fechaAlerta.setMinutes(fechaActual.getMinutes() + 2 );
                                 alerta.fechaCreacion = fechaAlerta;
                                 listaAlertasActivas.push(alerta);
                                 document.getElementById("alertas").value = JSON.stringify(listaAlertasActivas);
@@ -87,6 +72,27 @@ $( document ).ready(function() {
         setTimeout(validarPresente, 1000);
 
         clearInterval(intervalId);
+    }
+
+    function mostrarAlerta(tiempoRespuesta, alerta) {
+
+        $("#mensajeConfirmacionConexion").modal("show");
+        var intervalId = blinkTab("Confirmación de Conexión");
+
+        setTimeout(closeModal, tiempoRespuesta * 60000, intervalId);
+
+        $.ajax({
+            url: "alertaMostrada",
+            type: "POST",
+            dataType : "json",
+            data: {id : alerta._id, usuario: alerta.usuario, tiempoRespuesta: tiempoRespuesta},
+            success: function(data) {
+                document.getElementById("idEventoTeletrabajo").value = data.id;
+            },
+            error: function(){
+            }
+        });
+
     }
 
     function validarPresente() {
