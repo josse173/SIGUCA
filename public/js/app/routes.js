@@ -512,7 +512,7 @@ $("button[data-target=#editHorarioFijo]").click( function() {
 
         $('#cedula').val(data.cedula);
         $('#apellido1').val(data.apellido1);
-        $('#fechaIngreso').val(result);
+        $('#fechaIngresoo').val(result);
         $('#vacaciones').val(data.vacaciones);
         $('#apellido2').val(data.apellido2);
         $('#email').val(data.email);
@@ -1376,3 +1376,8 @@ $('.tableJustificaciones').footable().on('click', '.justificacionBoleta',
 
          req.send();
      });
+
+ $("button[data-target=#addEmpl]").click( function() {
+     alertify.error('La fecha de creación no se podrá modificar una vez creado el usuario');
+ });
+
