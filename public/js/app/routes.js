@@ -594,6 +594,7 @@ $("#extraLink").click(function(){
      var nuevaFecha = moment(fechaFormateada);
      var fechaAConfirmar = nuevaFecha.format();
      var usuario = $('#btn-marca').val();
+     var diasVacacionesDisponibles = $('#totalDiasDisponibles').val();
 
      if(val == 'seleccionar') {
          alertify.error('Motivo no valido');
@@ -634,6 +635,16 @@ $("#extraLink").click(function(){
              }
              if(cantidadDias != 1){
                  alertify.error('No puede ingresar Inciso C cantidad maxima a solicitar es 1 dia');
+                 return false;
+             }else{
+                 $('.formSoli').attr('action', '/solicitud_permisos/');
+                 $("#btn-permiso").submit();
+             }
+         }
+     }else if(val == 'Vacaciones'){
+         if(cantidadDias != null && cantidadDias != ''){
+             if(parseInt(cantidadDias) > parseInt(diasVacacionesDisponibles)){
+                 alertify.error('La cantidad de días solicitados supera la cantidad de Vacaciones disponibles');
                  return false;
              }else{
                  $('.formSoli').attr('action', '/solicitud_permisos/');
