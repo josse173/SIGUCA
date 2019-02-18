@@ -74,6 +74,8 @@ module.exports = {
 																	diasDisponibles: 0
 																};
 
+																crudUsuario.validarPeriodoUsuario(req.user, periodos);
+
 																periodos.forEach(function (periodo) {
 																	if(!(periodo.diasDisfrutados === periodo.diasAsignados)){
 																		infoPeriodo.cargoAlosPeriodos.push(periodo.numeroPeriodo)
@@ -82,8 +84,6 @@ module.exports = {
 																	infoPeriodo.diasDisfrutados = infoPeriodo.diasDisfrutados + periodo.diasDisfrutados;
 
 																});
-
-																crudUsuario.validarPeriodoUsuario(req.user, periodos);
 
 																// console.log('cargoAlosPeriodos: ' + infoPeriodo.cargoAlosPeriodos);
 																// console.log('diasDerechoDisfrutar: ' + infoPeriodo.diasDerechoDisfrutar);
@@ -212,6 +212,10 @@ module.exports = {
 								infoPeriodo.diasDisfrutados = infoPeriodo.diasDisfrutados + periodo.diasDisfrutados;
 
 							});
+
+							crudUsuario.validarPeriodoUsuario(req.user, periodos);
+
+							console.log(result);
 
 							 // console.log('cargoAlosPeriodos: ' + infoPeriodo.cargoAlosPeriodos);
 							 // console.log('diasDerechoDisfrutar: ' + infoPeriodo.diasDerechoDisfrutar);

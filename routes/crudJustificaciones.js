@@ -10,12 +10,12 @@ config 			= require('../config.json'),
 emailSIGUCA 	= 'siguca@greencore.co.cr';
 
 //--------------------------------------------------------------------
-//	Métodos Justificaciones          
+//	Métodos Justificaciones
 //	---------------------------------------------------------------------*/
 
 exports.deleteJustificationExit = function(usuarioId,epoch1,epochMax){
 	Justificaciones.remove({'usuario':usuarioId,fechaCreada: { "$gte": epoch1 ,"$lte":epochMax}},function(err,marcaE){
-					
+
 	});
 }
 
@@ -34,7 +34,7 @@ exports.conteoJustificaciones=function(usuario,cb){
 		var obj=new Object();
 		obj.idDepartamento=usuario.departamentos[i].departamento;
 		departamentos.push(obj);
-		
+
 	}
 	Usuario.find({tipo: { $ne: "Administrador"}},function(error,empleado){
 		if(empleado){
@@ -47,8 +47,8 @@ exports.conteoJustificaciones=function(usuario,cb){
 								h=h.length;
 								j=j.length;
 								var usuarioTemporal=new Object();
-								usuarioTemporal.empleado=empleado[i];					
-								usuariosConDepartamento.push(usuarioTemporal);		
+								usuarioTemporal.empleado=empleado[i];
+								usuariosConDepartamento.push(usuarioTemporal);
 								identificadores.push(usuarioTemporal.empleado._id)
 							}
 						}
@@ -65,26 +65,26 @@ exports.conteoJustificaciones=function(usuario,cb){
 						if(usuariosConDepartamento[i].empleado.equals(cantidad[j].usuario)){
 							contador++;
 						}
-						
+
 					}
 					usuariosConDepartamento[i].empleado.contadorJustificaciones=contador;
 				}
-				
+
 				cb(usuariosConDepartamento);
-				
+
 			}else{
 				cb();
 			}
-			
-		
+
+
 		});
-		
-	
+
+
 	});//fin de la consulta
 
-	
-	
-	
+
+
+
 };
 
 
@@ -99,7 +99,7 @@ exports.conteoJustificacionesTotal=function(usuario,cb){
 		var obj=new Object();
 		obj.idDepartamento=usuario.departamentos[i].departamento;
 		departamentos.push(obj);
-		
+
 	}
 	Usuario.find({tipo: { $ne: "Administrador"}},function(error,empleado){
 		if(empleado){
@@ -112,8 +112,8 @@ exports.conteoJustificacionesTotal=function(usuario,cb){
 								h=h.length;
 								j=j.length;
 								var usuarioTemporal=new Object();
-								usuarioTemporal.empleado=empleado[i];					
-								usuariosConDepartamento.push(usuarioTemporal);		
+								usuarioTemporal.empleado=empleado[i];
+								usuariosConDepartamento.push(usuarioTemporal);
 								identificadores.push(usuarioTemporal.empleado._id)
 							}
 						}
@@ -129,24 +129,18 @@ exports.conteoJustificacionesTotal=function(usuario,cb){
 						if(usuariosConDepartamento[i].empleado.equals(cantidad[j].usuario)){
 							contador++;
 						}
-						
+
 					}
 				}
-				
+
 				cb(contador++);
-				
+
 			}else{
 				cb(contador);
 			}
-			
-		
 		});
-		
-	
 	});//fin de la consulta
-
-	
-	};
+};
 
 exports.addJust = function(justificacion, cb){
 	var epochTime = moment().unix();
@@ -159,7 +153,7 @@ exports.addJust = function(justificacion, cb){
 		comentarioSupervisor: "",
 		tipoUsuario: globalTipoUsuario
 	});
-	
+
 	if(justificacion.motivoJust == 'otro')
 		newjustificacion.motivo = justificacion.motivoOtroJust;
 	else
@@ -168,34 +162,34 @@ exports.addJust = function(justificacion, cb){
 		newjustificacion.estado = justificacion.estado;
 	Justificaciones.find(
 	{
-		usuario: newjustificacion.usuario, 
+		usuario: newjustificacion.usuario,
 		fechaCreada: newjustificacion.fechaCreada,
 		motivo:newjustificacion.motivo
-	}, 
+	},
 	function (err, just){
 		if(just.length == 0){
 			newjustificacion.save(function (err, user) {
 				if (err) console.log(err);
-				return cb(err, just);	
+				return cb(err, just);
 			});//save
 		}
 	});//verificar
 };
 
 exports.loadJust = function(id, cb){
-	Justificaciones.findById(id, function (err, just) { 
+	Justificaciones.findById(id, function (err, just) {
 		if(just.estado == 'Pendiente'){
-			Justificaciones.findById(id, function (err, justificacion) { 
+			Justificaciones.findById(id, function (err, justificacion) {
 				if (err) return cb(err);
 				cb(justificacion);
-			}); 
+			});
 		} else if(just.estado == 'Incompleto'){
-			Justificaciones.findById(id, function (err, justificacion) { 
+			Justificaciones.findById(id, function (err, justificacion) {
 				if (err) return cb(err);
 				cb(justificacion);
-			}); 
+			});
 		}else cb({motivo:'seleccionar',detalle:''});
-	}); 
+	});
 }
 
 exports.updateJust = function(justificacion, cb){
@@ -206,7 +200,7 @@ exports.updateJust = function(justificacion, cb){
 		motivo = justificacion.motivoOtroJust;
 	} else{
 		motivo = justificacion.motivoJust;
-	} 
+	}
 
 	var justificacionActualizada = {
 		motivo: motivo,
@@ -216,17 +210,17 @@ exports.updateJust = function(justificacion, cb){
 
 
 	Usuario.findById(justificacion.usuario, function(err, user){
-		Justificaciones.findById(justificacion.id).populate('usuario').exec(function (err, just) { 
+		Justificaciones.findById(justificacion.id).populate('usuario').exec(function (err, just) {
 			if(JSON.stringify(user._id)===JSON.stringify(just.usuario._id)){
 				justificacionActualizada.fechaJustificada = epochTime;
 			}
 			Justificaciones.findByIdAndUpdate(justificacion.id, justificacionActualizada, function (err, justActualizada) {
 
 				if (!err && just.estado=="Incompleto") {
-					Usuario.find({'tipo' : 'Supervisor', 'departamentos.departamento' : just.usuario.departamentos[0].departamento}, {'email' : 1}).exec(function (err, supervisor) { 
+					Usuario.find({'tipo' : 'Supervisor', 'departamentos.departamento' : just.usuario.departamentos[0].departamento}, {'email' : 1}).exec(function (err, supervisor) {
 						if (err){
 							return cb(err);
-						} 
+						}
 						else{
 							Correo.find({},function(errorCritico,listaCorreos){
 								if(!errorCritico &&listaCorreos.length>0){
@@ -240,7 +234,7 @@ exports.updateJust = function(justificacion, cb){
 											+ " ha modificado la siguiente justificación: "
 											+ " \r\n Motivo: " + just.motivo
 											+ " \r\n Detalle: " + just.detalle
-											+ "\r\n\r\n A continuación se muestra la justificación modificada" 
+											+ "\r\n\r\n A continuación se muestra la justificación modificada"
 											+ " \r\n Motivo: " + justActualizada.motivo
 											+ " \r\n Detalle: " + justificacion.detalle
 										});
@@ -248,11 +242,11 @@ exports.updateJust = function(justificacion, cb){
 								}
 							});
 						}
-						
+
 
 					});
 				}
-			
+
 				return cb(err);
 			});
 			//
@@ -262,7 +256,7 @@ exports.updateJust = function(justificacion, cb){
 }
 
 exports.deleteJust = function(id, cb){
-	Justificaciones.findByIdAndRemove(id).populate('usuario').exec(function (err, just) { 
+	Justificaciones.findByIdAndRemove(id).populate('usuario').exec(function (err, just) {
 		if (err) return cb(err,'');
 		var fecha = "";
 		if(just.fechaCreada)
@@ -275,7 +269,7 @@ exports.deleteJust = function(id, cb){
 						to: just.usuario.email,
 						subject: 'Se ha eliminado una justificación en SIGUCA',
 						text: " Estimado(a) " + just.usuario.nombre + " " + just.usuario.apellido1 + " " + just.usuario.apellido2
-						+ " \r\n Su supervisor ha eliminado una de las justificaciones presentadas, en la cuál se indicabá lo siguiente: " 
+						+ " \r\n Su supervisor ha eliminado una de las justificaciones presentadas, en la cuál se indicabá lo siguiente: "
 						+ " \r\n Fecha: " + fecha
 						+ " \r\n Motivo: " + just.motivo
 						+ " \r\n Detalle: " + just.detalle
@@ -285,14 +279,14 @@ exports.deleteJust = function(id, cb){
 			}
 		});
 
-		
+
 		return cb(err, 'Se elimino');
 	});
 }
 
 
 exports.deleteJustMasa = function(id, cb){
-	Justificaciones.findByIdAndRemove(id).populate('usuario').exec(function (err, just) { 
+	Justificaciones.findByIdAndRemove(id).populate('usuario').exec(function (err, just) {
 		var fecha = "";
 		if(just.fechaCreada)
 			fecha = moment(just.fechaCreada);
@@ -304,36 +298,36 @@ exports.deleteJustMasa = function(id, cb){
 						to: just.usuario.email,
 						subject: 'Se ha eliminado una justificación en SIGUCA',
 						text: " Estimado(a) " + just.usuario.nombre + " " + just.usuario.apellido1 + " " + just.usuario.apellido2
-						+ " \r\n Su supervisor ha eliminado una de las justificaciones presentadas, en la cuál se indicabá lo siguiente: " 
+						+ " \r\n Su supervisor ha eliminado una de las justificaciones presentadas, en la cuál se indicabá lo siguiente: "
 						+ " \r\n Fecha: " + fecha
 						+ " \r\n Motivo: " + just.motivo
 						+ " \r\n Detalle: " + just.detalle
 					});
 			}
 		});
-		
+
 
 	});
 }
 
 
 exports.gestionarJust = function(justificacion, cb, idUser){
-	
-	Usuario.findById(idUser, function (errUser, supervisor) { 
+
+	Usuario.findById(idUser, function (errUser, supervisor) {
 		Justificaciones.findByIdAndUpdate(
-			justificacion.id, 
+			justificacion.id,
 			{
-				estado: justificacion.estado, 
+				estado: justificacion.estado,
 				comentarioSupervisor: justificacion.comentarioSupervisor
 			}
-			).populate('usuario').exec(function (err, just) { 
+			).populate('usuario').exec(function (err, just) {
 				if (err) return cb(err, '');
 				Correo.find({},function(errorCritico,listaCorreos){
 					if(!errorCritico &&listaCorreos.length>0){
 						var transporter = nodemailer.createTransport('smtps://'+listaCorreos[0].nombreCorreo+':'+listaCorreos[0].password+'@'+listaCorreos[0].dominioCorreo);
 						var a = new Date(just.fechaCreada * 1000);
 						var date = ""+a.getDate()+"/"+util.getMes(a.getMonth())+"/"+a.getFullYear();
-		
+
 						var justtext = "\r\n\r\nFecha de creación:"+date+"\n"
 						+ "Motivo:"+just.motivo+"\n"
 						+ "Detalle:"+just.detalle+"\r\n\r\n";
@@ -347,11 +341,11 @@ exports.gestionarJust = function(justificacion, cb, idUser){
 							from:listaCorreos[0].nombreCorreo,
 							to: just.usuario.email,
 							subject: 'Respuesta a justificación en SIGUCA',
-							text: " Estimado(a) " + just.usuario.nombre 
+							text: " Estimado(a) " + just.usuario.nombre
 							+ ",\r\n\r\nPor este medio se le notifica que "
 							+"la siguiente justificación ha sido respondida:"
 							+ justtext
-							+ "Le informamos que la justificación fue " + justificacion.estado 
+							+ "Le informamos que la justificación fue " + justificacion.estado
 							+ " por el supervisor " + superV
 							+ ", con el siguiente comentario"
 							+ "\r\n\r\n " + justificacion.comentarioSupervisor
@@ -360,10 +354,10 @@ exports.gestionarJust = function(justificacion, cb, idUser){
 						return cb(err, 'Se elimino');
 					}else{
 						return cb(err, 'Se elimino');
-						
+
 					}
 				});
-				
+
 			});
 		//
 	});
@@ -371,21 +365,21 @@ exports.gestionarJust = function(justificacion, cb, idUser){
 
 exports.gestionarJustifcacion = function(justificacion, cb, idUser){
 
-	Usuario.findById(idUser, function (errUser, supervisor) { 
+	Usuario.findById(idUser, function (errUser, supervisor) {
 		Justificaciones.findByIdAndUpdate(
-			justificacion.id, 
+			justificacion.id,
 			{
-				estado: justificacion.estado, 
+				estado: justificacion.estado,
 				comentarioSupervisor: justificacion.comentarioSupervisor
 			}
-			).populate('usuario').exec(function (err, just) { 
+			).populate('usuario').exec(function (err, just) {
 				if (err) return cb(err, '');
 				Correo.find({},function(errorCritico,listaCorreos){
 					if(!errorCritico &&listaCorreos.length>0){
 						var transporter = nodemailer.createTransport('smtps://'+listaCorreos[0].nombreCorreo+':'+listaCorreos[0].password+'@'+listaCorreos[0].dominioCorreo);
 						var a = new Date(just.fechaCreada * 1000);
 						var date = ""+a.getDate()+"/"+util.getMes(a.getMonth())+"/"+a.getFullYear();
-		
+
 						var justtext = "\r\n\r\nFecha de creación:"+date+"\n"
 						+ "Motivo:"+just.motivo+"\n"
 						+ "Detalle:"+just.detalle+"\r\n\r\n";
@@ -399,11 +393,11 @@ exports.gestionarJustifcacion = function(justificacion, cb, idUser){
 							from: listaCorreos[0].nombreCorreo,
 							to: just.usuario.email,
 							subject: 'Respuesta a justificación en SIGUCA',
-							text: " Estimado(a) " + just.usuario.nombre 
+							text: " Estimado(a) " + just.usuario.nombre
 							+ ",\r\n\r\nPor este medio se le notifica que "
 							+"la siguiente justificación ha sido respondida:"
 							+ justtext
-							+ "Le informamos que la justificación fue " + justificacion.estado 
+							+ "Le informamos que la justificación fue " + justificacion.estado
 							+ " por el supervisor " + superV
 							+ ", con el siguiente comentario"
 							+ "\r\n\r\n " + justificacion.comentarioSupervisor
