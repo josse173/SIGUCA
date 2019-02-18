@@ -43,8 +43,40 @@ exports.addExtra = function(extra, cb){
 	});
 
 	horaExtra.save(function (err, horaExtraCreada) {
-		if (err) console.log(err);
-		else return cb("Guardado correctamente.");
+		if (err){
+			console.log(err);
+		}
+		else {
+			Usuario.findOne({_id: horaExtraCreada.usuario}).populate('departamentos').exec(function (err, usuarioExtra) {
+				Usuario.find({ 'tipo': 'Supervisor', 'departamentos.departamento': usuarioExtra.departamentos[0].departamento}, {'email': 1}).exec(function (err, supervisor) {
+					if (err) return cb(err);
+					console.log(supervisor);
+					Correo.find({}, function (errorCritico, listaCorreos) {
+						if (!errorCritico && listaCorreos.length > 0) {
+
+							for (var i = 0; i < supervisor.length; i++) {
+
+									var from = listaCorreos[0].nombreCorreo;
+									var to = supervisor[i].email;
+									var subject = 'Creación de una solicitud de hora extra en SIGUCA';
+									var titulo = 'Estimado supervisor';
+									var text = " El usuario " + usuarioExtra.nombre + " " + usuarioExtra.apellido1 + " " + usuarioExtra.apellido2
+										+ " ha creado la siguiente solicitud de hora extra: "
+										+ "\r\n Día de Inicio: " + moment.unix(epochInicio).format("YYYY-MM-DD hh:mm:ss") + '<br>'
+										+ "\r\n Día de termino: " + moment.unix(epochTermino).format("YYYY-MM-DD hh:mm:ss")+ '<br>'
+										+ "\r\n Ubicación: " + extra.ubicacion + '<br>'
+										+ "\r\n Detalle: " + extra.motivo + '<br>';
+
+								enviarCorreo.enviar(from, to, subject, titulo, text);
+
+								return cb("Guardado correctamente.");
+							}
+						}
+					});
+
+				});
+			});
+		}
 	});
 };
 
@@ -103,7 +135,6 @@ exports.updateExtra = function(extra, cb, idUser){
 					});
 
 				});
-
 			});
 		}
 		return cb(err);
@@ -347,9 +378,9 @@ exports.gestionarSoli = function(solicitud, cb, idUser){
 			 */
 
 			if (err) return cb(err, '');
-			Correo.find({},function(errorCritico,listaCorreos){
+			Correo.find({},function(errorCritico, listaCorreos){
 				if(!errorCritico &&listaCorreos.length>0){
-					var transporter = nodemailer.createTransport('smtps://'+listaCorreos[0].nombreCorreo+':'+listaCorreos[0].password+'@'+listaCorreos[0].dominioCorreo);
+
 					var a = new Date(soli.fechaCreada * 1000);
 					var date = ""+a.getDate()+"/"+util.getMes(a.getMonth())+"/"+a.getFullYear();
 					var solitext = "\r\n\r\nFecha de creación:"+date+"\n"
@@ -361,25 +392,18 @@ exports.gestionarSoli = function(solicitud, cb, idUser){
 						superV += " " + supervisor.apellido1;
 						superV += " " + supervisor.apellido2;
 					}
-					transporter.sendMail({
-						from: listaCorreos[0].nombreCorreo,
-						to: soli.usuario.email,
-						subject: 'Respuesta a solicitud en SIGUCA',
-						text: " Estimado(a) " + soli.usuario.nombre
-						+ ",\r\n\r\nPor este medio se le notifica que "
-						+"la siguiente solicitud ha sido respondida:"
-						+ solitext
-						+ "Le informamos que la justificación fue " + solicitud.estado
-						+ " por el supervisor " + superV
-						+ ", con el siguiente comentario"
-						+ "\r\n\r\n " + solicitud.comentarioSupervisor
-						+ "\r\n\r\n Saludos cordiales."
-					}, function(error, info){
-						if(error){
-							return console.log('Error al enviar el correo de la gestión de una solicitud: '+soli.usuario.nombre + " Error: "+error);
-						}
-						//return console.log('Respuesta de envío de email: ' + JSON.stringify(info));
-					});
+
+					var text = "Por este medio se le notifica que la siguiente solicitud ha sido respondida:<br>"
+					+ solitext
+					+ "<br>Le informamos que la justificación fue " + solicitud.estado
+					+ " por el supervisor " + superV
+					+ ", con el siguiente comentario"
+					+ "<br> " + solicitud.comentarioSupervisor
+					+ "<br><br> Saludos cordiales.";
+
+
+					enviarCorreo.enviar(listaCorreos[0].nombreCorreo, soli.usuario.email, 'Respuesta a solicitud en SIGUCA', 'Estimado(a) ' + soli.usuario.nombre + ' '+ soli.usuario.apellido1 + ',', text);
+
 				}
 			});
 

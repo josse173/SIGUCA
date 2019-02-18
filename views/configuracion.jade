@@ -1,16 +1,16 @@
 extends layout
 
 block content
-  .container 
+  .container
     .col-xs-2
     .col-xs-8
-      if(texto[0])  
+      if(texto[0])
         div#containerCentral
           h3  #{texto[0].titulo}
       else
         div#containerCentral
           h3  Título principal
-         
+
     .col-xs-12
       .col-xs-6
         if(texto[1])
@@ -32,7 +32,7 @@ block content
             if(texto[5])
               button#cancelar.btn.btn-danger(name='cancelar') #{texto[5].titulo}
             else
-              button#cancelar.btn.btn-danger(name='cancelar') Cancelar  
+              button#cancelar.btn.btn-danger(name='cancelar') Cancelar
 
       .col-xs-6
         if(texto[2])
@@ -59,13 +59,13 @@ block content
       .col-xs-6.well.span4
           label.text-center
             | #{texto[9].titulo}
-          br  
+          br
           label.text-center
-            | #{texto[10].titulo}  
+            | #{texto[10].titulo}
           form(role='form',method="post",enctype="multipart/form-data",action="/IMAGEN/"+usuario._id,accept='image/png')
-           
+
             p
               input(type="hidden",name="codigo",value="#{usuario.codTarjeta}")
-              input(type="file",name="upl")
+              input(type="file",name="upl").btn.btn-info
             p
-              input(type="submit")
+              input(type="submit" value="Cargar imagen").btn.btn-success

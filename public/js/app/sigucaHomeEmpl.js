@@ -1,5 +1,5 @@
-var socket = io.connect('http://siguca.greencore.int');
-//var socket = io.connect('http://10.42.30.19:3000');
+//var socket = io.connect('http://siguca.greencore.int');
+var socket = io.connect('http://localhost:3000');
 //REVISAR IP
 socket.emit('connected');
 
@@ -13,7 +13,7 @@ function selectValue(){
 
 function clock(epoch){
     setInterval(function(){
-        var currentTime = new Date(0);        
+        var currentTime = new Date(0);
         currentTime.setUTCSeconds(epoch);
         var currentHours = currentTime.getHours ( );
         var currentMinutes = currentTime.getMinutes ( );
@@ -77,13 +77,13 @@ $('#btn-marca').click(function(){
             else if(data.marcas[m].tipoMarca=='Entrada'){
                 document.getElementById("btnEntrada").disabled=true;
             }
-           
+
             else if(data.marcas[m].tipoMarca=='Salida a Receso'){
                 contSalida++;
             }
             else if(data.marcas[m].tipoMarca=='Entrada de Receso'){
                 contEntrada++;
-                
+
             }
             else if(data.marcas[m].tipoMarca=='Salida al Almuerzo'){
                 document.getElementById("btnSalidaAlmuerzo").disabled=true;
@@ -91,15 +91,15 @@ $('#btn-marca').click(function(){
             else if(data.marcas[m].tipoMarca=='Entrada de Almuerzo'){
                 document.getElementById("btnEntradaAlmuerzo").disabled=true;
             }
-           
+
         }
         if(contSalida>contEntrada){
             document.getElementById("btnSalidaReceso").disabled=true;
         }
 
-        }}); 
+        }});
 
-    
+
 });
 
 $('#btnIr').click(function(){
@@ -123,36 +123,36 @@ $('#btnIr').click(function(){
                         horas++;
                         minutos=minutos-60;
                     }
-                    
+
                     if(minutos<10){
                         minutos = "0"+minutos;
                     }
                     if(horas<10){
                         horas = "0"+horas;
                     }
-                    
+
                     $(".hideDisplay").css("display","inline-flex");
                     $(".qwer").html("");
                     var cantidadFinal= horas+":"+minutos;
-                    $(".qwer").text(cantidadFinal); 
-                    $("#date_range_marca").val(""); 
-                    $("#date_range_end").val(""); 
-     
+                    $(".qwer").text(cantidadFinal);
+                    $("#date_range_marca").val("");
+                    $("#date_range_end").val("");
+
                 }else{
                     $(".hideDisplay").css("display","inline-flex");
                     $(".qwer").html("");
                     var cantidadFinal= 0+":"+0+""+0;
-                    $(".qwer").text(cantidadFinal); 
+                    $(".qwer").text(cantidadFinal);
                 }
-                
-             
+
+
             }
             ,error: function(){
                 alert("Error.");
             }
         });
 
-            
+
 
 
     }
@@ -171,13 +171,13 @@ $('#btnIr').click(function(){
                         $("<td></td>").text(data.marcas[m].tipoMarca))
                     .append(
                         $("<td></td>").text(data.marcas[m].fecha.hora))
-                    
+
                     );
-               }               
+               }
             }
             $(".hideDisplay").css("display","inline-flex");
             $(".qwer").html("");
-            $(".qwer").text(0+""+0+":"+""+0+""+0); 
+            $(".qwer").text(0+""+0+":"+""+0+""+0);
             if(data.result!="error"){
                 for(m in data.marcas){
                     if(data.marcas[m].tipoMarca=='Entrada'){
@@ -199,13 +199,13 @@ $('#btnIr').click(function(){
                         var tiempoEntradaAlmuerzo = data.marcas[m].fecha.hora
                     }
                     }
-                
-                  
+
+
                 inicioMinutos = parseInt(tiempoEntrada.substr(3,2));
-                
+
                 inicioHoras = parseInt(tiempoEntrada.substr(0,2));
                 finMinutos = parseInt(tiempoSalida.substr(3,2));
-                
+
                 finHoras = parseInt(tiempoSalida.substr(0,2));
                 transcurridoMinutos = finMinutos - inicioMinutos;
                 transcurridoHoras = finHoras - inicioHoras;  //bloque de salida y entrada
@@ -216,7 +216,7 @@ $('#btnIr').click(function(){
                 var finRecesoMinutos = parseInt(tiempoEntradaReceso.substr(3,2));
                 var finRecesoHoras = parseInt(tiempoEntradaReceso.substr(0,2));
                 var transcurridoRecesoMinutos = finRecesoMinutos - inicioRecesoMinutos;
-                var transcurridoRecesoHoras = finRecesoHoras - inicioRecesoHoras;//bloque para recesos 
+                var transcurridoRecesoHoras = finRecesoHoras - inicioRecesoHoras;//bloque para recesos
                 }else{
                     transcurridoRecesoHoras = 0;
                     transcurridoRecesoMinutos = 0;
@@ -235,20 +235,20 @@ $('#btnIr').click(function(){
 
                 var transcurridoHorasTotal = transcurridoHoras - transcurridoRecesoHoras - transcurridoAlmuerzoHoras;
                 var transcurridoMinutosTotal = transcurridoMinutos - transcurridoRecesoMinutos - transcurridoAlmuerzoMinutos;
-                
+
 
                 if (transcurridoMinutosTotal < 0) {
                     transcurridoHorasTotal--;
                     transcurridoMinutosTotal = 60 + transcurridoMinutosTotal;
                 }
-                
+
                 horas = transcurridoHorasTotal.toString();
                 minutos = transcurridoMinutosTotal.toString();
-                
+
                 if (horas.length < 2) {
                     horas = "0"+horas;
                 }
-                
+
                 if (minutos.length < 2) {
                     minutos = "0"+minutos;
                 }
@@ -260,16 +260,16 @@ $('#btnIr').click(function(){
 
                 //alert();
                 var cantidadFinal= horas+":"+minutos;
-                $(".qwer").text(cantidadFinal); 
- 
-             
+                $(".qwer").text(cantidadFinal);
+
+
             }
         },
         error: function(){
             alert("Error.");
         }
 
-    });  
+    });
 
     }//fin
 });
@@ -353,7 +353,7 @@ socket.on('disconnect', function () {
 });
 
 $(document).ready(function()
-{  
+{
    var codigo = $( "#codigoUsuario").text();
    $("#imagenPerfil").prop("src","/uploads/"+codigo+".png");
 

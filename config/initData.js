@@ -95,7 +95,7 @@ Contenido.findOne({ seccion: 'escritorioEmpl', llave: 'Modal hora extraordinaria
 
 Contenido.findOne({ seccion: 'Eventos', llave: 'Tabla Solicitudes de horas extraordinarias etiqueta cliente'}, function (err, contenido) {
     if (contenido) {
-        contenido.titulo = 'Ubicación:';
+        contenido.titulo = 'Ubicación';
 
         Contenido.findByIdAndUpdate(contenido._id, contenido, function(err, alerta){
             if (err) console.log(err);
@@ -210,3 +210,34 @@ Contenido.findOne({ seccion: 'escritorioEmpl', llave: 'Boton ir'}, function (err
         });
     }
 });
+
+Contenido.findOne({ seccion: 'escritorioEmpl', llave: 'Solicitud de horas extraordinarias etiqueta motivo'}, function (err, contenido) {
+    if (contenido) {
+        contenido.titulo = 'Detalle';
+
+        Contenido.findByIdAndUpdate(contenido._id, contenido, function(err, alerta){
+            if (err) console.log(err);
+        });
+    }
+});
+
+Contenido.findOne({ seccion: 'todosEventos', llave: 'Tabla solicitud de horas extraordinarias etiqueta motivo'}, function (err, contenido) {
+    if (contenido) {
+        contenido.titulo = 'Detalle';
+
+        Contenido.findByIdAndUpdate(contenido._id, contenido, function(err, alerta){
+            if (err) console.log(err);
+        });
+    }
+});
+
+Contenido.findOne({ seccion: 'Eventos', llave: 'Tabla Solicitudes de horas extraordinarias etiqueta motivo'}, function (err, contenido) {
+    if (contenido) {
+        contenido.titulo = 'Detalle';
+
+        Contenido.findByIdAndUpdate(contenido._id, contenido, function(err, alerta){
+            if (err) console.log(err);
+        });
+    }
+});
+
