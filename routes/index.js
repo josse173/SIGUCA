@@ -1727,7 +1727,7 @@ module.exports = function(app, io) {
     app.post('/generarBoleta/:boleta', autentificado, function (req, res) {
 
         var parametros = JSON.parse(req.params.boleta);
-        console.log(parametros);
+        //console.log(parametros);
         if (parametros.tipo === 'justificacion'){
 
             Justificaciones.findById(parametros.id).populate('usuario').exec(function (err, justificacion) {
@@ -1860,7 +1860,7 @@ module.exports = function(app, io) {
                 });
 
             });
-        } else if (parametros.tipo === 'Articulo'){
+        } else if (parametros.tipo === 'Articulo 51'){
 
             Solicitudes.findById(parametros.id).populate('usuario').exec(function (err, solicitud) {
                 if(err) return err;

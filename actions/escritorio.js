@@ -215,8 +215,6 @@ module.exports = {
 
 							crudUsuario.validarPeriodoUsuario(req.user, periodos);
 
-							console.log(result);
-
 							 // console.log('cargoAlosPeriodos: ' + infoPeriodo.cargoAlosPeriodos);
 							 // console.log('diasDerechoDisfrutar: ' + infoPeriodo.diasDerechoDisfrutar);
 							 // console.log('diasDisfrutados: ' + infoPeriodo.diasDisfrutados);
