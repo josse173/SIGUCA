@@ -267,9 +267,11 @@
                     option(value='Permiso Estudio') Permiso de Estudio
                     option(value='Familiar') Familiar
                     option(value='Articulo 51') Articulo 51
+                    option(value='Permiso sin goce de salario') Permiso sin goce de salario
                     option(value='otro') Otro
-                label(for='motivoOtro') #{textos[51].titulo}
-                  input#motivoOtro.form-control(type= 'text', placeholder='Otro', name= 'motivoOtro' style='float:left' disabled)
+                div(style='display:none').form-group#divOtro
+                  label(for='motivoOtro') #{textos[51].titulo}
+                    input#motivoOtro.form-control(type= 'text', placeholder='Otro', name= 'motivoOtro' style='float:left' disabled)
               .form-group
                 div(style='display:none').form-group#selectOpcionesArticulo
                   label(for='selectDerechoDisfrutar') #{textos[50].titulo}

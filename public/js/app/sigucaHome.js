@@ -277,6 +277,7 @@ $('#selectMotivo').change(function (){
     $("#divanno").attr('style','display:none');
     if($('#selectMotivo').val() != 'otro') $("#motivoOtro").attr('disabled','disabled') ;
     if($('#selectMotivo').val() == 'otro') $("#motivoOtro").removeAttr('disabled');
+    if($('#selectMotivo').val() == 'otro') $("#divOtro").attr('style','display:block');
     else if($('#selectMotivo').val() == 'Articulo 51')  $("#selectOpcionesArticulo").attr('style','display:block');
     else if($('#selectMotivo').val() == 'Vacaciones')  $("#selectOpcionesDepartamento").attr('style','display:block') &&
     $("#divPeriodoDescontar").attr('style','display:block') && $("#divDerechoDisfrutarPorPeriodo").attr('style','display:block') &&
