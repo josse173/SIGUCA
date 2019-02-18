@@ -32,7 +32,7 @@ block content
                       option(value=dep._id, selected) #{dep.nombre}
                     else
                       option(value=dep._id ) #{dep.nombre}
-              -if(vacaciones)
+              -if(vacaciones || tipoReporte === 'periodosUsuario')
                 td.hide
               -else
                 td
@@ -41,7 +41,7 @@ block content
                       input#date_range_start.form-control.fondoTransparente(type='text', name='fechaDesde', value=rangoFecha.fechaDesde)
                       span.input-group-addon.fondoTransparente-derecha
                         i.icon-calendar
-              -if(vacaciones)
+              -if(vacaciones || tipoReporte === 'periodosUsuario')
                 td.hide
               -else
                 td
