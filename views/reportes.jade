@@ -407,6 +407,7 @@ block content
                         th(data-hide="phone,small") #{textos[63].titulo}
                         th(data-hide="phone,small") #{textos[64].titulo}
                         th(data-hide="phone,small,medium") #{textos[65].titulo}
+                        th Motivo Articulo 51
                         th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[66].titulo}
                         th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[67].titulo}
                         th #{textos[68].titulo}
@@ -421,6 +422,10 @@ block content
                           td #{permiso.diaFinal}
                           td #{permiso.cantidadDias}
                           td #{permiso.motivo}
+                          if(permiso.motivo == 'Articulo 51')
+                            td #{permiso.motivoArticulo51}
+                          else
+                            td N/A
                           td #{permiso.detalle}
                           td #{permiso.comentarioSupervisor}
                           td #{permiso.estado}

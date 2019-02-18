@@ -155,7 +155,7 @@ block content
                             option(value= departamento.id) #{departamento.nombre}
 
                     label.labelFiltro(for='fechaIngreso') Fecha Ingreso:
-                      input#fechaIngreso.form-control(style="cursor:pointer; cursor: hand;", type="text", name='fechaIngreso', readonly="readonly")
+                      input#fechaIngresoo.form-control(type="text", name='fechaIngreso', readonly="readonly")
 
                     label.labelFiltro(for='vacaciones') Vacaciones:
                       input#vacaciones.form-control(type="text", name='vacaciones')
@@ -165,7 +165,7 @@ block content
                   .form-group
                      label(for="passwordInput")
                        |Contraseña:
-                       input.form-control#passInput(type='text', size='18', name="password", placeholder="Contraseña")
+                       input.form-control#passInput(type='password', size='18', name="password", placeholder="Contraseña")
                        button.btn.btn-default(type='button', onclick='generatepass(8)') Generar Contraseña
                        input#idEmpleado.form-control(type= 'text',name="_id")
                   button.btn.btn-success#btnActualizarEmpleado(type='button') Actualizar

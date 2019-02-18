@@ -26,8 +26,8 @@
             td #{usuario.tipo}
           tr
             td
-              b #{textos[5].titulo}
-            td #{usuario.codTarjeta}
+              b Cédula:
+            td #{usuario.cedula}
           tr
             td
               b #{textos[6].titulo}
@@ -266,7 +266,7 @@
                     option(value='Permiso Médico') Permiso Médico
                     option(value='Permiso Estudio') Permiso de Estudio
                     option(value='Familiar') Familiar
-                    option(value='Articulo') Articulo 51
+                    option(value='Articulo 51') Articulo 51
                     option(value='otro') Otro
                 label(for='motivoOtro') #{textos[51].titulo}
                   input#motivoOtro.form-control(type= 'text', placeholder='Otro', name= 'motivoOtro' style='float:left' disabled)
