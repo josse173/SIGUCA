@@ -50,7 +50,7 @@ module.exports = {
         populateQuery.match = {departamentos:{$elemMatch:{departamento:req.body.filtro_departamento}}};
       }
       if(JSON.stringify(queryEpoch) !== JSON.stringify({})){
-        cierreQuery.epoch = marcaQuery.epoch = justQuery.fechaCreada = extraQuery.fechaCreada = permisosQuery.fechaCreada = periodosUsuarioQuery.fechaCreada =  queryEpoch;
+        cierreQuery.epoch = marcaQuery.epoch = justQuery.fechaCreada = extraQuery.fechaCreada = permisosQuery.fechaCreada =  queryEpoch;
       }
       if(usuarioId && usuarioId != 'todos'){
         justQuery.usuario = extraQuery.usuario = permisosQuery.usuario = marcaQuery.usuario = periodosUsuarioQuery.usuario = usuarioId;
@@ -185,7 +185,6 @@ module.exports = {
         extraQuery.fechaCreada = fechaCreada;
         permisosQuery.fechaCreada = fechaCreada;
         cierreQuery.epoch = fechaCreada;
-        periodoQuery.fechaCreada = fechaCreada;
       }
       Marca.find(marcaQuery).exec(function(error, marcas) {
         Justificaciones.find(justQuery).exec(function(error, justificaciones) {
