@@ -50,7 +50,6 @@ exports.addExtra = function(extra, cb){
 			Usuario.findOne({_id: horaExtraCreada.usuario}).populate('departamentos').exec(function (err, usuarioExtra) {
 				Usuario.find({ 'tipo': 'Supervisor', 'departamentos.departamento': usuarioExtra.departamentos[0].departamento}, {'email': 1}).exec(function (err, supervisor) {
 					if (err) return cb(err);
-					console.log(supervisor);
 					Correo.find({}, function (errorCritico, listaCorreos) {
 						if (!errorCritico && listaCorreos.length > 0) {
 
