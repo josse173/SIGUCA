@@ -282,6 +282,12 @@
                       option(value='Nacimiento Hijo') Nacimiento de Hijo
                       option(value='Diligencias') Diligencias personales justificadas
               .form-group
+                div(style='display:none').form-group#selectOpcionesPermisosSinSalario
+                  label(for='selectPermisosSinSalario') Tiempo:
+                    select#selectPermisosSinSalario.form-control(type= 'text', name= 'permisosSinSalarioTipo' style='float:left' required)
+                      each permisoSinSalario in permisosSinSalario
+                        option(value= permisoSinSalario.id + ';' + permisoSinSalario.cantidadMeses) #{permisoSinSalario.nombre}
+              .form-group
                 div(style='display:none').form-group#selectOpcionesDepartamento
                   label(for='selectDepartamento') Departamento :
                     select#selectDepartamento.form-control(type= 'text', name= 'departamento' style='float:left' required)

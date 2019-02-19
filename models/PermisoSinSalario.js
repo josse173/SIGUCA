@@ -1,6 +1,6 @@
 /** SIGUCA
  *
- *  Modelo de Permisos sin Salario
+ *  Modelo de Permisos sin salario
  *
  */
 
@@ -16,7 +16,7 @@ var SchemaPermisoSinSalario = new Schema({
         type: String,
         default: ''
     },
-    numeroPeriodo: {
+    numero: {
         type: Number,
         default: 0
     },
@@ -26,4 +26,4 @@ var SchemaPermisoSinSalario = new Schema({
     }
 });
 
-module.exports = mongoose.model('PermisosSinSalario', SchemaPermisoSinSalario);
+module.exports = mongoose.model('PermisoSinSalario', SchemaPermisoSinSalario);
