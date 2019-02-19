@@ -186,3 +186,9 @@ footer {
 .btn-success:hover, .btn-success:focus, .btn-success:active, .btn-success.active, .open .dropdown-toggle.btn-success{
     background-color: #004277;
 }
+
+.panel-success > .panel-heading {
+    color: #004277;
+    background-image: linear-gradient(to bottom,white 0,white 100%);
+    border-color: white;
+}
