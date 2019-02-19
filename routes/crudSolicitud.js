@@ -63,7 +63,7 @@ exports.addExtra = function(extra, cb){
 										+ " ha creado la siguiente solicitud de hora extra: "
 										+ "\r\n Día de Inicio: " + moment.unix(epochInicio).format("YYYY-MM-DD hh:mm:ss") + '<br>'
 										+ "\r\n Día de termino: " + moment.unix(epochTermino).format("YYYY-MM-DD hh:mm:ss")+ '<br>'
-										+ "\r\n Ubicación: " + extra.ubicacion + '<br>'
+										+ "\r\n Ubicación: " + extra.cliente + '<br>'
 										+ "\r\n Detalle: " + extra.motivo + '<br>';
 
 								enviarCorreo.enviar(from, to, subject, titulo, text);
