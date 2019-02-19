@@ -260,7 +260,7 @@
                 input#cantidadDias.form-control(type= 'hidden', placeholder='3', name= 'cantidadDias' required)
               .form-group
                 label(for='motivo') #{textos[50].titulo}
-                  select#selectMotivo.form-control(type= 'text', name= 'motivo' style='float:left' required)
+                  select#selectMotivo.form-control(type= 'text', name= 'motivo' style='float:left')
                     option(value='seleccionar') Seleccione una opción
                     option(value='Vacaciones') Vacaciones
                     option(value='Permiso Médico') Permiso Médico
@@ -273,7 +273,7 @@
               .form-group
                 div(style='display:none').form-group#selectOpcionesArticulo
                   label(for='selectDerechoDisfrutar') #{textos[50].titulo}
-                    select#selectDerechoDisfrutar.form-control(type= 'text', name= 'motivoArticulo51' style='float:left' required)
+                    select#selectDerechoDisfrutar.form-control(type= 'text', name= 'motivoArticulo51' style='float:left')
                       option(value='seleccionar') Seleccione una opción
                       option(value='Matrimonio') Matrimonio
                       option(value='Fallecimiento') Fallecimiento de familiar
@@ -282,7 +282,7 @@
               .form-group
                 div(style='display:none').form-group#selectOpcionesDepartamento
                   label(for='selectDepartamento') Departamento :
-                    select#selectDepartamento.form-control(type= 'text', name= 'departamento' style='float:left' required)
+                    select#selectDepartamento.form-control(type= 'text', name= 'departamento' style='float:left')
                       each departamento, i in departamentosUsuario
                         option(value= departamento.id) #{departamento.nombre}
               .form-group
@@ -308,7 +308,7 @@
               .form-group
                 div(style='display:none').form-group#divInciso
                   label(for='inciso') Inciso:
-                    select#selectInciso.form-control(type= 'text', name= 'inciso', style='float:left', required)
+                    select#selectInciso.form-control(type= 'text', name= 'inciso', style='float:left')
                       option(value='seleccionar') Seleccione una opción
                       option(value='Inciso A') Inciso A
                       option(value='Inciso B') Inciso B

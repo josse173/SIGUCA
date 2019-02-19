@@ -58,9 +58,14 @@ module.exports = {
 													CierrePersonal.find({epoch:{"$gte": epochYesterday.unix()}}).exec(function(err, cierres) {
 
 														var depIds = [];
-														req.user.departamentos.forEach(function (departamento){
-															depIds.push(departamento.departamento.toString());
-														});
+
+														if(req.user.departamentos && req.user.departamentos.length > 0){
+															req.user.departamentos.forEach(function (departamento){
+																if(departamento.departamento){
+																	depIds.push(departamento.departamento.toString());
+																}
+															});
+														}
 
 														Departamento.find({_id:{"$in": depIds}}).exec(function(error, departamentosUsuario){
 															if (error) return res.json(err);
@@ -187,10 +192,14 @@ module.exports = {
 				Justificaciones.find({usuario: req.user.id, estado:'Incompleto', tipoUsuario: req.session.name}).exec(function(error, justificaciones) {
 					if (error) return res.json(error);
 
-					var depIds = [];
-					req.user.departamentos.forEach(function (departamento){
-						depIds.push(departamento.departamento.toString());
-					});
+					if(req.user.departamentos && req.user.departamentos.length > 0){
+						var depIds = [];
+						req.user.departamentos.forEach(function (departamento){
+							if(departamento.departamento){
+								depIds.push(departamento.departamento.toString());
+							}
+						});
+					}
 
 					Departamento.find({_id:{"$in": depIds}}).exec(function(error, departamentosUsuario){
 						if (error) return res.json(err);

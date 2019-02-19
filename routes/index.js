@@ -1734,13 +1734,17 @@ module.exports = function(app, io) {
                 if(err) return err;
                 Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(justificacion.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
                     if(error) return error;
+                    var nombreSupervisor = '';
+                    if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){
+                        nombreSupervisor = supervisor.nombre + ' ' + supervisor.apellido1 + ' ' + supervisor.apellido2;
+                    }
                     var mensaje = 'Nombre: ' + justificacion.usuario.nombre + ' ' + justificacion.usuario.apellido1 + ' ' + justificacion.usuario.apellido2 + '<br>';
                     mensaje += 'Fecha: ' + moment.unix(justificacion.fechaCreada).format("YYYY-MM-DD hh:mm:ss") + '<br>';
                     mensaje += 'Información: ' + justificacion.informacion + '<br>';
                     mensaje += 'Detalle: ' + justificacion.detalle + '<br>';
                     mensaje += 'Motivo: ' + justificacion.motivo + '<br>';
                     mensaje += 'Estado: ' + justificacion.estado + '<br>';
-                    mensaje += 'Supervisor: ' + supervisor.nombre + ' ' + supervisor.apellido1 + ' ' + supervisor.apellido2 + '<br>';
+                    mensaje += 'Supervisor: ' + nombreSupervisor + '<br>';
                     mensaje += 'Comentario del supervisor: ' + justificacion.comentarioSupervisor + '<br>';
 
                     var html = boleta.generarBoleta('Boleta de justificación', mensaje);
@@ -1758,6 +1762,10 @@ module.exports = function(app, io) {
                 if(err) return err;
                 Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
                     if(error) return error;
+                    var nombreSupervisor = '';
+                    if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){
+                        nombreSupervisor = supervisor.nombre + ' ' + supervisor.apellido1 + ' ' + supervisor.apellido2;
+                    }
                     var mensaje = 'Nombre: ' + solicitud.usuario.nombre + ' ' + solicitud.usuario.apellido1 + ' ' + solicitud.usuario.apellido2 + '<br>';
                     mensaje += 'Solicitud de: ' + solicitud.motivo + '<br>';
                     mensaje += 'Detalle: ' + solicitud.detalle + '<br>';
@@ -1766,7 +1774,7 @@ module.exports = function(app, io) {
                     mensaje += 'Fin de vacaciones: ' + solicitud.diaFinal + '<br>';
                     mensaje += 'Cantidad de días: ' + solicitud.cantidadDias + '<br>';
                     mensaje += 'Estado: ' + solicitud.estado + '<br>';
-                    mensaje += 'Supervisor: ' + supervisor.nombre + ' ' + supervisor.apellido1 + ' ' + supervisor.apellido2 + '<br>';
+                    mensaje += 'Supervisor: ' + nombreSupervisor + '<br>';
                     mensaje += 'Comentario del supervisor: ' + solicitud.comentarioSupervisor + '<br>';
 
                     var html = boleta.generarBoleta('Boleta solicitud de vacaciones', mensaje);
@@ -1785,6 +1793,10 @@ module.exports = function(app, io) {
                 if(err) return err;
                 Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
                     if(error) return error;
+                    var nombreSupervisor = '';
+                    if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){
+                        nombreSupervisor = supervisor.nombre + ' ' + supervisor.apellido1 + ' ' + supervisor.apellido2;
+                    }
                     var mensaje = 'Nombre: ' + solicitud.usuario.nombre + ' ' + solicitud.usuario.apellido1 + ' ' + solicitud.usuario.apellido2 + '<br>';
                     mensaje += 'Solicitud de: ' + solicitud.motivo + '<br>';
                     mensaje += 'Detalle: ' + solicitud.detalle + '<br>';
@@ -1793,7 +1805,7 @@ module.exports = function(app, io) {
                     mensaje += 'Fin fin: ' + solicitud.diaFinal + '<br>';
                     mensaje += 'Cantidad de días: ' + solicitud.cantidadDias + '<br>';
                     mensaje += 'Estado: ' + solicitud.estado + '<br>';
-                    mensaje += 'Supervisor: ' + supervisor.nombre + ' ' + supervisor.apellido1 + ' ' + supervisor.apellido2 + '<br>';
+                    mensaje += 'Supervisor: ' + nombreSupervisor + '<br>';
                     mensaje += 'Comentario del supervisor: ' + solicitud.comentarioSupervisor + '<br>';
 
                     var html = boleta.generarBoleta('Boleta solicitud de permiso médico', mensaje);
@@ -1812,6 +1824,10 @@ module.exports = function(app, io) {
                 if(err) return err;
                 Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
                     if(error) return error;
+                    var nombreSupervisor = '';
+                    if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){
+                        nombreSupervisor = supervisor.nombre + ' ' + supervisor.apellido1 + ' ' + supervisor.apellido2;
+                    }
                     var mensaje = 'Nombre: ' + solicitud.usuario.nombre + ' ' + solicitud.usuario.apellido1 + ' ' + solicitud.usuario.apellido2 + '<br>';
                     mensaje += 'Solicitud de permiso: ' + solicitud.motivo + '<br>';
                     mensaje += 'Detalle: ' + solicitud.detalle + '<br>';
@@ -1820,7 +1836,7 @@ module.exports = function(app, io) {
                     mensaje += 'Fin fin: ' + solicitud.diaFinal + '<br>';
                     mensaje += 'Cantidad de días: ' + solicitud.cantidadDias + '<br>';
                     mensaje += 'Estado: ' + solicitud.estado + '<br>';
-                    mensaje += 'Supervisor: ' + supervisor.nombre + ' ' + supervisor.apellido1 + ' ' + supervisor.apellido2 + '<br>';
+                    mensaje += 'Supervisor: ' + nombreSupervisor + '<br>';
                     mensaje += 'Comentario del supervisor: ' + solicitud.comentarioSupervisor + '<br>';
 
                     var html = boleta.generarBoleta('Boleta solicitud de permiso familiar', mensaje);
@@ -1839,6 +1855,10 @@ module.exports = function(app, io) {
                 if(err) return err;
                 Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
                     if(error) return error;
+                    var nombreSupervisor = '';
+                    if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){
+                        nombreSupervisor = supervisor.nombre + ' ' + supervisor.apellido1 + ' ' + supervisor.apellido2;
+                    }
                     var mensaje = 'Nombre: ' + solicitud.usuario.nombre + ' ' + solicitud.usuario.apellido1 + ' ' + solicitud.usuario.apellido2 + '<br>';
                     mensaje += 'Solicitud de: ' + solicitud.motivo + '<br>';
                     mensaje += 'Detalle: ' + solicitud.detalle + '<br>';
@@ -1847,7 +1867,7 @@ module.exports = function(app, io) {
                     mensaje += 'Fin fin: ' + solicitud.diaFinal + '<br>';
                     mensaje += 'Cantidad de días: ' + solicitud.cantidadDias + '<br>';
                     mensaje += 'Estado: ' + solicitud.estado + '<br>';
-                    mensaje += 'Supervisor: ' + supervisor.nombre + ' ' + supervisor.apellido1 + ' ' + supervisor.apellido2 + '<br>';
+                    mensaje += 'Supervisor: ' + nombreSupervisor + '<br>';
                     mensaje += 'Comentario del supervisor: ' + solicitud.comentarioSupervisor + '<br>';
 
                     var html = boleta.generarBoleta('Boleta solicitud de permiso estudio', mensaje);
@@ -1864,9 +1884,12 @@ module.exports = function(app, io) {
 
             Solicitudes.findById(parametros.id).populate('usuario').exec(function (err, solicitud) {
                 if(err) return err;
-                console.log(solicitud);
                 Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
                     if(error) return error;
+                    var nombreSupervisor = '';
+                    if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){
+                        nombreSupervisor = supervisor.nombre + ' ' + supervisor.apellido1 + ' ' + supervisor.apellido2;
+                    }
                     var mensaje = 'Nombre: ' + solicitud.usuario.nombre + ' ' + solicitud.usuario.apellido1 + ' ' + solicitud.usuario.apellido2 + '<br>';
                     mensaje += 'Solicitud de: ' + solicitud.motivo + '<br>';
                     mensaje += 'Motivo: ' + solicitud.motivoArticulo51 + '<br>';
@@ -1876,7 +1899,7 @@ module.exports = function(app, io) {
                     mensaje += 'Fin fin: ' + solicitud.diaFinal + '<br>';
                     mensaje += 'Cantidad de días: ' + solicitud.cantidadDias + '<br>';
                     mensaje += 'Estado: ' + solicitud.estado + '<br>';
-                    mensaje += 'Supervisor: ' + supervisor.nombre + ' ' + supervisor.apellido1 + ' ' + supervisor.apellido2 + '<br>';
+                    mensaje += 'Supervisor: ' + nombreSupervisor + '<br>';
                     mensaje += 'Comentario del supervisor: ' + solicitud.comentarioSupervisor + '<br>';
 
                     var html = boleta.generarBoleta('Boleta solicitud de permiso articulo 51', mensaje);
@@ -1896,6 +1919,10 @@ module.exports = function(app, io) {
 
                 Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
                     if(error) return error;
+                    var nombreSupervisor = '';
+                    if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){
+                        nombreSupervisor = supervisor.nombre + ' ' + supervisor.apellido1 + ' ' + supervisor.apellido2;
+                    }
                     var mensaje = 'Nombre: ' + solicitud.usuario.nombre + ' ' + solicitud.usuario.apellido1 + ' ' + solicitud.usuario.apellido2 + '<br>';
                     mensaje += 'Solicitud de permiso: ' + solicitud.motivo + '<br>';
                     mensaje += 'Detalle: ' + solicitud.detalle + '<br>';
@@ -1904,7 +1931,7 @@ module.exports = function(app, io) {
                     mensaje += 'Fin fin: ' + solicitud.diaFinal + '<br>';
                     mensaje += 'Cantidad de días: ' + solicitud.cantidadDias + '<br>';
                     mensaje += 'Estado: ' + solicitud.estado + '<br>';
-                    mensaje += 'Supervisor: ' + supervisor.nombre + ' ' + supervisor.apellido1 + ' ' + supervisor.apellido2 + '<br>';
+                    mensaje += 'Supervisor: ' + nombreSupervisor + '<br>';
                     mensaje += 'Comentario del supervisor: ' + solicitud.comentarioSupervisor + '<br>';
 
                     var html = boleta.generarBoleta('Boleta solicitud de permiso', mensaje);
@@ -1921,9 +1948,12 @@ module.exports = function(app, io) {
 
             HoraExtra.findById(parametros.id).populate('usuario').exec(function (err, horasExtra) {
                 if(err) return err;
-                console.log(horasExtra);
                 Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(horasExtra.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
                     if(error) return error;
+                    var nombreSupervisor = '';
+                    if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){
+                        nombreSupervisor = supervisor.nombre + ' ' + supervisor.apellido1 + ' ' + supervisor.apellido2;
+                    }
                     var mensaje = 'Nombre: ' + horasExtra.usuario.nombre + ' ' + horasExtra.usuario.apellido1 + ' ' + horasExtra.usuario.apellido2 + '<br>';
                     mensaje += 'Motivo: ' + horasExtra.motivo + '<br>';
                     mensaje += 'Ubicación: ' + horasExtra.ubicacion + '<br>';
@@ -1932,7 +1962,7 @@ module.exports = function(app, io) {
                     mensaje += 'Fecha de Fin: ' + moment.unix(horasExtra.fechaFinal).format("YYYY-MM-DD hh:mm:ss") + '<br>';
                     mensaje += 'Tiempo solicitado: ' + horasExtra.tiempoSolicitadoTexto + '<br>';
                     mensaje += 'Estado: ' + horasExtra.estado + '<br>';
-                    mensaje += 'Supervisor: ' + supervisor.nombre + ' ' + supervisor.apellido1 + ' ' + supervisor.apellido2 + '<br>';
+                    mensaje += 'Supervisor: ' + nombreSupervisor+ '<br>';
                     mensaje += 'Comentario del supervisor: ' + horasExtra.comentarioSupervisor + '<br>';
 
                     var html = boleta.generarBoleta('Boleta solicitud de horas extra', mensaje);

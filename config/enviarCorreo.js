@@ -5,8 +5,8 @@ module.exports = { enviar : function (de, para, titulo, tituloCuerpo, cuerpo ) {
         var transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
-                user: 'rsoto07@gmail.com',
-                pass: 'Rolo123456'
+                user: 'rsoto07.2@gmail.com',
+                pass: 'Qwerty123!'
             }
         });
 
