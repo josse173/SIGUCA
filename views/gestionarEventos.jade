@@ -83,7 +83,7 @@ block content
                         td #{justificacion.motivo}
                         td #{justificacion.detalle}
                         td
-                          textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
+                          textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario") #{justificacion.comentarioSupervisor}
                         td
                           select.select_picker.estado(name='estado' data-width="auto" data-style="btn-inverse")
                             option(value='Pendiente') #{textos[11].titulo}
@@ -134,7 +134,7 @@ block content
                         td #{extra.ubicacion}
                         td #{extra.motivo}
                         td
-                          textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
+                          textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario") #{extra.comentarioSupervisor}
                         td
                           select.select_picker(name="estado"+extra.id, id="estado"+extra.id, data-width="auto"  data-style="btn-inverse")
                             option(value='Pendiente') #{textos[11].titulo}
@@ -198,7 +198,7 @@ block content
                             td #{permiso.inciso}
                           td #{permiso.detalle}
                           td
-                            textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
+                            textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario") #{permiso.comentarioSupervisor}
                           td
                             select.select_picker(name='estado'+permiso.id, id="estado"+permiso.id, data-width="auto"  data-style="btn-inverse")
                               option(value='Pendiente') #{textos[11].titulo}
@@ -253,7 +253,7 @@ block content
                           td#motivo #{permiso.motivo}
                           td #{permiso.detalle}
                           td
-                            textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
+                            textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario") #{permiso.comentarioSupervisor}
                           td(class=permiso.usuario.id) #{permiso.usuario.vacaciones}
                           td
                             select.select_picker(name='estado'+permiso.id, id="estado"+permiso.id, data-width="auto"  data-style="btn-inverse")

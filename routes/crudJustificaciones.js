@@ -8,7 +8,7 @@ Justificaciones = require('../models/Justificaciones'),
 util 			= require('../util/util'),
 config 			= require('../config.json'),
 emailSIGUCA 	= 'siguca@greencore.co.cr';
-
+var enviarCorreo = require('../config/enviarCorreo');
 //--------------------------------------------------------------------
 //	Métodos Justificaciones
 //	---------------------------------------------------------------------*/
@@ -314,50 +314,42 @@ exports.deleteJustMasa = function(id, cb){
 exports.gestionarJust = function(justificacion, cb, idUser){
 
 	Usuario.findById(idUser, function (errUser, supervisor) {
-		Justificaciones.findByIdAndUpdate(
-			justificacion.id,
-			{
-				estado: justificacion.estado,
-				comentarioSupervisor: justificacion.comentarioSupervisor
-			}
-			).populate('usuario').exec(function (err, just) {
+		Justificaciones.findByIdAndUpdate( justificacion.id,{estado: justificacion.estado,comentarioSupervisor: justificacion.comentarioSupervisor}).populate('usuario').exec(function (err, just) {
 				if (err) return cb(err, '');
 				Correo.find({},function(errorCritico,listaCorreos){
 					if(!errorCritico &&listaCorreos.length>0){
-						var transporter = nodemailer.createTransport('smtps://'+listaCorreos[0].nombreCorreo+':'+listaCorreos[0].password+'@'+listaCorreos[0].dominioCorreo);
+
 						var a = new Date(just.fechaCreada * 1000);
 						var date = ""+a.getDate()+"/"+util.getMes(a.getMonth())+"/"+a.getFullYear();
 
-						var justtext = "\r\n\r\nFecha de creación:"+date+"\n"
-						+ "Motivo:"+just.motivo+"\n"
-						+ "Detalle:"+just.detalle+"\r\n\r\n";
+						var justtext = "<br>Fecha de creación: "+date+"\n"
+						+ "<br>Motivo: "+just.motivo+"\n"
+						+ "<br>Detalle: "+just.detalle+"<br><br>";
+
 						var superV = "";
 						if(!errUser && supervisor) {
 							superV += supervisor.nombre;
 							superV += " " + supervisor.apellido1;
 							superV += " " + supervisor.apellido2;
 						}
-						transporter.sendMail({
-							from:listaCorreos[0].nombreCorreo,
-							to: just.usuario.email,
-							subject: 'Respuesta a justificación en SIGUCA',
-							text: " Estimado(a) " + just.usuario.nombre
-							+ ",\r\n\r\nPor este medio se le notifica que "
-							+"la siguiente justificación ha sido respondida:"
+						var from =listaCorreos[0].nombreCorreo,
+							to = just.usuario.email,
+							subject =  'Respuesta a justificación en SIGUCA',
+							titulo = " Estimado(a) " + just.usuario.nombre
+							texto = "<br><br>Por este medio se le notifica que "
+							+"la siguiente justificación ha sido respondida:<br>"
 							+ justtext
-							+ "Le informamos que la justificación fue " + justificacion.estado
+							+ "Le informamos que la justificación se encuentra en estado " + justificacion.estado
 							+ " por el supervisor " + superV
-							+ ", con el siguiente comentario"
-							+ "\r\n\r\n " + justificacion.comentarioSupervisor
-							+ "\r\n\r\n Saludos cordiales."
-						});
-						return cb(err, 'Se elimino');
-					}else{
-						return cb(err, 'Se elimino');
+							+ ", con el siguiente comentario:"
+							+ "<br><br> " + justificacion.comentarioSupervisor
+							+ "<br><br>Saludos cordiales.";
+
+						enviarCorreo.enviar(from, to, subject, titulo, texto);
 
 					}
 				});
-
+			return cb(err, 'Justificacion actualizada');
 			});
 		//
 	});

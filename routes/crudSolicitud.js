@@ -381,9 +381,10 @@ exports.gestionarSoli = function(solicitud, cb, idUser){
 
 					var a = new Date(soli.fechaCreada * 1000);
 					var date = ""+a.getDate()+"/"+util.getMes(a.getMonth())+"/"+a.getFullYear();
-					var solitext = "\r\n\r\nFecha de creación:"+date+"\n"
-					+ "Motivo:"+soli.motivo+"\n"
-					+ "Detalle:"+soli.detalle+"\r\n\r\n";
+					var solitext = "<br>Fecha de creación: "+date+"\n"
+					+ "<br>Motivo: "+soli.motivo+"\n"
+					+ "<br>Detalle: "+soli.detalle+"<br><br>";
+
 					var superV = "";
 					if(!errUser && supervisor) {
 						superV += supervisor.nombre;
@@ -393,9 +394,9 @@ exports.gestionarSoli = function(solicitud, cb, idUser){
 
 					var text = "Por este medio se le notifica que la siguiente solicitud ha sido respondida:<br>"
 					+ solitext
-					+ "<br>Le informamos que la justificación fue " + solicitud.estado
+					+ "<br>Le informamos que la solicitud se encuentra en estado " + solicitud.estado
 					+ " por el supervisor " + superV
-					+ ", con el siguiente comentario"
+					+ ", con el siguiente comentario:"
 					+ "<br> " + solicitud.comentarioSupervisor
 					+ "<br><br> Saludos cordiales.";
 
@@ -405,7 +406,7 @@ exports.gestionarSoli = function(solicitud, cb, idUser){
 				}
 			});
 
-			return cb(err, 'Se elimino');
+			return cb(err, 'Solicitud actualizada');
 
 		});
 });
@@ -416,9 +417,6 @@ exports.gestionarHorasExtras = function(horaExtra, cb, idUser){
 	Usuario.findById(idUser, function (errUser, supervisor) {
 		HoraExtra.findByIdAndUpdate(horaExtra.id,	{estado: horaExtra.estado, comentarioSupervisor:horaExtra.comentarioSupervisor}).populate('usuario').exec(function (err, soli) {
 
-			/*
-			 * Envía el correo electrónico
-			 */
 
 			if (err) return cb(err, '');
 			Correo.find({},function(errorCritico,listaCorreos){
@@ -437,10 +435,10 @@ exports.gestionarHorasExtras = function(horaExtra, cb, idUser){
 					+ '<br><br>Fecha de creación: ' + moment.unix(soli.fechaCreada).format("YYYY-MM-DD hh:mm:ss") + '<br>'
 						+ 'Motivo: ' + soli.motivo + '<br>'
 						+ 'Ubicación: '+ soli.ubicacion+ '<br><br>'
-					+ 'Le informamos que la justificación fue ' + horaExtra.estado
+					+ 'Le informamos que la justificación se encuentra en estado ' + horaExtra.estado
 					+ ' por el supervisor ' + superV
-					+ ', con el siguiente comentario: '+ horaExtra.comentarioSupervisor
-					+ '<br><br> Saludos cordiales.';
+					+ ', con el siguiente comentario: <br>'+ horaExtra.comentarioSupervisor
+					+ '<br><br>Saludos cordiales.';
 
 					enviarCorreo.enviar(listaCorreos[0].nombreCorreo, soli.usuario.email, 'Respuesta a solicitud en SIGUCA', 'Estimado(a) ' + soli.usuario.nombre + ' '+ soli.usuario.apellido1 + ',', text);
 

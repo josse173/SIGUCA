@@ -749,7 +749,8 @@ $("#extraLink").click(function(){
             $.post('/getionarSolicitudAjax/'+id,
                 {comentarioSupervisor: comentarioSupervisor, estado: estado},
                 function (data){
-                    if(data == 'Se elimino'){
+                    alertify.success('Solicitud actualizada.');
+                    if(estado !== 'Pendiente'){
                         footable.removeRow(row);
                     }
                 });
@@ -771,7 +772,8 @@ $("#extraLink").click(function(){
          $.post('/getionarHorasExtrasAjax/'+id,
              {comentarioSupervisor: comentarioSupervisor, estado: estado},
              function (data){
-                 if(data == 'Se elimino'){
+                 alertify.success('Hora extra actualizada.');
+                 if(estado !== 'Pendiente'){
                      footable.removeRow(row);
                  }
              });
@@ -815,7 +817,8 @@ $("#extraLink").click(function(){
             $.post('/getionarSolicitudAjax/'+id,
                 {comentarioSupervisor: comentarioSupervisor, estado: estado, motivo: motivo},
                 function (data){
-                    if(data == 'Se elimino'){
+                    alertify.success('Hora extra actualizada.');
+                    if(estado !== 'Pendiente'){
                         footable.removeRow(row);
                     }
                 });
@@ -841,7 +844,8 @@ $("#extraLink").click(function(){
             $.post('/getionarJustificacionAjax/'+id,
                 {comentarioSupervisor: comentarioSupervisor, estado: estado},
                 function (data){
-                    if(data == 'Se elimino'){
+                    alertify.success('Justificación actualizada.');
+                    if(estado !== 'Pendiente'){
                         footable.removeRow(row);
                     }
                 });
@@ -1288,7 +1292,6 @@ $('.tableJustificaciones').footable().on('click', '.justificacionBoleta',
      function(e) {
 
          e.preventDefault();
-         console.log('here');
          var parametros = $(this).val().split(';');
 
          var req = new XMLHttpRequest();

@@ -384,33 +384,21 @@ module.exports = function(app, io) {
         var solicitud = req.body;
         solicitud.id = req.params.id;
 
-        //var estadoreal = 'Pendiente'+solicitud.id;
-        var estadoreal = 'Pendiente';
-
-        if(solicitud.estado != estadoreal) {
-            crudSolicitud.gestionarSoli(solicitud, function (err, msj) {
-                if (err) res.json(err);
-                else res.send(msj);
-            },req.user.id);
-        } else {
-            res.send('');
-        }
+        crudSolicitud.gestionarSoli(solicitud, function (err, msj) {
+            if (err) res.json(err);
+            else res.send(msj);
+        },req.user.id);
     });
 
     app.post('/getionarHorasExtrasAjax/:id', autentificado, function (req, res) {
         var horaExtra = req.body;
         horaExtra.id = req.params.id;
 
-        var estadoreal = 'Pendiente';
+        crudSolicitud.gestionarHorasExtras(horaExtra, function (err, msj) {
+            if (err) res.json(err);
+            else res.send(msj);
+        },req.user.id);
 
-        if(horaExtra.estado != estadoreal) {
-            crudSolicitud.gestionarHorasExtras(horaExtra, function (err, msj) {
-                if (err) res.json(err);
-                else res.send(msj);
-            },req.user.id);
-        } else {
-            res.send('');
-        }
     });
 
     /*
@@ -420,14 +408,12 @@ module.exports = function(app, io) {
 
         var justificacion = req.body;
         justificacion.id = req.params.id;
-        if(justificacion.estado != 'Pendiente') {
-            crudJustificaciones.gestionarJust(justificacion, function (err, msj) {
-                if (err) res.json(err);
-                else res.send(msj);
-            }, req.user.id);
-        } else {
-            res.send('');
-        }
+
+        crudJustificaciones.gestionarJust(justificacion, function (err, msj) {
+            if (err) res.json(err);
+            else res.send(msj);
+        }, req.user.id);
+
     });
 
     //******************************************************************************
