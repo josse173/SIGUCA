@@ -67,14 +67,13 @@ exports.addExtra = function(extra, cb){
 										+ "\r\n Detalle: " + extra.motivo + '<br>';
 
 								enviarCorreo.enviar(from, to, subject, titulo, text);
-
-								return cb("Guardado correctamente.");
 							}
 						}
 					});
 
 				});
 			});
+			return cb("Guardado correctamente.");
 		}
 	});
 };
