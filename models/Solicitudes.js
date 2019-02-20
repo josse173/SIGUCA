@@ -1,4 +1,4 @@
-/** SIGUCA 
+/** SIGUCA
  *
  *  Modelo de Solicitudes
  *
@@ -12,7 +12,7 @@ var SchemaSolicitudes = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Usuario'
     },
-    tipoSolicitudes: { 
+    tipoSolicitudes: {
         type: String,
         default: ''
     },
@@ -24,19 +24,19 @@ var SchemaSolicitudes = new Schema({
         type: String,
         default: ''
     },
-    /*Inicio: { 
+    /*Inicio: {
         type: String,
         default: ''
     },
-    Termino: { 
+    Termino: {
         type: String,
         default: ''
     },*/
-    epochInicio: { 
+    epochInicio: {
         type: Number,
         default: 0
     },
-    epochTermino: { 
+    epochTermino: {
         type: Number,
         default: 0
     },
@@ -64,11 +64,11 @@ var SchemaSolicitudes = new Schema({
         type: String,
         default: ''
     },
-    cantidadHoras: { 
+    cantidadHoras: {
         type: String,
         default: ''
     },
-    cantidadDias: { 
+    cantidadDias: {
         type: String,
         default: ''
     },
@@ -79,7 +79,12 @@ var SchemaSolicitudes = new Schema({
     motivoArticulo51:{
         type: String,
         default: ''
-    }
+    },
+    motivoOtro:{
+        type: String,
+        default: ''
+    },
+
 });
 
 module.exports = mongoose.model('Solicitudes', SchemaSolicitudes);

@@ -59,12 +59,15 @@ module.exports = {
 													PermisoSinSalario.find().sort({numero: 1}).exec(function(error, permisosSinSalario) {
 														CierrePersonal.find({epoch:{"$gte": epochYesterday.unix()}}).exec(function(err, cierres) {
 
-															var depIds = [];
-															if(req.user.departamentos && req.user.departamentos.length > 0){
-																req.user.departamentos.forEach(function (departamento){
+														var depIds = [];
+
+														if(req.user.departamentos && req.user.departamentos.length > 0){
+															req.user.departamentos.forEach(function (departamento){
+																if(departamento.departamento){
 																	depIds.push(departamento.departamento.toString());
-																});
-															}
+																}
+															});
+														}
 
 															Departamento.find({_id:{"$in": depIds}}).exec(function(error, departamentosUsuario){
 																if (error) return res.json(err);
@@ -192,14 +195,15 @@ module.exports = {
 				if (error) return res.json(error);
 				Justificaciones.find({usuario: req.user.id, estado:'Incompleto', tipoUsuario: req.session.name}).exec(function(error, justificaciones) {
 					if (error) return res.json(error);
-					PermisoSinSalario.find().sort({numero: 1}).exec(function(error, permisosSinSalario) {
-						if (error) return res.json(error);
+
+					if(req.user.departamentos && req.user.departamentos.length > 0){
 						var depIds = [];
-						if(req.user.departamentos && req.user.departamentos.length > 0){
-							req.user.departamentos.forEach(function (departamento){
+						req.user.departamentos.forEach(function (departamento){
+							if(departamento.departamento){
 								depIds.push(departamento.departamento.toString());
-							});
-						}
+							}
+						});
+					}
 
 						Departamento.find({_id:{"$in": depIds}}).exec(function(error, departamentosUsuario){
 							if (error) return res.json(err);

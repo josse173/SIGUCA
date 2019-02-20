@@ -260,7 +260,7 @@
                 input#cantidadDias.form-control(type= 'hidden', placeholder='3', name= 'cantidadDias' required)
               .form-group
                 label(for='motivo') #{textos[50].titulo}
-                  select#selectMotivo.form-control(type= 'text', name= 'motivo' style='float:left' required)
+                  select#selectMotivo.form-control(type= 'text', name= 'motivo' style='float:left')
                     option(value='seleccionar') Seleccione una opción
                     option(value='Vacaciones') Vacaciones
                     option(value='Permiso Médico') Permiso Médico
@@ -268,14 +268,13 @@
                     option(value='Familiar') Familiar
                     option(value='Articulo 51') Articulo 51
                     option(value='Permiso sin goce de salario') Permiso sin goce de salario
-                    option(value='otro') Otro
-                div(style='display:none').form-group#divOtro
-                  label(for='motivoOtro') #{textos[51].titulo}
-                    input#motivoOtro.form-control(type= 'text', placeholder='Otro', name= 'motivoOtro' style='float:left' disabled)
+                    option(value='Otro') Otro
+                label(for='motivoOtro') #{textos[51].titulo}
+                  input#motivoOtro.form-control(type= 'text', placeholder='Otro', name= 'motivoOtro' style='float:left' disabled)
               .form-group
                 div(style='display:none').form-group#selectOpcionesArticulo
                   label(for='selectDerechoDisfrutar') #{textos[50].titulo}
-                    select#selectDerechoDisfrutar.form-control(type= 'text', name= 'motivoArticulo51' style='float:left' required)
+                    select#selectDerechoDisfrutar.form-control(type= 'text', name= 'motivoArticulo51' style='float:left')
                       option(value='seleccionar') Seleccione una opción
                       option(value='Matrimonio') Matrimonio
                       option(value='Fallecimiento') Fallecimiento de familiar
@@ -290,7 +289,7 @@
               .form-group
                 div(style='display:none').form-group#selectOpcionesDepartamento
                   label(for='selectDepartamento') Departamento :
-                    select#selectDepartamento.form-control(type= 'text', name= 'departamento' style='float:left' required)
+                    select#selectDepartamento.form-control(type= 'text', name= 'departamento' style='float:left')
                       each departamento, i in departamentosUsuario
                         option(value= departamento.id) #{departamento.nombre}
               .form-group
@@ -315,8 +314,8 @@
               //    input#saldoDisfrutarVacaciones.form-control(type= 'text', name= 'saldoDisfrutarVacaciones' disabled, value=infoPeriodos.diasDisponibles)
               .form-group
                 div(style='display:none').form-group#divInciso
-                  label(for='inciso') Inciso:
-                    select#selectInciso.form-control(type= 'text', name= 'inciso', style='float:left', required)
+                  label(for='selectInciso') Inciso:
+                    select#selectInciso.form-control(type= 'text', name= 'inciso', style='float:left')
                       option(value='seleccionar') Seleccione una opción
                       option(value='Inciso A') Inciso A
                       option(value='Inciso B') Inciso B
@@ -358,13 +357,13 @@
       .modal-body
         form.formJust(role='form', method="POST")#login-form.well.span4
           .form-group
-            label(for='motivoJust') #{textos[50].titulo}
+            label(for='selectMotivoJust') #{textos[50].titulo}
               select#selectMotivoJust.form-control(type= 'text', name= 'motivoJust' style='float:left' required)
                 option(value='seleccionar') Seleccione una opción
                 option(value='Tardía') Tardía
                 option(value='Omisión de Marca') Omisión de Marca
                 option(value='Ausencia') Ausencia
-                option(value='otro') Otro
+                option(value='Otro') Otro
             label(for='motivoOtroJust') #{textos[51].titulo}
               input#motivoOtroJust.form-control(type= 'text', placeholder='Otro', name= 'motivoOtroJust' style='float:left' disabled)
           .form-group

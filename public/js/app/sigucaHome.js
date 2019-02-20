@@ -285,10 +285,10 @@ $('#selectMotivo').change(function (){
         $("#divsaldoDiasDisfrutar").attr('style','display:none') &&
         $("#divanno").attr('style','display:none');
 
-    if($('#selectMotivo').val() != 'otro')
+    if($('#selectMotivo').val() != 'Otro')
         $("#motivoOtro").attr('disabled','disabled') ;
 
-    if($('#selectMotivo').val() == 'otro')
+    if($('#selectMotivo').val() == 'Otro')
         $("#motivoOtro").removeAttr('disabled') &&
         $("#divOtro").attr('style','display:block');
 
@@ -340,13 +340,8 @@ $('#selectDerechoDisfrutar').change(function (){
     }
 });
 
-/*$('#selectMotivo').change(function (){
-    if($('#selectMotivo').val() == 'otro') $("#motivoOtro").removeAttr('disabled');
-    else $("#motivoOtro").attr('disabled','disabled');
-});*/
-
 $('#selectMotivoJust').change(function (){
-    if($('#selectMotivoJust').val() == 'otro') $("#motivoOtroJust").removeAttr('disabled');
+    if($('#selectMotivoJust').val() == 'Otro') $("#motivoOtroJust").removeAttr('disabled');
     else $("#motivoOtroJust").attr('disabled','disabled');
 });
 

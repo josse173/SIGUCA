@@ -1210,7 +1210,7 @@ function workedHour(_idUser,horario, mOut, mReal,cb){
 function addJustIncompleta(_idUser, motivo, informacion, cb){
 	crudJustificaciones.addJust(
 		{id:_idUser, detalle:"", informacion: informacion,
-		estado:"Incompleto", motivoJust:"otro",
+		estado:"Incompleto", motivoJust:"Otro",
 		motivoOtroJust:motivo},
 		function(err, just){
 			if(!err) cb(motivo);

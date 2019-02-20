@@ -4,9 +4,11 @@ var urlHorario = 'asignarHorario';
 // A $( document ).ready() block.
 $( document ).ready(function() {
 
-    var alertasPrincipal = document.getElementById("alertas").value;
-    if(alertasPrincipal && !(alertasPrincipal === 'undefined')){
-        setInterval(validarAlertas, 10000);
+    if(document.getElementById("alertas")){
+        var alertasPrincipal = document.getElementById("alertas").value;
+        if(alertasPrincipal && !(alertasPrincipal === 'undefined')){
+            setInterval(validarAlertas, 10000);
+        }
     }
 
     function validarAlertas() {
@@ -203,14 +205,11 @@ $( document ).ready(function() {
         var li = document.createElement("li");
         li.textContent = ip;
        // document.getElementById("nose").innerHTML=ip;
-        document.getElementById("ipOrigen").value=ip;
-        if (ip.match(/^(192\.168\.|169\.254\.|10\.|172\.(1[6-9]|2\d|3[01]))/)){
-
-            //document.getElementsByTagName("ul")[0].appendChild(li);
-
-            //alert(ip);
+        if(document.getElementById("ipOrigen")){
+            document.getElementById("ipOrigen").value=ip;
+            if (ip.match(/^(192\.168\.|169\.254\.|10\.|172\.(1[6-9]|2\d|3[01]))/)){
+            }
         }
-        //IPv6 addresses
 
     });
 });
@@ -411,6 +410,6 @@ $("#selectMotivo,#selectPermisosSinSalario").change(function(e){
             }
         }
     }catch(error){
-        alert(error.message);
+        // alert(error.message);
     }
 });

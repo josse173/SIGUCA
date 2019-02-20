@@ -83,7 +83,7 @@ block content
                         td #{justificacion.motivo}
                         td #{justificacion.detalle}
                         td
-                          textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
+                          textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario") #{justificacion.comentarioSupervisor}
                         td
                           select.select_picker.estado(name='estado' data-width="auto" data-style="btn-inverse")
                             option(value='Pendiente') #{textos[11].titulo}
@@ -134,7 +134,7 @@ block content
                         td #{extra.ubicacion}
                         td #{extra.motivo}
                         td
-                          textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
+                          textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario") #{extra.comentarioSupervisor}
                         td
                           select.select_picker(name="estado"+extra.id, id="estado"+extra.id, data-width="auto"  data-style="btn-inverse")
                             option(value='Pendiente') #{textos[11].titulo}
@@ -167,10 +167,9 @@ block content
                     th #{textos[27].titulo}
                     th #{textos[28].titulo}
                     th #{textos[29].titulo}
-                    th Cantidad de dias
+                    th Cantidad de días
                     th #{textos[32].titulo}
-                    th Motivo Articulo 51
-                    th Inciso
+                    th Descripción
                     th(data-sort-ignore="true") Detalle
                     th(data-sort-ignore="true") #{textos[33].titulo}
                     th(data-sort-ignore="true") #{textos[34].titulo}
@@ -188,17 +187,15 @@ block content
                           td #{permiso.diaFinal}
                           td #{permiso.cantidadDias}
                           td #{permiso.motivo}
-                          if(permiso.motivo == 'Articulo 51')
-                            td #{permiso.motivoArticulo51}
+                          if(permiso.motivo === 'Articulo 51')
+                            td #{permiso.motivoArticulo51 + ' (' + permiso.inciso + ')'}
+                          else if(permiso.motivo === 'Otro')
+                            td #{permiso.motivoOtro}
                           else
                             td N/A
-                          if(permiso.inciso == 'seleccionar')
-                            td N/A
-                          else
-                            td #{permiso.inciso}
                           td #{permiso.detalle}
                           td
-                            textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
+                            textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario") #{permiso.comentarioSupervisor}
                           td
                             select.select_picker(name='estado'+permiso.id, id="estado"+permiso.id, data-width="auto"  data-style="btn-inverse")
                               option(value='Pendiente') #{textos[11].titulo}
@@ -253,7 +250,7 @@ block content
                           td#motivo #{permiso.motivo}
                           td #{permiso.detalle}
                           td
-                            textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario")
+                            textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario") #{permiso.comentarioSupervisor}
                           td(class=permiso.usuario.id) #{permiso.usuario.vacaciones}
                           td
                             select.select_picker(name='estado'+permiso.id, id="estado"+permiso.id, data-width="auto"  data-style="btn-inverse")
