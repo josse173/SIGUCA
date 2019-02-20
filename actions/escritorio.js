@@ -59,15 +59,15 @@ module.exports = {
 													PermisoSinSalario.find().sort({numero: 1}).exec(function(error, permisosSinSalario) {
 														CierrePersonal.find({epoch:{"$gte": epochYesterday.unix()}}).exec(function(err, cierres) {
 
-														var depIds = [];
+															var depIds = [];
 
-														if(req.user.departamentos && req.user.departamentos.length > 0){
-															req.user.departamentos.forEach(function (departamento){
-																if(departamento.departamento){
-																	depIds.push(departamento.departamento.toString());
-																}
-															});
-														}
+															if(req.user.departamentos && req.user.departamentos.length > 0){
+																req.user.departamentos.forEach(function (departamento){
+																	if(departamento.departamento){
+																		depIds.push(departamento.departamento.toString());
+																	}
+																});
+															}
 
 															Departamento.find({_id:{"$in": depIds}}).exec(function(error, departamentosUsuario){
 																if (error) return res.json(err);
@@ -191,19 +191,22 @@ module.exports = {
 		//console.log(req.user.id);
 		Contenido.find({seccion:"escritorioEmpl"},function(error,contenido){
 			if (error) return res.json(error);
-			Marca.find({usuario: req.user.id, epoch:{"$gte": epochGte.unix()}, tipoUsuario: req.session.name}, {_id:0, tipoMarca:1, epoch:1, dispositivo:1, red:1}).exec( function(error, marcas) {
+			PermisoSinSalario.find().sort({numero: 1}).exec(function(error, permisosSinSalario) {
 				if (error) return res.json(error);
-				Justificaciones.find({usuario: req.user.id, estado:'Incompleto', tipoUsuario: req.session.name}).exec(function(error, justificaciones) {
+				Marca.find({usuario: req.user.id, epoch:{"$gte": epochGte.unix()}, tipoUsuario: req.session.name}, {_id:0, tipoMarca:1, epoch:1, dispositivo:1, red:1}).exec( function(error, marcas) {
 					if (error) return res.json(error);
+					Justificaciones.find({usuario: req.user.id, estado:'Incompleto', tipoUsuario: req.session.name}).exec(function(error, justificaciones) {
+						if (error) return res.json(error);
 
-					if(req.user.departamentos && req.user.departamentos.length > 0){
 						var depIds = [];
-						req.user.departamentos.forEach(function (departamento){
-							if(departamento.departamento){
-								depIds.push(departamento.departamento.toString());
-							}
-						});
-					}
+
+						if(req.user.departamentos && req.user.departamentos.length > 0){
+							req.user.departamentos.forEach(function (departamento){
+								if(departamento.departamento){
+									depIds.push(departamento.departamento.toString());
+								}
+							});
+						}
 
 						Departamento.find({_id:{"$in": depIds}}).exec(function(error, departamentosUsuario){
 							if (error) return res.json(err);
@@ -386,8 +389,8 @@ module.exports = {
 								}
 							});
 						});
+						});
 					});
-				});
 			});
 		});
 
