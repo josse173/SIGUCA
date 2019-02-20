@@ -318,6 +318,7 @@ block content
                         option(value='Permiso Estudio') Permiso de Estudio
                         option(value='Familiar') Familiar
                         option(value='Articulo 51') Articulo 51
+                        option(value='Permiso sin goce de salario') Permiso sin goce de salario
                         option(value='Otro') Otro
                     div#divOtro(style='display:none;')
                       label(for='motivoOtro') Descripción:
@@ -325,6 +326,12 @@ block content
                     div#divArticulo51(style='display:none')
                       label(for='motivoArticulo51') Descripción:
                         input#motivoArticulo51.form-control(type= 'text', name= 'motivoArticulo51' style='float:left' disabled)
+                  .form-group
+                    div(style='display:none').form-group#selectOpcionesPermisosSinSalario
+                      label(for='selectPermisosSinSalario') Tiempo:
+                        select#selectPermisosSinSalario.form-control(type= 'text', name= 'permisosSinSalarioTipo' style='float:left' required)
+                          each permisoSinSalario in permisosSinSalario
+                            option(value= permisoSinSalario.id + ';' + permisoSinSalario.cantidadMeses) #{permisoSinSalario.nombre}
                   .form-group
                     label(for='detallePermiso') Detalle:
                       textarea#detallePermiso.form-control(rows="4" cols="50" name='detalle' required)

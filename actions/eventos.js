@@ -18,6 +18,7 @@ var EventosTeletrabajo = require('../models/EventosTeletrabajo');
 var HoraExtra = require('../models/HoraExtra');
 var PeriodoUsuario = require('../models/PeriodoUsuario');
 var Periodo = require('../models/Periodo');
+var PermisoSinSalario = require('../models/PermisoSinSalario');
 
 module.exports = {
   filtrarEventos : function (req, res) {
@@ -100,44 +101,47 @@ module.exports = {
               CierrePersonal.find({usuario:req.user.id, epoch: {'$gte' : epochMin.unix()}}, function (err, listaCierre) {
                 HoraExtra.find({usuario:req.user.id}, function (error, horasExtra) {
                   PeriodoUsuario.find({usuario:req.user.id}).populate('periodo').sort({numeroPeriodo: 1}).exec(function (error, periodos) {
+                    PermisoSinSalario.find().sort({numero: 1}).exec(function(error, permisosSinSalario) {
 
-                    var supervisor = {departamentos: [1]};
+                      var supervisor = {departamentos: [1]};
 
-                    crudUsuario.validarPeriodoUsuario(req.user, periodos);
+                      crudUsuario.validarPeriodoUsuario(req.user, periodos);
 
-                    var arrayMarcas = util.eventosAjuste(marcas,supervisor,"eventosEmpl");
-                    var arrayJust = util.eventosAjuste(justificaciones,supervisor,"eventosEmpl");
-                    var arrayExtras = util.eventosAjuste(extras,supervisor,"eventosEmpl");
-                    var arrayPermisos = util.eventosAjuste(permisos,supervisor,"eventosEmpl");
+                      var arrayMarcas = util.eventosAjuste(marcas,supervisor,"eventosEmpl");
+                      var arrayJust = util.eventosAjuste(justificaciones,supervisor,"eventosEmpl");
+                      var arrayExtras = util.eventosAjuste(extras,supervisor,"eventosEmpl");
+                      var arrayPermisos = util.eventosAjuste(permisos,supervisor,"eventosEmpl");
 
-                    arrayMarcas = util.unixTimeToRegularDate(arrayMarcas, true);
-                    arrayJust = util.unixTimeToRegularDate(arrayJust, true);
-                    arrayExtras = util.unixTimeToRegularDate(arrayExtras, true);
-                    arrayPermisos = util.unixTimeToRegularDate(arrayPermisos, true);
-                    listaCierre = util.unixTimeToRegularDate(listaCierre, true);
+                      arrayMarcas = util.unixTimeToRegularDate(arrayMarcas, true);
+                      arrayJust = util.unixTimeToRegularDate(arrayJust, true);
+                      arrayExtras = util.unixTimeToRegularDate(arrayExtras, true);
+                      arrayPermisos = util.unixTimeToRegularDate(arrayPermisos, true);
+                      listaCierre = util.unixTimeToRegularDate(listaCierre, true);
 
-                    //En caso de ser profesor no se pasan las justificaciones
-                    if(req.user.tipo.length > 1 && req.session.name == config.empleadoProfesor){
-                      arrayJust = new Array();
-                      listaCierre = new Array();
-                    }
+                      //En caso de ser profesor no se pasan las justificaciones
+                      if(req.user.tipo.length > 1 && req.session.name == config.empleadoProfesor){
+                        arrayJust = new Array();
+                        listaCierre = new Array();
+                      }
 
-                    //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
-                    req.user.tipo = req.session.name;
-                    if (error) return res.json(error);
-                    Contenido.find({seccion:"Eventos"},function(errorContenido,contenido){
-                      return res.render('eventos', {
-                        title: 'Solicitudes/Justificaciones | SIGUCA',
-                        usuario: req.user,
-                        justificaciones: arrayJust,
-                        extras: arrayExtras,
-                        permisos: arrayPermisos,
-                        cierreUsuarios: listaCierre,
-                        marcas: marcas,
-                        textos:contenido,
-                        horasExtra: horasExtra,
-                        moment: require( 'moment' ),
-                        periodos: periodos
+                      //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
+                      req.user.tipo = req.session.name;
+                      if (error) return res.json(error);
+                      Contenido.find({seccion:"Eventos"},function(errorContenido,contenido){
+                        return res.render('eventos', {
+                          title: 'Solicitudes/Justificaciones | SIGUCA',
+                          usuario: req.user,
+                          justificaciones: arrayJust,
+                          extras: arrayExtras,
+                          permisos: arrayPermisos,
+                          cierreUsuarios: listaCierre,
+                          marcas: marcas,
+                          textos:contenido,
+                          horasExtra: horasExtra,
+                          moment: require( 'moment' ),
+                          periodos: periodos,
+                          permisosSinSalario: permisosSinSalario
+                        });
                       });
                     });
                   });
@@ -192,43 +196,46 @@ module.exports = {
             Solicitudes.find(permisosQuery).exec(function(error, permisos) {
               CierrePersonal.find(cierreQuery, function (err, listaCierre) {
                 PeriodoUsuario.find(periodoQuery).populate('periodo').sort({numeroPeriodo: 1}).exec(function (error, periodos) {
+                  PermisoSinSalario.find().sort({numero: 1}).exec(function(error, permisosSinSalario) {
                   if (error) return res.json(error);
 
-                  var supervisor = {departamentos: [1]};
+                    var supervisor = {departamentos: [1]};
 
-                  var arrayMarcas = util.eventosAjuste(marcas,supervisor,"eventosEmpl");
-                  var arrayJust = util.eventosAjuste(justificaciones,supervisor,"filtrarEventosEmpl");
-                  var arrayExtras = util.eventosAjuste(extras,supervisor,"filtrarEventosEmpl");
-                  var arrayPermisos = util.eventosAjuste(permisos,supervisor,"filtrarEventosEmpl");
+                    var arrayMarcas = util.eventosAjuste(marcas,supervisor,"eventosEmpl");
+                    var arrayJust = util.eventosAjuste(justificaciones,supervisor,"filtrarEventosEmpl");
+                    var arrayExtras = util.eventosAjuste(extras,supervisor,"filtrarEventosEmpl");
+                    var arrayPermisos = util.eventosAjuste(permisos,supervisor,"filtrarEventosEmpl");
 
-                  arrayMarcas = util.unixTimeToRegularDate(arrayMarcas, true);
-                  arrayJust = util.unixTimeToRegularDate(arrayJust, true);
-                  arrayExtras = util.unixTimeToRegularDate(arrayExtras, true);
-                  arrayPermisos = util.unixTimeToRegularDate(arrayPermisos, true);
-                  listaCierre = util.unixTimeToRegularDate(listaCierre, true);
+                    arrayMarcas = util.unixTimeToRegularDate(arrayMarcas, true);
+                    arrayJust = util.unixTimeToRegularDate(arrayJust, true);
+                    arrayExtras = util.unixTimeToRegularDate(arrayExtras, true);
+                    arrayPermisos = util.unixTimeToRegularDate(arrayPermisos, true);
+                    listaCierre = util.unixTimeToRegularDate(listaCierre, true);
 
-                  //En caso de ser profesor no se pasan las justificaciones
-                  if(req.user.tipo.length > 1 && req.session.name == config.empleadoProfesor){
-                    arrayJust = new Array();
-                    listaCierre =  new Array();
-                  }
+                    //En caso de ser profesor no se pasan las justificaciones
+                    if(req.user.tipo.length > 1 && req.session.name == config.empleadoProfesor){
+                      arrayJust = new Array();
+                      listaCierre =  new Array();
+                    }
 
-                  //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
-                  req.user.tipo = req.session.name;
+                    //Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
+                    req.user.tipo = req.session.name;
 
-                  Contenido.find({seccion:"Eventos"},function(errorContenido,contenido){
-                    return res.render('eventos', {
-                      title: 'Solicitudes/Justificaciones | SIGUCA',
-                      usuario: req.user,
-                      justificaciones: arrayJust,
-                      horasExtra: arrayExtras,
-                      permisos: arrayPermisos,
-                      cierreUsuarios: listaCierre,
-                      marcas: marcas,
-                      textos:contenido,
-                      moment: require('moment'),
-                      periodos: periodos
-                    });//render
+                    Contenido.find({seccion:"Eventos"},function(errorContenido,contenido){
+                      return res.render('eventos', {
+                        title: 'Solicitudes/Justificaciones | SIGUCA',
+                        usuario: req.user,
+                        justificaciones: arrayJust,
+                        horasExtra: arrayExtras,
+                        permisos: arrayPermisos,
+                        cierreUsuarios: listaCierre,
+                        marcas: marcas,
+                        textos:contenido,
+                        moment: require('moment'),
+                        periodos: periodos,
+                        permisosSinSalario: permisosSinSalario
+                      });//render
+                    });
                   });
                 });
               });//CierrePersonal
@@ -275,79 +282,80 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos, marcaQu
   Justificaciones.find(justQuery).populate(populateQuery).exec(function(error, justificaciones){
     HoraExtra.find(extraQuery).populate(populateQuery).exec(function(error, extras) {
       Solicitudes.find(permisosQuery).populate(populateQuery).exec(function(error, permisos) {
+        PermisoSinSalario.find().sort({numero: 1}).exec(function(error, permisosSinSalario) {
 
-        var permisosTemp = [];
+            var permisosTemp = [];
 
-        if(permisos && permisos.length > 0 ){
-          permisos.forEach(function (permiso) {
+            if(permisos && permisos.length > 0 ){
+              permisos.forEach(function (permiso) {
 
-            var infoPeriodo = {
-              diasDerechoDisfrutar: 0,
-              diasDisfrutados: 0,
-              diasDisponibles: 0
-            };
+                var infoPeriodo = {
+                  diasDerechoDisfrutar: 0,
+                  diasDisfrutados: 0,
+                  diasDisponibles: 0
+                };
 
-            PeriodoUsuario.find({usuario: permiso.usuario._id}).sort({numeroPeriodo: 1}).exec(function(error, periodos) {
-              if (error) return res.json(err);
+                PeriodoUsuario.find({usuario: permiso.usuario._id}).sort({numeroPeriodo: 1}).exec(function(error, periodos) {
+                  if (error) return res.json(err);
 
-              periodos.forEach(function (periodo) {
-                infoPeriodo.diasDerechoDisfrutar = infoPeriodo.diasDerechoDisfrutar + periodo.diasAsignados;
-                infoPeriodo.diasDisfrutados = infoPeriodo.diasDisfrutados + periodo.diasDisfrutados;
+                  periodos.forEach(function (periodo) {
+                    infoPeriodo.diasDerechoDisfrutar = infoPeriodo.diasDerechoDisfrutar + periodo.diasAsignados;
+                    infoPeriodo.diasDisfrutados = infoPeriodo.diasDisfrutados + periodo.diasDisfrutados;
+                  });
+
+                  infoPeriodo.diasDisponibles = infoPeriodo.diasDerechoDisfrutar-infoPeriodo.diasDisfrutados;
+                  permiso.usuario.vacaciones = infoPeriodo.diasDisponibles;
+
+                });
+                permisosTemp.push(permiso)
               });
-
-              infoPeriodo.diasDisponibles = infoPeriodo.diasDerechoDisfrutar-infoPeriodo.diasDisfrutados;
-              permiso.usuario.vacaciones = infoPeriodo.diasDisponibles;
-
-            });
-            permisosTemp.push(permiso)
-          });
-        }
-
-        permisos = permisosTemp;
-
-        if(req.route.path.substring(0, 9) !=='/reportes'){
-          //Se asigna el tipo de usuario con el cual ha iniciado sesion
-          req.user.tipo = req.session.name;
-          return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, null,
-            justificaciones, extras, permisos, null, nombreUsuario, null, null);
-        }
-        else {
-          Marca.find(marcaQuery).populate(populateQuery).exec(function(error, marcas){
-
-            var usuarioQueryFiltrado = {};
-            //Si se realizo un filtrado por departamento
-            if(req.body.filtro_departamento && req.body.filtro_departamento!="todos"){
-              usuarioQueryFiltrado.departamentos = {$elemMatch:{departamento:{"$in":req.body.filtro_departamento}}};
             }
 
-            Usuario.find(usuarioQueryFiltrado).exec(function(error, usuariosFiltradoDepartamento){
-              //Si no se filtro por usuario se hace el filtrado por departamentos
-              if(!cierreQuery.usuario && (!req.body.filtro_departamento || req.body.filtro_departamento=="todos")){
-                cierreQuery.usuario = { $in: usuarios };
-              }else if(req.body.filtro_departamento && req.body.filtro_departamento!="todos"){
-                cierreQuery.usuario = {$in: usuariosFiltradoDepartamento};
-              }
+            permisos = permisosTemp;
 
-              CierrePersonal.find(cierreQuery).populate("usuario").exec(function(error, cierres) {
-                    //Se asigna el tipo de usuario con el cual ha iniciado sesion
-                    req.user.tipo = req.session.name;
-                    EventosTeletrabajo.find(marcaQuery).exec(function(error, eventosTeletrabajo) {
-                      PeriodoUsuario.find(periodosUsuarioQuery).populate('usuario').populate('periodo').sort({numeroPeriodo: 1}).exec(function(error, periodoUsuarios) {
-                        return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, marcas,
-                          justificaciones, extras, permisos, cierres, nombreUsuario, eventosTeletrabajo, periodoUsuarios);
+            if(req.route.path.substring(0, 9) !=='/reportes'){
+              //Se asigna el tipo de usuario con el cual ha iniciado sesion
+              req.user.tipo = req.session.name;
+              return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, null,
+                justificaciones, extras, permisos, null, nombreUsuario, null, null, permisosSinSalario);
+            }
+            else {
+              Marca.find(marcaQuery).populate(populateQuery).exec(function(error, marcas){
+
+                var usuarioQueryFiltrado = {};
+                //Si se realizo un filtrado por departamento
+                if(req.body.filtro_departamento && req.body.filtro_departamento!="todos"){
+                  usuarioQueryFiltrado.departamentos = {$elemMatch:{departamento:{"$in":req.body.filtro_departamento}}};
+                }
+
+                Usuario.find(usuarioQueryFiltrado).exec(function(error, usuariosFiltradoDepartamento){
+                  //Si no se filtro por usuario se hace el filtrado por departamentos
+                  if(!cierreQuery.usuario && (!req.body.filtro_departamento || req.body.filtro_departamento=="todos")){
+                    cierreQuery.usuario = { $in: usuarios };
+                  }else if(req.body.filtro_departamento && req.body.filtro_departamento!="todos"){
+                    cierreQuery.usuario = {$in: usuariosFiltradoDepartamento};
+                  }
+
+                  CierrePersonal.find(cierreQuery).populate("usuario").exec(function(error, cierres) {
+                        //Se asigna el tipo de usuario con el cual ha iniciado sesion
+                        req.user.tipo = req.session.name;
+                        EventosTeletrabajo.find(marcaQuery).exec(function(error, eventosTeletrabajo) {
+                          PeriodoUsuario.find(periodosUsuarioQuery).populate('usuario').populate('periodo').sort({numeroPeriodo: 1}).exec(function(error, periodoUsuarios) {
+                            return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, marcas,
+                              justificaciones, extras, permisos, cierres, nombreUsuario, eventosTeletrabajo, periodoUsuarios, permisosSinSalario);
+                          });
+                        });
                       });
-                    });
-                  });
-            });//Fin usuarios filtrados por departamento
-
-          });//Marcas
-        }
+                });//Fin usuarios filtrados por departamento
+            });//Marcas
+          }
+        });
       });//Solicitudes permisos
     });//Solicitudes horas extra
   });//Justificaciones
 }
 
-function renderFiltro(req, res, titulo, usuario, departamentos, usuarios, marcas, justificaciones, extras, permisos, cierre, nombreUsuario, eventosTeletrabajo, periodoUsuarios){
+function renderFiltro(req, res, titulo, usuario, departamentos, usuarios, marcas, justificaciones, extras, permisos, cierre, nombreUsuario, eventosTeletrabajo, periodoUsuarios, permisosSinSalario){
   var cList = [];
   if(cierre){
     cList = util.unixTimeToRegularDate(cierre.filter(
@@ -441,7 +449,8 @@ function renderFiltro(req, res, titulo, usuario, departamentos, usuarios, marcas
     },
     eventosTeletrabajo: eventosTeletrabajo,
     moment: require( 'moment' ),
-    periodosUsuario : periodoUsuarios
+    periodosUsuario : periodoUsuarios,
+    permisosSinSalario: permisosSinSalario
   };
 
   //Se especifica el valor por defecto de los select para filtrado por usuario

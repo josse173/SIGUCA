@@ -144,7 +144,11 @@ exports.updateExtra = function(extra, cb, idUser){
 //--------------------------------------------------------------------
 exports.addPermiso = function(permiso, cb, idUser){
 	var epochTime = moment().unix();
-
+	var fecha1 = permiso.diaInicio.split('/');
+	var fecha2 = permiso.diaFinal.split('/');
+	var epochInicio = moment([fecha1[0], Number(fecha1[1])-1, fecha1[2]]).unix();
+	var epochFinal = moment([fecha2[0], Number(fecha2[1])-1, fecha2[2]]).unix();
+	console.log(permiso);
     var newSolicitud = Solicitudes({
 		fechaCreada: epochTime,
 		tipoSolicitudes: "Permisos",
@@ -157,8 +161,14 @@ exports.addPermiso = function(permiso, cb, idUser){
 		inciso: permiso.inciso,
         motivoArticulo51: permiso.motivoArticulo51,
 		motivo: permiso.motivo,
-		motivoOtro: permiso.motivoOtro
+		motivoOtro: permiso.motivoOtro,
+		epochInicio: epochInicio,
+		epochTermino: epochFinal
 	});
+
+    if(permiso.permisosSinSalarioTipo){
+		newSolicitud.inciso = permiso.permisosSinSalarioTipo;
+	}
 
     Solicitudes.find({
         usuario: newSolicitud.usuario,
@@ -180,9 +190,10 @@ exports.addPermiso = function(permiso, cb, idUser){
                                     var from = listaCorreos[0].nombreCorreo,
                                     to = supervisor[i].email,
                                     subject = 'Nueva solicitud de permiso anticipado en SIGUCA',
-                                    text = " El usuario " + permiso.usuario.nombre + " " + permiso.usuario.apellido1 + " " + permiso.usuario.apellido2 + " ha enviado el siguiente permiso anticipado: "
+                                    text = " El usuario " + permiso.usuario.nombre + " " + permiso.usuario.apellido1 + " " + permiso.usuario.apellido2 + " ha enviado el siguiente permiso anticipado: <br>"
                                         + "<br> Día de Inicio: " + soli.diaInicio
                                         + "<br>  Día de termino: " + soli.diaFinal
+										+ "<br>  Cantidad de días: " + soli.cantidadDias
                                         + "<br>  Motivo: " + soli.motivo
                                         + "<br>  Detalle: " + soli.detalle
 								enviarCorreo.enviar(from, to, subject, '', text);
@@ -201,16 +212,22 @@ exports.updatePermiso = function(permiso, cb, idUser){
 
 	var fecha1 = permiso.diaInicio.split('/');
 	var fecha2 = permiso.diaFinal.split('/');
-	var a = moment([fecha1[0], Number(fecha1[1])-1, fecha1[2]]);
-	var b = moment([fecha2[0], Number(fecha2[1])-1, fecha2[2]]);
-	var dias = b.diff(a, 'days', false) +1;
+	var epochInicio = moment([fecha1[0], Number(fecha1[1])-1, fecha1[2]]);
+	var epochFinal = moment([fecha2[0], Number(fecha2[1])-1, fecha2[2]]);
+	var dias = epochFinal.diff(epochInicio, 'days', false) + 1;
 
 	var solicitudActualizada = {
 		diaInicio: permiso.diaInicio,
 		diaFinal: permiso.diaFinal,
 		detalle: permiso.detalle,
-		cantidadDias: dias
+		cantidadDias: dias,
+		epochInicio: epochInicio.unix(),
+		epochTermino: epochFinal.unix()
 	};
+
+	if(permiso.permisosSinSalarioTipo){
+		solicitudActualizada.inciso = permiso.permisosSinSalarioTipo;
+	}
 
 	Solicitudes.findById(permiso.id).exec(function (err, soli) {
 		Solicitudes.findByIdAndUpdate(permiso.id, solicitudActualizada).populate('usuario').exec(function (err, solicitud) {

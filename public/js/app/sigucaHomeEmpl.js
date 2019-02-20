@@ -289,6 +289,9 @@ $('#selectFiltro').change(function(){
 });
 
 $('#selectMotivo').change(function (){
+
+    $("#divOtro").attr('style','display:none;');
+
     if($('#selectMotivo').val() != 'Vacaciones')
         $("#selectOpcionesDepartamento").attr('style','display:none') &&
         $("#divPeriodoDescontar").attr('style','display:none');
@@ -329,10 +332,10 @@ $('#selectMotivo').change(function (){
         $("#divOtro").attr('style','display:none');
     else if($('#selectMotivo').val() == 'Permiso sin goce de salario')
         $("#selectOpcionesPermisosSinSalario").attr('style','display:block') &&
-        $("#diaFinal").attr('disabled','disabled');
+        $("#diaFinal").attr('readonly','true');
     if($('#selectMotivo').val() !== 'Permiso sin goce de salario')
         $("#selectOpcionesPermisosSinSalario").attr('style','display:none') &&
-        $("#diaFinal").attr('disabled',false);
+        $("#diaFinal").attr('readonly',false);
 });
 
 $('#selectDerechoDisfrutar').change(function (){

@@ -39,6 +39,7 @@ module.exports = {
 	},
 	editarPermiso: function (req, res) {
 		var permiso = req.body;
+		console.log(permiso);
 		permiso.id = req.params.id;
 		crudSolicitud.updatePermiso(permiso, function (err) {
 			res.redirect('/eventos');
