@@ -502,7 +502,7 @@ function addJustIncompleta(_idUser, motivo, informacion) {
     crudJustificaciones.addJust(
         {
             id: _idUser, detalle: "", informacion: informacion,
-            estado: "Incompleto", motivoJust: "otro",
+            estado: "Incompleto", motivoJust: "Otro",
             motivoOtroJust: motivo
         },
         function () {

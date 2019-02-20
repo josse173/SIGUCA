@@ -167,10 +167,9 @@ block content
                     th #{textos[27].titulo}
                     th #{textos[28].titulo}
                     th #{textos[29].titulo}
-                    th Cantidad de dias
+                    th Cantidad de días
                     th #{textos[32].titulo}
-                    th Motivo Articulo 51
-                    th Inciso
+                    th Descripción
                     th(data-sort-ignore="true") Detalle
                     th(data-sort-ignore="true") #{textos[33].titulo}
                     th(data-sort-ignore="true") #{textos[34].titulo}
@@ -188,14 +187,12 @@ block content
                           td #{permiso.diaFinal}
                           td #{permiso.cantidadDias}
                           td #{permiso.motivo}
-                          if(permiso.motivo == 'Articulo 51')
-                            td #{permiso.motivoArticulo51}
+                          if(permiso.motivo === 'Articulo 51')
+                            td #{permiso.motivoArticulo51 + ' (' + permiso.inciso + ')'}
+                          else if(permiso.motivo === 'Otro')
+                            td #{permiso.motivoOtro}
                           else
                             td N/A
-                          if(permiso.inciso == 'seleccionar')
-                            td N/A
-                          else
-                            td #{permiso.inciso}
                           td #{permiso.detalle}
                           td
                             textarea.comentarioSupervisor.form-control(rows="1" cols="50", name="comentarioSupervisor", placeholder="Añada comentario") #{permiso.comentarioSupervisor}

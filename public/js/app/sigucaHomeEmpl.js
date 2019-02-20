@@ -297,8 +297,8 @@ $('#selectMotivo').change(function (){
     $("#divcantidadDiasDisfrutados").attr('style','display:none') && $("#divcantidadDiasDisponibles").attr('style','display:none') &&
     $("#divcantidadDiasSolicitados").attr('style','display:none') && $("#divsaldoDiasDisfrutar").attr('style','display:none') &&
     $("#divanno").attr('style','display:none');
-    if($('#selectMotivo').val() != 'otro') $("#motivoOtro").attr('disabled','disabled') ;
-    if($('#selectMotivo').val() == 'otro') $("#motivoOtro").removeAttr('disabled');
+    if($('#selectMotivo').val() != 'Otro') $("#motivoOtro").attr('disabled','disabled') ;
+    if($('#selectMotivo').val() == 'Otro') $("#motivoOtro").removeAttr('disabled');
     else if($('#selectMotivo').val() == 'Articulo 51')  $("#selectOpcionesArticulo").attr('style','display:block');
     else if($('#selectMotivo').val() == 'Vacaciones')  $("#selectOpcionesDepartamento").attr('style','display:block') &&
     $("#divPeriodoDescontar").attr('style','display:block') && $("#divDerechoDisfrutarPorPeriodo").attr('style','display:block') &&
@@ -336,7 +336,7 @@ $('#selectDerechoDisfrutar').change(function (){
 });
 
 $('#selectMotivoJust').change(function (){
-    if($('#selectMotivoJust').val() == 'otro') $("#motivoOtroJust").removeAttr('disabled');
+    if($('#selectMotivoJust').val() == 'Otro') $("#motivoOtroJust").removeAttr('disabled');
     else $("#motivoOtroJust").attr('disabled','disabled');
 });
 

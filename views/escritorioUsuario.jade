@@ -267,7 +267,7 @@
                     option(value='Permiso Estudio') Permiso de Estudio
                     option(value='Familiar') Familiar
                     option(value='Articulo 51') Articulo 51
-                    option(value='otro') Otro
+                    option(value='Otro') Otro
                 label(for='motivoOtro') #{textos[51].titulo}
                   input#motivoOtro.form-control(type= 'text', placeholder='Otro', name= 'motivoOtro' style='float:left' disabled)
               .form-group
@@ -307,7 +307,7 @@
               //    input#saldoDisfrutarVacaciones.form-control(type= 'text', name= 'saldoDisfrutarVacaciones' disabled, value=infoPeriodos.diasDisponibles)
               .form-group
                 div(style='display:none').form-group#divInciso
-                  label(for='inciso') Inciso:
+                  label(for='selectInciso') Inciso:
                     select#selectInciso.form-control(type= 'text', name= 'inciso', style='float:left')
                       option(value='seleccionar') Seleccione una opción
                       option(value='Inciso A') Inciso A
@@ -350,13 +350,13 @@
       .modal-body
         form.formJust(role='form', method="POST")#login-form.well.span4
           .form-group
-            label(for='motivoJust') #{textos[50].titulo}
+            label(for='selectMotivoJust') #{textos[50].titulo}
               select#selectMotivoJust.form-control(type= 'text', name= 'motivoJust' style='float:left' required)
                 option(value='seleccionar') Seleccione una opción
                 option(value='Tardía') Tardía
                 option(value='Omisión de Marca') Omisión de Marca
                 option(value='Ausencia') Ausencia
-                option(value='otro') Otro
+                option(value='Otro') Otro
             label(for='motivoOtroJust') #{textos[51].titulo}
               input#motivoOtroJust.form-control(type= 'text', placeholder='Otro', name= 'motivoOtroJust' style='float:left' disabled)
           .form-group

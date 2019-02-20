@@ -157,12 +157,12 @@ $(document).ready(function()
     Carga información a los modal
     ---------------------------------------------------------------------*/
     $('#selectMotivo').change(function (){
-        if($('#selectMotivo').val() == 'otro') $("#motivoOtro").removeAttr('disabled');
+        if($('#selectMotivo').val() == 'Otro') $("#motivoOtro").removeAttr('disabled');
         else $("#motivoOtro").attr('disabled','disabled');
     });
 
     $('#selectMotivoJust').change(function (){
-        if($('#selectMotivoJust').val() == 'otro') $("#motivoOtroJust").removeAttr('disabled');
+        if($('#selectMotivoJust').val() == 'Otro') $("#motivoOtroJust").removeAttr('disabled');
         else $("#motivoOtroJust").attr('disabled','disabled');
     });
 
@@ -179,7 +179,7 @@ $(document).ready(function()
 
             if(jQuery.inArray( data.motivo, optionValues ) == -1){
                 $("#motivoOtroJust").removeAttr('disabled');
-                $('#selectMotivoJust').val('otro');
+                $('#selectMotivoJust').val('Otro');
                 $('#motivoOtroJust').val(data.motivo);
             } else {
                 $("#motivoOtroJust").attr('disabled','disabled');
@@ -211,8 +211,7 @@ $(document).ready(function()
     $.get('/horaExtra/edit/'+id, function( data ) {
         var epochInicio = moment.unix(data.fechaInicial).format("DD/MM/YYYY HH:mm"),
         epochTermino = moment.unix(data.fechaFinal).format("DD/MM/YYYY HH:mm");
-        console.log(epochInicio);
-        console.log(epochTermino);
+
         $('#date_timepicker_start').val(epochInicio);
         $('#date_timepicker_end').val(epochTermino);
         $('#cliente').val(data.ubicacion);
@@ -225,23 +224,24 @@ $(document).ready(function()
     $.get('/solicitud/edit/'+id, function( data ) {
         $('#diaInicio').val(data.diaInicio);
         $('#diaFinal').val(data.diaFinal);
+
         $('#cantidadDias').val(data.cantidadDias);
-        var optionValues = [];
+        document.getElementById("lblnumDias").innerHTML = "Días: " + data.cantidadDias;
 
-        $('#selectMotivo option').each(function() {
-            optionValues.push($(this).val());
-        });
+        $('#selectMotivo').val(data.motivo);
+        $('#detallePermiso').val(data.detalle);
 
-        if(jQuery.inArray( data.motivo, optionValues ) == -1){
-            $("#motivoOtro").removeAttr('disabled');
-            $('#selectMotivo').val('otro');
-            $('#motivoOtro').val(data.motivo);
+        if(data.motivo === 'Otro'){
+            document.getElementById("divOtro").style.display = "block";
+            $('#motivoOtro').val(data.motivoOtro);
+        } else if(data.motivo === 'Articulo 51'){
+            document.getElementById("divArticulo51").style.display = "block";
+            $('#motivoArticulo51').val(data.motivoArticulo51 + ' (' + data.inciso + ')');
         } else {
-            $("#motivoOtro").attr('disabled','disabled');
-            $('#selectMotivo').val(data.motivo);
+            document.getElementById("divArticulo51").style.display = "none";
+            document.getElementById("divOtro").style.display = "none";
         }
 
-        $('#detallePermiso').val(data.detalle);
     });
 });
 
@@ -291,8 +291,6 @@ $("button[data-target=#editHorarioPersonalizado]").click( function() {
 
     $.get('/horarioN/buscarPersonalizado/'+id, function( data ) {
         $('#nombreHorarioPersonalizado').val(data.nombreHorarioPersonalizado);
-
-
 
         if(data.lunes.entrada.minutos<10){
             $('#lunesEntrada').val(data.lunes.entrada.hora+":"+0+data.lunes.entrada.minutos);
@@ -599,7 +597,7 @@ $("#extraLink").click(function(){
      if(val == 'seleccionar') {
          alertify.error('Motivo no valido');
          return false;
-     }else if(val == 'Articulo') {
+     } else if(val == 'Articulo 51') {
          if(inciso == 'Inciso A'){
              if(cantidadDias > 5){
                  alertify.error('No puede ingresar un Inciso A debido que la cantidad maxima a solicitar son 5 dias');
@@ -641,7 +639,7 @@ $("#extraLink").click(function(){
                  $("#btn-permiso").submit();
              }
          }
-     }else if(val == 'Vacaciones'){
+     } else if(val == 'Vacaciones'){
          if(cantidadDias != null && cantidadDias != ''){
              if(parseInt(cantidadDias) > parseInt(diasVacacionesDisponibles)){
                  alertify.error('La cantidad de días solicitados supera la cantidad de Vacaciones disponibles');
@@ -1249,7 +1247,6 @@ $('.tableJustificaciones').footable().on('click', '.justificacionBoleta',
 
      req.onload = function (event) {
          var blob = req.response;
-         console.log(blob.size);
 
          const url = window.URL.createObjectURL(new Blob([req.response]));
          const link = document.createElement('a');
@@ -1266,7 +1263,7 @@ $('.tableJustificaciones').footable().on('click', '.justificacionBoleta',
      function(e) {
 
          e.preventDefault();
-         console.log('here');
+
          var parametros = $(this).val().split(';');
 
          var req = new XMLHttpRequest();
@@ -1275,7 +1272,6 @@ $('.tableJustificaciones').footable().on('click', '.justificacionBoleta',
 
          req.onload = function (event) {
              var blob = req.response;
-             console.log(blob.size);
 
              const url = window.URL.createObjectURL(new Blob([req.response]));
              const link = document.createElement('a');
@@ -1300,7 +1296,6 @@ $('.tableJustificaciones').footable().on('click', '.justificacionBoleta',
 
          req.onload = function (event) {
              var blob = req.response;
-             console.log(blob.size);
 
              const url = window.URL.createObjectURL(new Blob([req.response]));
              const link = document.createElement('a');
@@ -1317,7 +1312,6 @@ $('.tableJustificaciones').footable().on('click', '.justificacionBoleta',
      function(e) {
 
          e.preventDefault();
-         console.log('here');
          var parametros = $(this).val().split(';');
 
          var req = new XMLHttpRequest();
@@ -1326,7 +1320,6 @@ $('.tableJustificaciones').footable().on('click', '.justificacionBoleta',
 
          req.onload = function (event) {
              var blob = req.response;
-             console.log(blob.size);
 
              const url = window.URL.createObjectURL(new Blob([req.response]));
              const link = document.createElement('a');
@@ -1343,7 +1336,6 @@ $('.tableJustificaciones').footable().on('click', '.justificacionBoleta',
  function(e) {
 
      e.preventDefault();
-     console.log('here');
      var parametros = $(this).val().split(';');
 
      var req = new XMLHttpRequest();
@@ -1352,7 +1344,6 @@ $('.tableJustificaciones').footable().on('click', '.justificacionBoleta',
 
      req.onload = function (event) {
          var blob = req.response;
-         console.log(blob.size);
 
          const url = window.URL.createObjectURL(new Blob([req.response]));
          const link = document.createElement('a');
@@ -1369,7 +1360,7 @@ $('.tableJustificaciones').footable().on('click', '.justificacionBoleta',
      function(e) {
 
          e.preventDefault();
-         console.log('here');
+
          var parametros = $(this).val().split(';');
 
          var req = new XMLHttpRequest();
@@ -1378,7 +1369,6 @@ $('.tableJustificaciones').footable().on('click', '.justificacionBoleta',
 
          req.onload = function (event) {
              var blob = req.response;
-             console.log(blob.size);
 
              const url = window.URL.createObjectURL(new Blob([req.response]));
              const link = document.createElement('a');
@@ -1394,4 +1384,3 @@ $('.tableJustificaciones').footable().on('click', '.justificacionBoleta',
  $("button[data-target=#addEmpl]").click( function() {
      alertify.error('La fecha de creación no se podrá modificar una vez creado el usuario');
  });
-

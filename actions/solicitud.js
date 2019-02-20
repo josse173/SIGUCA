@@ -29,8 +29,8 @@ module.exports = {
 	},
 	crearPermiso : function (req, res) {
 		var permiso = req.body;
-		// console.log(req);
 		permiso.usuario = req.user;
+
 		crudSolicitud.addPermiso(permiso, function (){
 			if (req.session.name == "Empleado" || req.session.name == config.empleadoProfesor) {
 				res.redirect('/escritorioEmpl');
@@ -52,13 +52,11 @@ module.exports = {
 	},
 	obtenerCantidadInciso:function (req, res) {
 		crudSolicitud.getAllIncisoC(function (qty) {
-			console.log("LOG DE SOLI2   ss    " + qty)
 			res.json(qty);
 		});
 	},
     solicitudAnterior:function (req, res) {
         crudSolicitud.getSolicitudAnterior(function (qty) {
-            console.log("LOG    " + qty)
             res.json(qty);
         });
     }

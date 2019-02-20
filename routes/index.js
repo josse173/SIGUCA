@@ -230,7 +230,7 @@ module.exports = function(app, io) {
             usuario:req.user.id,
             detalle:req.body.detalle,
             motivoOtroJust:req.body.motivoOtroJust,
-            motivoJust:"otro"
+            motivoJust:"Otro"
 
         };
         if(req.session.name!="Supervisor"){
@@ -256,7 +256,7 @@ module.exports = function(app, io) {
                     usuario:req.user.id,
                     detalle:req.body.ordenadas[i].detalle,
                     motivoOtroJust:req.body.ordenadas[i].motivoOtroJust,
-                    motivoJust:"otro"
+                    motivoJust:"Otro"
 
                 };
                 crudJustificaciones.updateJust(just, function (err){
@@ -272,7 +272,7 @@ module.exports = function(app, io) {
                     usuario:req.user.id,
                     detalle:req.body.ordenadas[i].detalle,
                     motivoOtroJust:req.body.ordenadas[i].motivoOtroJust,
-                    motivoJust:"otro"
+                    motivoJust:"Otro"
 
                 };
                 crudJustificaciones.updateJust(just, function (err){
@@ -1898,7 +1898,7 @@ module.exports = function(app, io) {
                 });
 
             });
-        } else if (parametros.tipo === 'otro') {
+        } else if (parametros.tipo === 'Otro') {
 
             Solicitudes.findById(parametros.id).populate('usuario').exec(function (err, solicitud) {
                 if(err) return err;

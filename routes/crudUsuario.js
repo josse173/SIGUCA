@@ -18,7 +18,7 @@ emailSIGUCA 	= 'siguca@greencore.co.cr',
 Periodo = require('../models/Periodo'),
 PeriodoUsuario = require('../models/PeriodoUsuario');
 var config 			= require('../config');
-
+var enviarCorreo = require('../config/enviarCorreo');
 
 //--------------------------------------------------------------------
 //	Métodos Usuario
@@ -573,7 +573,7 @@ exports.getEmpleadoPorSupervisor = function(idSupervisor, usuarioQuery, callback
 
 exports.updateVacaciones = function(){
 	//Configuración al correo
-	var transporter = nodemailer.createTransport('smtps://'+config.emailUser+':'+config.emailPass+'@'+config.emailEmail);
+
 	var emailSIGUCA 	= 'siguca@greencore.co.cr';
 	var fechaActual = new Date();
 
@@ -618,14 +618,14 @@ exports.updateVacaciones = function(){
 						/**
 						 * Envío de correo a empleados.
 						 */
-						transporter.sendMail({
-							from: emailSIGUCA,
-							to: user.email,
-							subject: 'Acumulación de vacaciones',
-							text: " Señor " + user.nombre + " " + user.apellido1
+						var	from = emailSIGUCA,
+							to = user.email,
+							subject = 'Acumulación de vacaciones',
+							text = " Señor " + user.nombre + " " + user.apellido1
 							+ ", usted dispone de " + (user.vacaciones+1) + " días de vacaciones, se recomienda no exceder 12 días,"
-							+ " favor contactar a su supervisor.\n\n ¡Saludos!"
-						});
+							+ " favor contactar a su supervisor.<br><br> ¡Saludos!";
+
+						enviarCorreo.enviar(from, to, subject, '', text);
 
 						//Recorre departamentos del usuario
 						for (var index = 0; index < user.departamentos.length; index++) {
@@ -687,13 +687,13 @@ exports.updateVacaciones = function(){
 				 */
 				for (var instIdEmail = 0; instIdEmail < listEmail.length; instIdEmail++) {
 					var email = listEmail[instIdEmail];
-					transporter.sendMail({
-						from: emailSIGUCA,
-						to: email.emailSpv,
-						subject: 'Acumulación de vacaciones',
-						text: "Estimado(a) " + email.nameSpv +", se le informa que la siguiente lista de usuarios ha superado 11 días de vacaciones acumulados:\n"
-						+ email.message + "\n\n ¡Saludos!"
-					});
+					var	from = emailSIGUCA,
+						to = email.emailSpv,
+						subject = 'Acumulación de vacaciones',
+						text = "Estimado(a) " + email.nameSpv +", se le informa que la siguiente lista de usuarios ha superado 11 días de vacaciones acumulados:<br>"
+						+ email.message + "<br><br> ¡Saludos!";
+
+					enviarCorreo.enviar(from, to, subject, '', text);
 
 				}
 			});
