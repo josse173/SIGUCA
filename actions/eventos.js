@@ -953,8 +953,14 @@ function getTitulo(option){
 }
 
 function getEstado(titulo){
-  if(titulo=='Gestionar eventos | SIGUCA'){
+  console.log(titulo);
+  if(titulo === 'Gestionar eventos | SIGUCA'){
     return "Pendiente";
+  }
+  if(titulo === 'Reportes | SIGUCA'){
+    return {
+      "$in": ["Pendiente", "Incompleto", "Aceptada", "Rechazada"]
+    };
   }
   return {
     "$in": ["Pendiente", "Incompleto"]
