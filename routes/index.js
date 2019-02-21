@@ -1992,6 +1992,38 @@ module.exports = function(app, io) {
                 });
 
             });
+        }else if (parametros.tipo === 'Reunión') {
+
+            Solicitudes.findById(parametros.id).populate('usuario').exec(function (err, solicitud) {
+                if(err) return err;
+
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                    if(error) return error;
+                    var nombreSupervisor = '';
+                    if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){
+                        nombreSupervisor = supervisor.nombre + ' ' + supervisor.apellido1 + ' ' + supervisor.apellido2;
+                    }
+                    var mensaje = 'Nombre: ' + solicitud.usuario.nombre + ' ' + solicitud.usuario.apellido1 + ' ' + solicitud.usuario.apellido2 + '<br>';
+                    mensaje += 'Solicitud de permiso: ' + solicitud.motivo + '<br>';
+                    mensaje += 'Detalle: ' + solicitud.detalle + '<br>';
+                    mensaje += 'Fecha de solicitud: ' + moment.unix(solicitud.fechaCreada).format("YYYY-MM-DD hh:mm:ss") + '<br>';
+                    mensaje += 'Fecha inicio: ' + solicitud.diaInicio + '<br>';
+                    mensaje += 'Fecha fin: ' + solicitud.diaFinal + '<br>';
+                    mensaje += 'Cantidad de días: ' + solicitud.cantidadDias + '<br>';
+                    mensaje += 'Estado: ' + solicitud.estado + '<br>';
+                    mensaje += 'Supervisor: ' + nombreSupervisor + '<br>';
+                    mensaje += 'Comentario del supervisor: ' + solicitud.comentarioSupervisor + '<br>';
+
+                    var html = boleta.generarBoleta('Boleta solicitud de permiso para reunión', mensaje);
+
+                    pdf.create(html).toStream(function (err, stream) {
+                        if (err) return res.send(err);
+                        res.type('pdf');
+                        stream.pipe(res);
+                    });
+                });
+
+            });
         }
 
     });
