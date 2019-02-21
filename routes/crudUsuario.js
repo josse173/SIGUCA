@@ -706,8 +706,6 @@ exports.validarPeriodoUsuario = function (usuario, periodos) {
 
 	var mayorPeriodo = {};
 	var fechaActual = moment().unix();
-	console.log('validarPeriodoUsuario');
-	// console.log(usuario);
 	if(periodos && periodos.length > 0){
 
 		mayorPeriodo = periodos.reduce(function(prev, current) {
