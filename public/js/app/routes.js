@@ -229,7 +229,12 @@ $(document).ready(function()
         document.getElementById("lblnumDias").innerHTML = "Días: " + data.cantidadDias;
 
         $('#selectMotivo').val(data.motivo);
+        $('#hiddenMotivo').val(data.motivo);
         $('#detallePermiso').val(data.detalle);
+
+        document.getElementById("divArticulo51").style.display = "none";
+        document.getElementById("divOtro").style.display = "none";
+        document.getElementById("selectOpcionesPermisosSinSalario").style.display = "none";
 
         if(data.motivo === 'Otro'){
             document.getElementById("divOtro").style.display = "block";
@@ -237,13 +242,9 @@ $(document).ready(function()
         } else if(data.motivo === 'Articulo 51'){
             document.getElementById("divArticulo51").style.display = "block";
             $('#motivoArticulo51').val(data.motivoArticulo51 + ' (' + data.inciso + ')');
-        } else if(data.motivo === 'Permiso sin goce de salario'){
+        } else if(data.motivo === 'Permiso sin goce de salario') {
             document.getElementById("selectOpcionesPermisosSinSalario").style.display = "block";
             $('#selectPermisosSinSalario').val(data.inciso);
-        } else {
-            document.getElementById("divArticulo51").style.display = "none";
-            document.getElementById("divOtro").style.display = "none";
-            document.getElementById("selectOpcionesPermisosSinSalario").style.display = "none";
         }
 
     });

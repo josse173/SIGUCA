@@ -148,7 +148,7 @@ exports.addPermiso = function(permiso, cb, idUser){
 	var fecha2 = permiso.diaFinal.split('/');
 	var epochInicio = moment([fecha1[0], Number(fecha1[1])-1, fecha1[2]]).unix();
 	var epochFinal = moment([fecha2[0], Number(fecha2[1])-1, fecha2[2]]).unix();
-	console.log(permiso);
+
     var newSolicitud = Solicitudes({
 		fechaCreada: epochTime,
 		tipoSolicitudes: "Permisos",
@@ -166,7 +166,7 @@ exports.addPermiso = function(permiso, cb, idUser){
 		epochTermino: epochFinal
 	});
 
-    if(permiso.permisosSinSalarioTipo){
+    if(permiso.motivo === 'Permiso sin goce de salario' && permiso.permisosSinSalarioTipo){
 		newSolicitud.inciso = permiso.permisosSinSalarioTipo;
 	}
 
@@ -225,7 +225,7 @@ exports.updatePermiso = function(permiso, cb, idUser){
 		epochTermino: epochFinal.unix()
 	};
 
-	if(permiso.permisosSinSalarioTipo){
+	if(permiso.hiddenMotivo === 'Permiso sin goce de salario' && permiso.permisosSinSalarioTipo){
 		solicitudActualizada.inciso = permiso.permisosSinSalarioTipo;
 	}
 

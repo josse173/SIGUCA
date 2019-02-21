@@ -157,7 +157,7 @@ block content
                   .pagination.pagination-centered.hide-if-no-paging
 
 
-      if(permisos && permisos.length > 0)
+      if(permisos && permisos.length > 0 && (permisos.filter(x => x.motivo !== 'Permiso sin goce de salario').length > 0))
         br
         h3 #{textos[27].titulo}
         table.solicitudesTable.footable(data-page-navigation=".pagination")
@@ -176,7 +176,7 @@ block content
                 th(data-sort-ignore="true") Editar
                 th(data-hide="phone,small" data-sort-ignore="true") Boleta
             tbody
-              each permiso in permisos
+              each permiso in permisos.filter(x => x.motivo !== 'Permiso sin goce de salario')
                 tr
                   td(data-value=permiso.fechaCreada) #{permiso.fecha.str}
                   td #{permiso.diaInicio}
@@ -204,6 +204,54 @@ block content
                 td(colspan='11')
                   .pagination.pagination-centered.hide-if-no-paging
               //button.btnDescargaPdf.btn.btn-default(type='button', data-dismiss='modal')  Descargar pdf
+
+      if(permisos && permisos.length > 0 && (permisos.filter(x => x.motivo === 'Permiso sin goce de salario').length > 0))
+        br
+        h3 Permisos sin goce de salario
+        table.solicitudesTable.footable(data-page-navigation=".pagination")
+          thead
+            tr
+              th(data-type="numeric" data-sort-initial="descending") #{textos[28].titulo}
+              th #{textos[29].titulo}
+              th #{textos[30].titulo}
+              //th(data-hide="phone,small,medium") #{textos[31].titulo}
+              th(data-hide="phone,small,medium") #{textos[32].titulo}
+              th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[33].titulo}
+              th(data-hide="phone,small,medium" data-sort-ignore="true") Descripción
+              th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[34].titulo}
+              th #{textos[35].titulo}
+              th(data-hide="phone,small" data-sort-ignore="true") #{textos[36].titulo}
+              th(data-sort-ignore="true") Editar
+              th(data-hide="phone,small" data-sort-ignore="true") Boleta
+          tbody
+            each permiso in permisos.filter(x => x.motivo === 'Permiso sin goce de salario')
+              tr
+                td(data-value=permiso.fechaCreada) #{permiso.fecha.str}
+                td #{permiso.diaInicio}
+                td #{permiso.diaFinal}
+                td #{permiso.cantidadDias}
+                td #{permiso.motivo}
+                if(permiso.motivo === 'Articulo 51')
+                  td #{permiso.motivoArticulo51 + ' (' + permiso.inciso + ')'}
+                else if(permiso.motivo === 'Otro')
+                  td #{permiso.motivoOtro}
+                else
+                  td N/A
+                td #{permiso.detalle}
+                td #{permiso.comentarioSupervisor}
+                td #{permiso.estado}
+                td
+                  if(permiso.estado == 'Pendiente')
+                    button.btn.btn-default(data-toggle="modal" data-target="#editPermiso" value=permiso._id)
+                      i.icon-pencil.icon-large.i-success
+                td
+                  button.btn.btn-default.solicitudesBoleta(value=permiso._id + ';' + permiso.motivo)
+                    i.icon-download.icon-large.i-success
+          tfoot
+            tr
+              td(colspan='11')
+                .pagination.pagination-centered.hide-if-no-paging
+            //button.btnDescargaPdf.btn.btn-default(type='button', data-dismiss='modal')  Descargar pdf
 
       if(periodos && periodos.length > 0)
         h3 Lista de Periodos
@@ -320,6 +368,7 @@ block content
                         option(value='Articulo 51') Articulo 51
                         option(value='Permiso sin goce de salario') Permiso sin goce de salario
                         option(value='Otro') Otro
+                      input#hiddenMotivo.form-control(type='hidden', name='hiddenMotivo')
                     div#divOtro(style='display:none;')
                       label(for='motivoOtro') Descripción:
                         input#motivoOtro.form-control(type= 'text', name= 'motivoOtro' style='float:left' disabled)

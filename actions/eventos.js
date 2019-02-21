@@ -22,7 +22,6 @@ var PermisoSinSalario = require('../models/PermisoSinSalario');
 
 module.exports = {
   filtrarEventos : function (req, res) {
-
     if (req.session.name == "Supervisor") {
       var usuarioId;
       var option;
@@ -340,7 +339,7 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos, marcaQu
                         //Se asigna el tipo de usuario con el cual ha iniciado sesion
                         req.user.tipo = req.session.name;
                         EventosTeletrabajo.find(marcaQuery).exec(function(error, eventosTeletrabajo) {
-                          PeriodoUsuario.find(periodosUsuarioQuery).populate('usuario').populate('periodo').sort({numeroPeriodo: 1}).exec(function(error, periodoUsuarios) {
+                          PeriodoUsuario.find(periodosUsuarioQuery).populate('usuario').populate('periodo').sort({usuario: 1, numeroPeriodo: 1}).exec(function(error, periodoUsuarios) {
                             return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, marcas,
                               justificaciones, extras, permisos, cierres, nombreUsuario, eventosTeletrabajo, periodoUsuarios, permisosSinSalario);
                           });
