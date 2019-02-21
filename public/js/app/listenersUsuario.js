@@ -408,6 +408,44 @@ $("#selectMotivo,#selectPermisosSinSalario").change(function(e){
                     document.getElementById("cantidadDias").value = dias;
                 }
             }
+        } else if(selectMotivo.options[selectMotivo.selectedIndex].value === 'Reunión'){
+            jQuery('#diaInicio').datetimepicker({
+                format: 'Y-m-d H:i:00',
+                timepicker:true,
+                onShow:function( ct ){
+                    this.setOptions({
+                        maxDate:jQuery('#diaFinal').val()?jQuery('#diaFinal').val():false
+                    })
+                }
+            });
+            jQuery('#diaFinal').datetimepicker({
+                format: 'Y-m-d H:i:00',
+                timepicker:true,
+                onShow:function( ct ){
+                    this.setOptions({
+                        minDate:jQuery('#diaInicio').val()?jQuery('#diaInicio').val():false
+                    })
+                }
+            });
+        }else{
+            jQuery('#diaInicio').datetimepicker({
+                format:'Y-m-d',
+                timepicker:false,
+                onShow:function( ct ){
+                    this.setOptions({
+                        maxDate:jQuery('#diaFinal').val()?jQuery('#diaFinal').val():false
+                    })
+                }
+            });
+            jQuery('#diaFinal').datetimepicker({
+                format: 'Y-m-d',
+                timepicker:false,
+                onShow:function( ct ){
+                    this.setOptions({
+                        minDate:jQuery('#diaInicio').val()?jQuery('#diaInicio').val():false
+                    })
+                }
+            });
         }
     }catch(error){
         // alert(error.message);

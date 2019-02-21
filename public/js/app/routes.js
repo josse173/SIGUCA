@@ -73,24 +73,17 @@ $("#botonJustificacionMasa").click(function() {
                     location.href="/escritorioEmpl";
                 }else{
                     location.href="/escritorio";
-
-
                 }
-
             },
             error: function(){
                 alert("Error al justificar en masa.");
             }
         });
     }else{
-
-            var notification = alertify.error('Error,seleccione justificaciones con el mismo motivo', 'success', 4, function(){
-                location.href="/escritorioEmpl";
-             });
-
-
+        var notification = alertify.error('Error,seleccione justificaciones con el mismo motivo', 'success', 4, function(){
+            location.href="/escritorioEmpl";
+        });
     }
-
 });
 
 $(document).ready(function()
@@ -104,7 +97,6 @@ $(document).ready(function()
 
    });
 
-
     jQuery('#date_range_marca').datetimepicker({
         format: 'd/m/Y'
     });
@@ -116,7 +108,7 @@ $(document).ready(function()
     });
 
     jQuery('#diaInicio').datetimepicker({
-        format:'Y/m/d',
+        format:'Y-m-d',
         onShow:function( ct ){
             this.setOptions({
                 maxDate:jQuery('#diaFinal').val()?jQuery('#diaFinal').val():false
@@ -125,7 +117,7 @@ $(document).ready(function()
         timepicker:false
     });
     jQuery('#diaFinal').datetimepicker({
-        format:'Y/m/d',
+        format:'Y-m-d',
         onShow:function( ct ){
             this.setOptions({
                 minDate:jQuery('#diaInicio').val()?jQuery('#diaInicio').val():false
@@ -245,6 +237,25 @@ $(document).ready(function()
         } else if(data.motivo === 'Permiso sin goce de salario') {
             document.getElementById("selectOpcionesPermisosSinSalario").style.display = "block";
             $('#selectPermisosSinSalario').val(data.inciso);
+        }else if(data.motivo === 'Reunión') {
+            jQuery('#diaInicio').datetimepicker({
+                format: 'Y-m-d H:i:00',
+                timepicker:true,
+                onShow:function( ct ){
+                    this.setOptions({
+                        maxDate:jQuery('#diaFinal').val()?jQuery('#diaFinal').val():false
+                    })
+                }
+            });
+            jQuery('#diaFinal').datetimepicker({
+                format: 'Y-m-d H:i:00',
+                timepicker:true,
+                onShow:function( ct ){
+                    this.setOptions({
+                        minDate:jQuery('#diaInicio').val()?jQuery('#diaInicio').val():false
+                    })
+                }
+            });
         }
 
     });

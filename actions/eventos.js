@@ -953,7 +953,7 @@ function getTitulo(option){
 }
 
 function getEstado(titulo){
-  console.log(titulo);
+
   if(titulo === 'Gestionar eventos | SIGUCA'){
     return "Pendiente";
   }

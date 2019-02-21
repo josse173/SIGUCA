@@ -72,7 +72,7 @@
 					"Ндл", "Пнд", "Втр", "Срд", "Чтв", "Птн", "Сбт"
 				]
 			},
-			en: { // English
+			es: { // English
 				months: [
 					"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
 				],
@@ -120,7 +120,7 @@
 					"Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"
 				]
 			},
-			es: { // Spanish
+			en: { // Spanish
 				months: [
 					"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
 				],
