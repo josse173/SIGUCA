@@ -257,7 +257,7 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos, marcaQu
 
   usuarios.forEach(function (usuario) {
     PeriodoUsuario.find({usuario: usuario._id}).sort({numeroPeriodo: 1}).exec(function(error, periodos) {
-      crudUsuario.validarPeriodoUsuario(usuario._id, periodos);
+      crudUsuario.validarPeriodoUsuario(usuario, periodos);
 
       var infoPeriodo = {
         diasDerechoDisfrutar: 0,
