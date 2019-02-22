@@ -893,7 +893,7 @@ $("#extraLink").click(function(){
                     }
                 });
             }
-        }).show();
+        }).setHeader('<em> Eliminar justificación </em> ').show();
     });
 
  $('.tableSolicitudes').footable().on('click', '.solicitudDelete', function(e) {
@@ -942,7 +942,7 @@ $("#extraLink").click(function(){
                      }
                  });
              }
-         }).show().setHeader('<em> Eliminar Solicitud </em> ');
+         }).setHeader('<em> Eliminar Solicitud </em> ').show();
  });
 
 
@@ -968,7 +968,7 @@ $("#extraLink").click(function(){
                }
            });
        }
-   }).show();
+   }).setHeader('<em> Eliminar Solicitud </em> ').show();
 });
 
  $('.tableMarcas').footable().on('click', '.marcaDelete', function(e) {
@@ -977,22 +977,23 @@ $("#extraLink").click(function(){
 
     var marca = $(this).val();
     var split = marca.split(',');
+    console.log(split);
     alertify.dialog('confirm')
     .set({
         'labels':{ok:'Eliminar', cancel:'Cancelar'},
         'transition': 'slide',
-        'message': '¿Está seguro de eliminar la marca de <br/><strong>' +  split[0] + '</strong>?',
+        'message': '¿Está seguro de eliminar la marca de <br/><strong>' +  split[2] + '</strong>?',
         'onok': function(){
             $.get('/marca/delete/'+split[1]+'/'+split[2], function (data){
                 if(data == 'Se eliminó correctamente.'){
                     footable.removeRow(row);
-                    alertify.message('Se eliminó la marca <strong>' +  split[0] + '</strong> con éxito');
+                    alertify.message('Se eliminó la marca <strong>' +  split[2] + '</strong> con éxito');
                 } else {
                     alertify.error(data);
                 }
             });
         }
-    }).show();
+    }).setHeader('<em> Eliminar Marca </em> ').show();
 });
 
 /*--------------------------------------------------------------------
@@ -1019,7 +1020,7 @@ $("#extraLink").click(function(){
                     }
                 });
             }
-        }).show();
+        }).setHeader('<em> Eliminar Departamento </em> ').show();
     });
 
  $('.tableHorario').footable().on('click', '.horarioDelete', function(e) {
@@ -1043,7 +1044,7 @@ $("#extraLink").click(function(){
                 }
             });
         }
-    }).show();
+    }).setHeader('<em> Eliminar Horario </em> ').show();
 });
 
  $('.tableFeriado').footable().on('click', '.feriadoDelete', function(e) {
@@ -1067,7 +1068,7 @@ $("#extraLink").click(function(){
                 }
             });
         }
-    }).show();
+    }).setHeader('<em> Eliminar Horario </em> ').show();
 });
 
  $('.tablePeriodo').footable().on('click', '.periodoDelete', function(e) {
@@ -1091,7 +1092,7 @@ $("#extraLink").click(function(){
                      }
                  });
              }
-         }).show();
+         }).setHeader('<em> Eliminar Horario </em> ').show();
  });
 
 $('.tableCorreo').footable().on('click', '.correoDelete', function(e) {
@@ -1115,7 +1116,7 @@ $('.tableCorreo').footable().on('click', '.correoDelete', function(e) {
                 }
             });
         }
-    }).show();
+    }).setHeader('<em> Eliminar Horario </em> ').show();
 });
 
 $('.tableRed').footable().on('click', '.redDelete', function(e) {
@@ -1139,7 +1140,7 @@ $('.tableRed').footable().on('click', '.redDelete', function(e) {
                 }
             });
         }
-    }).show();
+    }).setHeader('<em> Eliminar Red </em> ').show();
 });
 
 $("button[data-target=#editFeriado]").click( function() {
@@ -1224,7 +1225,7 @@ $('.tableHorarioEliminar').footable().on('click','.eliminarFijo',function(e) {
                 }
             });
         }
-    }).show();
+    }).setHeader('<em> Eliminar Horario </em> ').show();
 
 });
 
@@ -1248,7 +1249,7 @@ $('.tableHorarioPersonalizado').footable().on('click','.eliminarPersonalizado',f
                 }
             });
         }
-    }).show();
+    }).setHeader('<em> Eliminar Horario </em> ').show();
 
 });
 
@@ -1273,7 +1274,7 @@ $('.tableEmpleado').footable().on('click', '.empleadoDelete', function(e) {
                 }
             });
         }
-    }).show();
+    }).setHeader('<em> Eliminar Empleado </em> ').show();
 });
 
 $('.tableJustificaciones').footable().on('click', '.justificacionBoleta',

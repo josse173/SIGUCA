@@ -523,6 +523,9 @@ exports.deleteUsuario = function(id, cb){
 	Solicitudes.remove({usuario:id}, function (err, solicitudes) {
 	});
 
+	PeriodoUsuario.remove({usuario:id}, function (err, solicitudes) {
+	});
+
 	Usuario.remove({_id:id}, function (err, empleados) {
 		if (err) return cb(err, '');
 		return cb(err, 'Se elimino');
