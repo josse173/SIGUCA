@@ -424,7 +424,8 @@ module.exports = { enviar : function (de, para, titulo, tituloCuerpo, cuerpo ) {
 
             transporter.sendMail(mailOptions, function (error, info) {
                 if (error) {
-                    console.log(error);
+                    console.log('Error al enviar correo');
+                    //console.log(error);
                 } else {
                     console.log('Email sent: ' + info.response);
                 }
