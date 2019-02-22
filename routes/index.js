@@ -431,48 +431,48 @@ module.exports = function(app, io) {
     app.post('/alertaMostrada', autentificado, function (req, res) {
 
         var alertaActualizada = {
-            mostrada : true
+            mostrada : true,
+            fechaMostrada: moment().unix()
         };
 
         Alerta.findByIdAndUpdate(req.body.id, alertaActualizada, function(err, alerta){
             if (err) console.log(err);
-        });
 
-        Usuario.findOne({ _id: req.body.usuario }, function (error, usuario) {
-            if(error) console.log(error);
-            if (usuario){
+            Usuario.findOne({ _id: req.body.usuario }, function (error, usuario) {
+                if(error) console.log(error);
+                if (usuario){
 
-                Correo.find({},function(errorCritico, listaCorreos){
-                    if (!errorCritico && listaCorreos.length > 0 ) {
-                        enviarCorreo.enviar(listaCorreos[0].nombreCorreo, usuario.email, 'Alerta de Validación de Presencia','Estimado(a) funcionario:', 'Usted ha recibido una alerta de validación de presencia en SIGUCA:<br><br>Se le recuerda que debe atender esta solicitud en los proximos ' + req.body.tiempoRespuesta + ' minuto(s).');
-                    } else {
-                        console.log("error al enviar correo de solicitud de confirmación de conexión");
-                    }
-                });
+                    Correo.find({},function(errorCritico, listaCorreos){
+                        if (!errorCritico && listaCorreos.length > 0 ) {
+                            enviarCorreo.enviar(listaCorreos[0].nombreCorreo, usuario.email, 'Alerta de Validación de Presencia','Estimado(a) funcionario:', 'Usted ha recibido una alerta de validación de presencia en SIGUCA:<br><br>Se le recuerda que debe atender esta solicitud en los proximos ' + req.body.tiempoRespuesta + ' minuto(s).');
+                        } else {
+                            console.log("error al enviar correo de solicitud de confirmación de conexión");
+                        }
+                    });
 
-                var nombreUsuario = usuario.nombre + ' ' + usuario.apellido1 + ' ' + usuario.apellido2;
-                var date = moment();
+                    var nombreUsuario = usuario.nombre + ' ' + usuario.apellido1 + ' ' + usuario.apellido2;
 
-                var eventosTeletrabajo = new EventosTeletrabajo({
-                    usuario: req.body.usuario,
-                    nombreUsuario: nombreUsuario,
-                    epoch: date.unix()
-                });
+                    var eventosTeletrabajo = new EventosTeletrabajo({
+                        usuario: req.body.usuario,
+                        nombreUsuario: nombreUsuario,
+                        epoch: moment().unix(),
+                        alerta: alerta._id
+                    });
 
-                eventosTeletrabajo.save(function (err, respuesta) {
-                    if (err) console.log(err);
-                    res.json({id: respuesta._id});
-                });
-            }
+                    eventosTeletrabajo.save(function (err, respuesta) {
+                        if (err) console.log(err);
+                        res.json({id: respuesta._id});
+                    });
+                }
+            });
         });
     });
 
     app.post('/presente', autentificado, function (req, res) {
 
-        var fechaActual = new Date();
         var eventosTeletrabajo = {
             presente : true,
-            fechaAceptacion: fechaActual
+            fechaAceptacion: moment().unix()
         };
 
         EventosTeletrabajo.findByIdAndUpdate(req.body.id, eventosTeletrabajo, function(err, respuesta){

@@ -16,17 +16,17 @@ var SchemaEventosTeletrabajo = new Schema({
       type: String,
       default: ''
     },
-    fecha: {
-        type: Date,
-        default: Date.now()
+    alerta: {
+        type: Schema.Types.ObjectId,
+        ref: 'Alerta'
     },
     epoch: {
         type: Number,
         default: 0
     },
     fechaAceptacion: {
-        type: Date,
-        default: null
+        type: Number,
+        default: 0
     },
     presente: {
         type: Boolean,

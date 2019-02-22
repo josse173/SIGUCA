@@ -13,8 +13,20 @@ var SchemaAlerta = new Schema({
         ref: 'Usuario'
     },
     fechaCreacion: {
-        type: Date,
+        type: Number,
         default: ''
+    },
+    fechaAlerta: {
+        type: Date,
+        default: 0
+    },
+    fechaAlertaUnix: {
+        type: Number,
+        default: 0
+    },
+    fechaMostrada: {
+        type: Number,
+        default: 0
     },
     mostrada:{
         type: Boolean,

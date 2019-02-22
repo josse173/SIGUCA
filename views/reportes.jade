@@ -533,17 +533,21 @@ block content
               table.footable.tableContenido(data-page-navigation=".pagination" ,data-page-size="25")#opcionesTablaConfirmacionPresencia
                 thead
                   tr
-                    th Usuario
-                    th Fecha de la alerta
-                    th Fecha Aceptación
-                    th Presente
+                    th(data-sort-ignore="true") Usuario
+                    th(data-sort-ignore="true") Fecha Creación
+                    th(data-sort-ignore="true") Hora Creación Alerta
+                    th(data-sort-ignore="true") Hora a Mostrar
+                    th(data-sort-ignore="true") Hora Acepto
+                    th(data-sort-ignore="true") Presente
 
                 tbody
                   each eventoTeletrabajo, i in eventosTeletrabajo
                     tr
                       td #{eventoTeletrabajo.nombreUsuario}
-                      td #{moment(eventoTeletrabajo.fecha).format("YYYY-MM-DD hh:mm:ss")}
-                      td #{eventoTeletrabajo.fechaAceptacion === null ? '' : moment(eventoTeletrabajo.fechaAceptacion).format("YYYY-MM-DD hh:mm:ss")}
+                      td #{moment.unix(eventoTeletrabajo.epoch).format("YYYY-MM-DD hh:mm:ss")}
+                      td #{moment.unix(eventoTeletrabajo.alerta.fechaCreacion).format("hh:mm:ss")}
+                      td #{moment.unix(eventoTeletrabajo.alerta.fechaAlertaUnix).format("hh:mm:ss")}
+                      td #{eventoTeletrabajo.fechaAceptacion === 0 ? '' : moment.unix(eventoTeletrabajo.fechaAceptacion).format("hh:mm:ss")}
                       td #{eventoTeletrabajo.presente ? 'Si' : 'No'}
 
           if(tipoReporte === 'periodosUsuario' && periodosUsuario && periodosUsuario.length > 0)

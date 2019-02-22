@@ -257,7 +257,7 @@ module.exports = {
 
 											var fechaActual = new Date();
 
-											Alerta.find({ $expr: { $and: [ { $eq: [ { $year: "$fechaCreacion" }, fechaActual.getFullYear()] }, {$eq: [{ $month: "$fechaCreacion" }, fechaActual.getMonth()+1]}, {$eq: [{ $dayOfMonth: "$fechaCreacion" }, fechaActual.getDate()] }]} }, function(err, alertas){
+											Alerta.find({ $expr: { $and: [ { $eq: [ { $year: "$fechaAlerta" }, fechaActual.getFullYear()] }, {$eq: [{ $month: "$fechaAlerta" }, fechaActual.getMonth()+1]}, {$eq: [{ $dayOfMonth: "$fechaAlerta" }, fechaActual.getDate()] }]} }, function(err, alertas){
 												if (err) return res.json(err);
 
 												var listaAlertas = [];
@@ -389,8 +389,8 @@ module.exports = {
 								}
 							});
 						});
-						});
 					});
+				});
 			});
 		});
 
@@ -401,10 +401,14 @@ module.exports = {
 	}
 
     function crearAlerta(horaEntrada, horaSalida, minutosEntrada, minutosSalida) {
+		var fechaActual = moment();
+		var fechaAlerta = fechaAleatoria(Number(fechaActual.get('hour')), Number(horaSalida), Number(fechaActual.get('minute')), Number(minutosSalida));
 
         var nuevaAlerta = new Alerta({
             usuario: req.user.id,
-            fechaCreacion: fechaAleatoria(Number(horaEntrada), Number(horaSalida - 1), Number(minutosEntrada), Number(minutosSalida)),
+			fechaCreacion: moment().unix(),
+			fechaAlerta: fechaAlerta,
+			fechaAlertaUnix: moment(fechaAlerta).unix(),
             mostrada: false,
         });
 
@@ -439,6 +443,8 @@ module.exports = {
         // console.log('horaFinal: ' + horaFinal);
         // console.log('minutosInicial: ' + minutosInicial);
         // console.log('minutosfinal: ' + minutosfinal);
+
+		horaFinal = horaFinal -1;
 
         var fecha = new Date();
         var horaAleatoria = Math.floor(Math.random()*(horaFinal-horaInicial+1)+horaInicial) ;

@@ -338,7 +338,7 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos, marcaQu
                   CierrePersonal.find(cierreQuery).populate("usuario").exec(function(error, cierres) {
                         //Se asigna el tipo de usuario con el cual ha iniciado sesion
                         req.user.tipo = req.session.name;
-                        EventosTeletrabajo.find(marcaQuery).exec(function(error, eventosTeletrabajo) {
+                        EventosTeletrabajo.find(marcaQuery).populate('alerta').exec(function(error, eventosTeletrabajo) {
                           PeriodoUsuario.find(periodosUsuarioQuery).populate('usuario').populate('periodo').sort({usuario: 1, numeroPeriodo: 1}).exec(function(error, periodoUsuarios) {
                             return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, marcas,
                               justificaciones, extras, permisos, cierres, nombreUsuario, eventosTeletrabajo, periodoUsuarios, permisosSinSalario);

@@ -13,8 +13,8 @@ $( document ).ready(function() {
 
     function validarAlertas() {
 
-        var fechaActual = new Date();
-        // console.log('Hora Actual: ' + fechaActual.getDate() + ' ' + fechaActual.getHours() + ':' + fechaActual.getMinutes() + "(" + fechaActual.getTime() + ")");
+        var fechaActual = moment().unix();
+        console.log('fechaActual: ' + fechaActual);
 
         var tiempoRespuesta = document.getElementById("tiempoRespuesta").value;
         var alertas = document.getElementById("alertas").value;
@@ -24,9 +24,9 @@ $( document ).ready(function() {
             var listaAlertasActivas = [];
             listaAlertas.forEach(function(alerta) {
                 // console.log(alerta);
-                var fechaAlerta = new Date(alerta.fechaCreacion);
-                // console.log('Hora Alerta: '+ fechaAlerta.getDate() + ' ' + fechaAlerta.getHours() + ':' + fechaAlerta.getMinutes() + "(" + fechaAlerta.getTime() + ")");
-                if ( fechaAlerta.getTime() <= fechaActual.getTime() && alerta.mostrada === false) {
+                var fechaAlerta = alerta.fechaAlertaUnix;
+                 console.log('fechaAlerta: '+ fechaAlerta);
+                if ( fechaAlerta <= fechaActual && alerta.mostrada === false) {
 
                     $.ajax({
                         url: "usuarioDisponibleVerAlerta",
@@ -36,10 +36,11 @@ $( document ).ready(function() {
                         success: function(data) {
                             // console.log(data.result);
                             if (data.result && data.result === true) {
-                                setTimeout(mostrarAlerta, 60000, tiempoRespuesta, alerta);
+                                setTimeout(mostrarAlerta, 20000, tiempoRespuesta, alerta);
                             } else {
-                                fechaAlerta.setMinutes(fechaActual.getMinutes() + 2 );
-                                alerta.fechaCreacion = fechaAlerta;
+                                var fechaTemp = moment.unix(fechaAlerta);
+                                fechaTemp.add(5,'minutes');
+                                alerta.fechaAlertaUnix = fechaTemp.unix();
                                 listaAlertasActivas.push(alerta);
                                 document.getElementById("alertas").value = JSON.stringify(listaAlertasActivas);
 
