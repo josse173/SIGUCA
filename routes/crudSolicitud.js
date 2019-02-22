@@ -143,13 +143,13 @@ exports.updateExtra = function(extra, cb, idUser){
 //Métodos Solicitudes de Permisos
 //--------------------------------------------------------------------
 exports.addPermiso = function(permiso, cb, idUser){
-	var epochTime = moment().unix();
-	var fecha1 = permiso.diaInicio.split('/');
-	var fecha2 = permiso.diaFinal.split('/');
-	var epochInicio = moment([fecha1[0], Number(fecha1[1])-1, fecha1[2]]).unix();
-	var epochFinal = moment([fecha2[0], Number(fecha2[1])-1, fecha2[2]]).unix();
 
-    var newSolicitud = Solicitudes({
+	console.log(permiso);
+	var epochTime = moment().unix();
+	var epochInicio = moment(permiso.diaInicio).unix();
+	var epochFinal = moment(permiso.diaFinal).unix();
+
+	var newSolicitud = Solicitudes({
 		fechaCreada: epochTime,
 		tipoSolicitudes: "Permisos",
 		diaInicio: permiso.diaInicio,
@@ -210,10 +210,8 @@ exports.addPermiso = function(permiso, cb, idUser){
 
 exports.updatePermiso = function(permiso, cb, idUser){
 
-	var fecha1 = permiso.diaInicio.split('/');
-	var fecha2 = permiso.diaFinal.split('/');
-	var epochInicio = moment([fecha1[0], Number(fecha1[1])-1, fecha1[2]]);
-	var epochFinal = moment([fecha2[0], Number(fecha2[1])-1, fecha2[2]]);
+	var epochInicio = moment(permiso.diaInicio);
+	var epochFinal = moment(permiso.diaFinal);
 	var dias = epochFinal.diff(epochInicio, 'days', false) + 1;
 
 	var solicitudActualizada = {
@@ -252,7 +250,7 @@ exports.updatePermiso = function(permiso, cb, idUser){
 											+ "<br> Día de Inicio: " + solicitudActualizada.diaInicio
 											+ "<br> Día de termino: " + solicitudActualizada.diaFinal
 											+ "<br> Motivo: " + solicitud.motivo
-											+ "<br> Detalle: " + solicitud.detalle;
+											+ "<br> Detalle: " + solicitudActualizada.detalle;
 
 										enviarCorreo.enviar(from, to, subject, '', text);
 									}
