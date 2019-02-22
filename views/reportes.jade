@@ -69,7 +69,7 @@ block content
                 if(marcas)
                   tr
                     td #{textos[9].titulo}
-                    if(marcas.length != 0)
+                    if(marcas.length > 0)
                       td #{marcas.length}
                     else
                       td 0
@@ -78,7 +78,7 @@ block content
                 if(justificaciones)
                   tr
                     td Justificaciones
-                    if(justificaciones.length != 0)
+                    if(justificaciones.length > 0)
                       td #{justificaciones.length}
                     else
                       td 0
@@ -87,8 +87,14 @@ block content
                 if(permisos)
                   tr
                     td Solicitudes de permisos
-                    if(permisos.length != 0)
-                      td #{permisos.length}
+                    if(permisos.filter(x => x.motivo !== 'Permiso sin goce de salario').length > 0)
+                      td #{permisos.filter(x => x.motivo !== 'Permiso sin goce de salario').length}
+                    else
+                      td 0
+                  tr
+                    td Solicitudes de permisos sin goce de salario
+                    if(permisos.filter(x => x.motivo === 'Permiso sin goce de salario').length > 0)
+                      td #{permisos.filter(x => x.motivo === 'Permiso sin goce de salario').length}
                     else
                       td 0
 
@@ -96,7 +102,7 @@ block content
                 if(extras)
                   tr
                     td Solicitudes de horas extraordinarias
-                    if(extras.length != 0)
+                    if(extras.length > 0)
                       td #{extras.length}
                     else
                       td 0
@@ -104,7 +110,7 @@ block content
                  if(feriado)
                   tr
                     td Feriados
-                    if(feriado.length != 0)
+                    if(feriado.length > 0)
                       td #{feriado.length}
                     else
                       td 0
@@ -119,7 +125,7 @@ block content
                 if(horasEmpleado)
                   tr
                     td total de horas laboradas
-                    if(horasEmpleado.length != 0)
+                    if(horasEmpleado.length > 0)
                       //-Se calcula el total de horas laboradas por empleado
                       -var sumaHoras = 0, sumaMinutos = 0;
                       each empleadoTem, p in horasEmpleado
@@ -151,7 +157,7 @@ block content
 
         br
         div.tablasReportes
-          if(resumen && resumen.length != 0)
+          if(resumen && resumen.length > 0)
             h3.h3Marcas Resumen
             table.footable
                 thead
@@ -169,7 +175,7 @@ block content
 
 
           if(horasEmpleado)
-            if(horasEmpleado.length != 0)
+            if(horasEmpleado.length > 0)
               br
               h3 #{textos[39].titulo}
               .tableSolicitudes.footable
@@ -202,7 +208,7 @@ block content
 
           //-Horas por dia
           if(cierreUsuarios)
-            if(cierreUsuarios.length != 0)
+            if(cierreUsuarios.length > 0)
               br
               h3 #{textos[43].titulo}
               .tableCierres.footable
@@ -236,7 +242,7 @@ block content
 
           //-Marcas
           if(marcas)
-            if(marcas.length != 0)
+            if(marcas.length > 0)
               h3 #{textos[10].titulo}
               .footable
                 table#marcasPDF
@@ -261,7 +267,7 @@ block content
 
 
           if(arregloTardias)
-            if(arregloTardias.length != 0)
+            if(arregloTardias.length > 0)
               h3 #{textos[25].titulo}
               .footable
                 table#tardiasPDF
@@ -289,7 +295,7 @@ block content
               p #{textos[15].titulo}
 
           if(marcasPorDia)
-            if(marcasPorDia.length != 0)
+            if(marcasPorDia.length > 0)
                 h3 #{textos[16].titulo}
                 .footable
                   table#marcassPDF
@@ -320,7 +326,7 @@ block content
 
           //-Justificaciones
           if(justificaciones)
-            if(justificaciones.length != 0)
+            if(justificaciones.length > 0)
               h3 #{textos[30].titulo}
               .tableJustificaciones
                 table#justificacionesPDF
@@ -354,7 +360,7 @@ block content
 
           //-Solicitudes Horas Extraordinarias
           if(extras)
-            if(extras.length != 0)
+            if(extras.length > 0)
               br
               h3 #{textos[48].titulo}
               .tableSolicitudes.footable
@@ -388,13 +394,10 @@ block content
                             if(extra.usuario)
                               button.btn.btn-default.solicitudDelete(value=extra.usuario.nombre+' '+extra.usuario.apellido1+' '+extra.usuario.apellido2+','+extra.id+','+extra.fecha.str, name='eliminar')
                               i.icon-trash.icon-large.i-danger
-            else
-              h3 #{textos[48].titulo}
-              p #{textos[15].titulo}
 
           //-Solicitudes Permisos
           if(permisos)
-            if(permisos.length != 0)
+            if(permisos.length > 0 && (permisos.filter(x => x.motivo !== 'Permiso sin goce de salario').length > 0))
               br
               h3 #{textos[59].titulo}
               .tableSolicitudes.footable
@@ -413,7 +416,7 @@ block content
                         th #{textos[68].titulo}
                         th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[69].titulo}
                     tbody
-                      each permiso, i in permisos
+                      each permiso, i in permisos.filter(x => x.motivo !== 'Permiso sin goce de salario')
                         tr
                           td(data-value=permiso.fechaCreada) #{permiso.fecha.str}
                           if(permiso.usuario)
@@ -426,6 +429,47 @@ block content
                             td #{permiso.motivoArticulo51}
                           else
                             td N/A
+                          td #{permiso.detalle}
+                          td #{permiso.comentarioSupervisor}
+                          td #{permiso.estado}
+                          td
+                            if(permiso.usuario)
+                              button.btn.btn-default.solicitudDelete(value=permiso.usuario.nombre+' '+permiso.usuario.apellido1+' '+permiso.usuario.apellido2+','+permiso.id+','+permiso.fecha.str, name='eliminar')
+                                i.icon-trash.icon-large.i-danger
+            else
+              h3 #{textos[59].titulo}
+              p #{textos[15].titulo}
+
+
+          //-Solicitudes Permisos sin goce de salario
+          if(permisos)
+            if(permisos.length > 0 && (permisos.filter(x => x.motivo === 'Permiso sin goce de salario').length > 0))
+              br
+              h3 Permisos sin goce de salario
+              .tableSolicitudesSinGoce.footable
+                table#permisoSinGocePDF
+                    thead
+                      tr
+                        th(data-type="numeric" data-sort-initial="descending") #{textos[60].titulo}
+                        th  #{textos[61].titulo}
+                        th(data-hide="phone,small") #{textos[62].titulo}
+                        th(data-hide="phone,small") #{textos[63].titulo}
+                        th(data-hide="phone,small") #{textos[64].titulo}
+                        th(data-hide="phone,small,medium") #{textos[65].titulo}
+                        th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[66].titulo}
+                        th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[67].titulo}
+                        th #{textos[68].titulo}
+                        th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[69].titulo}
+                    tbody
+                      each permiso in permisos.filter(x => x.motivo === 'Permiso sin goce de salario')
+                        tr
+                          td(data-value=permiso.fechaCreada) #{permiso.fecha.str}
+                          if(permiso.usuario)
+                            td #{permiso.usuario.nombre} #{permiso.usuario.apellido1}
+                          td #{permiso.diaInicio}
+                          td #{permiso.diaFinal}
+                          td #{permiso.cantidadDias}
+                          td #{permiso.motivo}
                           td #{permiso.detalle}
                           td #{permiso.comentarioSupervisor}
                           td #{permiso.estado}
@@ -502,7 +546,7 @@ block content
                       td #{eventoTeletrabajo.fechaAceptacion === null ? '' : moment(eventoTeletrabajo.fechaAceptacion).format("YYYY-MM-DD hh:mm:ss")}
                       td #{eventoTeletrabajo.presente ? 'Si' : 'No'}
 
-          if(tipoReporte === 'periodosUsuario')
+          if(tipoReporte === 'periodosUsuario' && periodosUsuario && periodosUsuario.length > 0)
             h3 Periodos de los empleados
             table.footable.tableContenido(data-page-navigation=".pagination" ,data-page-size="25")#opcionesTablaPeriodosUsuario
               thead

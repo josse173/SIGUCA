@@ -19,6 +19,7 @@ Periodo = require('../models/Periodo'),
 PeriodoUsuario = require('../models/PeriodoUsuario');
 var config 			= require('../config');
 var enviarCorreo = require('../config/enviarCorreo');
+var ObjectID = require('mongodb').ObjectID;
 
 //--------------------------------------------------------------------
 //	Métodos Usuario
@@ -702,10 +703,11 @@ exports.updateVacaciones = function(){
 };
 
 exports.validarPeriodoUsuario = function (usuario, periodos) {
+
 	var mayorPeriodo = {};
 	var fechaActual = moment().unix();
-
 	if(periodos && periodos.length > 0){
+
 		mayorPeriodo = periodos.reduce(function(prev, current) {
 			if (+current.numeroPeriodo > +prev.numeroPeriodo) {
 				return current;
@@ -714,57 +716,118 @@ exports.validarPeriodoUsuario = function (usuario, periodos) {
 			}
 		});
 
-		var cierreSiguientePeriodo = mayorPeriodo.fechaFinal + 30240000; // 30240000 = 50 semanas
+		Solicitudes.find({usuario: ObjectID(usuario._id), estado: "Aceptada", epochInicio: { "$gte": mayorPeriodo.fechaFinal, "$lte": fechaActual} , motivo: "Permiso sin goce de salario"}).sort({ "epochInicio" : 1}).exec(function (error, permisosSinGoceSalario) {
 
-		if(fechaActual > cierreSiguientePeriodo){
-			// Buscar siguiente tipo periodo y crear periodoUsuario
+			if(permisosSinGoceSalario && permisosSinGoceSalario.length > 0){
 
-			var semanasLaboradas = (fechaActual - usuario.fechaIngreso) /604800; // 604800 = 1 semana
-
-			Periodo.find().sort({ "numeroPeriodo" : 1}).exec(function (error, periodos) {
-				if (error) return res.json(error);
-				periodos.forEach(function (periodo) {
-					if(semanasLaboradas >= periodo.rangoInicial && semanasLaboradas < periodo.rangoFinal){
-						var periodoUsuario = new PeriodoUsuario({
-							fechaCreada: fechaActual,
-							usuario: usuario.id,
-							periodo: periodo._id,
-							nombrePeriodoPadre: periodo.nombre,
-							fechaInicio: mayorPeriodo.fechaFinal,
-							fechaFinal: cierreSiguientePeriodo,
-							diasAsignados: periodo.cantidadDias,
-							numeroPeriodo: mayorPeriodo.numeroPeriodo + 1
-						});
-
-						periodoUsuario.save(function (err, respuesta) {
-							if (err) console.log(err);
-						});
-					}
+				var totalDiasPermisoSinSalario = 0;
+				permisosSinGoceSalario.forEach(function (permisoSinGoceSalario) {
+					totalDiasPermisoSinSalario += Number(permisoSinGoceSalario.cantidadDias);
 				});
-			});
-		}
+
+				var fechaFinalUltimoPeriodo = moment.unix(mayorPeriodo.fechaFinal);
+
+				fechaFinalUltimoPeriodo.add(totalDiasPermisoSinSalario, 'days');
+				fechaFinalUltimoPeriodo.add(350, 'days'); //350 = 50 semanas
+
+				if(fechaFinalUltimoPeriodo.unix() < fechaActual){
+
+					var semanasLaboradas = (fechaActual - usuario.fechaIngreso) / 604800; // 604800 = 1 semana
+
+					semanasLaboradas = semanasLaboradas - (totalDiasPermisoSinSalario / 7);
+
+					Periodo.find().sort({"numeroPeriodo": 1}).exec(function (error, periodos) {
+						if (error) return res.json(error);
+						periodos.forEach(function (periodo) {
+							if (semanasLaboradas >= periodo.rangoInicial && semanasLaboradas < periodo.rangoFinal) {
+								crearPeriodo(fechaActual, usuario.id, periodo._id, periodo.nombre, mayorPeriodo.fechaFinal, fechaFinalUltimoPeriodo.unix(), periodo.cantidadDias, (mayorPeriodo.numeroPeriodo + 1));
+							}
+						});
+					});
+
+				}
+
+			} else {
+
+				var cierreSiguientePeriodo = mayorPeriodo.fechaFinal + 30240000; // 30240000 = 50 semanas
+
+				if (fechaActual > cierreSiguientePeriodo) {
+					var semanasLaboradas = (fechaActual - usuario.fechaIngreso) / 604800; // 604800 = 1 semana
+
+					Periodo.find().sort({"numeroPeriodo": 1}).exec(function (error, periodos) {
+						if (error) return res.json(error);
+						periodos.forEach(function (periodo) {
+							if (semanasLaboradas >= periodo.rangoInicial && semanasLaboradas < periodo.rangoFinal) {
+								crearPeriodo(fechaActual, usuario.id, periodo._id, periodo.nombre, mayorPeriodo.fechaFinal, cierreSiguientePeriodo, periodo.cantidadDias, (mayorPeriodo.numeroPeriodo + 1));
+							}
+						});
+					});
+				}
+			}
+		});
+
 	} else {
+
 		var cierreFechaCreacion = usuario.fechaIngreso + 30240000; // 30240000 = 50 semanas
 
-		if(fechaActual > cierreFechaCreacion){
+		Solicitudes.find({usuario: ObjectID(usuario._id), estado: "Aceptada", epochInicio: { "$gte": usuario.fechaIngreso, "$lte": fechaActual} , motivo: "Permiso sin goce de salario"}).sort({ "epochInicio" : 1}).exec(function (error, permisosSinGoceSalario) {
 
-			Periodo.find().sort({ "numeroPeriodo" : 1}).exec(function (error, periodos) {
-				if (error) return res.json(error);
-				var periodoUsuario = new PeriodoUsuario({
-					fechaCreada: fechaActual,
-					usuario: usuario.id,
-					periodo: periodos[0]._id,
-					nombrePeriodoPadre: periodos[0].nombre,
-					fechaInicio: usuario.fechaIngreso,
-					fechaFinal: cierreFechaCreacion,
-					diasAsignados: periodos[0].cantidadDias,
-					numeroPeriodo: 1
+			if(permisosSinGoceSalario && permisosSinGoceSalario.length > 0){
+
+				var totalDiasPermisoSinSalario = 0;
+				permisosSinGoceSalario.forEach(function (permisoSinGoceSalario) {
+					totalDiasPermisoSinSalario += Number(permisoSinGoceSalario.cantidadDias);
 				});
 
-				periodoUsuario.save(function (err, respuesta) {
-					if (err) console.log(err);
-				});
-			});
-		}
+				var fechaFinalUltimoPeriodo = moment.unix(usuario.fechaIngreso);
+
+				fechaFinalUltimoPeriodo.add(totalDiasPermisoSinSalario, 'days');
+				fechaFinalUltimoPeriodo.add(350, 'days'); //350 = 50 semanas
+
+				if(fechaFinalUltimoPeriodo.unix() < fechaActual){
+
+					var semanasLaboradas = (fechaActual - usuario.fechaIngreso) / 604800; // 604800 = 1 semana
+
+					semanasLaboradas = semanasLaboradas - (totalDiasPermisoSinSalario / 7);
+
+					Periodo.find().sort({"numeroPeriodo": 1}).exec(function (error, periodos) {
+						if (error) return res.json(error);
+						periodos.forEach(function (periodo) {
+							if (semanasLaboradas >= periodo.rangoInicial && semanasLaboradas < periodo.rangoFinal) {
+								crearPeriodo(fechaActual, usuario.id, periodo._id, periodo.nombre, usuario.fechaIngreso, fechaFinalUltimoPeriodo.unix(), periodo.cantidadDias, 1);
+							}
+						});
+					});
+				}
+
+			} else {
+
+				if(fechaActual > cierreFechaCreacion){
+
+					Periodo.find().sort({ "numeroPeriodo" : 1}).exec(function (error, periodos) {
+						if (error) console.log(error);
+						crearPeriodo(fechaActual, usuario.id, periodos[0]._id, periodos[0].nombre, usuario.fechaIngreso, cierreFechaCreacion, periodos[0].cantidadDias, 1);
+					});
+				}
+			}
+		});
+	}
+
+	function crearPeriodo(fechaCreada, usuario, periodo, nombrePeriodoPadre, fechaInicio, fechaFinal, diasAsignados, numeroPeriodo) {
+
+		var periodoUsuario = new PeriodoUsuario({
+			fechaCreada: fechaCreada,
+			usuario: usuario,
+			periodo: periodo,
+			nombrePeriodoPadre: nombrePeriodoPadre,
+			fechaInicio: fechaInicio,
+			fechaFinal: fechaFinal,
+			diasAsignados: diasAsignados,
+			numeroPeriodo: numeroPeriodo
+		});
+
+		periodoUsuario.save(function (err, respuesta) {
+			if (err) console.log(err);
+		});
 	}
 };

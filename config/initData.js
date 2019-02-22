@@ -2,11 +2,11 @@
 
 var mongoose = require('mongoose'),
     Usuario = mongoose.model('Usuario'),
-    Articulo51 	= require('../models/Articulo51'),
-    Horario = require('../models/Horario'),
+    Horario = mongoose.model('Horario'),
     Configuracion = mongoose.model('Configuracion'),
     Contenido = mongoose.model('Contenido'),
-    Periodo = mongoose.model('Periodo');
+    Periodo = mongoose.model('Periodo'),
+    PermisoSinSalario = require('../models/PermisoSinSalario');
 
 Usuario.findOne({ 'tipo' :  'Administrador' }, function (err, user) {
     if (!user) {
@@ -241,3 +241,58 @@ Contenido.findOne({ seccion: 'Eventos', llave: 'Tabla Solicitudes de horas extra
     }
 });
 
+PermisoSinSalario.findOne({ nombre: '6 meses', numero: '1'}, function (err, permisoSinSalario) {
+    if (!permisoSinSalario) {
+        var permisoSinSalario = new PermisoSinSalario({
+            nombre: '6 meses',
+            numero: 1,
+            cantidadMeses: 6
+        });
+
+        permisoSinSalario.save(function (err, respuesta) {
+            if (err) console.log(err);
+        });
+    }
+});
+
+PermisoSinSalario.findOne({ nombre: '1 año', numero: '2'}, function (err, permisoSinSalario) {
+    if (!permisoSinSalario) {
+        var permisoSinSalario = new PermisoSinSalario({
+            nombre: '1 año',
+            numero: 2,
+            cantidadMeses: 12
+        });
+
+        permisoSinSalario.save(function (err, respuesta) {
+            if (err) console.log(err);
+        });
+    }
+});
+
+PermisoSinSalario.findOne({ nombre: '2 años', numero: '3'}, function (err, permisoSinSalario) {
+    if (!permisoSinSalario) {
+        var permisoSinSalario = new PermisoSinSalario({
+            nombre: '2 años',
+            numero: 3,
+            cantidadMeses: 24
+        });
+
+        permisoSinSalario.save(function (err, respuesta) {
+            if (err) console.log(err);
+        });
+    }
+});
+
+PermisoSinSalario.findOne({ nombre: '4 años', numero: '4'}, function (err, permisoSinSalario) {
+    if (!permisoSinSalario) {
+        var permisoSinSalario = new PermisoSinSalario({
+            nombre: '4 años',
+            numero: 4,
+            cantidadMeses: 48
+        });
+
+        permisoSinSalario.save(function (err, respuesta) {
+            if (err) console.log(err);
+        });
+    }
+});

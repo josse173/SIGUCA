@@ -63,7 +63,6 @@ var Configuracion = require('../models/Configuracion');
 var Alerta = require('../models/Alerta');
 var EventosTeletrabajo = require('../models/EventosTeletrabajo');
 var HoraExtra = require('../models/HoraExtra');
-
 //***************************************
 //var multer=require('multer');
 //var upload = multer({ dest: '' });
@@ -1788,7 +1787,7 @@ module.exports = function(app, io) {
                     mensaje += 'Detalle: ' + solicitud.detalle + '<br>';
                     mensaje += 'Fecha de solicitud: ' + moment.unix(solicitud.fechaCreada).format("YYYY-MM-DD hh:mm:ss") + '<br>';
                     mensaje += 'Fecha inicio: ' + solicitud.diaInicio + '<br>';
-                    mensaje += 'Fin fin: ' + solicitud.diaFinal + '<br>';
+                    mensaje += 'Fecha fin: ' + solicitud.diaFinal + '<br>';
                     mensaje += 'Cantidad de días: ' + solicitud.cantidadDias + '<br>';
                     mensaje += 'Estado: ' + solicitud.estado + '<br>';
                     mensaje += 'Supervisor: ' + nombreSupervisor + '<br>';
@@ -1819,7 +1818,7 @@ module.exports = function(app, io) {
                     mensaje += 'Detalle: ' + solicitud.detalle + '<br>';
                     mensaje += 'Fecha de solicitud: ' + moment.unix(solicitud.fechaCreada).format("YYYY-MM-DD hh:mm:ss") + '<br>';
                     mensaje += 'Fecha inicio: ' + solicitud.diaInicio + '<br>';
-                    mensaje += 'Fin fin: ' + solicitud.diaFinal + '<br>';
+                    mensaje += 'Fecha fin: ' + solicitud.diaFinal + '<br>';
                     mensaje += 'Cantidad de días: ' + solicitud.cantidadDias + '<br>';
                     mensaje += 'Estado: ' + solicitud.estado + '<br>';
                     mensaje += 'Supervisor: ' + nombreSupervisor + '<br>';
@@ -1850,7 +1849,7 @@ module.exports = function(app, io) {
                     mensaje += 'Detalle: ' + solicitud.detalle + '<br>';
                     mensaje += 'Fecha de solicitud: ' + moment.unix(solicitud.fechaCreada).format("YYYY-MM-DD hh:mm:ss") + '<br>';
                     mensaje += 'Fecha inicio: ' + solicitud.diaInicio + '<br>';
-                    mensaje += 'Fin fin: ' + solicitud.diaFinal + '<br>';
+                    mensaje += 'Fecha fin: ' + solicitud.diaFinal + '<br>';
                     mensaje += 'Cantidad de días: ' + solicitud.cantidadDias + '<br>';
                     mensaje += 'Estado: ' + solicitud.estado + '<br>';
                     mensaje += 'Supervisor: ' + nombreSupervisor + '<br>';
@@ -1882,7 +1881,7 @@ module.exports = function(app, io) {
                     mensaje += 'Detalle: ' + solicitud.detalle + '<br>';
                     mensaje += 'Fecha de solicitud: ' + moment.unix(solicitud.fechaCreada).format("YYYY-MM-DD hh:mm:ss") + '<br>';
                     mensaje += 'Fecha inicio: ' + solicitud.diaInicio + '<br>';
-                    mensaje += 'Fin fin: ' + solicitud.diaFinal + '<br>';
+                    mensaje += 'Fecha fin: ' + solicitud.diaFinal + '<br>';
                     mensaje += 'Cantidad de días: ' + solicitud.cantidadDias + '<br>';
                     mensaje += 'Estado: ' + solicitud.estado + '<br>';
                     mensaje += 'Supervisor: ' + nombreSupervisor + '<br>';
@@ -1914,7 +1913,7 @@ module.exports = function(app, io) {
                     mensaje += 'Detalle: ' + solicitud.detalle + '<br>';
                     mensaje += 'Fecha de solicitud: ' + moment.unix(solicitud.fechaCreada).format("YYYY-MM-DD hh:mm:ss") + '<br>';
                     mensaje += 'Fecha inicio: ' + solicitud.diaInicio + '<br>';
-                    mensaje += 'Fin fin: ' + solicitud.diaFinal + '<br>';
+                    mensaje += 'Fecha fin: ' + solicitud.diaFinal + '<br>';
                     mensaje += 'Cantidad de días: ' + solicitud.cantidadDias + '<br>';
                     mensaje += 'Estado: ' + solicitud.estado + '<br>';
                     mensaje += 'Supervisor: ' + nombreSupervisor + '<br>';
@@ -1952,6 +1951,38 @@ module.exports = function(app, io) {
                     mensaje += 'Comentario del supervisor: ' + horasExtra.comentarioSupervisor + '<br>';
 
                     var html = boleta.generarBoleta('Boleta solicitud de horas extra', mensaje);
+
+                    pdf.create(html).toStream(function (err, stream) {
+                        if (err) return res.send(err);
+                        res.type('pdf');
+                        stream.pipe(res);
+                    });
+                });
+
+            });
+        } else if (parametros.tipo === 'Permiso sin goce de salario') {
+
+            Solicitudes.findById(parametros.id).populate('usuario').exec(function (err, solicitud) {
+                if(err) return err;
+
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                    if(error) return error;
+                    var nombreSupervisor = '';
+                    if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){
+                        nombreSupervisor = supervisor.nombre + ' ' + supervisor.apellido1 + ' ' + supervisor.apellido2;
+                    }
+                    var mensaje = 'Nombre: ' + solicitud.usuario.nombre + ' ' + solicitud.usuario.apellido1 + ' ' + solicitud.usuario.apellido2 + '<br>';
+                    mensaje += 'Solicitud de permiso: ' + solicitud.motivo + '<br>';
+                    mensaje += 'Detalle: ' + solicitud.detalle + '<br>';
+                    mensaje += 'Fecha de solicitud: ' + moment.unix(solicitud.fechaCreada).format("YYYY-MM-DD hh:mm:ss") + '<br>';
+                    mensaje += 'Fecha inicio: ' + solicitud.diaInicio + '<br>';
+                    mensaje += 'Fecha fin: ' + solicitud.diaFinal + '<br>';
+                    mensaje += 'Cantidad de días: ' + solicitud.cantidadDias + '<br>';
+                    mensaje += 'Estado: ' + solicitud.estado + '<br>';
+                    mensaje += 'Supervisor: ' + nombreSupervisor + '<br>';
+                    mensaje += 'Comentario del supervisor: ' + solicitud.comentarioSupervisor + '<br>';
+
+                    var html = boleta.generarBoleta('Boleta solicitud de permiso sin goce de salario', mensaje);
 
                     pdf.create(html).toStream(function (err, stream) {
                         if (err) return res.send(err);

@@ -157,7 +157,7 @@ block content
             p #{textos[37].titulo}
 
         br
-        if(permisos && permisos.length > 0)
+        if(permisos && permisos.length > 0 && (permisos.filter(x => x.motivo !== 'Vacaciones').length > 0))
           h3 #{textos[38].titulo}
           if(permisos && permisos.length > 0)
             table.tableSolicitudes.footable(data-page-navigation=".pagination" data-page-size="5")
@@ -218,7 +218,7 @@ block content
             p #{textos[39].titulo}
 
         br
-        if(permisos && permisos.length > 0)
+        if(permisos && permisos.length > 0 && (permisos.filter(x => x.motivo === 'Vacaciones').length > 0))
           h3 #{textos[40].titulo}
           if(permisos && permisos.length > 0)
             table.tableVacaciones.footable(data-page-navigation=".pagination" data-page-size="5")
@@ -239,7 +239,7 @@ block content
                     th(data-hide="phone,small" data-sort-ignore="true") Boleta
                 tbody
                   each permiso, i in permisos
-                    if(permiso.motivo == "Vacaciones")
+                    if(permiso.motivo === "Vacaciones")
                       form(role='form', method="POST", action="/getionarSolicitud/"+permiso.id)
                         tr
                           td(data-value=permiso.fechaCreada) #{permiso.fecha.str}

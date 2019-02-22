@@ -267,9 +267,11 @@
                     option(value='Permiso Estudio') Permiso de Estudio
                     option(value='Familiar') Familiar
                     option(value='Articulo 51') Articulo 51
+                    option(value='Permiso sin goce de salario') Permiso sin goce de salario
                     option(value='Otro') Otro
-                label(for='motivoOtro') #{textos[51].titulo}
-                  input#motivoOtro.form-control(type= 'text', placeholder='Otro', name= 'motivoOtro' style='float:left' disabled)
+                div#divOtro(style='display:none;')
+                  label(for='motivoOtro') Descripción:
+                    input#motivoOtro.form-control(type= 'text', placeholder='Descripción motivo otro', name= 'motivoOtro' style='float:left' disabled)
               .form-group
                 div(style='display:none').form-group#selectOpcionesArticulo
                   label(for='selectDerechoDisfrutar') #{textos[50].titulo}
@@ -279,6 +281,12 @@
                       option(value='Fallecimiento') Fallecimiento de familiar
                       option(value='Nacimiento Hijo') Nacimiento de Hijo
                       option(value='Diligencias') Diligencias personales justificadas
+              .form-group
+                div(style='display:none').form-group#selectOpcionesPermisosSinSalario
+                  label(for='selectPermisosSinSalario') Tiempo:
+                    select#selectPermisosSinSalario.form-control(type= 'text', name= 'permisosSinSalarioTipo' style='float:left' required)
+                      each permisoSinSalario in permisosSinSalario
+                        option(value= permisoSinSalario.id + ';' + permisoSinSalario.cantidadMeses) #{permisoSinSalario.nombre}
               .form-group
                 div(style='display:none').form-group#selectOpcionesDepartamento
                   label(for='selectDepartamento') Departamento :
@@ -297,14 +305,6 @@
                 div(style='display:none').form-group#divTotalDiasDisponibles
                   label#lblTotalDiasDisponibles(for='totalDiasDisponibles') Total de días disponibles :
                   input#totalDiasDisponibles.form-control(type= 'text', name= 'totalDiasDisponibles', disabled, value=infoPeriodos.diasDisponibles)
-              // .form-group
-              //   div(style='display:none').form-group#divDiasSolicitadosVacaciones
-              //     label#lblDiasSolicitadosVacaciones(for='diasSolicitadosVacaciones') Días solicitados:
-              //    input#diasSolicitadosVacaciones.form-control(type= 'text', name= 'diasSolicitadosVacaciones' disabled, value=infoPeriodos.diasDisfrutados)
-              // .form-group
-              //   div(style='display:none').form-group#divSaldoDisfrutarVacaciones
-              //    label#lblSaldoDisfrutarVacaciones(for='saldoDisfrutarVacaciones') Saldo días por Disfrutar:
-              //    input#saldoDisfrutarVacaciones.form-control(type= 'text', name= 'saldoDisfrutarVacaciones' disabled, value=infoPeriodos.diasDisponibles)
               .form-group
                 div(style='display:none').form-group#divInciso
                   label(for='selectInciso') Inciso:

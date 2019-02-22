@@ -1,13 +1,13 @@
 /** SIGUCA
  *
- *  Modelo de Periodos
+ *  Modelo de Permisos sin salario
  *
  */
 
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
-var SchemaPeriodo = new Schema({
+var SchemaPermisoSinSalario = new Schema({
     fechaCreada: {
         type: Number,
         default: Date.now()
@@ -16,22 +16,14 @@ var SchemaPeriodo = new Schema({
         type: String,
         default: ''
     },
-    numeroPeriodo: {
+    numero: {
         type: Number,
         default: 0
     },
-    rangoInicial: {
-        type: Number,
-        default: 0
-    },
-    rangoFinal: {
-        type: Number,
-        default: 0
-    },
-    cantidadDias: {
+    cantidadMeses: {
         type: Number,
         default: 0
     }
 });
 
-module.exports = mongoose.model('Periodo', SchemaPeriodo);
+module.exports = mongoose.model('PermisoSinSalario', SchemaPermisoSinSalario);
