@@ -161,8 +161,9 @@ footer {
 }
 
 .btn-success{
-    background-image: -moz-linear-gradient(top,#004277 0,#004277 100%);
+    background-image: none!important;
     border-color: #004277 !important;
+    background-color: #004277!important;
 }
 
 .text-success{
