@@ -14,7 +14,7 @@ $( document ).ready(function() {
     function validarAlertas() {
 
         var fechaActual = moment().unix();
-        console.log('fechaActual: ' + fechaActual);
+        //console.log('fechaActual: ' + fechaActual);
 
         var tiempoRespuesta = document.getElementById("tiempoRespuesta").value;
         var alertas = document.getElementById("alertas").value;
@@ -25,7 +25,7 @@ $( document ).ready(function() {
             listaAlertas.forEach(function(alerta) {
                 // console.log(alerta);
                 var fechaAlerta = alerta.fechaAlertaUnix;
-                 console.log('fechaAlerta: '+ fechaAlerta);
+                 //console.log('fechaAlerta: '+ fechaAlerta);
                 if ( fechaAlerta <= fechaActual && alerta.mostrada === false) {
 
                     $.ajax({
@@ -163,8 +163,8 @@ $( document ).ready(function() {
             useWebKit = !!win.webkitRTCPeerConnection;
         }
         //minimal requirements for data connection
-        var mediaConstraints = {
-            optional: [{RtpDataChannels: true}]
+        let mediaConstraints = {
+            optional: [{SCTPDataChannel : true}]
         };
         var servers = {iceServers: [{urls: "stun:stun.services.mozilla.com"}]};
         //construct a new RTCPeerConnection
