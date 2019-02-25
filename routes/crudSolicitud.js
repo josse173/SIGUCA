@@ -144,7 +144,7 @@ exports.updateExtra = function(extra, cb, idUser){
 //--------------------------------------------------------------------
 exports.addPermiso = function(permiso, cb, idUser){
 
-	console.log(permiso);
+	//console.log(permiso);
 	var epochTime = moment().unix();
 	var epochInicio = moment(permiso.diaInicio).unix();
 	var epochFinal = moment(permiso.diaFinal).unix();
