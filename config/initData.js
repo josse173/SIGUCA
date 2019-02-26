@@ -2,7 +2,7 @@
 
 var mongoose = require('mongoose'),
     Usuario = mongoose.model('Usuario'),
-    Horario = mongoose.model('Horario'),
+    HorarioFijo = mongoose.model('HorarioFijo'),
     Configuracion = mongoose.model('Configuracion'),
     Contenido = mongoose.model('Contenido'),
     Periodo = mongoose.model('Periodo'),
@@ -13,7 +13,7 @@ Usuario.findOne({ 'tipo' :  'Administrador' }, function (err, user) {
 
 
         /* Se crea el horario del usuario tipo administrador por defecto */
-        var horario = new Horario({
+        var horario = new HorarioFijo({
                 nombre: 'horarioAdminDefault',
                 horaEntrada: '0:00',
                 horaSalida: '0:00',
