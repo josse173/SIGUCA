@@ -19,10 +19,12 @@ var HoraExtra = require('../models/HoraExtra');
 var PeriodoUsuario = require('../models/PeriodoUsuario');
 var Periodo = require('../models/Periodo');
 var PermisoSinSalario = require('../models/PermisoSinSalario');
+var mongoose = require('mongoose');
+var ObjectId = mongoose.Types.ObjectId;
 
 module.exports = {
   filtrarEventos : function (req, res) {
-    if (req.session.name == "Supervisor") {
+    if (req.session.name === "Supervisor") {
       var usuarioId;
       var option;
       if(req.body.filtro){
@@ -36,41 +38,46 @@ module.exports = {
       var titulo = getTitulo(req.route.path.substring(0, 9));
       var justQuery = {};
       var extraQuery = {};
-      var permisosQuery = {tipoSolicitudes:'Permisos'};
-      //var cierresQuery = {};
+      var permisosQuery = { tipoSolicitudes:'Permisos' };
       var marcaQuery = {};
       var cierreQuery = {};//{"usuarios.tiempo.horas":{"$gte":0}};
-      var usuarioQuery = {estado:"Activo",tipo:{'$nin': ['Administrador', "Supervisor"]}};
+      var usuarioQuery = { estado:"Activo", tipo:{'$nin': ['Administrador', "Supervisor"]}};
       var populateQuery = {
         path: 'usuario'
       };
+
       var periodosUsuarioQuery = {};
 
-      if(req.body.filtro_departamento && req.body.filtro_departamento!="todos"){
+      if(req.body.filtro_departamento && req.body.filtro_departamento !== "todos"){
         populateQuery.match = {departamentos:{$elemMatch:{departamento:req.body.filtro_departamento}}};
       }
+
       if(JSON.stringify(queryEpoch) !== JSON.stringify({})){
         cierreQuery.epoch = marcaQuery.epoch = justQuery.fechaCreada = extraQuery.fechaCreada = permisosQuery.fechaCreada =  queryEpoch;
       }
-      if(usuarioId && usuarioId != 'todos'){
+
+      if(usuarioId && usuarioId !== 'todos'){
         justQuery.usuario = extraQuery.usuario = permisosQuery.usuario = marcaQuery.usuario = periodosUsuarioQuery.usuario = usuarioId;
         cierreQuery.usuario = usuarioId;
       }
+
       justQuery.estado = extraQuery.estado = permisosQuery.estado = getEstado(titulo);
       crudUsuario.getById(usuarioId, function (err, usuario){
         var querrySupervisores = {
           _id:{
-            "$ne":req.user.id
+            "$ne":ObjectId(req.user.id)
           },
-          tipo:"Supervisor"
+          tipo:"Supervisor",
+          departamentos: {$elemMatch: {departamento: ObjectId(req.user.departamentos[0].departamento)}}
         };
+        console.log(querrySupervisores);
         crudUsuario.get(querrySupervisores, function (err, supervisores){
-          crudUsuario.getEmpleadoPorSupervisor(req.user.id, usuarioQuery,
-            function(error, usuarios, departamentos){
+          crudUsuario.getEmpleadoPorSupervisor(req.user.id, usuarioQuery, function(error, usuarios, departamentos){
               if(!usuarioId || usuarioId == 'todos'){
                 var queryUsers = {"$in":util.getIdsList(usuarios.concat(supervisores))};
                 justQuery.usuario = extraQuery.usuario = permisosQuery.usuario = marcaQuery.usuario = queryUsers;
               }
+
               getInformacionRender(req, res, titulo, usuarios.concat(supervisores), departamentos, marcaQuery,
                 justQuery, extraQuery, permisosQuery, cierreQuery, populateQuery,
                 ((!err && usuario) ? (usuario.apellido1+" "+usuario.apellido2+", "+usuario.nombre) : null), periodosUsuarioQuery);

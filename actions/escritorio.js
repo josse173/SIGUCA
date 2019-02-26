@@ -21,6 +21,8 @@ var Alerta = require('../models/Alerta');
 var PeriodoUsuario = require('../models/PeriodoUsuario');
 var HoraExtra = require('../models/HoraExtra');
 var PermisoSinSalario = require('../models/PermisoSinSalario');
+var mongoose = require('mongoose');
+var ObjectId = mongoose.Types.ObjectId;
 
 module.exports = {
 	escritorio : function (req, res) {
@@ -35,9 +37,10 @@ module.exports = {
 			*/
 			var querrySupervisores = {
 				_id:{
-					"$ne":req.user.id
+					"$ne":ObjectId(req.user.id)
 				},
-				tipo:"Supervisor"
+				tipo:"Supervisor",
+				departamentos: {$elemMatch: {departamento: ObjectId(req.user.departamentos[0].departamento)}}
 			};
 			Contenido.find({seccion:"escritorio"},function(err,contenido){
 			    if (err) return res.json(error);
