@@ -395,7 +395,7 @@ exports.gestionarJustifcacion = function(justificacion, cb, idUser){
 							+ "<br><br> Saludos cordiales.";
 						enviarCorreo.enviar(from, to, subject, '', text);
 					}else{
-						console.log("problemas 2");
+						//console.log("problemas 2");
 					}
 				});
 				//return cb(err, 'Se elimino');

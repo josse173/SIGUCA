@@ -304,7 +304,7 @@ module.exports = function(app, io) {
     */
 
     app.get('/solicitud/inciso', autentificado, function (req, res) {
-        console.log('INCISO PRUEBA ID    ' + req.user.id)
+        //console.log('INCISO PRUEBA ID    ' + req.user.id)
         Solicitudes.find({usuario: req.user.id, "inciso":"Inciso C", "estado":"Aceptada" }).exec(function (err, quantity) {
             console.log(quantity);
             var size = quantity.length;
@@ -730,7 +730,7 @@ module.exports = function(app, io) {
           console.log(content);
           content.save(function (err, user) {
               if (err) console.log(err);
-              console.log("El usuario se creo ");
+              //console.log("El usuario se creo ");
           });
           res.redirect('/escritorioAdmin');
       });
@@ -905,7 +905,7 @@ module.exports = function(app, io) {
     *  Crea un nuevo periodo
     */
     app.post('/periodo/:id', autentificado, function (req, res) {
-        console.log("post de periodo mandando el id " + req.params.id);
+        //console.log("post de periodo mandando el id " + req.params.id);
         //console.log("ESTE ES usuario dentro del post     " + req.user);
         if (req.session.name == "Administrador") {
             req.body.usuario = req.params.id;
@@ -929,7 +929,7 @@ module.exports = function(app, io) {
             }else{
                 req.user.tipo = req.session.name;
                 Usuario.findById(req.params.id, function (err, empleado) {
-                    console.log("NOMBRE USUARIO    " + empleado.nombre);
+                    //console.log("NOMBRE USUARIO    " + empleado.nombre);
                     if (err) return res.json(err);
                     else{
                         return res.render('periodo', {
@@ -949,7 +949,7 @@ module.exports = function(app, io) {
    *  Modifica el estado de Activo a Inactivo de un periodo en específico
    */
     app.get('/periodo/delete/:id', autentificado, function (req, res) {
-        console.log("ESTE ES id a eliminar   " + req.params.id);
+        //console.log("ESTE ES id a eliminar   " + req.params.id);
         crudPeriodo.deletePeriodo(req.params.id, function (err, msj) {
             if (err) res.json(err);
             res.send(msj);
@@ -1119,7 +1119,7 @@ module.exports = function(app, io) {
 
         var extension=String(req.files.upl.type);
         var extension = extension.substring(6);
-        console.log(extension);
+        //console.log(extension);
         if(extension!=="png"){
             res.send("Solo se aceptan .png");
         }
