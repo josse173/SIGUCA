@@ -1992,7 +1992,7 @@ module.exports = function(app, io) {
                 });
 
             });
-        }else if (parametros.tipo === 'Reunión') {
+        }else if (parametros.tipo === 'Salida-Visita (INS)') {
 
             Solicitudes.findById(parametros.id).populate('usuario').exec(function (err, solicitud) {
                 if(err) return err;
@@ -2014,7 +2014,7 @@ module.exports = function(app, io) {
                     mensaje += 'Supervisor: ' + nombreSupervisor + '<br>';
                     mensaje += 'Comentario del supervisor: ' + solicitud.comentarioSupervisor + '<br>';
 
-                    var html = boleta.generarBoleta('Boleta solicitud de permiso para reunión', mensaje);
+                    var html = boleta.generarBoleta('Boleta solicitud de permiso para Salida/Visita (INS)', mensaje);
 
                     pdf.create(html).toStream(function (err, stream) {
                         if (err) return res.send(err);

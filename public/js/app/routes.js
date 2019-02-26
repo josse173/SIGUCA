@@ -237,7 +237,7 @@ $(document).ready(function()
         } else if(data.motivo === 'Permiso sin goce de salario') {
             document.getElementById("selectOpcionesPermisosSinSalario").style.display = "block";
             $('#selectPermisosSinSalario').val(data.inciso);
-        }else if(data.motivo === 'Reunión') {
+        }else if(data.motivo === 'Salida-Visita (INS)') {
             jQuery('#diaInicio').datetimepicker({
                 format: 'Y-m-d H:i:00',
                 timepicker:true,

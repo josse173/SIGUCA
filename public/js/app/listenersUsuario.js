@@ -409,7 +409,7 @@ $("#selectMotivo,#selectPermisosSinSalario").change(function(e){
                     document.getElementById("cantidadDias").value = dias;
                 }
             }
-        } else if(selectMotivo.options[selectMotivo.selectedIndex].value === 'Reunión'){
+        } else if(selectMotivo.options[selectMotivo.selectedIndex].value === 'Salida-Visita (INS)'){
             jQuery('#diaInicio').datetimepicker({
                 format: 'Y-m-d H:i:00',
                 timepicker:true,
