@@ -70,7 +70,7 @@ module.exports = {
           tipo:"Supervisor",
           departamentos: {$elemMatch: {departamento: ObjectId(req.user.departamentos[0].departamento)}}
         };
-        console.log(querrySupervisores);
+
         crudUsuario.get(querrySupervisores, function (err, supervisores){
           crudUsuario.getEmpleadoPorSupervisor(req.user.id, usuarioQuery, function(error, usuarios, departamentos){
               if(!usuarioId || usuarioId == 'todos'){
