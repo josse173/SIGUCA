@@ -7,6 +7,7 @@ var CronJob = require('cron').CronJob;
 var crud = require('../routes/crud');
 var crudHorario = require('../routes/crudHorario');
 var crudSolicitud = require('../routes/crudSolicitud');
+const Justificaciones = require('../models/Justificaciones');
 var crudJustificaciones = require('../routes/crudJustificaciones');
 var crudUsuario = require('../routes/crudUsuario');
 var Feriado = require('../models/Feriado');
@@ -148,7 +149,6 @@ const CronJobOperations = {
                         if (result) {
                             reject(new Error("La marca de entrada ya ha sido registrada."));
                         } else {
-                            global.globalTipoUsuario = userType;
                             const closingHours = ScheduleOperations.calculateClosureHours(workedHours);
 
                             let addClosureMark = false;
@@ -159,7 +159,7 @@ const CronJobOperations = {
                             if (absentFromWork) {
                                 return DBOperations.addPersonalClosure(_idUser, userType, closingHours, true)
                                     .then(() => {
-                                        DBOperations.addIncompleteJustification(_idUser, DAY_NOT_WORKED, DAY_NOT_WORKED);
+                                        DBOperations.addIncompleteJustification(_idUser, userType, DAY_NOT_WORKED, DAY_NOT_WORKED);
                                         resolve();
                                     }).catch(error => reject(error));
                             } else {
@@ -180,10 +180,10 @@ const CronJobOperations = {
     },
     addJustifications(result, userId, userType){
         if (userType !== USER_TYPES.TEACHER) {
-            DBOperations.addIncompleteJustification(userId, END_MARK_MISSING, END_MARK_MISSING);
+            DBOperations.addIncompleteJustification(userId, userType, END_MARK_MISSING, END_MARK_MISSING);
             //This is only for horarioEmpleado, when the user forgot the opening mark for the day
             if (result.addClosureMark) {
-                DBOperations.addIncompleteJustification(userId, START_MARK_MISSING, START_MARK_MISSING);
+                DBOperations.addIncompleteJustification(userId, userType, START_MARK_MISSING, START_MARK_MISSING);
             }
         }
     }
@@ -373,7 +373,7 @@ const DBOperations = {
     },
     addPersonalClosure(_idUser, userType, closingHours, automaticClosure = false, epochStartMarkUnix= 0)  {
         return new Promise((resolve, reject) => {
-            let personaClosingObject = this.createPersonalClosingObject(_idUser, userType, closingHours.hours(), closingHours.minutes(), automaticClosure, epochStartMarkUnix);
+            const personaClosingObject = this.createPersonalClosingObject(_idUser, userType, closingHours.hours(), closingHours.minutes(), automaticClosure, epochStartMarkUnix);
             CierrePersonal(personaClosingObject).save()
                 .then(result => resolve(result))
                 .catch(error => reject(new Error("Error al crear cierre en la fecha '" + new Date() + "' => Mensaje: " + error)));
@@ -437,19 +437,18 @@ const DBOperations = {
             Feriado.find({epoch: {"$gte": epochGte, "$lte": epochLte}}).then(holidays => resolve(holidays)).catch(error => reject(error));
         })
     },
-    addIncompleteJustification(_idUser, reason, information){
-        crudJustificaciones.addJust(
-            {
-                id: _idUser,
+    addIncompleteJustification(_idUser, _userType, reason, information){
+        return new Promise((resolve, reject) => {
+            const justification = Justificaciones({
+                usuario: _idUser,
+                fechaCreada: moment().unix(),
                 detalle: "",
                 informacion: information,
-                estado: "Incompleto",
-                motivoJust: "Otro",
-                motivoOtroJust: reason
-            },
-            function () {
-            }
-        );
+                comentarioSupervisor: "",
+                tipoUsuario: _userType
+            });
+            justification.save().then(result => resolve(result)).catch(error => reject(error));
+        });
     }
 };
 
@@ -499,10 +498,10 @@ function buscarInformacionUsuarioCierre(tipoUsuario, _idUser, epochMin, epochMax
             registroHorasRegulares(tipoUsuario, _idUser, marks, currentDay, horario);
             if (tipoUsuario !== USER_TYPES.TEACHER || numTipos === 1) {
                 if (!marks.entrada) {
-                    DBOperations.addIncompleteJustification(_idUser, "Omisión de marca de entrada", "");
+                    DBOperations.addIncompleteJustification(_idUser, tipoUsuario,"Omisión de marca de entrada", "");
                 } else if (!marks.salida) {
                     //Solo se genera una notificación de omisión de marca de salida si el usuario incumplió las horas de trabajo
-                    DBOperations.addIncompleteJustification(_idUser, "Omisión de marca de salida", "");
+                    DBOperations.addIncompleteJustification(_idUser, tipoUsuario, "Omisión de marca de salida", "");
                 }
             }
         }
@@ -544,7 +543,7 @@ function registroHorasRegulares(tipoUsuario, _idUser, marcas, tiempoDia, horario
     //No importa la hora que salió, lo importante es que cumpla la jornada
     if (comparaH == 1) {
         console.log("Jornada laborada menor que la establecida");
-        DBOperations.addIncompleteJustification(_idUser, "Jornada laborada menor que la establecida",
+        DBOperations.addIncompleteJustification(_idUser, tipoUsuario, "Jornada laborada menor que la establecida",
             "Horas trabajadas: " + util.horaStr(tiempo.h, tiempo.m) +
             " - Horas establecidas: " + util.horaStr(totalJornada.h, totalJornada.m));
     }
