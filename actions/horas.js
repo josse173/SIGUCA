@@ -4,8 +4,6 @@ var util = require('../util/util');
 
 module.exports = {
     horasTrabajadas: function (req, res) {
-        console.log(req.user);
-        console.log(req.session);
         var epochGte = moment();
         epochGte.hours(0);
         epochGte.minutes(0);
