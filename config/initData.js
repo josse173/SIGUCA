@@ -2,7 +2,7 @@
 
 var mongoose = require('mongoose'),
     Usuario = mongoose.model('Usuario'),
-    HorarioFijo = mongoose.model('HorarioFijo'),
+    HorarioFijo = require('../models/HorarioFijo'),
     Configuracion = mongoose.model('Configuracion'),
     Contenido = mongoose.model('Contenido'),
     Periodo = mongoose.model('Periodo'),
