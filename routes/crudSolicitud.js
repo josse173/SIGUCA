@@ -362,7 +362,7 @@ exports.gestionarSoli = function(solicitud, cb, idUser){
 				PeriodoUsuario.find({usuario: soli.usuario._id}).sort({numeroPeriodo:1}).exec(function(error, periodos) {
 					if (error) return res.json(err);
 
-					var cantidadDias = soli.cantidadDias;
+					var cantidadDias = Number(soli.cantidadDias);
 
 					periodos.forEach(function (periodo) {
 						var diasDisponibles = periodo.diasAsignados - periodo.diasDisfrutados;
