@@ -255,14 +255,14 @@
                         option(value= horario.id) #{horario.nombre}
 
 
-                label(for='horario Fijo') Horario Fijo:
+                label(for='textInput') Horario Fijo:
                   br
                   select.form-control#textInput.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="horarioFijo")
                     option(value="") Sin horario
                     each horarioFijo, i in arregloHorarioFijo
                         option(value= horarioFijo._id) #{horarioFijo.nombre}
 
-                label(for='horario Fijo') Horario personalizado:
+                label(for='textInput') Horario personalizado:
                   br
                   select.form-control#textInput.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="personalizado")
                     option(value="") Sin horario
@@ -270,7 +270,7 @@
                         option(value=personalizado._id) #{personalizado.nombreHorarioPersonalizado}
 
 
-                label(for="tipoInput") Tipo de Usuario:
+                label(for="selectTipo") Tipo de Usuario:
                   br
                   select.form-control#selectTipo.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="tipo", multiple="multiple")
                     option Empleado
@@ -279,7 +279,7 @@
                     option #{tipoEmpleado}
                     option #{empleadoProfesor}
 
-                label(for='departamento') Departamento:
+                label(for='selectDepartamentos') Departamento:
                   br
                   select.form-control#selectDepartamentos.selectpicker(data-style="btn-success", data-width="150px", data-selected-text-format="count>2", type="text", name="idDepartamento", multiple="multiple")
                     each departamento, i in departamentos
@@ -292,7 +292,7 @@
                   input#teleTrabajo.form-control(type='checkbox',checked=false, name="teleTrabajo")
 
               .form-group
-                label(for="passwordInput")
+                label(for="passInput")
                   |Contraseña:
                   input.form-control#passInput(type='password', size='18', name="password", placeholder="Contraseña")
                   label#passInputText

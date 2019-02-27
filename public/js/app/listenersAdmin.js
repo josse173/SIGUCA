@@ -1,6 +1,6 @@
 var urlHorario = 'asignarHorario';
 $("#asignar-horario-form").submit(function(e) {
-    e.preventDefault();   
+    e.preventDefault();
     //alert($.ajax);
     $.ajax({
         url: urlHorario,
@@ -48,7 +48,7 @@ function actualizarHorarioModal(){
                 $("#tiempoReceso").val(
                         ajustarCero(data["tiempoReceso"].hora)+":"+
                         ajustarCero(data["tiempoReceso"].minutos));
-                
+
                 urlHorario = "/horario/actualizar/"+idUser;
             }else{
                 $.each(dias,function(i, dia){
@@ -99,7 +99,7 @@ $.validator.addMethod("numeros", function(value, element) {
 
 
 $('#agregarEmpleadoFormulario').validate({
-    
+
     rules:{
         nombre:{required:true,letras:true},
         cedula:{required:true,numeros:true},
@@ -119,39 +119,49 @@ $('#agregarEmpleadoFormulario').validate({
         email:{required:'El campo es requerido',email:'Formato inválido'},
         codTarjeta:{required:'El campo es requerido'},
         username:{required:'El campo es requerido'},
-        username:{required:'El campo es requerido'},
         fechaIngreso:{required:'El campo es requerido'},
         password:{required:'El campo es requerido'}
     }
 });
 
 $('#agregarEmpleado').click(function(){
-  
-    
+
+
     var empleado=new Object();
-    empleado.cedula=$('#cedula').val();
-    empleado.username= $('#username').val();
-    empleado.codTarjeta= $('#codTarjeta').val();
+    empleado.cedula = $('#cedula').val();
+    empleado.username = $('#username').val();
+    empleado.codTarjeta = $('#codTarjeta').val();
 
-    $.ajax({
-        url: "/verificarEmpleado",
-        type: 'POST',
-        dataType : "json",
-        data:{"empleado":empleado},
-        success: function(data) {    
-            if(data=="Correcto"){
-                $('#agregarEmpleadoFormulario').submit();
-                //location.href="/escritorioEmpl";
-            }else{
-                alertify.error('El usuario ya existe');
+    var selectTipo = $('#selectTipo').get(0);
+    var selectDepartamentos = $('#selectDepartamentos').get(0);
+
+    if(selectTipo && selectTipo.selectedOptions.length > 0){
+        if(selectDepartamentos && selectDepartamentos.selectedOptions.length > 0){
+        $.ajax({
+            url: "/verificarEmpleado",
+            type: 'POST',
+            dataType : "json",
+            data:{"empleado":empleado},
+            success: function(data) {
+                if(data=="Correcto"){
+                    $('#agregarEmpleadoFormulario').submit();
+                    //location.href="/escritorioEmpl";
+                }else{
+                    alertify.error('El usuario ya existe');
+                }
+
+            },
+            error: function(){
+                alert("Error al insertar usuario");
             }
-          
-        },
-        error: function(){
-            alert("Error al insertar usuario");
+        });
+        }else{
+            alertify.error('Debe seleccionar al menos un departamento.');
         }
-    }); 
+    }else{
+        alertify.error('Debe seleccionar al menos un tipo de usuario.');
+    }
 
- 
+
 });
 
