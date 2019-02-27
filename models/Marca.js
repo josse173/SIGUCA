@@ -36,6 +36,10 @@ var SchemaMarca = new Schema({
         type: String,
         default: ""
     },
+    epochMarcaEntrada:{ //relacionado con la marca inicial, si es que existe, utilizado unicamente con el cierre automatico
+        type: Number,
+        default: 0
+    }
 });
 
 module.exports = mongoose.model('Marca', SchemaMarca);
