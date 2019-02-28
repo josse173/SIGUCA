@@ -306,18 +306,40 @@ module.exports = function(app, io) {
     app.get('/solicitud/inciso', autentificado, function (req, res) {
         //console.log('INCISO PRUEBA ID    ' + req.user.id)
         Solicitudes.find({usuario: req.user.id, "inciso":"Inciso C", "estado":"Aceptada" }).exec(function (err, quantity) {
-            console.log(quantity);
+            //console.log(quantity);
             var size = quantity.length;
             res.json({quantity});
         });
     });
 
     app.get('/solicitud/solicitudAyer/:id/:fecha', autentificado, function (req, res) {
-        var fechaa =  req.params.fecha;
-        var fechaFormateada = moment(fechaa).subtract(1, 'day').format('YYYY/MM/DD');
-        Solicitudes.find({usuario: req.user.id, "diaInicio":fechaFormateada}).exec(function (err, quantity) {
-            var size = quantity.length;
-            res.json(size);
+        var fechaActual = moment();
+        fechaActual.hours(0);
+        fechaActual.minutes(0);
+        fechaActual.seconds(0);
+        //console.log("fechaActual: " + fechaActual.unix());
+        var diaAnterior = moment(req.params.fecha).add(-1, 'days').unix();
+        //console.log("diaAnterior: " + diaAnterior);
+        var diaSiguiente = moment(req.params.fecha).add(1, 'days').unix();
+        //console.log("diaSiguiente: " + diaSiguiente);
+        //console.log("fechaActual: " + fechaActual.unix());
+        var coincidencias = 0;
+        //console.log({usuario: ObjectId(req.user.id), estado: "Aceptada", epochInicio: {$gte: fechaActual.unix()} });
+        Solicitudes.find( {usuario: ObjectId(req.user.id), estado: "Aceptada", epochInicio: {$gte: fechaActual.unix()} }).exec(function (err, solicitudes) {
+            if(solicitudes && solicitudes.length > 0){
+                //console.log("Cantidad: "+solicitudes.length);
+                solicitudes.forEach(function (solicitud) {
+                    //console.log("solicitud.epochInicio: " + solicitud.epochInicio);
+                    if(solicitud.epochInicio === diaAnterior || solicitud.epochInicio === diaSiguiente){
+                        coincidencias++;
+                    }
+                });
+                //console.log("coincidencias: "+coincidencias);
+                res.json(coincidencias);
+            } else {
+                res.json(coincidencias);
+            }
+
         });
     });
 

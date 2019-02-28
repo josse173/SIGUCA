@@ -241,10 +241,10 @@
     .modal-dialog
         .modal-content
           .modal-header
-            button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+            button#cerrarModalPermiso.close(type='button', data-dismiss='modal', aria-hidden='true') ×
             h4#myModalLabel.modal-title #{textos[46].titulo}
           .modal-body
-            form.formSoli(role='form', method="POST")#login-form.well.span4
+            form.formSoli(role='form', method="POST")#permisoForm.well.span4
               .form-group
                 label(for='diaInicio') #{textos[47].titulo}
                   div.input-group

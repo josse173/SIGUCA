@@ -599,10 +599,13 @@ $("#extraLink").click(function(){
      $('#anno').val(testYear);
  });
 
- $("#btn-permiso").click(function(){
+ $("#btn-permiso").click(function(e){
+
+     e.preventDefault();
+     var $self = $(this);
      var val = $('#selectMotivo').val();
      var inciso = $('#selectInciso').val();
-     var cantidadDias = $('#cantidadDias').val();
+     var cantidadDias = Number($('#cantidadDias').val());
      var fecha = $('#diaInicio').val();
      var fechaFormateada = moment(fecha).format('MM/DD/YYYY').valueOf();
      var nuevaFecha = moment(fechaFormateada);
@@ -610,88 +613,125 @@ $("#extraLink").click(function(){
      var usuario = $('#btn-marca').val();
      var diasVacacionesDisponibles = $('#totalDiasDisponibles').val();
 
-     if(val == 'seleccionar') {
+     if(val === 'seleccionar') {
          alertify.error('Motivo no valido');
          return false;
-     } else if(val == 'Articulo 51') {
-         if(inciso == 'Inciso A'){
+     } else if(val === 'Articulo 51') {
+         if(inciso === 'Inciso A'){
              if(cantidadDias > 5){
-                 alertify.error('No puede ingresar un Inciso A debido que la cantidad maxima a solicitar son 5 dias');
+                 alertify.error('No puede ingresar un Inciso A debido que la cantidad maxima a solicitar son 5 días');
                  return false;
              }else{
                  $('.formSoli').attr('action', '/solicitud_permisos/');
-                 $("#btn-permiso").submit();
+                 $self.off('click').get(0).click();
              }
-         }else if(inciso =='Inciso B'){
-             if(cantidadDias != 1){
-                 alertify.error('No puede ingresar Inciso B cantidad maxima a solicitar es 1 dia');
+         }else if(inciso === 'Inciso B'){
+             if(cantidadDias > 1){
+                 alertify.error('No puede ingresar Inciso B cantidad maxima a solicitar es 1 día');
                  return false;
              }else{
                  $('.formSoli').attr('action', '/solicitud_permisos/');
-                 $("#btn-permiso").submit();
+                 $self.off('click').get(0).click();
              }
-         }else if(inciso =='Inciso C'){
-             $.get('/solicitud/inciso', {id: usuario}, function( data ) {
-                 var dias = data.quantity;
-                 var cantidadDeDias = dias.length;
-                 if(cantidadDeDias >= 3){
+         }else if(inciso === 'Inciso C'){
+
+             var promiseCantidadSolicitudes = $.cantidadSolicitudes(usuario);
+
+             promiseCantidadSolicitudes.done(function(respuestaCantidad){
+
+                 if(respuestaCantidad.quantity.length >= 3){
                      alertify.error('No se puede usar el Inciso C más de 3 veces');
                      return false;
+                 }else{
+                     var promiseValidarFechaSiguienteAnterior = $.validarFechaSiguienteAnterior(usuario, fechaAConfirmar);
+
+                     promiseValidarFechaSiguienteAnterior.done(function(repuestaValidacion){
+                         console.log(repuestaValidacion);
+                         if(repuestaValidacion > 0){
+                             alertify.error('No puede ingresar Inciso C debido a que tiene una solicitud del mismo tipo el día anterior o el día siguiente');
+                             return false;
+                         } else {
+                             if(cantidadDias > 1){
+                                 alertify.error('No puede ingresar Inciso C cantidad maxima a solicitar es 1 día');
+                                 return false;
+                             } else {
+                                 $('.formSoli').attr('action', '/solicitud_permisos/');
+                                 $self.off('click').get(0).click();
+                             }
+                         }
+                     });
                  }
              });
-             if(fecha!= null && fecha!= ''){
-                 $.get('/solicitud/solicitudAyer/'+usuario+'/'+fechaAConfirmar, function( data ) {
-                     if(data>0){
-                         alertify.error('No puede ingresar Inciso C debido a que hizo una solicitud del mismo tipo el dia de ayer');
-                         return false;
-                     }
-                 });
-             }
-             if(cantidadDias != 1){
-                 alertify.error('No puede ingresar Inciso C cantidad maxima a solicitar es 1 dia');
-                 return false;
-             }else{
-                 $('.formSoli').attr('action', '/solicitud_permisos/');
-                 $("#btn-permiso").submit();
-             }
          }
-     } else if(val == 'Vacaciones'){
-         if(cantidadDias != null && cantidadDias != ''){
+     } else if(val === 'Vacaciones'){
+
+         if(cantidadDias && cantidadDias > 0){
+
              if(parseInt(cantidadDias) > parseInt(diasVacacionesDisponibles)){
                  alertify.error('La cantidad de días solicitados supera la cantidad de Vacaciones disponibles');
                  return false;
+
              }else{
+
                  $('.formSoli').attr('action', '/solicitud_permisos/');
-                 $("#btn-permiso").submit();
+                 $self.off('click').get(0).click();
              }
          }
      }else {
          $('.formSoli').attr('action', '/solicitud_permisos/');
-         $("#btn-permiso").submit();
+         $self.off('click').get(0).click();
      }
  });
 
- /*$("#btn-permiso").click(function(){
-    var val = $('#selectMotivo').val();
-    var inciso = $('#selectDerechoDisfrutar').val();
-    if(val == 'seleccionar') {
-        alertify.error('Motivo no valido');
-        return false;
-    }else {
-        $('.formSoli').attr('action', '/solicitud_permisos/');
-        $("#btn-permiso").submit();
-    }
-});*/
+ $.cantidadSolicitudes = function (usuario) {
+     return $.get('/solicitud/inciso', {id: usuario}, function( data ) {});
+ };
+
+ $.validarFechaSiguienteAnterior = function (usuario, fecha) {
+     return $.get('/solicitud/solicitudAyer/'+usuario+'/'+fecha, function( data ) {});
+ };
+
+ $('#permiso').on('hidden.bs.modal', function () {
+     limpiarformularioPermiso();
+ });
+
+ $('#permiso').on('shown.bs.modal', function () {
+     limpiarformularioPermiso();
+ });
+
+ $("#cerrarModalPermiso").click(function(){
+     limpiarformularioPermiso();
+ });
 
  $("#btn-permiso-cancelar").click(function(){
-       $("#diaInicio").val("");
-       $("#diaFinal ").val("");
-       $("#selectMotivo").val("seleccionar")
-       $("#cantidadDias").val("");
-       $("#motivoOtro ").val("");
-       $("#detalle").val("");
-       //$("#selectDerechoDisfrutar").val("seleccionar");
+     limpiarformularioPermiso();
  });
+
+ function limpiarformularioPermiso(){
+     $("#diaInicio").val("");
+     $("#diaFinal ").val("");
+     $("#cantidadDias").val("");
+     $("#motivoOtro ").val("");
+     $("#detalle").val("");
+     $("#selectMotivo").get(0).selectedIndex = 0;
+     $("#selectDerechoDisfrutar").get(0).selectedIndex = 0;
+     $("#selectPermisosSinSalario").get(0).selectedIndex = 0;
+     $("#selectInciso").get(0).selectedIndex = 0;
+
+     $("#divOtro").attr('style','display:none');
+     $("#selectOpcionesArticulo").attr('style','display:none');
+     $("#selectOpcionesPermisosSinSalario").attr('style','display:none');
+     $("#selectOpcionesDepartamento").attr('style','display:none');
+     $("#divDerechoDisfrutarPorPeriodo").attr('style','display:none');
+     $("#divDiasDisfrutadosPorPeriodo").attr('style','display:none');
+     $("#divTotalDiasDisponibles").attr('style','display:none');
+     $("#divInciso").attr('style','display:none');
+     $("#divcantidadDiasDisfrutados").attr('style','display:none');
+     $("#divcantidadDiasDisponibles").attr('style','display:none');
+     $("#divcantidadDiasSolicitados").attr('style','display:none');
+     $("#divsaldoDiasDisfrutar").attr('style','display:none');
+     $("#divanno").attr('style','display:none');
+ }
 
  $("#btn-just").click(function(){
     var val = $('#selectMotivoJust').val();
