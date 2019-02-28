@@ -275,8 +275,10 @@ block content
                       tr
                         th #{textos[26].titulo}
                         th #{textos[27].titulo}
-                        th #{textos[28].titulo}
                         th #{textos[29].titulo}
+                        th Hora entrada
+                        th Hora marca
+
 
 
                     tbody
@@ -284,12 +286,12 @@ block content
                         tr
                           th #{arregloTardias[g].tipoUsuario}
                           td #{arregloTardias[g].nombre} #{arregloTardias[g].apellido}
-
+                          td #{arregloTardias[g].fecha.split(", ")[0]}
                           if(arregloTardias[g].horarioMinutos < 10)
                             td #{arregloTardias[g].horarioHora+":"+arregloTardias[g].horarioMinutos+""+0}
                           else
                             td #{arregloTardias[g].horarioHora+":"+arregloTardias[g].horarioMinutos}
-                          td #{arregloTardias[g].fecha}
+                          td #{arregloTardias[g].fecha.split(", ")[1]}
             else
               h3 #{textos[25].titulo}
               p #{textos[15].titulo}
