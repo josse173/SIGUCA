@@ -4,7 +4,7 @@
 var global=0;
 
 $(document).keypress(function(e) {
-   
+
     if(e.which == 13) {
     if(global==0){
         var username = $("#username").val(),
@@ -22,9 +22,9 @@ $(document).keypress(function(e) {
                         for( var i in data.tipo){
                             var option = document.createElement("option");
                             option.text = data.tipo[i];
-                            selectTem.add(option); 
+                            selectTem.add(option);
                         }
-                        
+
                         if(data.tipo.length <= 1){
                             $("#login-form").submit();
                         }else{
@@ -34,11 +34,11 @@ $(document).keypress(function(e) {
                             $("#selectTem").css('display', 'block');
                             $("#btnVerificar").css('display', 'none');
                         }
-                        
-                        
+
+
                     }
                 }
-            
+
             },
             error: function(){
             }
@@ -51,7 +51,7 @@ $(document).keypress(function(e) {
      }
 
     }
-    
+
 });
 
 function verificarTipos(){
@@ -70,9 +70,9 @@ function verificarTipos(){
                     for( var i in data.tipo){
                         var option = document.createElement("option");
                         option.text = data.tipo[i];
-                        selectTem.add(option); 
+                        selectTem.add(option);
                     }
-                    
+
                     if(data.tipo.length <= 1){
                         $("#login-form").submit();
                     }else{
@@ -80,16 +80,17 @@ function verificarTipos(){
                         $("#btnIngresar").css('display', 'block');
                         $("#selectTem").css('display', 'block');
                         $("#btnVerificar").css('display', 'none');
+                        alertify.success('Seleccione el rol con el que desea ingresar.');
                     }
-                    
-                    
+
+
                 }
             }else{
-                var notification = alertify.error('Error:Los credenciales no coinciden con ningún usuario', 'success', 4, function(){ 
-                    
+                var notification = alertify.error('Error:Los credenciales no coinciden con ningún usuario', 'success', 4, function(){
+
                  });
             }
-        
+
         },
         error: function(){
         }
@@ -100,7 +101,7 @@ function verificarTipos(){
 }
 
 /**
- * Función que capta un cambio en los input 
+ * Función que capta un cambio en los input
  */
  $("#username,#passInput").keyup(function(){
     $("#btnIngresar").css('display', 'none');

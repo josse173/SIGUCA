@@ -43,8 +43,7 @@ body {
 	padding: 3px;
 	background-color: #dfe4df;
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#00ffffff',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
-
-
+	max-width: 1370px;
 }
 #containerImgs{
 	margin-top: 60px;

@@ -16,7 +16,6 @@ const WORKING_DAYS = ["Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Vier
 const USER_TYPES = {ADMIN: 'Administrador', TEACHER: 'Profesor'};
 const MAXIMUM_INTERVAL_WORKING = 12;
 const SCHEDULER_TYPE = {FIXED: 'horarioFijo', RANGE: 'horarios', EMPLOYEE_SCHEDULE: 'horariosEmpleado'};
-const START_MARK_MISSING = "Omisión de marca de entrada";
 const AUTOMATIC_CLOSURE = 'Cierre Automático  de Sistema';
 const DAY_NOT_WORKED = "Día no laborado.";
 const END_MARK_MISSING = "Olvidó Marcar Salida.";
@@ -35,7 +34,7 @@ module.exports = {
                 }
             }).catch(error => console.log(error));
             //Realizar actualización de vacaciones
-            crudUsuario.updateVacaciones();
+            //crudUsuario.updateVacaciones();
         },
         null,
         false,
@@ -129,7 +128,9 @@ const CronJobOperations = {
                     if(user.horarioEmpleado) isScheduleAvailable = ScheduleOperations.isValidCustomScheduleDay(user.horarioEmpleado);
                     const schedule = user.horarioEmpleado || user.horarioFijo || user.horario;
                     if (isScheduleAvailable && schedule) {
-                        this.automaticClosure(userId, schedule, type).then((result) =>  this.addJustifications(result, userId, type)).catch(error => console.log(error));
+                        this.automaticClosure(userId, schedule, type).then((result) => {
+                            console.log(`Cierre automático procesado correctamente para el usuario: ${result}`)
+                        }).catch(error => console.log(error));
                     }
                 });
             });
@@ -147,28 +148,29 @@ const CronJobOperations = {
                     const startTime = workedHours.startTime !== 0 ? workedHours.startTime.unix() : 0;
                     DBOperations.findWorkedHour(_idUser, startTime).then(result => {
                         if (result) {
-                            reject(new Error("La marca de entrada ya ha sido registrada."));
+                            reject(`La marca de entrada ya ha sido registrada. Usuario: ${_idUser}`);
                         } else {
                             const closingHours = ScheduleOperations.calculateClosureHours(workedHours);
 
-                            let addClosureMark = false;
-                            if (ScheduleType.isCustom(userSchedule))
-                                addClosureMark = workedHours.startTime === 0;
-
                             let {canCompletePersonalClosing, absentFromWork} = ScheduleOperations.verifyWorkedHours(userSchedule, workedHours, closingHours.asHours());
                             if (absentFromWork) {
-                                return DBOperations.addPersonalClosure(_idUser, userType, closingHours, true)
+                                DBOperations.addPersonalClosure(_idUser, userType, closingHours, true)
                                     .then(() => {
                                         DBOperations.addIncompleteJustification(_idUser, userType, DAY_NOT_WORKED, DAY_NOT_WORKED);
                                         resolve();
                                     }).catch(error => reject(error));
                             } else {
                                 if (!canCompletePersonalClosing) {
-                                    reject(new Error("The current working period does not have a exit mark, but cant be closed because is not in the maximum interval of 12 working hours or the one defined by user schedule"));
+                                    reject("The current working period does not have a exit mark, but cant be closed because is not in the maximum interval of 12 working hours or the one defined by user schedule");
                                 } else {
-                                    return DBOperations.addPersonalClosure(_idUser, userType, closingHours, true, startTime).then(result => {
+                                    DBOperations.addPersonalClosure(_idUser, userType, closingHours, true, startTime).then(() => {
                                         DBOperations.addMark(_idUser, userType, startTime);
-                                        resolve({result: result, addClosureMark: addClosureMark})
+                                        if (userType !== USER_TYPES.TEACHER) {
+                                            DBOperations.addIncompleteJustification(_idUser, userType, END_MARK_MISSING, END_MARK_MISSING)
+                                                .then(() => console.log(`Justificación agregada para el usuario ${_idUser}`))
+                                                .catch((error) => console.log(error));
+                                        }
+                                        resolve(_idUser)
                                     }).catch(error => reject(error));
                                 }
                             }
@@ -177,15 +179,6 @@ const CronJobOperations = {
                 });
             }).catch(error => reject(error));
         });
-    },
-    addJustifications(result, userId, userType){
-        if (userType !== USER_TYPES.TEACHER) {
-            DBOperations.addIncompleteJustification(userId, userType, END_MARK_MISSING, END_MARK_MISSING);
-            //This is only for horarioEmpleado, when the user forgot the opening mark for the day
-            if (result.addClosureMark) {
-                DBOperations.addIncompleteJustification(userId, userType, START_MARK_MISSING, START_MARK_MISSING);
-            }
-        }
     }
 };
 
@@ -356,8 +349,10 @@ const DBOperations = {
         });
     },
     addMark(_idUser, userType, startMarkUnix){
-        const mark = DBOperations.createMark(AUTOMATIC_CLOSURE, _idUser, userType, startMarkUnix);
-        Marca(mark).save();
+        return new Promise((resolve, reject) => {
+            const mark = DBOperations.createMark(AUTOMATIC_CLOSURE, _idUser, userType, startMarkUnix);
+            Marca(mark).save().then(() => resolve()).catch((error) => reject(error));
+        });
     },
     createMark(markType, userId, userType, startMarkUnix)  {
         return {
@@ -443,6 +438,8 @@ const DBOperations = {
                 usuario: _idUser,
                 fechaCreada: moment().unix(),
                 detalle: "",
+                motivo: reason,
+                estado: 'Incompleta',
                 informacion: information,
                 comentarioSupervisor: "",
                 tipoUsuario: _userType
