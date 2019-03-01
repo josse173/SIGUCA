@@ -439,7 +439,7 @@ const DBOperations = {
                 fechaCreada: moment().unix(),
                 detalle: "",
                 motivo: reason,
-                estado: 'Incompleta',
+                estado: 'Incompleto',
                 informacion: information,
                 comentarioSupervisor: "",
                 tipoUsuario: _userType
