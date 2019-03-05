@@ -4,12 +4,8 @@ const User = require('../models/Usuario');
 var CierrePersonal = require('../models/CierrePersonal');
 var util = require('../util/util');
 var CronJob = require('cron').CronJob;
-var crud = require('../routes/crud');
 var crudHorario = require('../routes/crudHorario');
-var crudSolicitud = require('../routes/crudSolicitud');
 const Justificaciones = require('../models/Justificaciones');
-var crudJustificaciones = require('../routes/crudJustificaciones');
-var crudUsuario = require('../routes/crudUsuario');
 var Feriado = require('../models/Feriado');
 
 const WORKING_DAYS = ["Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"];
@@ -20,6 +16,7 @@ const AUTOMATIC_CLOSURE = 'Cierre Automático  de Sistema';
 const DAY_NOT_WORKED = "Día no laborado.";
 const END_MARK_MISSING = "Olvidó Marcar Salida.";
 const START_MARK = "Entrada";
+
 const //cronTime = '* * * * *';
       cronTime = '00 50 23 * * 0-7';
     //cronTime = '50 5,11,17,23 * * *';
@@ -105,7 +102,7 @@ module.exports = {
 const cierreHorario = (_idUser, userSchedule, mOut, userType) => {
     return DBOperations.findMarks(_idUser, userType).then(marks => {
         const workedHours = ScheduleOperations.getWorkedHoursByMarks(marks);
-        const closingHours = ScheduleOperations.calculateClosureHours(workedHours);
+        const closingHours = ScheduleOperations.calculateWorkedHours(workedHours);
         return ScheduleOperations.addPersonalClosure(_idUser, userType, closingHours)
             .then(result => result)
             .catch(error => error);
@@ -116,69 +113,58 @@ const cierreHorario = (_idUser, userSchedule, mOut, userType) => {
 
 const CronJobOperations = {
     executeAutomaticClosure() {
+        const day = WORKING_DAYS[moment().day()];
         DBOperations.findUsers().then(users => {
             users.forEach(user => {
-                //since in some scenarios we can, maybe not possible all the time but could, we dont need to check for worked hours but
-                // the filter is by day, so that means if we have 2 marks (start marks) at same day then with the worked hours we could omit one of them
-                const day = WORKING_DAYS[moment().day()];
                 const userId = user._id;
                 user.tipo.filter(type => type !== USER_TYPES.ADMIN).forEach(type =>{
-                    let isScheduleAvailable = true;
-                    if (user.horarioFijo) isScheduleAvailable = user.horarioFijo[day] === day;
-                    if(user.horarioEmpleado) isScheduleAvailable = ScheduleOperations.isValidCustomScheduleDay(user.horarioEmpleado);
                     const schedule = user.horarioEmpleado || user.horarioFijo || user.horario;
-                    if (isScheduleAvailable && schedule) {
-                        this.automaticClosure(userId, schedule, type).then((result) => {
-                            console.log(`Cierre automático procesado correctamente para el usuario: ${result}`)
-                        }).catch(error => console.log(error));
+                    if (schedule) {
+                        this.checkUserMarks(userId, schedule, type, day).catch(error => console.log(error));
+                    }else {
+                        console.log(`El usuario ${userId} no tiene un horario asociado`);
                     }
                 });
             });
         }).catch(error => console.log("Error retrieving users", JSON.stringify(error)));
     },
-    isUserPeriodUnregistered(user, type, closingMarks) {
-        return closingMarks.length > 0 ? closingMarks.includes(item => {
-            return !user._id.equals(item.usuario) && type !== item.tipoUsuario
-        }) : true;
-    },
-    automaticClosure(_idUser, userSchedule, userType) {
-        return new Promise((resolve, reject) => {
-            DBOperations.findMarks(_idUser, userType).then(marks => {
-                ScheduleOperations.groupMarks(marks).forEach(workedHours => {
-                    const startTime = workedHours.startTime !== 0 ? workedHours.startTime.unix() : 0;
-                    DBOperations.findWorkedHour(_idUser, startTime).then(result => {
-                        if (result) {
-                            reject(`La marca de entrada ya ha sido registrada. Usuario: ${_idUser}`);
-                        } else {
-                            const closingHours = ScheduleOperations.calculateClosureHours(workedHours);
+    checkUserMarks(_idUser, userSchedule, userType, currentDay) {
+       return DBOperations.findMarks(_idUser, userType).then(marks => {
+            ScheduleOperations.groupMarks(marks).forEach(definedWorkHours => {
+                const startTime = definedWorkHours.startTime !== 0 ? definedWorkHours.startTime.unix() : 0;
+                DBOperations.findWorkedHour(_idUser, startTime).then(result => {
+                    if (result) {
+                        console.log(`La marca de entrada ya ha sido registrada. Usuario: ${_idUser}`);
+                    } else {
+                        const closingHours = ScheduleOperations.calculateWorkedHours(definedWorkHours);
 
-                            let {canCompletePersonalClosing, absentFromWork} = ScheduleOperations.verifyWorkedHours(userSchedule, workedHours, closingHours.asHours());
-                            if (absentFromWork) {
-                                DBOperations.addPersonalClosure(_idUser, userType, closingHours, true)
-                                    .then(() => {
-                                        DBOperations.addIncompleteJustification(_idUser, userType, DAY_NOT_WORKED, DAY_NOT_WORKED);
-                                        resolve();
-                                    }).catch(error => reject(error));
+                        let {canCompletePersonalClosing, absentFromWork, isAWorkableDay} = ScheduleOperations.verifyWorkedHours(userSchedule, definedWorkHours, closingHours.asHours(), currentDay);
+                        //this just to add the information into the log
+                        if(!isAWorkableDay && marks.length >= 1)
+                            console.log(`${currentDay} no es un día laborable para el usuario; ${_idUser}, pero tiene marcas pendientes de procesar`);
+                        if (absentFromWork) {
+                            DBOperations.addPersonalClosure(_idUser, userType, closingHours, true)
+                                .then(_ => {
+                                    DBOperations.addIncompleteJustification(_idUser, userType, DAY_NOT_WORKED, DAY_NOT_WORKED);
+                                    console.log(`Día no laborado por el usuario: ${_idUser}`)
+                                }).catch(error => console.log(error));
+                        } else {
+                            if (canCompletePersonalClosing) {
+                                DBOperations.addPersonalClosure(_idUser, userType, closingHours, true, startTime).then(() => {
+                                    DBOperations.addMark(_idUser, userType, startTime).then(_ => console.log(`Marca agregada para el usuario ${_idUser}`)).catch(error => console.log(error));
+                                    if (userType !== USER_TYPES.TEACHER) {
+                                        DBOperations.addIncompleteJustification(_idUser, userType, END_MARK_MISSING, END_MARK_MISSING).then(_ => console.log(`Justificación agregada para el usuario ${_idUser}`)).catch((error) => console.log(error));
+                                    }
+                                    console.log(`Cierre automático procesado correctamente para el usuario: ${_idUser}.`)
+                                }).catch(error => console.log(error));
                             } else {
-                                if (!canCompletePersonalClosing) {
-                                    reject("The current working period does not have a exit mark, but cant be closed because is not in the maximum interval of 12 working hours or the one defined by user schedule");
-                                } else {
-                                    DBOperations.addPersonalClosure(_idUser, userType, closingHours, true, startTime).then(() => {
-                                        DBOperations.addMark(_idUser, userType, startTime);
-                                        if (userType !== USER_TYPES.TEACHER) {
-                                            DBOperations.addIncompleteJustification(_idUser, userType, END_MARK_MISSING, END_MARK_MISSING)
-                                                .then(() => console.log(`Justificación agregada para el usuario ${_idUser}`))
-                                                .catch((error) => console.log(error));
-                                        }
-                                        resolve(_idUser)
-                                    }).catch(error => reject(error));
-                                }
+                                console.log(`No se ha encontrado una marca de salida asociada a la marca de entrada, pero no es posible agregar la marca de salida aún, debido al intervalo maximo de 12 horas. Usuario ${_idUser}`);
                             }
                         }
-                    });
-                });
-            }).catch(error => reject(error));
-        });
+                    }
+                }).catch(error => console.log(error));
+            });
+        }).catch(error => console.log(error));
     }
 };
 
@@ -246,7 +232,7 @@ const ScheduleOperations = {
         }
         return schedule;
     },
-    calculateClosureHours(workedHours) {
+    calculateWorkedHours(workedHours) {
         let totalElapsedTime = moment.duration(0);
         if (workedHours.startTime > 0) {
             const jobEndTime = workedHours.endTime === 0 ? workedHours.automaticEndTime : workedHours.endTime;
@@ -262,20 +248,28 @@ const ScheduleOperations = {
     calculateElapsedTime(startTime, endTime){
         return startTime !== 0 && endTime !== 0 ? moment.duration(startTime.diff(endTime)) : moment.duration(0);
     },
-    verifyWorkedHours(userSchedule, workedHours, currentWorkDuration) {
-        let canCompletePersonalClosing = false, absentFromWork = false;
-        if (workedHours.startTime !== 0 && workedHours.endTime === 0) {
+    /**
+     *
+     * @param userSchedule User's schedule
+     * @param definedWorkHours Start and End Time defined in User's Schedule
+     * @param currentWorkDuration
+     * @param currentDay
+     * @returns {{absentFromWork: boolean, isAWorkableDay: (*|boolean), canCompletePersonalClosing: boolean}}
+     */
+    verifyWorkedHours(userSchedule, definedWorkHours, currentWorkDuration, currentDay) {
+        let canCompletePersonalClosing = false, absentFromWork = false, isAWorkableDay = ScheduleOperations.isAWorkableDay(currentDay, userSchedule);
+        if (definedWorkHours.startTime !== 0 && definedWorkHours.endTime === 0) {
             if (ScheduleType.isFree(userSchedule)) {
                 canCompletePersonalClosing = currentWorkDuration >= MAXIMUM_INTERVAL_WORKING;
             } else{
-                const {start, end} = this.getDefinedWorkHours(userSchedule, workedHours.startTime);
-                canCompletePersonalClosing = this.isScheduleOutOfRange(start, end, workedHours.automaticEndTime)
+                const {start, end} = this.getDefinedWorkHours(userSchedule, definedWorkHours.startTime);
+                canCompletePersonalClosing = this.isScheduleOutOfRange(start, end, definedWorkHours.automaticEndTime)
                     && currentWorkDuration >= MAXIMUM_INTERVAL_WORKING;
             }
-        }else if(!ScheduleType.isFree(userSchedule) && workedHours.startTime === 0){
-            absentFromWork = this.validateUserWithoutStartMark(workedHours.automaticEndTime, userSchedule);
+        }else if(!ScheduleType.isFree(userSchedule) && definedWorkHours.startTime === 0 && isAWorkableDay) {
+            absentFromWork = this.validateUserWithoutStartMark(definedWorkHours.automaticEndTime, userSchedule);
         }
-        return {canCompletePersonalClosing, absentFromWork};
+        return {canCompletePersonalClosing, absentFromWork, isAWorkableDay};
     },
     validateUserWithoutStartMark(currentEndTime, userSchedule){
         const {start, end} = this.getDefinedWorkHours(userSchedule, currentEndTime);
@@ -305,24 +299,20 @@ const ScheduleOperations = {
         newMoment.set({hour: hours, minute: minutes, seconds: 0});
         return newMoment
     },
-    getDuration(time)  {
-        const [hours, minutes] = time.split(':');
-        return moment.duration({hour: hours, minute: minutes})
-    },
-    getEffectiveTime(startMoment, schedule = {start: 0, end: 0, break: 0, lunch: 0}) {
-        const startTimeMoment = this.setTime(startMoment, schedule.start);
-
-        let endTimeMoment = this.setTime(startMoment, schedule.end);
-        if (endTimeMoment.isBefore(startTimeMoment)) endTimeMoment.add(1, 'days');
-
-        const lunchTime = this.getDuration(schedule.lunch);
-        const breakTime = this.getDuration(schedule.break);
-
-        return this.calculateElapsedTime(endTimeMoment, startTimeMoment).subtract(lunchTime).subtract(breakTime);
-    },
-    isValidCustomScheduleDay(userSchedule) {
-        const currentDay = userSchedule[WORKING_DAYS[moment().day()].toLowerCase()];
-        return (currentDay.entrada.hora !== 0) && (currentDay.salida.hora !== 0);
+    /**
+     * @param day
+     * @param userSchedule
+     * @returns {boolean}
+     */
+    isAWorkableDay(day, userSchedule) {
+        let isScheduleAvailable = true;
+        if (ScheduleType.isFixed(userSchedule))
+            isScheduleAvailable = userSchedule[day] === day;
+        else if(ScheduleType.isCustom(userSchedule)){
+            const currentDay = userSchedule[WORKING_DAYS[moment().day()].toLowerCase()];
+            isScheduleAvailable = (currentDay.entrada.hora !== 0) && (currentDay.salida.hora !== 0);
+        }
+        return isScheduleAvailable;
     }
 };
 
