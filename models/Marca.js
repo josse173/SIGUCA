@@ -39,6 +39,10 @@ var SchemaMarca = new Schema({
     epochMarcaEntrada:{ //relacionado con la marca inicial, si es que existe, utilizado unicamente con el cierre automatico
         type: Number,
         default: 0
+    },
+    epochCreacion:{
+        type: Number,
+        default: 0
     }
 });
 

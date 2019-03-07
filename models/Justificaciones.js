@@ -45,6 +45,10 @@ var SchemaJustificacion = new Schema({
         type: String,
         default: ''
     },
+    epochCreacion: {
+        type: Number,
+        default: 0
+    }
 });
 
 module.exports = mongoose.model('Justificaciones', SchemaJustificacion);

@@ -114,51 +114,51 @@ const cierreHorario = (_idUser, userSchedule, mOut, userType) => {
 const CronJobOperations = {
     executeAutomaticClosure() {
         const day = WORKING_DAYS[moment().day()];
+        const today = moment();
         DBOperations.findUsers().then(users => {
             users.forEach(user => {
-                const userId = user._id;
                 user.tipo.filter(type => type !== USER_TYPES.ADMIN).forEach(type =>{
                     const schedule = user.horarioEmpleado || user.horarioFijo || user.horario;
                     if (schedule) {
-                        this.checkUserMarks(userId, schedule, type, day).catch(error => console.log(error));
+                        this.checkUserMarks(user, schedule, type, day, today).catch(error => console.log(error));
                     }else {
-                        console.log(`El usuario ${userId} no tiene un horario asociado`);
+                        console.log(`El usuario ${user._id} no tiene un horario asociado`);
                     }
                 });
             });
         }).catch(error => console.log("Error retrieving users", JSON.stringify(error)));
     },
-    checkUserMarks(_idUser, userSchedule, userType, currentDay) {
+    checkUserMarks(user, userSchedule, userType, currentDay, today) {
+        const _idUser = user._id;
        return DBOperations.findMarks(_idUser, userType).then(marks => {
-            ScheduleOperations.groupMarks(marks).forEach(definedWorkHours => {
+            ScheduleOperations.groupMarks(marks, userSchedule, today).forEach(definedWorkHours => {
                 const startTime = definedWorkHours.startTime !== 0 ? definedWorkHours.startTime.unix() : 0;
                 DBOperations.findWorkedHour(_idUser, startTime).then(result => {
                     if (result) {
-                        console.log(`La marca de entrada ya ha sido registrada. Usuario: ${_idUser}`);
+                        console.log(`La marca de entrada ya ha sido registrada. Usuario: ${user.nombre}`);
                     } else {
                         const closingHours = ScheduleOperations.calculateWorkedHours(definedWorkHours);
 
                         let {canCompletePersonalClosing, absentFromWork, isAWorkableDay} = ScheduleOperations.verifyWorkedHours(userSchedule, definedWorkHours, closingHours.asHours(), currentDay);
-                        //this just to add the information into the log
                         if(!isAWorkableDay && marks.length >= 1)
-                            console.log(`${currentDay} no es un día laborable para el usuario; ${_idUser}, pero tiene marcas pendientes de procesar`);
+                            console.log(`${currentDay} no es un día laborable para el usuario; ${user.nombre}, pero tiene marcas pendientes de procesar`);
                         if (absentFromWork) {
                             DBOperations.addPersonalClosure(_idUser, userType, closingHours, true)
                                 .then(_ => {
                                     DBOperations.addIncompleteJustification(_idUser, userType, DAY_NOT_WORKED, DAY_NOT_WORKED);
-                                    console.log(`Día no laborado por el usuario: ${_idUser}`)
+                                    console.log(`${currentDay} no laborado por el usuario: ${user.nombre}`)
                                 }).catch(error => console.log(error));
                         } else {
                             if (canCompletePersonalClosing) {
                                 DBOperations.addPersonalClosure(_idUser, userType, closingHours, true, startTime).then(() => {
-                                    DBOperations.addMark(_idUser, userType, startTime).then(_ => console.log(`Marca agregada para el usuario ${_idUser}`)).catch(error => console.log(error));
+                                    DBOperations.addMark(_idUser, userType, definedWorkHours.startTime).then(_ => console.log(`Marca agregada para el usuario ${user.nombre}`)).catch(error => console.log(error));
                                     if (userType !== USER_TYPES.TEACHER) {
-                                        DBOperations.addIncompleteJustification(_idUser, userType, END_MARK_MISSING, END_MARK_MISSING).then(_ => console.log(`Justificación agregada para el usuario ${_idUser}`)).catch((error) => console.log(error));
+                                        DBOperations.addIncompleteJustification(_idUser, userType, END_MARK_MISSING, END_MARK_MISSING, definedWorkHours.startTime).then(_ => console.log(`Justificación agregada para el usuario ${user.nombre}`)).catch((error) => console.log(error));
                                     }
-                                    console.log(`Cierre automático procesado correctamente para el usuario: ${_idUser}.`)
+                                    console.log(`Cierre automático procesado correctamente para el usuario: ${user.nombre}.`)
                                 }).catch(error => console.log(error));
                             } else {
-                                console.log(`No se ha encontrado una marca de salida asociada a la marca de entrada, pero no es posible agregar la marca de salida aún, debido al intervalo maximo de 12 horas. Usuario ${_idUser}`);
+                                console.log(`No se ha encontrado una marca de salida asociada a la marca de entrada, pero no es posible agregar la marca de salida aún, debido al intervalo maximo de 12 horas. Usuario ${user.nombre}`);
                             }
                         }
                     }
@@ -181,19 +181,25 @@ const ScheduleType =  {
 };
 
 const ScheduleOperations = {
-    groupMarks(marks){
+    groupMarks(marks, userSchedule, today){
         const groups = [];
-        if(this.moreThanOneStartMark(marks)){
+        if(marks.length > 0){
             const startMarks = marks.filter(mark => mark.tipoMarca === START_MARK);
+            if(!ScheduleType.isFree(userSchedule)) {
+                //if a mark for today = current day is  not present then add a default onw because of probably absent day
+                const containsTodayMark = startMarks.filter(startMark => {
+                    const {start} = this.getDefinedWorkHours(userSchedule, today);
+                    return moment.unix(startMark.epoch).isSame(moment(), 'day') && moment.unix(startMark.epoch).isBetween(start, this.setTime(start, '23:50'));
+                }).length > 0;
+                if(!containsTodayMark) groups.push(this.getWorkedHoursByMarks([]));
+            }
+
             startMarks.forEach(startMark => {
                 const startTime = moment.unix(startMark.epoch);
                 const maxRange = moment(startTime).add(MAXIMUM_INTERVAL_WORKING, 'hours');
                 const newMarks = [startMark].concat(marks.filter(mark => {
-                    if (mark.tipoMarca === AUTOMATIC_CLOSURE && moment.unix(mark.epochMarcaEntrada).diff(startTime) === 0){
-                        return mark;
-                    } else if(mark.tipoMarca !== START_MARK && moment.unix(mark.epoch).isBetween(startTime, maxRange)){
-                        return mark;
-                    }
+                    if (mark.tipoMarca === AUTOMATIC_CLOSURE && moment.unix(mark.epochMarcaEntrada).diff(startTime) === 0) return mark;
+                    else if(mark.tipoMarca !== START_MARK && mark.tipoMarca !== AUTOMATIC_CLOSURE && moment.unix(mark.epoch).isBetween(startTime, maxRange)) return mark;
                 }));
                 groups.push(this.getWorkedHoursByMarks(newMarks));
             });
@@ -201,9 +207,6 @@ const ScheduleOperations = {
             groups.push(this.getWorkedHoursByMarks(marks));
         }
         return groups;
-    },
-    moreThanOneStartMark(marks){
-      return marks.filter(mark => mark.tipoMarca === START_MARK).length > 1;
     },
     getWorkedHoursByMarks(formattedMarks) {
         const schedule = {
@@ -287,7 +290,7 @@ const ScheduleOperations = {
         }
         return {start: this.setTime(currentEndTime, startTime), end: this.setTime(currentEndTime, endTime)};
     },
-    isScheduleOutOfRange( startTimeMoment, endTimeMoment, currentEndTime) {
+    isScheduleOutOfRange(startTimeMoment, endTimeMoment, currentEndTime) {
         return currentEndTime.isBefore(startTimeMoment) ? false : !currentEndTime.isBetween(startTimeMoment, endTimeMoment);
     },
     setTime(moment, time) {
@@ -338,18 +341,20 @@ const DBOperations = {
             }).then(marks => resolve(marks)).catch(error => reject(error));
         });
     },
-    addMark(_idUser, userType, startMarkUnix){
+    addMark(_idUser, userType, startMark){
         return new Promise((resolve, reject) => {
-            const mark = DBOperations.createMark(AUTOMATIC_CLOSURE, _idUser, userType, startMarkUnix);
+            const mark = DBOperations.createMark(AUTOMATIC_CLOSURE, _idUser, userType, startMark);
             Marca(mark).save().then(() => resolve()).catch((error) => reject(error));
         });
     },
-    createMark(markType, userId, userType, startMarkUnix)  {
+    createMark(markType, userId, userType, startMark)  {
+        const currentMoment = moment();
         return {
-            tipoMarca: markType,
+            tipoMarca: `${markType} (${currentMoment.format('DD-MM-YYYY HH:mm')})`,
             usuario: userId,
-            epoch: moment().unix(),
-            epochMarcaEntrada: startMarkUnix,
+            epochCreacion: currentMoment.unix(),
+            epoch: startMark.set({hour:currentMoment.hours(),minute:currentMoment.minutes()}).unix(),
+            epochMarcaEntrada: startMark.unix(),
             tipoUsuario: userType,
             ipOrigen: 'Sistema',
             red: 'Sistema',
@@ -408,10 +413,17 @@ const DBOperations = {
     },
     findWorkedHour(userId, initialEpoch){
         return new Promise((resolve, reject) =>{
-            CierrePersonal.findOne({
-                usuario: userId,
-                epochMarcaEntrada: initialEpoch
-            }).then(workedHour => resolve(workedHour)).catch(error => reject(error))
+            let query = { usuario: userId };
+            if(initialEpoch === 0){
+                const date = moment();
+                let start = date.hours(0).minutes(0).seconds(0).unix(), end = date.hours(23).minutes(59).seconds(59).unix();
+                query = {...query, epoch: {"$gte": start, "$lte": end}};
+            }else{
+                query = {...query, epochMarcaEntrada: initialEpoch}
+            }
+            CierrePersonal.findOne(query).then(workedHour =>
+                resolve(workedHour))
+                .catch(error => reject(error))
         });
     },
     findHolidays(){
@@ -422,11 +434,13 @@ const DBOperations = {
             Feriado.find({epoch: {"$gte": epochGte, "$lte": epochLte}}).then(holidays => resolve(holidays)).catch(error => reject(error));
         })
     },
-    addIncompleteJustification(_idUser, _userType, reason, information){
+    addIncompleteJustification(_idUser, _userType, reason, information, markDate){
         return new Promise((resolve, reject) => {
+            const currentMoment = moment();
             const justification = Justificaciones({
                 usuario: _idUser,
-                fechaCreada: moment().unix(),
+                epochCreacion: currentMoment.unix(),
+                fechaCreada: markDate ? markDate.set({hour:currentMoment.hours(),minute:currentMoment.minutes()}).unix() : moment().unix(),
                 detalle: "",
                 motivo: reason,
                 estado: 'Incompleto',
