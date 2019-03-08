@@ -1,4 +1,4 @@
-/** SIGUCA 
+/** SIGUCA
  *
  *  Modelo de Marca
  *
@@ -7,7 +7,7 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
 //Crear el esquema de Marca
-var SchemaMarca = new Schema({ 
+var SchemaMarca = new Schema({
     tipoMarca: {
         type: String,
         default: "Entrada" //Entrada-salida-salidaReceso-EntradaReceso-salidaAlmuerzo-entradaAlmuerzo
@@ -43,6 +43,10 @@ var SchemaMarca = new Schema({
     epochCreacion:{
         type: Number,
         default: 0
+    },
+    procesadaEnCierre:{
+        type: Boolean,
+        default: false
     }
 });
 

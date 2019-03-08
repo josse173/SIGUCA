@@ -135,7 +135,11 @@ const CronJobOperations = {
                 const startTime = definedWorkHours.startTime !== 0 ? definedWorkHours.startTime.unix() : 0;
                 DBOperations.findWorkedHour(_idUser, startTime).then(result => {
                     if (result) {
-                        console.log(`La marca de entrada ya ha sido registrada. Usuario: ${user.nombre}`);
+                        console.log(`La marca de salida ya ha sido registrada. Usuario: ${user.nombre}`);
+                        console.log(`Cambiando estado de marcas a procesadas en cierre`);
+                        definedWorkHours.marks.forEach(function (mark) {
+                            DBOperations.updateMark(mark);
+                        });
                     } else {
                         const closingHours = ScheduleOperations.calculateWorkedHours(definedWorkHours);
 
@@ -156,6 +160,11 @@ const CronJobOperations = {
                                         DBOperations.addIncompleteJustification(_idUser, userType, END_MARK_MISSING, END_MARK_MISSING, definedWorkHours.startTime).then(_ => console.log(`Justificación agregada para el usuario ${user.nombre}`)).catch((error) => console.log(error));
                                     }
                                     console.log(`Cierre automático procesado correctamente para el usuario: ${user.nombre}.`)
+                                }).then(()=>{
+                                    console.log(`Cambiando estado de marcas a procesadas en cierre`);
+                                    definedWorkHours.marks.forEach(function (mark) {
+                                        DBOperations.updateMark(mark);
+                                    });
                                 }).catch(error => console.log(error));
                             } else {
                                 console.log(`No se ha encontrado una marca de salida asociada a la marca de entrada, pero no es posible agregar la marca de salida aún, debido al intervalo maximo de 12 horas. Usuario ${user.nombre}`);
@@ -218,7 +227,8 @@ const ScheduleOperations = {
             endLunchTime: 0,
             startExtraTime: 0,
             endExtraTime: 0,
-            automaticEndTime: moment()
+            automaticEndTime: moment(),
+            marks:[]
         };
 
         for (const mark of formattedMarks) {
@@ -231,7 +241,9 @@ const ScheduleOperations = {
             else if (mark.tipoMarca === 'Salida al Almuerzo') schedule.startLunchTime = unixTime;
             else if (mark.tipoMarca === 'Entrada de Almuerzo') schedule.endLunchTime = unixTime;
             else if (mark.tipoMarca === "Entrada a extras") schedule.startExtraTime = unixTime;
-            else if (mark.tipoMarca === "Salida de extras") schedule.endExtraTime = unixTime
+            else if (mark.tipoMarca === "Salida de extras") schedule.endExtraTime = unixTime;
+
+            schedule.marks.push(mark);
         }
         return schedule;
     },
@@ -337,7 +349,8 @@ const DBOperations = {
             Marca.find({
                 usuario: _idUser,
                 tipoUsuario: userType,
-                epoch: {"$gte": epochGte.unix(), "$lte": epochLte.unix(),}
+                procesadaEnCierre: false,
+                epoch: {"$gte": epochGte.unix(), "$lte": epochLte.unix()}
             }).then(marks => resolve(marks)).catch(error => reject(error));
         });
     },
@@ -358,7 +371,8 @@ const DBOperations = {
             tipoUsuario: userType,
             ipOrigen: 'Sistema',
             red: 'Sistema',
-            dispositivo: 'Computadora'
+            dispositivo: 'Computadora',
+            procesadaEnCierre: true
         }
     },
     addPersonalClosure(_idUser, userType, closingHours, automaticClosure = false, epochStartMarkUnix= 0)  {
@@ -449,6 +463,12 @@ const DBOperations = {
                 tipoUsuario: _userType
             });
             justification.save().then(result => resolve(result)).catch(error => reject(error));
+        });
+    },
+    updateMark(mark){
+        return new Promise((resolve, reject) => {
+            mark.procesadaEnCierre = true;
+            mark.save().then(() => resolve()).catch((error) => reject(error));
         });
     }
 };

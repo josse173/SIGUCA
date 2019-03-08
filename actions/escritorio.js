@@ -55,7 +55,7 @@ module.exports = {
 						Justificaciones.find(queryInUsers).populate('usuario').exec(function(error, justCount) {
 							Solicitudes.find(queryInUsers).populate('usuario').exec(function(error, soliCount) {
 								HoraExtra.find(queryInUsers).populate('usuario').exec(function(error, extras) {
-									Marca.find({usuario: req.user.id, tipoUsuario: req.session.name, epoch:{"$gte": epochGte.unix()}},{_id:0,tipoMarca:1,epoch:1,dispositivo:1,red:1}).exec(function(error, marcas){
+									Marca.find({usuario: req.user.id, tipoUsuario: req.session.name, procesadaEnCierre: false},{_id:0,tipoMarca:1,epoch:1,dispositivo:1,red:1}).exec(function(error, marcas){
 										Justificaciones.find({usuario: req.user.id, estado:'Incompleto', tipoUsuario: req.session.name}).populate('usuario').exec(function(error, justificaciones) {
 											Solicitudes.find({estado:'Pendiente'}).populate('usuario').exec(function(error, solicitudes) {
 												Usuario.find({_id:req.user.id},{_id:0,departamentos: 1}).populate('departamentos.departamento').exec(function(error, supervisor){
@@ -196,7 +196,7 @@ module.exports = {
 			if (error) return res.json(error);
 			PermisoSinSalario.find().sort({numero: 1}).exec(function(error, permisosSinSalario) {
 				if (error) return res.json(error);
-				Marca.find({usuario: req.user.id, epoch:{"$gte": epochGte.unix()}, tipoUsuario: req.session.name}, {_id:0, tipoMarca:1, epoch:1, dispositivo:1, red:1}).exec( function(error, marcas) {
+				Marca.find({usuario: req.user.id, procesadaEnCierre: false, tipoUsuario: req.session.name}, {_id:0, tipoMarca:1, epoch:1, dispositivo:1, red:1}).exec( function(error, marcas) {
 					if (error) return res.json(error);
 					console.log({usuario: req.user.id, estado:'Incompleto', tipoUsuario: req.session.name});
 					Justificaciones.find({usuario: req.user.id, estado:'Incompleto', tipoUsuario: req.session.name}).exec(function(error, justificaciones) {
