@@ -139,7 +139,7 @@ Periodo.findOne({ nombre: 'Rango 1', numeroPeriodo: '1'}, function (err, periodo
             nombre: 'Rango 1',
             numeroPeriodo: 1,
             rangoInicial: 50,
-            rangoFinal: 250,
+            rangoFinal: 300,
             cantidadDias: 15
         });
 
@@ -154,8 +154,8 @@ Periodo.findOne({ nombre: 'Rango 2', numeroPeriodo: '2'}, function (err, periodo
         var periodo = new Periodo({
             nombre: 'Rango 2',
             numeroPeriodo: 2,
-            rangoInicial: 250,
-            rangoFinal: 500,
+            rangoInicial: 300,
+            rangoFinal: 550,
             cantidadDias: 20
         });
 
@@ -170,7 +170,7 @@ Periodo.findOne({ nombre: 'Rango 3', numeroPeriodo: '3'}, function (err, periodo
         var periodo = new Periodo({
             nombre: 'Rango 3',
             numeroPeriodo: 3,
-            rangoInicial: 500,
+            rangoInicial: 550,
             rangoFinal: 5214,
             cantidadDias: 26
         });
