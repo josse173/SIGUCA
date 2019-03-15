@@ -41,7 +41,7 @@ module.exports = {
       var permisosQuery = { tipoSolicitudes:'Permisos' };
       var marcaQuery = {};
       var cierreQuery = {};//{"usuarios.tiempo.horas":{"$gte":0}};
-      var usuarioQuery = { estado:"Activo", tipo:{'$nin': ['Administrador', "Supervisor"]}};
+      var usuarioQuery = { estado:"Activo", tipo:{'$in': ['Empleado']}};
       var populateQuery = {
         path: 'usuario'
       };
@@ -77,7 +77,6 @@ module.exports = {
                 var queryUsers = {"$in":util.getIdsList(usuarios.concat(supervisores))};
                 justQuery.usuario = extraQuery.usuario = permisosQuery.usuario = marcaQuery.usuario = queryUsers;
               }
-
               getInformacionRender(req, res, titulo, usuarios.concat(supervisores), departamentos, marcaQuery,
                 justQuery, extraQuery, permisosQuery, cierreQuery, populateQuery,
                 ((!err && usuario) ? (usuario.apellido1+" "+usuario.apellido2+", "+usuario.nombre) : null), periodosUsuarioQuery);
@@ -961,7 +960,9 @@ function getTitulo(option){
 function getEstado(titulo){
 
   if(titulo === 'Gestionar eventos | SIGUCA'){
-    return "Pendiente";
+    return {
+      "$in": ["Pendiente", "Incompleto"]
+    };
   }
   if(titulo === 'Reportes | SIGUCA'){
     return {

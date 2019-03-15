@@ -44,13 +44,13 @@ module.exports = {
 			};
 			Contenido.find({seccion:"escritorio"},function(err,contenido){
 			    if (err) return res.json(error);
-			    var usuarioQuery = {tipo:{'$nin': ['Administrador', "Supervisor"]}};
+			    var usuarioQuery = { tipo: {'$in': ['Empleado']}};
 			    crudUsuario.get(querrySupervisores, function (err, supervisores){
 			        crudUsuario.getEmpleadoPorSupervisor(req.user.id, usuarioQuery,function(error, usuarios, departamentos){
 
 						var queryInUsers = {
 							usuario:{"$in":util.getIdsList(usuarios.concat(supervisores))},
-							estado:'Pendiente'
+							estado:{ "$in": ["Pendiente", "Incompleto"] }
 						};
 						Justificaciones.find(queryInUsers).populate('usuario').exec(function(error, justCount) {
 							Solicitudes.find(queryInUsers).populate('usuario').exec(function(error, soliCount) {

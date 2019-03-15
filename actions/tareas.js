@@ -18,8 +18,8 @@ const END_MARK_MISSING = "Olvidó Marcar Salida.";
 const START_MARK = "Entrada";
 
 const //cronTime = '* * * * *';
-      cronTime = '00 50 23 * * 0-7';
-    //cronTime = '50 5,11,17,23 * * *';
+    cronTime = '00 50 23 * * 0-7';
+//cronTime = '50 5,11,17,23 * * *';
 module.exports = {
     cierreAutomatico: new CronJob(cronTime, function () {
             DBOperations.findHolidays().then(holidays => {
@@ -103,7 +103,7 @@ const cierreHorario = (_idUser, userSchedule, mOut, userType) => {
     return DBOperations.findMarks(_idUser, userType).then(marks => {
         const workedHours = ScheduleOperations.getWorkedHoursByMarks(marks);
         const closingHours = ScheduleOperations.calculateWorkedHours(workedHours);
-        return ScheduleOperations.addPersonalClosure(_idUser, userType, closingHours)
+        return DBOperations.addPersonalClosure(_idUser, userType, closingHours, false, 0)
             .then(result => result)
             .catch(error => error);
     }).catch(error => {
@@ -130,7 +130,7 @@ const CronJobOperations = {
     },
     checkUserMarks(user, userSchedule, userType, currentDay, today) {
         const _idUser = user._id;
-       return DBOperations.findMarks(_idUser, userType).then(marks => {
+        return DBOperations.findMarks(_idUser, userType).then(marks => {
             ScheduleOperations.groupMarks(marks, userSchedule, today).forEach(definedWorkHours => {
                 const startTime = definedWorkHours.startTime !== 0 ? definedWorkHours.startTime.unix() : 0;
                 DBOperations.findWorkedHour(_idUser, startTime).then(result => {
@@ -198,7 +198,8 @@ const ScheduleOperations = {
                 //if a mark for today = current day is  not present then add a default onw because of probably absent day
                 const containsTodayMark = startMarks.filter(startMark => {
                     const {start} = this.getDefinedWorkHours(userSchedule, today);
-                    return moment.unix(startMark.epoch).isSame(moment(), 'day') && moment.unix(startMark.epoch).isBetween(start, this.setTime(start, '23:50'));
+                    return moment.unix(startMark.epoch).isSame(moment(), 'day') && (moment.unix(startMark.epoch).isBefore(start) ||
+                        moment.unix(startMark.epoch).isBetween(start, this.setTime(start, '23:50')));
                 }).length > 0;
                 if(!containsTodayMark) groups.push(this.getWorkedHoursByMarks([]));
             }
