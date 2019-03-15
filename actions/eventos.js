@@ -813,11 +813,7 @@ function ordenarTardias(marcas, cb){
                   marcas[i].fecha.dia = "Miercoles";
                 }
 
-                if(horarioFijo[j].Domingo === marcas[i].fecha.dia &&
-                    !validarHoraEntrada(Number(marcas[i].fecha.hora.substr(0,2)),
-                        Number(marcas[i].fecha.hora.substr(3,2)),
-                        Number(horarioFijo[j].horaEntrada.substr(0,2)),
-                        Number(horarioFijo[j].horaEntrada.substr(3,2)))){
+                if(horarioFijo[j].Domingo === marcas[i].fecha.dia && !validarHoraEntrada(marcas[i].fecha.hora,  horarioFijo[j].horaEntrada)){
                   obj.fecha = marcas[i].fecha.str;
                   obj.nombre = marcas[i].usuario.nombre;
                   obj.apellido = marcas[i].usuario.apellido1;
@@ -825,11 +821,7 @@ function ordenarTardias(marcas, cb){
                   obj.horarioHora = parseInt(String(horarioFijo[j].horaEntrada).substr(0,2));
                   obj.tipoUsuario = marcas[i].tipoUsuario;
                 }
-                else if(horarioFijo[j].Lunes === marcas[i].fecha.dia &&
-                    !validarHoraEntrada(Number(marcas[i].fecha.hora.substr(0,2)),
-                        Number(marcas[i].fecha.hora.substr(3,2)),
-                        Number(horarioFijo[j].horaEntrada.substr(0,2)),
-                        Number(horarioFijo[j].horaEntrada.substr(3,2)))){
+                else if(horarioFijo[j].Lunes === marcas[i].fecha.dia && !validarHoraEntrada(marcas[i].fecha.hora,  horarioFijo[j].horaEntrada)){
                   obj.fecha = marcas[i].fecha.str;
                   obj.nombre = marcas[i].usuario.nombre;
                   obj.apellido = marcas[i].usuario.apellido1;
@@ -838,11 +830,7 @@ function ordenarTardias(marcas, cb){
                   obj.tipoUsuario = marcas[i].tipoUsuario;
 
                 }
-                else if(horarioFijo[j].Martes === marcas[i].fecha.dia &&
-                    !validarHoraEntrada(Number(marcas[i].fecha.hora.substr(0,2)),
-                        Number(marcas[i].fecha.hora.substr(3,2)),
-                        Number(horarioFijo[j].horaEntrada.substr(0,2)),
-                        Number(horarioFijo[j].horaEntrada.substr(3,2)))){
+                else if(horarioFijo[j].Martes === marcas[i].fecha.dia && !validarHoraEntrada(marcas[i].fecha.hora,  horarioFijo[j].horaEntrada)){
                   obj.fecha = marcas[i].fecha.str;
                   obj.nombre = marcas[i].usuario.nombre;
                   obj.apellido = marcas[i].usuario.apellido1;
@@ -851,11 +839,7 @@ function ordenarTardias(marcas, cb){
                   obj.tipoUsuario = marcas[i].tipoUsuario;
 
                 }
-                else if(horarioFijo[j].Miercoles === marcas[i].fecha.dia &&
-                    !validarHoraEntrada(Number(marcas[i].fecha.hora.substr(0,2)),
-                        Number(marcas[i].fecha.hora.substr(3,2)),
-                        Number(horarioFijo[j].horaEntrada.substr(0,2)),
-                        Number(horarioFijo[j].horaEntrada.substr(3,2)))){
+                else if(horarioFijo[j].Miercoles === marcas[i].fecha.dia && !validarHoraEntrada(marcas[i].fecha.hora,  horarioFijo[j].horaEntrada)){
                   obj.fecha = marcas[i].fecha.str;
                   obj.nombre = marcas[i].usuario.nombre;
                   obj.apellido = marcas[i].usuario.apellido1;
@@ -864,11 +848,7 @@ function ordenarTardias(marcas, cb){
                   obj.tipoUsuario = marcas[i].tipoUsuario;
 
                 }
-                else if(horarioFijo[j].Jueves === marcas[i].fecha.dia &&
-                    !validarHoraEntrada(Number(marcas[i].fecha.hora.substr(0,2)),
-                        Number(marcas[i].fecha.hora.substr(3,2)),
-                        Number(horarioFijo[j].horaEntrada.substr(0,2)),
-                        Number(horarioFijo[j].horaEntrada.substr(3,2)))){
+                else if(horarioFijo[j].Jueves === marcas[i].fecha.dia && !validarHoraEntrada(marcas[i].fecha.hora,  horarioFijo[j].horaEntrada)){
                   obj.fecha = marcas[i].fecha.str;
                   obj.nombre = marcas[i].usuario.nombre;
                   obj.apellido = marcas[i].usuario.apellido1;
@@ -877,11 +857,7 @@ function ordenarTardias(marcas, cb){
                   obj.tipoUsuario = marcas[i].tipoUsuario;
 
                 }
-                else if(horarioFijo[j].Viernes === marcas[i].fecha.dia &&
-                    !validarHoraEntrada(Number(marcas[i].fecha.hora.substr(0,2)),
-                        Number(marcas[i].fecha.hora.substr(3,2)),
-                        Number(horarioFijo[j].horaEntrada.substr(0,2)),
-                        Number(horarioFijo[j].horaEntrada.substr(3,2)))){
+                else if(horarioFijo[j].Viernes === marcas[i].fecha.dia && !validarHoraEntrada(marcas[i].fecha.hora,  horarioFijo[j].horaEntrada)){
                   obj.fecha = marcas[i].fecha.str;
                   obj.nombre = marcas[i].usuario.nombre;
                   obj.apellido = marcas[i].usuario.apellido1;
@@ -889,11 +865,7 @@ function ordenarTardias(marcas, cb){
                   obj.horarioHora = parseInt(String(horarioFijo[j].horaEntrada).substr(0,2));
                   obj.tipoUsuario = marcas[i].tipoUsuario;
 
-                }else if(horarioFijo[j].Sabado === marcas[i].fecha.dia &&
-                    !validarHoraEntrada(Number(marcas[i].fecha.hora.substr(0,2)),
-                        Number(marcas[i].fecha.hora.substr(3,2)),
-                        Number(horarioFijo[j].horaEntrada.substr(0,2)),
-                        Number(horarioFijo[j].horaEntrada.substr(3,2)))){
+                }else if(horarioFijo[j].Sabado === marcas[i].fecha.dia && !validarHoraEntrada(marcas[i].fecha.hora,  horarioFijo[j].horaEntrada)){
                   obj.fecha = marcas[i].fecha.str;
                   obj.nombre = marcas[i].usuario.nombre;
                   obj.apellido = marcas[i].usuario.apellido1;
@@ -921,7 +893,12 @@ function ordenarTardias(marcas, cb){
 
 }
 
-function validarHoraEntrada(horaEntrada, minutosEntrada, horaHorario, minutosHorario) {
+function validarHoraEntrada(entrada, horario) {
+
+  let horaEntrada = Number(entrada.substr(0,2));
+  let minutosEntrada = Number(entrada.substr(3,2));
+  let horaHorario = Number(horario.substr(0,2));
+  let minutosHorario = Number(horario.substr(3,2));
 
   let tiempoEntrada = (horaEntrada * 60) + minutosEntrada;
   let tiempoHorario = (horaHorario * 60) + minutosHorario;
