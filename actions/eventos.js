@@ -385,8 +385,8 @@ function renderFiltro(req, res, titulo, usuario, departamentos, usuarios, marcas
       revisado = false;
 
       for(var p = 0; p < listaSumada.length;p++){
-        if(listaSumada[p].tipoUsuario == original.tipoUsuario
-        && listaSumada[p].usuario._id==original.usuario._id){//Si existe lo suma
+        if(listaSumada[p].tipoUsuario === original.tipoUsuario
+        && listaSumada[p].usuario._id === original.usuario._id){//Si existe lo suma
           //Suma el tiempo trabajado analizando que si esta en el minuto 59 debe sumar la hora
 
           listaSumada[p].tipoUsuario = original.tipoUsuario;
@@ -470,14 +470,14 @@ function renderFiltro(req, res, titulo, usuario, departamentos, usuarios, marcas
   }
 
   //Si el filtrado es "marcas/tardia"
-  if(filtrado && filtrado == "marcas" && req.route.path.substring(0, 9) =='/reportes'){
+  if(filtrado && filtrado === "marcas" && req.route.path.substring(0, 9) === '/reportes'){
 
     filtro.marcas = util.unixTimeToRegularDate(marcas.filter(function(m){
       return m.usuario;
     }), true);
 
     ordenarTardias(filtro.marcas, function (arregloTardias){
-      filtro.arregloTardias=arregloTardias;
+      filtro.arregloTardias = arregloTardias;
     });
 
     marcasPorDias(filtro.marcas, function (marcasPorDia){
@@ -543,46 +543,44 @@ function renderFiltro(req, res, titulo, usuario, departamentos, usuarios, marcas
 function marcasPorDias(marcas,cb){
   var primeraVez=0;
   var entro=false;
-  var ordenadas=new Array();
+  var ordenadas = new Array();
   var temporal = new Array();
   for (var i = 0; i <marcas.length; i++){
-    if (primeraVez==0){
+    if (primeraVez === 0){
         var objMarcas = new Object();
-        objMarcas.nombre=marcas[i].usuario.nombre;
+        objMarcas.nombre = marcas[i].usuario.nombre;
         objMarcas.dia=marcas[i].fecha.dia;
         objMarcas.mes=marcas[i].fecha.mes;
         objMarcas.año=marcas[i].fecha.año;
         objMarcas.apellido1=marcas[i].usuario.apellido1;
-        objMarcas.tipoUsuario=marcas[i].tipoUsuario;
+        objMarcas.tipoUsuario = marcas[i].tipoUsuario;
         temporal.push(objMarcas);
         primeraVez++ ;
     }else{
 
-
       for (var j = 0; j <temporal.length; j++){
-        entro=false;;
-        if (temporal[j].nombre==marcas[i].usuario.nombre &&
-          temporal[j].apellido1==marcas[i].usuario.apellido1 && temporal[j].dia==marcas[i].fecha.dia
-          && temporal[j].mes==marcas[i].fecha.mes  && temporal[j].año==marcas[i].fecha.año
-        &&temporal[j].tipoUsuario==marcas[i].tipoUsuario){
-          entro=true;
+        entro = false;;
+        if (temporal[j].nombre === marcas[i].usuario.nombre &&
+          temporal[j].apellido1 === marcas[i].usuario.apellido1 && temporal[j].dia === marcas[i].fecha.dia
+          && temporal[j].mes === marcas[i].fecha.mes  && temporal[j].año === marcas[i].fecha.año
+        &&temporal[j].tipoUsuario === marcas[i].tipoUsuario){
+          entro = true;
           j=temporal.length;
         }
       }
 
-      if(entro==false){
+      if(entro===false){
         var objMarcas = new Object();
-        objMarcas.nombre=marcas[i].usuario.nombre;
+        objMarcas.nombre = marcas[i].usuario.nombre;
         objMarcas.dia=marcas[i].fecha.dia;
         objMarcas.mes=marcas[i].fecha.mes;
         objMarcas.año=marcas[i].fecha.año;
         objMarcas.apellido1=marcas[i].usuario.apellido1;
-        objMarcas.tipoUsuario=marcas[i].tipoUsuario;
+        objMarcas.tipoUsuario = marcas[i].tipoUsuario;
         temporal.push(objMarcas);
       }
     }
   }
-
 
   for(var r=0; r<temporal.length;r++){
     var marcasOrdenadas = new Object();
@@ -592,8 +590,8 @@ function marcasPorDias(marcas,cb){
          && temporal[r].mes==marcas[m].fecha.mes && temporal[r].año==marcas[m].fecha.año
          && marcas[m].tipoMarca=="Entrada" && temporal[r].tipoUsuario==marcas[m].tipoUsuario){
 
-        marcasOrdenadas.nombre=marcas[m].usuario.nombre;
-        marcasOrdenadas.tipoUsuario=marcas[m].tipoUsuario;
+        marcasOrdenadas.nombre = marcas[m].usuario.nombre;
+        marcasOrdenadas.tipoUsuario = marcas[m].tipoUsuario;
         marcasOrdenadas.apellido1=marcas[m].usuario.apellido1;
         marcasOrdenadas.entrada=marcas[m].fecha.str;
 
@@ -639,164 +637,152 @@ function marcasPorDias(marcas,cb){
 
 function ordenarTardias(marcas, cb){
 
-
-  var temporal =new Array();
-  var hEmpleado=0;
+  var temporal = new Array();
+  var hEmpleado = 0;
   for(var x=0;x<marcas.length;x++){
 
-    if(marcas[x].tipoMarca=="Entrada" && marcas[x].usuario.horarioEmpleado){
-      var obj=new Object();
-      obj._id=marcas[x].usuario.horarioEmpleado;
+    if(marcas[x].tipoMarca === "Entrada" && marcas[x].usuario.horarioEmpleado){
+      var obj = new Object();
+      obj._id = marcas[x].usuario.horarioEmpleado;
       temporal.push(obj);
       hEmpleado++;
-    }else if(marcas[x].tipoMarca=="Entrada" && marcas[x].usuario.horarioFijo){
-      var obj=new Object();
-      obj._id=marcas[x].usuario.horarioFijo;
+    }else if(marcas[x].tipoMarca === "Entrada" && marcas[x].usuario.horarioFijo){
+      var obj = new Object();
+      obj._id = marcas[x].usuario.horarioFijo;
       temporal.push(obj);
       hEmpleado++;
     }
   }
 
-  if(hEmpleado>0){
-    var arregloTardias=new Array();
+  if(hEmpleado > 0){
+    var arregloTardias= new Array();
+
     HorarioEmpleado.find({_id: {$in:temporal}}, function(err,horarioEmpleado){
       if(horarioEmpleado) {
 
-        for(var p=0;p<marcas.length;p++){
-          var obj=new Object();
-          for(var x=0;x<horarioEmpleado.length;x++){
+        for(var p = 0; p < marcas.length; p++){
+
+          var obj = new Object();
+
+          for(var x=0; x<horarioEmpleado.length; x++){
             if(marcas[p].usuario.horarioEmpleado){
 
+              if(marcas[p].tipoMarca === "Entrada" && marcas[p].usuario.horarioEmpleado.equals(horarioEmpleado[x]._id) ){
 
-              if(marcas[p].tipoMarca=="Entrada" && marcas[p].usuario.horarioEmpleado.equals(horarioEmpleado[x]._id) ){
+                if(marcas[p].fecha.dia === "Lunes"){
 
-                if(marcas[p].fecha.dia=="Lunes"){
-
-                  if(parseInt(horarioEmpleado[x].lunes.entrada.hora)!=0){
-                    if(parseInt(String(marcas[p].fecha.hora).substr(0,2))>parseInt(horarioEmpleado[x].lunes.entrada.hora)
-                    ||(parseInt(String(marcas[p].fecha.hora).substr(0,2))==parseInt(horarioEmpleado[x].lunes.entrada.hora)&&
-                    parseInt(String(marcas[p].fecha.hora).substr(3,2))>parseInt(horarioEmpleado[x].lunes.entrada.minutos)
-                  ))
-                  {
-                    obj.fecha=marcas[p].fecha.str;
-                    obj.nombre=marcas[p].usuario.nombre;
-                    obj.apellido=marcas[p].usuario.apellido1;
-                    obj.horarioMinutos=horarioEmpleado[x].lunes.entrada.minutos;
-                    obj.horarioHora=horarioEmpleado[x].lunes.entrada.hora;
-                    obj.tipoUsuario=marcas[p].tipoUsuario;
-
+                  if(parseInt(horarioEmpleado[x].lunes.entrada.hora) !== 0){
+                    if(parseInt(String(marcas[p].fecha.hora).substr(0,2)) > parseInt(horarioEmpleado[x].lunes.entrada.hora)
+                        || (parseInt(String(marcas[p].fecha.hora).substr(0,2)) === parseInt(horarioEmpleado[x].lunes.entrada.hora)
+                        && parseInt(String(marcas[p].fecha.hora).substr(3,2)) > parseInt(horarioEmpleado[x].lunes.entrada.minutos)))
+                    {
+                      obj.fecha=marcas[p].fecha.str;
+                      obj.nombre = marcas[p].usuario.nombre;
+                      obj.apellido = marcas[p].usuario.apellido1;
+                      obj.horarioMinutos = horarioEmpleado[x].lunes.entrada.minutos;
+                      obj.horarioHora = horarioEmpleado[x].lunes.entrada.hora;
+                      obj.tipoUsuario = marcas[p].tipoUsuario;
                     }
                   }
-
-                }else if(marcas[p].fecha.dia=="Martes"){
-                  if(parseInt(horarioEmpleado[x].martes.entrada.hora)!=0){
-                    if(parseInt(String(marcas[p].fecha.hora).substr(0,2))>parseInt(horarioEmpleado[x].martes.entrada.hora)
-                    ||(parseInt(String(marcas[p].fecha.hora).substr(0,2))==parseInt(horarioEmpleado[x].martes.entrada.hora)&&
+                }else if(marcas[p].fecha.dia === "Martes"){
+                  if(parseInt(horarioEmpleado[x].martes.entrada.hora) !== 0){
+                    if(parseInt(String(marcas[p].fecha.hora).substr(0,2)) > parseInt(horarioEmpleado[x].martes.entrada.hora)
+                    ||(parseInt(String(marcas[p].fecha.hora).substr(0,2)) === parseInt(horarioEmpleado[x].martes.entrada.hora)&&
                     parseInt(String(marcas[p].fecha.hora).substr(3,2))>parseInt(horarioEmpleado[x].martes.entrada.minutos)
                   ))
                   {
                     obj.fecha=marcas[p].fecha.str;
-                    obj.nombre=marcas[p].usuario.nombre;
-                    obj.apellido=marcas[p].usuario.apellido1;
-                    obj.horarioMinutos=horarioEmpleado[x].martes.entrada.minutos;
-                    obj.horarioHora=horarioEmpleado[x].martes.entrada.hora;
-                    obj.tipoUsuario=marcas[p].tipoUsuario;
-
+                    obj.nombre = marcas[p].usuario.nombre;
+                    obj.apellido = marcas[p].usuario.apellido1;
+                    obj.horarioMinutos = horarioEmpleado[x].martes.entrada.minutos;
+                    obj.horarioHora = horarioEmpleado[x].martes.entrada.hora;
+                    obj.tipoUsuario = marcas[p].tipoUsuario;
                   }
                   }
-
-
                 }
-                else if(marcas[p].fecha.dia=="Miércoles"){
-                  if(parseInt(horarioEmpleado[x].miercoles.entrada.hora)!=0){
-                    if(parseInt(String(marcas[p].fecha.hora).substr(0,2))>parseInt(horarioEmpleado[x].miercoles.entrada.hora)
-                    ||(parseInt(String(marcas[p].fecha.hora).substr(0,2))==parseInt(horarioEmpleado[x].miercoles.entrada.hora)&&
-                    parseInt(String(marcas[p].fecha.hora).substr(3,2))>parseInt(horarioEmpleado[x].miercoles.entrada.minutos)
+                else if(marcas[p].fecha.dia === "Miércoles"){
+                  if(parseInt(horarioEmpleado[x].miercoles.entrada.hora) !== 0){
+                    if(parseInt(String(marcas[p].fecha.hora).substr(0,2)) > parseInt(horarioEmpleado[x].miercoles.entrada.hora)
+                    ||(parseInt(String(marcas[p].fecha.hora).substr(0,2)) === parseInt(horarioEmpleado[x].miercoles.entrada.hora)&&
+                    parseInt(String(marcas[p].fecha.hora).substr(3,2)) > parseInt(horarioEmpleado[x].miercoles.entrada.minutos)
                   ))
                   {
-                    obj.fecha=marcas[p].fecha.str;
-                    obj.nombre=marcas[p].usuario.nombre;
-                    obj.apellido=marcas[p].usuario.apellido1;
-                    obj.horarioMinutos=horarioEmpleado[x].miercoles.entrada.minutos;
-                    obj.horarioHora=horarioEmpleado[x].miercoles.entrada.hora;
-                    obj.tipoUsuario=marcas[p].tipoUsuario;
+                    obj.fecha = marcas[p].fecha.str;
+                    obj.nombre = marcas[p].usuario.nombre;
+                    obj.apellido = marcas[p].usuario.apellido1;
+                    obj.horarioMinutos = horarioEmpleado[x].miercoles.entrada.minutos;
+                    obj.horarioHora = horarioEmpleado[x].miercoles.entrada.hora;
+                    obj.tipoUsuario = marcas[p].tipoUsuario;
                   }
                   }
-
-
                 }
-                else if(marcas[p].fecha.dia=="Jueves"){
-                  if(parseInt(horarioEmpleado[x].jueves.entrada.hora)!=0){
-                    if(parseInt(String(marcas[p].fecha.hora).substr(0,2))>parseInt(horarioEmpleado[x].jueves.entrada.hora)
-                    ||(parseInt(String(marcas[p].fecha.hora).substr(0,2))==parseInt(horarioEmpleado[x].jueves.entrada.hora)&&
-                    parseInt(String(marcas[p].fecha.hora).substr(3,2))>parseInt(horarioEmpleado[x].jueves.entrada.minutos)
+                else if(marcas[p].fecha.dia === "Jueves"){
+                  if(parseInt(horarioEmpleado[x].jueves.entrada.hora) !== 0)
+                  {
+                    if(parseInt(String(marcas[p].fecha.hora).substr(0,2)) > parseInt(horarioEmpleado[x].jueves.entrada.hora)
+                        || (parseInt(String(marcas[p].fecha.hora).substr(0,2)) === parseInt(horarioEmpleado[x].jueves.entrada.hora)
+                          && parseInt(String(marcas[p].fecha.hora).substr(3,2)) > parseInt(horarioEmpleado[x].jueves.entrada.minutos)))
+                    {
+                      obj.fecha = marcas[p].fecha.str;
+                      obj.nombre = marcas[p].usuario.nombre;
+                      obj.apellido = marcas[p].usuario.apellido1;
+                      obj.horarioMinutos = horarioEmpleado[x].jueves.entrada.minutos;
+                      obj.horarioHora = horarioEmpleado[x].jueves.entrada.hora;
+                      obj.tipoUsuario = marcas[p].tipoUsuario;
+                    }
+                  }
+                }
+                else if(marcas[p].fecha.dia === "Viernes"){
+                  if(parseInt(horarioEmpleado[x].viernes.entrada.hora) !== 0){
+                    if(parseInt(String(marcas[p].fecha.hora).substr(0,2)) > parseInt(horarioEmpleado[x].viernes.entrada.hora)
+                    ||(parseInt(String(marcas[p].fecha.hora).substr(0,2)) === parseInt(horarioEmpleado[x].viernes.entrada.hora)&&
+                    parseInt(String(marcas[p].fecha.hora).substr(3,2)) > parseInt(horarioEmpleado[x].viernes.entrada.minutos)
                   ))
                   {
-                    obj.fecha=marcas[p].fecha.str;
-                    obj.nombre=marcas[p].usuario.nombre;
-                    obj.apellido=marcas[p].usuario.apellido1;
-                    obj.horarioMinutos=horarioEmpleado[x].jueves.entrada.minutos;
-                    obj.horarioHora=horarioEmpleado[x].jueves.entrada.hora;
-                    obj.tipoUsuario=marcas[p].tipoUsuario;
+                    obj.fecha = marcas[p].fecha.str;
+                    obj.nombre = marcas[p].usuario.nombre;
+                    obj.apellido = marcas[p].usuario.apellido1;
+                    obj.horarioMinutos = horarioEmpleado[x].viernes.entrada.minutos;
+                    obj.horarioHora = horarioEmpleado[x].viernes.entrada.hora;
+                    obj.tipoUsuario = marcas[p].tipoUsuario;
                   }
                   }
-
                 }
-                else if(marcas[p].fecha.dia=="Viernes"){
-                  if(parseInt(horarioEmpleado[x].viernes.entrada.hora)!=0){
-                    if(parseInt(String(marcas[p].fecha.hora).substr(0,2))>parseInt(horarioEmpleado[x].viernes.entrada.hora)
-                    ||(parseInt(String(marcas[p].fecha.hora).substr(0,2))==parseInt(horarioEmpleado[x].viernes.entrada.hora)&&
-                    parseInt(String(marcas[p].fecha.hora).substr(3,2))>parseInt(horarioEmpleado[x].viernes.entrada.minutos)
+                else if(marcas[p].fecha.dia === "Sábado"){
+                  if(parseInt(horarioEmpleado[x].sabado.entrada.hora) !== 0){
+                    if(parseInt(String(marcas[p].fecha.hora).substr(0,2)) > parseInt(horarioEmpleado[x].sabado.entrada.hora)
+                    ||(parseInt(String(marcas[p].fecha.hora).substr(0,2)) === parseInt(horarioEmpleado[x].sabado.entrada.hora)&&
+                    parseInt(String(marcas[p].fecha.hora).substr(3,2)) > parseInt(horarioEmpleado[x].sabado.entrada.minutos)
                   ))
                   {
-
-                    obj.fecha=marcas[p].fecha.str;
-                    obj.nombre=marcas[p].usuario.nombre;
-                    obj.apellido=marcas[p].usuario.apellido1;
-                    obj.horarioMinutos=horarioEmpleado[x].viernes.entrada.minutos;
-                    obj.horarioHora=horarioEmpleado[x].viernes.entrada.hora;
-                    obj.tipoUsuario=marcas[p].tipoUsuario;
-                  }
-                  }
-
-                }
-                else if(marcas[p].fecha.dia=="Sábado"){
-                  if(parseInt(horarioEmpleado[x].sabado.entrada.hora)!=0){
-                    if(parseInt(String(marcas[p].fecha.hora).substr(0,2))>parseInt(horarioEmpleado[x].sabado.entrada.hora)
-                    ||(parseInt(String(marcas[p].fecha.hora).substr(0,2))==parseInt(horarioEmpleado[x].sabado.entrada.hora)&&
-                    parseInt(String(marcas[p].fecha.hora).substr(3,2))>parseInt(horarioEmpleado[x].sabado.entrada.minutos)
-                  ))
-                  {
-                    obj.fecha=marcas[p].fecha.str;
-                    obj.nombre=marcas[p].usuario.nombre;
-                    obj.apellido=marcas[p].usuario.apellido1;
-                    obj.horarioMinutos=horarioEmpleado[x].sabado.entrada.minutos;
-                    obj.horarioHora=horarioEmpleado[x].sabado.entrada.hora;
-                    obj.tipoUsuario=marcas[p].tipoUsuario;
+                    obj.fecha = marcas[p].fecha.str;
+                    obj.nombre = marcas[p].usuario.nombre;
+                    obj.apellido = marcas[p].usuario.apellido1;
+                    obj.horarioMinutos = horarioEmpleado[x].sabado.entrada.minutos;
+                    obj.horarioHora = horarioEmpleado[x].sabado.entrada.hora;
+                    obj.tipoUsuario = marcas[p].tipoUsuario;
 
                     }
                   }
 
                 }
-                else if(marcas[p].fecha.dia=="Domingo"){
+                else if(marcas[p].fecha.dia === "Domingo"){
 
-                  if(parseInt(horarioEmpleado[x].domingo.entrada.hora)!=0){
-                    if(parseInt(String(marcas[p].fecha.hora).substr(0,2))>parseInt(horarioEmpleado[x].domingo.entrada.hora)
-                    ||(parseInt(String(marcas[p].fecha.hora).substr(0,2))==parseInt(horarioEmpleado[x].domingo.entrada.hora)&&
-                    parseInt(String(marcas[p].fecha.hora).substr(3,2))>parseInt(horarioEmpleado[x].domingo.entrada.minutos)
+                  if(parseInt(horarioEmpleado[x].domingo.entrada.hora) !== 0){
+                    if(parseInt(String(marcas[p].fecha.hora).substr(0,2)) > parseInt(horarioEmpleado[x].domingo.entrada.hora)
+                    ||(parseInt(String(marcas[p].fecha.hora).substr(0,2)) === parseInt(horarioEmpleado[x].domingo.entrada.hora)&&
+                    parseInt(String(marcas[p].fecha.hora).substr(3,2)) > parseInt(horarioEmpleado[x].domingo.entrada.minutos)
                   ))
                   {
-                    obj.fecha=marcas[p].fecha.str;
-                    obj.nombre=marcas[p].usuario.nombre;
-                    obj.apellido=marcas[p].usuario.apellido1;
-                    obj.horarioMinutos=horarioEmpleado[x].domingo.entrada.minutos;
-                    obj.horarioHora=horarioEmpleado[x].domingo.entrada.hora;
-                    obj.tipoUsuario=marcas[p].tipoUsuario;
+                    obj.fecha = marcas[p].fecha.str;
+                    obj.nombre = marcas[p].usuario.nombre;
+                    obj.apellido = marcas[p].usuario.apellido1;
+                    obj.horarioMinutos = horarioEmpleado[x].domingo.entrada.minutos;
+                    obj.horarioHora = horarioEmpleado[x].domingo.entrada.hora;
+                    obj.tipoUsuario = marcas[p].tipoUsuario;
                   }
                   }
-
                 }
-
               }
             }//fin del if que pregunta si tiene un horario
           }
@@ -808,103 +794,139 @@ function ordenarTardias(marcas, cb){
       }
 
   });
-  HorarioFijo.find({_id: {$in:temporal}}, function(err,horarioFijo){
 
-    if(horarioFijo){
+    HorarioFijo.find({_id: {$in:temporal}}, function(err,horarioFijo){
 
-      for(var i=0;i<marcas.length;i++){
-        var obj=new Object();
+      if(horarioFijo){
 
-        for(var j=0;j<horarioFijo.length;j++){
+        for(var i=0;i<marcas.length;i++){
+          var obj = new Object();
 
-          if( marcas[i].usuario.horarioFijo){
-            if(marcas[i].tipoMarca=="Entrada" && marcas[i].usuario.horarioFijo.equals(horarioFijo[j]._id) ){
+          for(var j=0;j < horarioFijo.length;j++){
 
+            if( marcas[i].usuario.horarioFijo){
+              if(marcas[i].tipoMarca === "Entrada" && marcas[i].usuario.horarioFijo.equals(horarioFijo[j]._id) ){
 
-              if(marcas[i].fecha.dia=="Sábado"){
-                marcas[i].fecha.dia="Sabado";
-              }else if(marcas[i].fecha.dia=="Miércoles"){
-                marcas[i].fecha.dia="Miercoles";
+                if(marcas[i].fecha.dia === "Sábado"){
+                  marcas[i].fecha.dia = "Sabado";
+                }else if(marcas[i].fecha.dia === "Miércoles"){
+                  marcas[i].fecha.dia = "Miercoles";
+                }
+
+                if(horarioFijo[j].Domingo === marcas[i].fecha.dia &&
+                    !validarHoraEntrada(Number(marcas[i].fecha.hora.substr(0,2)),
+                        Number(marcas[i].fecha.hora.substr(3,2)),
+                        Number(horarioFijo[j].horaEntrada.substr(0,2)),
+                        Number(horarioFijo[j].horaEntrada.substr(3,2)))){
+                  obj.fecha = marcas[i].fecha.str;
+                  obj.nombre = marcas[i].usuario.nombre;
+                  obj.apellido = marcas[i].usuario.apellido1;
+                  obj.horarioMinutos = parseInt(String(horarioFijo[j].horaEntrada).substr(3,2));
+                  obj.horarioHora = parseInt(String(horarioFijo[j].horaEntrada).substr(0,2));
+                  obj.tipoUsuario = marcas[i].tipoUsuario;
+                }
+                else if(horarioFijo[j].Lunes === marcas[i].fecha.dia &&
+                    !validarHoraEntrada(Number(marcas[i].fecha.hora.substr(0,2)),
+                        Number(marcas[i].fecha.hora.substr(3,2)),
+                        Number(horarioFijo[j].horaEntrada.substr(0,2)),
+                        Number(horarioFijo[j].horaEntrada.substr(3,2)))){
+                  obj.fecha = marcas[i].fecha.str;
+                  obj.nombre = marcas[i].usuario.nombre;
+                  obj.apellido = marcas[i].usuario.apellido1;
+                  obj.horarioMinutos = parseInt(String(horarioFijo[j].horaEntrada).substr(3,2));
+                  obj.horarioHora = parseInt(String(horarioFijo[j].horaEntrada).substr(0,2));
+                  obj.tipoUsuario = marcas[i].tipoUsuario;
+
+                }
+                else if(horarioFijo[j].Martes === marcas[i].fecha.dia &&
+                    !validarHoraEntrada(Number(marcas[i].fecha.hora.substr(0,2)),
+                        Number(marcas[i].fecha.hora.substr(3,2)),
+                        Number(horarioFijo[j].horaEntrada.substr(0,2)),
+                        Number(horarioFijo[j].horaEntrada.substr(3,2)))){
+                  obj.fecha = marcas[i].fecha.str;
+                  obj.nombre = marcas[i].usuario.nombre;
+                  obj.apellido = marcas[i].usuario.apellido1;
+                  obj.horarioMinutos = parseInt(String(horarioFijo[j].horaEntrada).substr(3,2));
+                  obj.horarioHora = parseInt(String(horarioFijo[j].horaEntrada).substr(0,2));
+                  obj.tipoUsuario = marcas[i].tipoUsuario;
+
+                }
+                else if(horarioFijo[j].Miercoles === marcas[i].fecha.dia &&
+                    !validarHoraEntrada(Number(marcas[i].fecha.hora.substr(0,2)),
+                        Number(marcas[i].fecha.hora.substr(3,2)),
+                        Number(horarioFijo[j].horaEntrada.substr(0,2)),
+                        Number(horarioFijo[j].horaEntrada.substr(3,2)))){
+                  obj.fecha = marcas[i].fecha.str;
+                  obj.nombre = marcas[i].usuario.nombre;
+                  obj.apellido = marcas[i].usuario.apellido1;
+                  obj.horarioMinutos = parseInt(String(horarioFijo[j].horaEntrada).substr(3,2));
+                  obj.horarioHora = parseInt(String(horarioFijo[j].horaEntrada).substr(0,2));
+                  obj.tipoUsuario = marcas[i].tipoUsuario;
+
+                }
+                else if(horarioFijo[j].Jueves === marcas[i].fecha.dia &&
+                    !validarHoraEntrada(Number(marcas[i].fecha.hora.substr(0,2)),
+                        Number(marcas[i].fecha.hora.substr(3,2)),
+                        Number(horarioFijo[j].horaEntrada.substr(0,2)),
+                        Number(horarioFijo[j].horaEntrada.substr(3,2)))){
+                  obj.fecha = marcas[i].fecha.str;
+                  obj.nombre = marcas[i].usuario.nombre;
+                  obj.apellido = marcas[i].usuario.apellido1;
+                  obj.horarioMinutos = parseInt(String(horarioFijo[j].horaEntrada).substr(3,2));
+                  obj.horarioHora = parseInt(String(horarioFijo[j].horaEntrada).substr(0,2));
+                  obj.tipoUsuario = marcas[i].tipoUsuario;
+
+                }
+                else if(horarioFijo[j].Viernes === marcas[i].fecha.dia &&
+                    !validarHoraEntrada(Number(marcas[i].fecha.hora.substr(0,2)),
+                        Number(marcas[i].fecha.hora.substr(3,2)),
+                        Number(horarioFijo[j].horaEntrada.substr(0,2)),
+                        Number(horarioFijo[j].horaEntrada.substr(3,2)))){
+                  obj.fecha = marcas[i].fecha.str;
+                  obj.nombre = marcas[i].usuario.nombre;
+                  obj.apellido = marcas[i].usuario.apellido1;
+                  obj.horarioMinutos = parseInt(String(horarioFijo[j].horaEntrada).substr(3,2));
+                  obj.horarioHora = parseInt(String(horarioFijo[j].horaEntrada).substr(0,2));
+                  obj.tipoUsuario = marcas[i].tipoUsuario;
+
+                }else if(horarioFijo[j].Sabado === marcas[i].fecha.dia &&
+                    !validarHoraEntrada(Number(marcas[i].fecha.hora.substr(0,2)),
+                        Number(marcas[i].fecha.hora.substr(3,2)),
+                        Number(horarioFijo[j].horaEntrada.substr(0,2)),
+                        Number(horarioFijo[j].horaEntrada.substr(3,2)))){
+                  obj.fecha = marcas[i].fecha.str;
+                  obj.nombre = marcas[i].usuario.nombre;
+                  obj.apellido = marcas[i].usuario.apellido1;
+                  obj.horarioMinutos = parseInt(String(horarioFijo[j].horaEntrada).substr(3,2));
+                  obj.horarioHora = parseInt(String(horarioFijo[j].horaEntrada).substr(0,2));
+                  obj.tipoUsuario = marcas[i].tipoUsuario;
+                }
               }
-              if(horarioFijo[j].Domingo==marcas[i].fecha.dia){
-                obj.fecha=marcas[i].fecha.str;
-                obj.nombre=marcas[i].usuario.nombre;
-                obj.apellido=marcas[i].usuario.apellido1;
-                obj.horarioMinutos=parseInt(String(horarioFijo[j].horaEntrada).substr(3,2));
-                obj.horarioHora=parseInt(String(horarioFijo[j].horaEntrada).substr(0,2));
-                obj.tipoUsuario=marcas[i].tipoUsuario;
-              }else if(horarioFijo[j].Lunes==marcas[i].fecha.dia){
-                obj.fecha=marcas[i].fecha.str;
-                obj.nombre=marcas[i].usuario.nombre;
-                obj.apellido=marcas[i].usuario.apellido1;
-                obj.horarioMinutos=parseInt(String(horarioFijo[j].horaEntrada).substr(3,2));
-                obj.horarioHora=parseInt(String(horarioFijo[j].horaEntrada).substr(0,2));
-                obj.tipoUsuario=marcas[i].tipoUsuario;
+            }//fin del if que pregunta si tiene horario fijo
+          }
 
-              }else if(horarioFijo[j].Martes==marcas[i].fecha.dia){
-                obj.fecha=marcas[i].fecha.str;
-                obj.nombre=marcas[i].usuario.nombre;
-                obj.apellido=marcas[i].usuario.apellido1;
-                obj.horarioMinutos=parseInt(String(horarioFijo[j].horaEntrada).substr(3,2));
-                obj.horarioHora=parseInt(String(horarioFijo[j].horaEntrada).substr(0,2));
-                obj.tipoUsuario=marcas[i].tipoUsuario;
-
-              }else if(horarioFijo[j].Miercoles==marcas[i].fecha.dia){
-                obj.fecha=marcas[i].fecha.str;
-                obj.nombre=marcas[i].usuario.nombre;
-                obj.apellido=marcas[i].usuario.apellido1;
-                obj.horarioMinutos=parseInt(String(horarioFijo[j].horaEntrada).substr(3,2));
-                obj.horarioHora=parseInt(String(horarioFijo[j].horaEntrada).substr(0,2));
-                obj.tipoUsuario=marcas[i].tipoUsuario;
-
-              }
-              else if(horarioFijo[j].Jueves==marcas[i].fecha.dia){
-                obj.fecha=marcas[i].fecha.str;
-                obj.nombre=marcas[i].usuario.nombre;
-                obj.apellido=marcas[i].usuario.apellido1;
-                obj.horarioMinutos=parseInt(String(horarioFijo[j].horaEntrada).substr(3,2));
-                obj.horarioHora=parseInt(String(horarioFijo[j].horaEntrada).substr(0,2));
-                obj.tipoUsuario=marcas[i].tipoUsuario;
-
-              }
-              else if(horarioFijo[j].Viernes==marcas[i].fecha.dia){
-                obj.fecha=marcas[i].fecha.str;
-                obj.nombre=marcas[i].usuario.nombre;
-                obj.apellido=marcas[i].usuario.apellido1;
-                obj.horarioMinutos=parseInt(String(horarioFijo[j].horaEntrada).substr(3,2));
-                obj.horarioHora=parseInt(String(horarioFijo[j].horaEntrada).substr(0,2));
-                obj.tipoUsuario=marcas[i].tipoUsuario;
-
-              }else if(horarioFijo[j].Sabado==marcas[i].fecha.dia){
-                obj.fecha=marcas[i].fecha.str;
-                obj.nombre=marcas[i].usuario.nombre;
-                obj.apellido=marcas[i].usuario.apellido1;
-                obj.horarioMinutos=parseInt(String(horarioFijo[j].horaEntrada).substr(3,2));
-                obj.horarioHora=parseInt(String(horarioFijo[j].horaEntrada).substr(0,2));
-                obj.tipoUsuario=marcas[i].tipoUsuario;
-
-              }
-            }
-          }//fin del if que pregunta si tiene horario fijo
-
+          if(obj.fecha){
+            arregloTardias.push(obj);
+          }
         }
-        if(obj.fecha){
-          arregloTardias.push(obj);
-
-        }
-
       }
-    }
 
-    cb(arregloTardias);
+      cb(arregloTardias);
 
-  });
-
+    });
 
  cb(arregloTardias);
 
-
   }
+
+}
+
+function validarHoraEntrada(horaEntrada, minutosEntrada, horaHorario, minutosHorario) {
+
+  let tiempoEntrada = (horaEntrada * 60) + minutosEntrada;
+  let tiempoHorario = (horaHorario * 60) + minutosHorario;
+
+  return tiempoEntrada <= tiempoHorario;
 
 }
 
