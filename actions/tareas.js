@@ -18,7 +18,7 @@ const END_MARK_MISSING = "Olvidó Marcar Salida.";
 const START_MARK = "Entrada";
 
 const //cronTime = '* * * * *';
-    cronTime = '00 50 23 * * 0-7';
+     cronTime = '00 50 23 * * 0-7';
 //cronTime = '50 5,11,17,23 * * *';
 module.exports = {
     cierreAutomatico: new CronJob(cronTime, function () {
@@ -103,7 +103,7 @@ const cierreHorario = (_idUser, userSchedule, mOut, userType) => {
     return DBOperations.findMarks(_idUser, userType).then(marks => {
         const workedHours = ScheduleOperations.getWorkedHoursByMarks(marks);
         const closingHours = ScheduleOperations.calculateWorkedHours(workedHours);
-        return DBOperations.addPersonalClosure(_idUser, userType, closingHours, false, 0)
+        return DBOperations.addPersonalClosure(_idUser, userType, closingHours, false, workedHours.startTime.unix())
             .then(result => result)
             .catch(error => error);
     }).catch(error => {
@@ -171,9 +171,13 @@ const CronJobOperations = {
                             }
                         }
                     }
-                }).catch(error => console.log(error));
+                }).catch(error => {
+                    console.log(error);
+                });
             });
-        }).catch(error => console.log(error));
+        }).catch(error => {
+            console.log(error)
+        });
     }
 };
 
@@ -380,8 +384,11 @@ const DBOperations = {
         return new Promise((resolve, reject) => {
             const personaClosingObject = this.createPersonalClosingObject(_idUser, userType, closingHours.hours(), closingHours.minutes(), automaticClosure, epochStartMarkUnix);
             CierrePersonal(personaClosingObject).save()
-                .then(result => resolve(result))
-                .catch(error => reject(new Error("Error al crear cierre en la fecha '" + new Date() + "' => Mensaje: " + error)));
+                .then(result => {
+                    resolve(result);})
+                .catch(error => {
+                    reject(new Error("Error al crear cierre en la fecha '" + new Date() + "' => Mensaje: " + error))
+                } );
         });
     },
     createPersonalClosingObject(_idUser, userType, totalElapsedHours, totalElapsedMinutes, automaticClosure, epochStartMarkUnix) {
