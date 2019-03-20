@@ -41,7 +41,7 @@ module.exports = {
       var permisosQuery = { tipoSolicitudes:'Permisos' };
       var marcaQuery = {};
       var cierreQuery = {};//{"usuarios.tiempo.horas":{"$gte":0}};
-      var usuarioQuery = { estado:"Activo", tipo:{'$in': ['Empleado']}};
+      var usuarioQuery = { estado:"Activo", tipo:{'$in': ['Empleado', 'Usuario sin acceso web']}};
       var populateQuery = {
         path: 'usuario'
       };
@@ -960,9 +960,7 @@ function getTitulo(option){
 function getEstado(titulo){
 
   if(titulo === 'Gestionar eventos | SIGUCA'){
-    return {
-      "$in": ["Pendiente", "Incompleto"]
-    };
+    return "Pendiente";
   }
   if(titulo === 'Reportes | SIGUCA'){
     return {
