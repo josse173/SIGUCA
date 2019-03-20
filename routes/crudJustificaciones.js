@@ -36,7 +36,7 @@ exports.conteoJustificaciones=function(usuario,cb){
 		departamentos.push(obj);
 
 	}
-	Usuario.find({tipo: { $ne: "Administrador"}},function(error,empleado){
+	Usuario.find({tipo: {'$in': ['Empleado', 'Usuario sin acceso web']}},function(error,empleado){
 		if(empleado){
 			for(var i=0;i<empleado.length;i++){
 				if(empleado[i].departamentos.length>0){//pregunta que si tiene mas de un departamento
@@ -101,7 +101,7 @@ exports.conteoJustificacionesTotal=function(usuario,cb){
 		departamentos.push(obj);
 
 	}
-	Usuario.find({tipo: { $ne: "Administrador"}},function(error,empleado){
+	Usuario.find({tipo: {'$in': ['Empleado', 'Usuario sin acceso web']}},function(error,empleado){
 		if(empleado){
 			for(var i=0;i<empleado.length;i++){
 				if(empleado[i].departamentos.length>0){//pregunta que si tiene mas de un departamento
