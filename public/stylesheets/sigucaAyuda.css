@@ -299,3 +299,13 @@ body {
 		margin-left: 20px;
     }
 }
+
+.labelHorarioFijo{
+	margin-bottom: -30px!important;
+	margin-top: 20px;
+}
+
+.checkboxHorarioFijo{
+	margin-left: 3px;
+	margin-top: -30px!important;
+}
