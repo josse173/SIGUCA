@@ -128,27 +128,27 @@
                   - var strSalida =  dia+"HoraSalida";
                   - var strDia =  dia.charAt(0).toUpperCase() + dia.slice(1);
                   label #{strDia}:
-                  br
-                  label(for = strEntrada) #{textos[18].titulo}
-                    div#timepicker.input-group
-                      input.input-small.form-control(type="text", name= strEntrada, id=strEntrada)
-                      span.input-group-addon
-                        i.icon-time
-                  label(for = strSalida) #{textos[19].titulo}
-                    div#timepicker1.input-group
-                      input.input-small.form-control(type="text", name= strSalida, id=strSalida)
-                      span.input-group-addon
-                        i.icon-time
-                label(for = "tiempoAlmuerzo") #{textos[21].titulo}
-                  div#timepicker3.input-group
-                    input.input-small.form-control(type="text", name= "tiempoAlmuerzo", id= "tiempoAlmuerzo")
-                    span.input-group-addon
-                      i.icon-time
-                label(for = "tiempoReceso") #{textos[20].titulo}
-                  div#timepicker5.input-group
-                    input.input-small.form-control(type="text", name= "tiempoReceso", id= "tiempoReceso")
-                    span.input-group-addon
-                      i.icon-time
+                    br
+                    label(for = strEntrada) #{textos[18].titulo}
+                      div#timepicker.input-group
+                        input.input-small.form-control(type="text", name= strEntrada, id=strEntrada)
+                        span.input-group-addon
+                          i.icon-time
+                    label(for = strSalida) #{textos[19].titulo}
+                      div#timepicker1.input-group
+                        input.input-small.form-control(type="text", name= strSalida, id=strSalida)
+                        span.input-group-addon
+                          i.icon-time
+                    label(for = "tiempoAlmuerzo") #{textos[21].titulo}
+                      div#timepicker3.input-group
+                        input.input-small.form-control(type="text", name= "tiempoAlmuerzo", id= "tiempoAlmuerzo")
+                        span.input-group-addon
+                          i.icon-time
+                    label(for = "tiempoReceso") #{textos[20].titulo}
+                      div#timepicker5.input-group
+                        input.input-small.form-control(type="text", name= "tiempoReceso", id= "tiempoReceso")
+                        span.input-group-addon
+                          i.icon-time
 
               button.btn.btn-success(type='submit') #{textos[13].titulo}
               button.btn.btn-danger(type='button', data-dismiss='modal') #{textos[14].titulo}
