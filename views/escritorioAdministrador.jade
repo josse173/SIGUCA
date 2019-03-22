@@ -220,7 +220,7 @@
 
   //agregar empleados
   #addEmpl.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
-    .modal-dialog
+    .modal-dialog(style="width:700px;")
       .modal-content
         .modal-body
           button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
@@ -230,13 +230,13 @@
                 h3 Información Básica
                 label(for='nombre') Nombre:
                   input#nombre.form-control(type= 'text', placeholder='Carlos', name= 'nombre')
-                label(for='cedula') Cédula:
-                 input#cedula.form-control(type= 'text', placeholder='110459625', name='cedula')
-              .form-group
                 label(for='apellido1') Primer Apellido:
                   input#apellido1.form-control(type= 'text', placeholder='Corella', name= 'apellido1')
                 label(for='apellido2') Segundo Apellido:
-                 input#apellido2.form-control(type= 'text', placeholder='Sandi', name='apellido2')
+                  input#apellido2.form-control(type= 'text', placeholder='Sandi', name='apellido2')
+              .form-group
+                label(for='cedula') Cédula:
+                  input#cedula.form-control(type= 'text', placeholder='110459625', name='cedula')
                 label(for='email') Correo Eléctronico:
                   input#email.form-control(type= 'email', placeholder='alguien@ejemplo.com', name='email')
               .form-group
@@ -246,29 +246,34 @@
                   input.form-control#username(type="text", name="username", placeholder="Usuario")
                 label(for='codTarjeta') Código de Empleado:
                   input#codTarjeta.form-control(type= 'text', placeholder='Código de Empleado', name='codTarjeta')
-
+              .form-group
                 label Horario libre:
                   br
-                  select.form-control#textInput.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="idHorario")
+                  select.form-control#textInput.selectpicker(data-style="btn-inverse", data-width="200px", type="text", name="idHorario")
                     option(value="") Sin horario
                     each horario, i in horarios
                         option(value= horario.id) #{horario.nombre}
 
-
                 label(for='textInput') Horario Fijo:
                   br
-                  select.form-control#textInput.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="horarioFijo")
+                  select.form-control#textInput.selectpicker(data-style="btn-inverse", data-width="200px", type="text", name="horarioFijo")
                     option(value="") Sin horario
                     each horarioFijo, i in arregloHorarioFijo
                         option(value= horarioFijo._id) #{horarioFijo.nombre}
 
                 label(for='textInput') Horario personalizado:
                   br
-                  select.form-control#textInput.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="personalizado")
+                  select.form-control#textInput.selectpicker(data-style="btn-inverse", data-width="200px", type="text", name="personalizado")
                     option(value="") Sin horario
                     each personalizado, i in horarioPersonalizado
                         option(value=personalizado._id) #{personalizado.nombreHorarioPersonalizado}
 
+              .form-group
+                label(for='selectDepartamentos') Departamento:
+                  br
+                  select.form-control#selectDepartamentos.selectpicker(data-style="btn-success", data-width="150px", data-selected-text-format="count>2", type="text", name="idDepartamento", multiple="multiple")
+                    each departamento, i in departamentos
+                      option(value= departamento.id) #{departamento.nombre}
 
                 label(for="selectTipo") Tipo de Usuario:
                   br
@@ -278,28 +283,23 @@
                     option Administrador
                     option #{tipoEmpleado}
                     option #{empleadoProfesor}
+                    option Administrador de Reportes
 
-                label(for='selectDepartamentos') Departamento:
-                  br
-                  select.form-control#selectDepartamentos.selectpicker(data-style="btn-success", data-width="150px", data-selected-text-format="count>2", type="text", name="idDepartamento", multiple="multiple")
-                    each departamento, i in departamentos
-                        option(value= departamento.id) #{departamento.nombre}
-
+              .form-group
                 label.labelFiltro(for='fechaIngreso') Fecha Ingreso:
-                    input#fechaIngreso.form-control(style="cursor:pointer; cursor: hand;", type="text", name='fechaIngreso', readonly="readonly", placeholder="Fecha Ingreso" )
+                  input#fechaIngreso.form-control(style="cursor:pointer; cursor: hand;", type="text", name='fechaIngreso', readonly="readonly", placeholder="Fecha Ingreso" )
 
-                label(for='teleTrabajo') Tele trabajo:
-                  input#teleTrabajo.form-control(type='checkbox',checked=false, name="teleTrabajo")
+                label.labelTeletrabajo(for='teleTrabajo') Tele trabajo:
+                  input#teleTrabajo.form-control(type='checkbox', checked=false, name="teleTrabajo")
 
               .form-group
                 label(for="passInput")
                   |Contraseña:
                   input.form-control#passInput(type='password', size='18', name="password", placeholder="Contraseña")
-                  label#passInputText
-                  br
-                  button.btn.btn-default(type='button', onclick='generatepass(8)') Generar Contraseña
+                button.btn.btn-default.botonGenerarContrasena(type='button', onclick='generatepass(8)') Generar Contraseña
+                label#passInputText
 
-              button.btn.btn-success#agregarEmpleado(type='button') Ingresar
+            button.btn.btn-success#agregarEmpleado(type='button') Ingresar
               button.btn.btn-danger#clearLabel(type='button', data-dismiss='modal') Cancelar
 
   //

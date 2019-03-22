@@ -309,3 +309,12 @@ body {
 	margin-left: 3px;
 	margin-top: -30px!important;
 }
+
+.labelTeletrabajo{
+	float: right;
+	margin-right: 345px;
+}
+
+.botonGenerarContrasena{
+	margin-bottom: 0!important;
+}
