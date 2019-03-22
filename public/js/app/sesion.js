@@ -80,7 +80,8 @@ function verificarTipos(){
                         $("#btnIngresar").css('display', 'block');
                         $("#selectTem").css('display', 'block');
                         $("#btnVerificar").css('display', 'none');
-                        alertify.success('Seleccione el rol con el que desea ingresar.');
+                        alertify.success('Seleccione el rol con el que desea ingresar.').delay(10);
+
                     }
 
 
