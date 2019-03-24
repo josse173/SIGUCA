@@ -382,44 +382,86 @@ exports.gestionarSoli = function(solicitud, cb, idUser){
 			}
 
 			/*
-			 * Envía el correo electrónico
+			*Preparar datos para el envio del correo
+			*
+			*/
+
+			var a = new Date(soli.fechaCreada * 1000);
+			var date = ""+a.getDate()+"/"+util.getMes(a.getMonth())+"/"+a.getFullYear();
+			var solitext = "<br>Fecha de creación: "+date+"\n"
+				+ "<br>Motivo: "+soli.motivo+"\n"
+				+ "<br>Detalle: "+soli.detalle+"<br><br>";
+
+			var superV = "";
+			if(!errUser && supervisor) {
+				superV += supervisor.nombre;
+				superV += " " + supervisor.apellido1;
+				superV += " " + supervisor.apellido2;
+			}
+
+			var text = "Por este medio se le notifica que la siguiente solicitud ha sido respondida:<br>"
+				+ solitext
+				+ "<br>Le informamos que la solicitud se encuentra en estado " + solicitud.estado
+				+ " por el supervisor " + superV
+				+ ", con el siguiente comentario:"
+				+ "<br> " + solicitud.comentarioSupervisor
+				+ "<br><br> Saludos cordiales.";
+
+			/*
+			 * Envía el correo electrónico al empleado
 			 */
 
 			if (err) return cb(err, '');
 			Correo.find({},function(errorCritico, listaCorreos){
 				if(!errorCritico &&listaCorreos.length>0){
-
-					var a = new Date(soli.fechaCreada * 1000);
-					var date = ""+a.getDate()+"/"+util.getMes(a.getMonth())+"/"+a.getFullYear();
-					var solitext = "<br>Fecha de creación: "+date+"\n"
-					+ "<br>Motivo: "+soli.motivo+"\n"
-					+ "<br>Detalle: "+soli.detalle+"<br><br>";
-
-					var superV = "";
-					if(!errUser && supervisor) {
-						superV += supervisor.nombre;
-						superV += " " + supervisor.apellido1;
-						superV += " " + supervisor.apellido2;
-					}
-
-					var text = "Por este medio se le notifica que la siguiente solicitud ha sido respondida:<br>"
-					+ solitext
-					+ "<br>Le informamos que la solicitud se encuentra en estado " + solicitud.estado
-					+ " por el supervisor " + superV
-					+ ", con el siguiente comentario:"
-					+ "<br> " + solicitud.comentarioSupervisor
-					+ "<br><br> Saludos cordiales.";
-
-
 					enviarCorreo.enviar(listaCorreos[0].nombreCorreo, soli.usuario.email, 'Respuesta a solicitud en SIGUCA', 'Estimado(a) ' + soli.usuario.nombre + ' '+ soli.usuario.apellido1 + ',', text);
-
 				}
 			});
+
+			/*
+			 * Envía el correo electrónico a Recursos humanos
+			 */
+
+
+			if(solicitud.estado === 'Aceptada' || solicitud.estado === 'Rechazada'){
+				if(solicitud.motivo === 'Articulo 51'){
+					if(solicitud.motivoArticulo51 !== 'Diligencias'){
+
+						Usuario.find({tipo: {"$in": "Administrador de Reportes"}}, function (errorCritico, usuarios) {
+							if (!errorCritico && usuarios.length > 0) {
+								Correo.find({},function(errorCritico, listaCorreos) {
+									if (!errorCritico && listaCorreos.length > 0) {
+										usuarios.forEach(function (usuario) {
+											enviarCorreo.enviar(listaCorreos[0].nombreCorreo, usuario.email, 'Respuesta a solicitud en SIGUCA', 'Estimado(a) ' + usuario.nombre + ' ' + usuario.apellido1 + ',', text);
+										});
+									}
+								});
+							}
+						});
+					}
+				}
+
+				if(solicitud.motivo === 'Permiso sin goce de salario'){
+
+					Usuario.find({tipo: {"$in": "Administrador de Reportes"}}, function (errorCritico, usuarios) {
+						if (!errorCritico && usuarios.length > 0) {
+							Correo.find({},function(errorCritico, listaCorreos) {
+								if (!errorCritico && listaCorreos.length > 0) {
+									usuarios.forEach(function (usuario) {
+										enviarCorreo.enviar(listaCorreos[0].nombreCorreo, usuario.email, 'Respuesta a solicitud en SIGUCA', 'Estimado(a) ' + usuario.nombre + ' ' + usuario.apellido1 + ',', text);
+									});
+								}
+							});
+						}
+					});
+
+				}
+			}
 
 			return cb(err, 'Solicitud actualizada');
 
 		});
-});
+	});
 };
 
 exports.gestionarHorasExtras = function(horaExtra, cb, idUser){
