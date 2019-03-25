@@ -424,10 +424,10 @@ exports.gestionarSoli = function(solicitud, cb, idUser){
 
 
 			if(solicitud.estado === 'Aceptada' || solicitud.estado === 'Rechazada'){
-				if(solicitud.motivo === 'Articulo 51'){
-					if(solicitud.motivoArticulo51 !== 'Diligencias'){
+				if(soli.motivo === 'Articulo 51'){
+					if(soli.motivoArticulo51 !== 'Diligencias'){
 
-						Usuario.find({tipo: {"$in": "Administrador de Reportes"}}, function (errorCritico, usuarios) {
+						Usuario.find({tipo: {"$in": ["Administrador de Reportes"]}}, function (errorCritico, usuarios) {
 							if (!errorCritico && usuarios.length > 0) {
 								Correo.find({},function(errorCritico, listaCorreos) {
 									if (!errorCritico && listaCorreos.length > 0) {
@@ -441,9 +441,9 @@ exports.gestionarSoli = function(solicitud, cb, idUser){
 					}
 				}
 
-				if(solicitud.motivo === 'Permiso sin goce de salario'){
+				if(soli.motivo === 'Permiso sin goce de salario'){
 
-					Usuario.find({tipo: {"$in": "Administrador de Reportes"}}, function (errorCritico, usuarios) {
+					Usuario.find({tipo: {"$in": ["Administrador de Reportes"]}}, function (errorCritico, usuarios) {
 						if (!errorCritico && usuarios.length > 0) {
 							Correo.find({},function(errorCritico, listaCorreos) {
 								if (!errorCritico && listaCorreos.length > 0) {
