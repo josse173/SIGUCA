@@ -150,13 +150,14 @@ exports.addUsuario = function(us, cb){
 
 	function crearPeriodo(periodos, fechaActual, usuario, fechaIngreso, cantidadSemanas, numeroPeriodo) {
 
+		var fechaFinalPeriodo = fechaIngreso + 31536000;
 		var fechaPeriodo = fechaIngreso + 30240000;
 
 		// console.log('fechaIngreso: '+ moment.unix(fechaIngreso).format("YYYY-MM-DD hh:mm:ss"));
 		// console.log('fechaPeriodo: '+ moment.unix(fechaPeriodo).format("YYYY-MM-DD hh:mm:ss"));
 		// console.log('cantidadSemanas: '+ cantidadSemanas);
 
-		if(fechaPeriodo < fechaActual){
+		if(fechaFinalPeriodo < fechaActual){
 			periodos.forEach(function(periodo) {
 				if(cantidadSemanas >= periodo.rangoInicial && cantidadSemanas < periodo.rangoFinal){
 
@@ -166,7 +167,8 @@ exports.addUsuario = function(us, cb){
 						periodo: periodo._id,
                         nombrePeriodoPadre: periodo.nombre,
 						fechaInicio: fechaIngreso,
-						fechaFinal: fechaPeriodo,
+						fechaFinal: fechaFinalPeriodo,
+						fechaDisfrute: fechaPeriodo,
 						diasAsignados: periodo.cantidadDias,
 						numeroPeriodo: numeroPeriodo
 					});
@@ -175,7 +177,7 @@ exports.addUsuario = function(us, cb){
 						if (err) console.log(err);
 					});
 
-					crearPeriodo(periodos, fechaActual, usuario, fechaPeriodo, (cantidadSemanas + 50), (numeroPeriodo + 1));
+					crearPeriodo(periodos, fechaActual, usuario, fechaFinalPeriodo, (cantidadSemanas + 50), (numeroPeriodo + 1));
 				}
 			});
 		}
