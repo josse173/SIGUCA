@@ -575,6 +575,15 @@ exports.getEmpleadoPorSupervisor = function(idSupervisor, usuarioQuery, callback
 	});
 };
 
+exports.getTodosEmpleados = function(callback){
+
+	Departamento.find().exec(function(error, departamentos){
+		Usuario.find({tipo: {"$in":["Empleado", "Supervisor", "Usuario sin acceso web"]}}).exec(function(error, usuarios){
+			callback(error, usuarios, departamentos);
+		});
+	});
+};
+
 exports.updateVacaciones = function(){
 	//Configuración al correo
 

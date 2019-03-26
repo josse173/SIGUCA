@@ -35,6 +35,7 @@
  var crudConfiguracion = require('./crudConfiguracion');
  var crudCorreo = require('./crudCorreo');
  var crudRed = require('./crudRed');
+ var crudCorreoRH = require('./crudCorreoRH');
  var crud = require('./crud');
  var util = require('../util/util');
  var ObjectId = mongoose.Types.ObjectId;
@@ -47,6 +48,7 @@ var Feriado = require('../models/Feriado');
 var Correo = require('../models/Correo');
 var Contenido = require('../models/Contenido');
 var Red = require('../models/Red');
+var CorreoRH = require('../models/CorreoRH');
 var Usuario = require('../models/Usuario');
 var Horario = require('../models/Horario');
 var HorarioFijo = require('../models/HorarioFijo');
@@ -1514,6 +1516,45 @@ module.exports = function(app, io) {
 
 
     app.post('/redUpdate/:id',autentificado, crudRed.actualizarRed);
+
+
+    /*
+    *Crud Correos RH
+     */
+
+    app.post('/asignarCorreoRH',autentificado, crudCorreoRH.insertarCorreoRH);
+
+    app.get('/correoRH',autentificado,function(req,res){
+        CorreoRH.find(function(err,correos){
+            if(err){
+                return res.jason(err);
+            }else{
+                req.user.tipo = req.session.name;
+                return res.render('correoRH', {
+                    title: 'Correos Recursos Humanos | SIGUCA',
+                    correos:correos,
+                    usuario:req.user
+                });
+            }
+        });
+    });
+
+    app.get('/correoRH/delete/:id', autentificado, function (req, res) {
+        crudCorreoRH.deleteCorreoRH(req.params.id, function (err, msj) {
+            if (err) return res.json(err);
+            else res.send(msj);
+        });
+    });
+
+
+    app.get('/correoRH/editCorreoRH/:id',function(req,res){
+        CorreoRH.findById(req.params.id,function(err,red){
+            if (err) return res.json(err);
+            else res.json(red);
+        });
+    });
+
+    app.post('/correoRHUpdate/:id',autentificado, crudCorreoRH.actualizarCorreoRH);
 
     /*
     *  Crud de feriados

@@ -88,7 +88,7 @@ html
                      a(href="/reportes")
                         i.icon-edit.icon-large
                         |&nbsp;Reportes
-
+                  if(usuario.tipo == 'Supervisor' || usuario.tipo == "Administrador de Reportes")
                     li
                       div.dropdown
                         button.btn.dropdown-toggle.text-primary.father-1.dropMain(type='button', data-toggle="dropdown", style='margin-top:3%; margin-button:0;')
