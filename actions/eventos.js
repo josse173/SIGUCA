@@ -24,7 +24,8 @@ var ObjectId = mongoose.Types.ObjectId;
 
 module.exports = {
   filtrarEventos : function (req, res) {
-    if (req.session.name === "Supervisor") {
+
+    if (req.session.name === "Supervisor" || req.session.name === "Administrador de Reportes") {
       var usuarioId;
       var option;
       if(req.body.filtro){
@@ -71,20 +72,29 @@ module.exports = {
           departamentos: {$elemMatch: {departamento: ObjectId(req.user.departamentos[0].departamento)}}
         };
 
-        crudUsuario.get(querrySupervisores, function (err, supervisores){
-          crudUsuario.getEmpleadoPorSupervisor(req.user.id, usuarioQuery, function(error, usuarios, departamentos){
-              if(!usuarioId || usuarioId == 'todos'){
+        if(req.session.name === "Administrador de Reportes"){
+          crudUsuario.getTodosEmpleados(function(error, usuarios, departamentos){
+            if(!usuarioId || usuarioId === 'todos'){
+              var queryUsers = {"$in":util.getIdsList(usuarios)};
+              justQuery.usuario = extraQuery.usuario = permisosQuery.usuario = marcaQuery.usuario = queryUsers;
+            }
+            getInformacionRender(req, res, titulo, usuarios, departamentos, marcaQuery, justQuery, extraQuery, permisosQuery, cierreQuery, populateQuery, ((!err && usuario) ? (usuario.apellido1+" "+usuario.apellido2+", "+usuario.nombre) : null), periodosUsuarioQuery);
+          });
+
+        }else{
+
+          crudUsuario.get(querrySupervisores, function (err, supervisores){
+            crudUsuario.getEmpleadoPorSupervisor(req.user.id, usuarioQuery, function(error, usuarios, departamentos){
+              if(!usuarioId || usuarioId === 'todos'){
                 var queryUsers = {"$in":util.getIdsList(usuarios.concat(supervisores))};
                 justQuery.usuario = extraQuery.usuario = permisosQuery.usuario = marcaQuery.usuario = queryUsers;
               }
-              getInformacionRender(req, res, titulo, usuarios.concat(supervisores), departamentos, marcaQuery,
-                justQuery, extraQuery, permisosQuery, cierreQuery, populateQuery,
-                ((!err && usuario) ? (usuario.apellido1+" "+usuario.apellido2+", "+usuario.nombre) : null), periodosUsuarioQuery);
+              getInformacionRender(req, res, titulo, usuarios.concat(supervisores), departamentos, marcaQuery, justQuery, extraQuery, permisosQuery, cierreQuery, populateQuery, ((!err && usuario) ? (usuario.apellido1+" "+usuario.apellido2+", "+usuario.nombre) : null), periodosUsuarioQuery);
             });
-        });
+          });
+        }
       });
-} else {
-      //
+    } else {
       req.logout();
       res.redirect('/');
     }
@@ -321,15 +331,14 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos, marcaQu
             if(req.route.path.substring(0, 9) !=='/reportes'){
               //Se asigna el tipo de usuario con el cual ha iniciado sesion
               req.user.tipo = req.session.name;
-              return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, null,
-                justificaciones, extras, permisos, null, nombreUsuario, null, null, permisosSinSalario);
+              return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, null, justificaciones, extras, permisos, null, nombreUsuario, null, null, permisosSinSalario);
             }
             else {
               Marca.find(marcaQuery).populate(populateQuery).exec(function(error, marcas){
 
                 var usuarioQueryFiltrado = {};
                 //Si se realizo un filtrado por departamento
-                if(req.body.filtro_departamento && req.body.filtro_departamento!="todos"){
+                if(req.body.filtro_departamento && req.body.filtro_departamento != "todos"){
                   usuarioQueryFiltrado.departamentos = {$elemMatch:{departamento:{"$in":req.body.filtro_departamento}}};
                 }
 

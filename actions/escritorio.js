@@ -28,7 +28,7 @@ module.exports = {
 	escritorio : function (req, res) {
 		var conteoJustificacionesTotal=0;
 		req.user.tipo = req.session.name;
-		if (req.session.name == "Supervisor") {
+		if (req.session.name === "Supervisor" || req.session.name === "Administrador de Reportes") {
 			var epochGte = moment().hours(0).minutes(0).seconds(0).milliseconds(0);
 
 			var epochYesterday = moment().subtract(1, 'days').hours(23).minutes(59).seconds(59);

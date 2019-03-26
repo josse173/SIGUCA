@@ -299,3 +299,22 @@ body {
 		margin-left: 20px;
     }
 }
+
+.labelHorarioFijo{
+	margin-bottom: -30px!important;
+	margin-top: 20px;
+}
+
+.checkboxHorarioFijo{
+	margin-left: 3px;
+	margin-top: -30px!important;
+}
+
+.labelTeletrabajo{
+	float: right;
+	margin-right: 345px;
+}
+
+.botonGenerarContrasena{
+	margin-bottom: 0!important;
+}
