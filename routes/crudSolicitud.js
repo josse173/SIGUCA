@@ -6,6 +6,7 @@ Solicitudes 	= require('../models/Solicitudes'),
 Articulo51 	= require('../models/Articulo51'),
 Usuario 		= require('../models/Usuario'),
 Correo		= require('../models/Correo'),
+CorreoRH		= require('../models/CorreoRH'),
 util 			= require('../util/util'),
 config          = require('../config.json'),
 emailSIGUCA 	= 'siguca@greencore.co.cr',
@@ -427,12 +428,12 @@ exports.gestionarSoli = function(solicitud, cb, idUser){
 				if(soli.motivo === 'Articulo 51'){
 					if(soli.motivoArticulo51 !== 'Diligencias'){
 
-						Usuario.find({tipo: {"$in": ["Administrador de Reportes"]}}, function (errorCritico, usuarios) {
+						CorreoRH.find({}, function (errorCritico, usuarios) {
 							if (!errorCritico && usuarios.length > 0) {
 								Correo.find({},function(errorCritico, listaCorreos) {
 									if (!errorCritico && listaCorreos.length > 0) {
 										usuarios.forEach(function (usuario) {
-											enviarCorreo.enviar(listaCorreos[0].nombreCorreo, usuario.email, 'Respuesta a solicitud en SIGUCA', 'Estimado(a) ' + usuario.nombre + ' ' + usuario.apellido1 + ',', text);
+											enviarCorreo.enviar(listaCorreos[0].nombreCorreo, usuario.correo, 'Respuesta a solicitud en SIGUCA', 'Estimado(a) ' + usuario.nombre + ' ' + usuario.apellido1 + ',', text);
 										});
 									}
 								});
@@ -443,12 +444,12 @@ exports.gestionarSoli = function(solicitud, cb, idUser){
 
 				if(soli.motivo === 'Permiso sin goce de salario'){
 
-					Usuario.find({tipo: {"$in": ["Administrador de Reportes"]}}, function (errorCritico, usuarios) {
+					CorreoRH.find({}, function (errorCritico, usuarios) {
 						if (!errorCritico && usuarios.length > 0) {
 							Correo.find({},function(errorCritico, listaCorreos) {
 								if (!errorCritico && listaCorreos.length > 0) {
 									usuarios.forEach(function (usuario) {
-										enviarCorreo.enviar(listaCorreos[0].nombreCorreo, usuario.email, 'Respuesta a solicitud en SIGUCA', 'Estimado(a) ' + usuario.nombre + ' ' + usuario.apellido1 + ',', text);
+										enviarCorreo.enviar(listaCorreos[0].nombreCorreo, usuario.correo, 'Respuesta a solicitud en SIGUCA', 'Estimado(a) ' + usuario.nombre + ' ' + usuario.apellido1 + ',', text);
 									});
 								}
 							});

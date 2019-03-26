@@ -1183,6 +1183,30 @@ $('.tableRed').footable().on('click', '.redDelete', function(e) {
     }).setHeader('<em> Eliminar Red </em> ').show();
 });
 
+ $('.tableCorreoRH').footable().on('click', '.correoRHDelete', function(e) {
+     var footable = $('.tableCorreoRH').data('footable');
+     var row = $(this).parents('tr:first');
+
+     var red= $(this).val();
+     var split = red.split(',');
+     alertify.dialog('confirm')
+         .set({
+             'labels':{ok:'Eliminar', cancel:'Cancelar'},
+             'transition': 'slide',
+             'message': '¿Está seguro de eliminar el correo <strong>' +  split[0] + '</strong>?' ,
+             'onok': function(){
+                 $.get('/correoRH/delete/'+split[1], function (data){
+                     if(data == 'Se elimino'){
+                         footable.removeRow(row);
+                         alertify.message('Se eliminó el correo ' +  split[0] + ' con éxito');
+                     } else {
+                         alertify.error('No se puede eliminar el correo <strong>' +  split[0] + '</strong>');
+                     }
+                 });
+             }
+         }).setHeader('<em> Eliminar Correo </em> ').show();
+ });
+
 $("button[data-target=#editFeriado]").click( function() {
     var id = $(this).val();
     $('.formUpdateFeriado').attr('action', '/feriadoUpdate/'+id);
@@ -1244,6 +1268,14 @@ $("button[data-target=#editRed]").click( function() {
        $('#nombreRed').val(data.nombreRed);
     });
 });
+
+ $("button[data-target=#editCorreoRH]").click( function() {
+     var id = $(this).val();
+     $('.formUpdateCorreoRH').attr('action', '/correoRHUpdate/'+id);
+     $.get('/correoRH/editCorreoRH/'+id, function( data ) {
+         $('#nombreCorreoRH').val(data.correo);
+     });
+ });
 
 $('.tableHorarioEliminar').footable().on('click','.eliminarFijo',function(e) {
     var footable = $('.tableHorarioEliminar').data('footable');

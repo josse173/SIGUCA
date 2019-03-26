@@ -1,7 +1,7 @@
 .col-xs-4.col-sm-offset-2.col-md-offset-3.col-lg-offset-4
     h3#labelIMEC(class="text-center")
       |#{textos[0].titulo}
-    table.footable(data-page-size="11")
+    table.footable(data-page-size="12")
       thead
         tr
           th #{textos[1].titulo}
@@ -105,6 +105,17 @@
 
             td
               form(action= '/configuracionAlertas')
+                button.btn.btn-primary(type = 'submit')
+                  i.icon-edit.icon-large
+
+        tr
+          td Correos Recursos humanos
+            td
+              button.btn.btn-success(type = 'submit' data-toggle="modal" data-target="#asignarCorreoRH")
+                i.icon-plus.icon-large
+
+            td
+              form(action= '/correoRH')
                 button.btn.btn-primary(type = 'submit')
                   i.icon-edit.icon-large
 
@@ -468,6 +479,21 @@
               h4 #{textos[17].titulo}
               label(for='nombre' style="float:left") #{textos[35].titulo}
                 input.form-control#textInput( type="text", name="nombreRed",required)
+              div.clearfix
+              button.btn.btn-success(type='submit') #{textos[13].titulo}
+              button.btn.btn-danger(type='button', data-dismiss='modal') #{textos[14].titulo}
+  #asignarCorreoRH.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+    .modal-dialog
+      .modal-content
+        .modal-header
+          button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+          h4#myModalLabel.modal-title Asignar Correo Recursos Humanos
+        .modal-body
+          form(action='/asignarCorreoRH', method='post')#login-form.well.span4
+            .form-group
+              h4 #{textos[17].titulo}
+              label(for='nombre' style="float:left") Correo:
+                input.form-control#textInput( type="text", name="nombreCorreoRH",required)
               div.clearfix
               button.btn.btn-success(type='submit') #{textos[13].titulo}
               button.btn.btn-danger(type='button', data-dismiss='modal') #{textos[14].titulo}
