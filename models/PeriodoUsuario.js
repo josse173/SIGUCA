@@ -36,6 +36,10 @@ var SchemaPeriodoUsuario = new Schema({
         type: Number,
         default: 0
     },
+    fechaDisfrute: {
+        type: Number,
+        default: 0
+    },
     diasAsignados: {
         type: Number,
         default: 0

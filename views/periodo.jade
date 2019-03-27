@@ -16,6 +16,7 @@ block content
             th Tipo Periodo
             th Fecha Inicio
             th Fecha Final
+            th Fecha Disfrute
             th Dias Asignados
             th Dias Disfrutados
             th(data-hide="phone,small" data-sort-ignore="true") Editar
@@ -27,8 +28,9 @@ block content
               td #{nombreUsuario}
               td #{moment.unix(periodoCurrent.fechaCreada).format("YYYY-MM-DD hh:mm:ss")}
               td #{periodoCurrent.nombrePeriodoPadre}
-              td #{moment.unix(periodoCurrent.fechaInicio).format("YYYY-MM-DD hh:mm:ss")}
-              td #{moment.unix(periodoCurrent.fechaFinal).format("YYYY-MM-DD hh:mm:ss")}
+              td #{moment.unix(periodoCurrent.fechaInicio).format("YYYY-MM-DD")}
+              td #{moment.unix(periodoCurrent.fechaFinal).format("YYYY-MM-DD")}
+              td #{moment.unix(periodoCurrent.fechaDisfrute).format("YYYY-MM-DD")}
               td #{periodoCurrent.diasAsignados}
               td #{periodoCurrent.diasDisfrutados}
               td
