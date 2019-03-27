@@ -642,7 +642,7 @@ exports.updateVacaciones = function(){
 							+ ", usted dispone de " + (user.vacaciones+1) + " días de vacaciones, se recomienda no exceder 12 días,"
 							+ " favor contactar a su supervisor.<br><br> ¡Saludos!";
 
-						enviarCorreo.enviar(from, to, subject, '', text);
+						enviarCorreo.enviar(from, to, subject, '', text, '');
 
 						//Recorre departamentos del usuario
 						for (var index = 0; index < user.departamentos.length; index++) {
@@ -710,7 +710,7 @@ exports.updateVacaciones = function(){
 						text = "Estimado(a) " + email.nameSpv +", se le informa que la siguiente lista de usuarios ha superado 11 días de vacaciones acumulados:<br>"
 						+ email.message + "<br><br> ¡Saludos!";
 
-					enviarCorreo.enviar(from, to, subject, '', text);
+					enviarCorreo.enviar(from, to, subject, '', text, '');
 
 				}
 			});

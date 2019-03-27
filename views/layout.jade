@@ -66,7 +66,7 @@ html
             if (usuario)
                 ul.nav.nav-pills
                   li
-                    if(usuario.tipo == 'Supervisor')
+                    if(usuario.tipo == 'Supervisor' || usuario.tipo == "Administrador de Reportes")
                       a.activeControl(href="/escritorio")
                         i.icon-home.icon-large
                         |&nbsp;Escritorio

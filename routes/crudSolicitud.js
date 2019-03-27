@@ -67,7 +67,7 @@ exports.addExtra = function(extra, cb){
 										+ "\r\n Ubicación: " + extra.cliente + '<br>'
 										+ "\r\n Detalle: " + extra.motivo + '<br>';
 
-								enviarCorreo.enviar(from, to, subject, titulo, text);
+								enviarCorreo.enviar(from, to, subject, titulo, text, '');
 							}
 						}
 					});
@@ -128,7 +128,7 @@ exports.updateExtra = function(extra, cb, idUser){
 										+ "<br> Motivo: " + extraActualizada.motivo
 										+ "<br> Detalle: " + extraActualizada.detalle;
 
-								enviarCorreo.enviar(from, to, subject, '', text);
+								enviarCorreo.enviar(from, to, subject, '', text, '');
 							}
 						}
 					});
@@ -197,7 +197,7 @@ exports.addPermiso = function(permiso, cb, idUser){
 										+ "<br>  Cantidad de días: " + soli.cantidadDias
                                         + "<br>  Motivo: " + soli.motivo
                                         + "<br>  Detalle: " + soli.detalle
-								enviarCorreo.enviar(from, to, subject, '', text);
+								enviarCorreo.enviar(from, to, subject, '', text, '');
                             }
                         }
                     });
@@ -253,7 +253,7 @@ exports.updatePermiso = function(permiso, cb, idUser){
 											+ "<br> Motivo: " + solicitud.motivo
 											+ "<br> Detalle: " + solicitudActualizada.detalle;
 
-										enviarCorreo.enviar(from, to, subject, '', text);
+										enviarCorreo.enviar(from, to, subject, '', text, '');
 									}
 								}
 							});
@@ -323,7 +323,7 @@ exports.deleteSoli = function(id, cb, idUser){
 						+ "<br> Motivo: " + soli.motivo
 						+ "<br> Estado: " + soli.estado
 						+ "<br> Comentario supervisor: " + soli.comentarioSupervisor;
-					enviarCorreo.enviar(from, to, subject, '', text);
+					enviarCorreo.enviar(from, to, subject, '', text, '');
 				} else {
 					var	from = listaCorreos[0].nombreCorreo,
 						to = soli.usuario.email,
@@ -338,7 +338,7 @@ exports.deleteSoli = function(id, cb, idUser){
 						+ "<br> Detalle: " + soli.detalle
 						+ "<br> Estado: " + soli.estado
 						+ "<br> Comentario supervisor: " + soli.comentarioSupervisor;
-					enviarCorreo.enviar(from, to, subject, '', text);
+					enviarCorreo.enviar(from, to, subject, '', text, '');
 				}
 			}
 		});
@@ -408,16 +408,6 @@ exports.gestionarSoli = function(solicitud, cb, idUser){
 				+ "<br> " + solicitud.comentarioSupervisor
 				+ "<br><br> Saludos cordiales.";
 
-			/*
-			 * Envía el correo electrónico al empleado
-			 */
-
-			if (err) return cb(err, '');
-			Correo.find({},function(errorCritico, listaCorreos){
-				if(!errorCritico &&listaCorreos.length>0){
-					enviarCorreo.enviar(listaCorreos[0].nombreCorreo, soli.usuario.email, 'Respuesta a solicitud en SIGUCA', 'Estimado(a) ' + soli.usuario.nombre + ' '+ soli.usuario.apellido1 + ',', text);
-				}
-			});
 
 			/*
 			 * Envía el correo electrónico a Recursos humanos
@@ -428,13 +418,14 @@ exports.gestionarSoli = function(solicitud, cb, idUser){
 				if(soli.motivo === 'Articulo 51'){
 					if(soli.motivoArticulo51 !== 'Diligencias'){
 
-						CorreoRH.find({}, function (errorCritico, usuarios) {
-							if (!errorCritico && usuarios.length > 0) {
+						CorreoRH.find({}, function (errorCritico, correosRH) {
+							if (!errorCritico && correosRH.length > 0) {
 								Correo.find({},function(errorCritico, listaCorreos) {
 									if (!errorCritico && listaCorreos.length > 0) {
-										usuarios.forEach(function (usuario) {
-											enviarCorreo.enviar(listaCorreos[0].nombreCorreo, usuario.correo, 'Respuesta a solicitud en SIGUCA', 'Estimado(a) ' + usuario.nombre + ' ' + usuario.apellido1 + ',', text);
-										});
+
+										var cc = Array.prototype.map.call(correosRH, function(item) { return item.correo; }).join(",");
+
+										enviarCorreo.enviar(listaCorreos[0].nombreCorreo, soli.usuario.email, 'Respuesta a solicitud en SIGUCA', 'Estimado(a) ' + soli.usuario.nombre + ' ' + soli.usuario.apellido1 + ',', text, cc);
 									}
 								});
 							}
@@ -444,13 +435,15 @@ exports.gestionarSoli = function(solicitud, cb, idUser){
 
 				if(soli.motivo === 'Permiso sin goce de salario'){
 
-					CorreoRH.find({}, function (errorCritico, usuarios) {
-						if (!errorCritico && usuarios.length > 0) {
+					CorreoRH.find({}, function (errorCritico, correosRH) {
+						if (!errorCritico && correosRH.length > 0) {
 							Correo.find({},function(errorCritico, listaCorreos) {
 								if (!errorCritico && listaCorreos.length > 0) {
-									usuarios.forEach(function (usuario) {
-										enviarCorreo.enviar(listaCorreos[0].nombreCorreo, usuario.correo, 'Respuesta a solicitud en SIGUCA', 'Estimado(a) ' + usuario.nombre + ' ' + usuario.apellido1 + ',', text);
-									});
+
+									var cc = Array.prototype.map.call(correosRH, function(item) { return item.correo; }).join(",");
+
+									enviarCorreo.enviar(listaCorreos[0].nombreCorreo, soli.usuario.email, 'Respuesta a solicitud en SIGUCA', 'Estimado(a) ' + soli.usuario.nombre + ' ' + soli.usuario.apellido1 + ',', text, cc);
+
 								}
 							});
 						}
@@ -493,7 +486,7 @@ exports.gestionarHorasExtras = function(horaExtra, cb, idUser){
 					+ ', con el siguiente comentario: <br>'+ horaExtra.comentarioSupervisor
 					+ '<br><br>Saludos cordiales.';
 
-					enviarCorreo.enviar(listaCorreos[0].nombreCorreo, soli.usuario.email, 'Respuesta a solicitud en SIGUCA', 'Estimado(a) ' + soli.usuario.nombre + ' '+ soli.usuario.apellido1 + ',', text);
+					enviarCorreo.enviar(listaCorreos[0].nombreCorreo, soli.usuario.email, 'Respuesta a solicitud en SIGUCA', 'Estimado(a) ' + soli.usuario.nombre + ' '+ soli.usuario.apellido1 + ',', text, '');
 
 				}
 			});

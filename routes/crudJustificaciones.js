@@ -237,7 +237,7 @@ exports.updateJust = function(justificacion, cb){
 											+ "<br> Motivo: " + justActualizada.motivo
 											+ "<br> Detalle: " + justificacion.detalle;
 
-											enviarCorreo.enviar(from, to, subject, '', text);
+											enviarCorreo.enviar(from, to, subject, '', text, '');
 									}
 								}
 							});
@@ -273,7 +273,7 @@ exports.deleteJust = function(id, cb){
 						+ "<br> Motivo: " + just.motivo
 						+ "<br> Detalle: " + just.detalle;
 
-				enviarCorreo.enviar(from, to, subject, '', text);
+				enviarCorreo.enviar(from, to, subject, '', text, '');
 			}else{
 				console.log("error al enviar correo de eliminado de justificación");
 			}
@@ -302,7 +302,7 @@ exports.deleteJustMasa = function(id, cb){
 						+ "<br> Motivo: " + just.motivo
 						+ "<br> Detalle: " + just.detalle;
 
-				enviarCorreo.enviar(from, to, subject, '', text);
+				enviarCorreo.enviar(from, to, subject, '', text, '');
 			}
 		});
 
@@ -345,7 +345,7 @@ exports.gestionarJust = function(justificacion, cb, idUser){
 							+ "<br><br> " + justificacion.comentarioSupervisor
 							+ "<br><br>Saludos cordiales.";
 
-						enviarCorreo.enviar(from, to, subject, titulo, texto);
+						enviarCorreo.enviar(from, to, subject, titulo, texto, '');
 
 					}
 				});
@@ -393,7 +393,7 @@ exports.gestionarJustifcacion = function(justificacion, cb, idUser){
 							+ ", con el siguiente comentario"
 							+ "<br><br> " + justificacion.comentarioSupervisor
 							+ "<br><br> Saludos cordiales.";
-						enviarCorreo.enviar(from, to, subject, '', text);
+						enviarCorreo.enviar(from, to, subject, '', text, '');
 					}else{
 						//console.log("problemas 2");
 					}

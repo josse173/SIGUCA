@@ -8,7 +8,7 @@ block content
     table.footable.tableCorreoRH
         thead
           tr
-            th Nombre
+            th Correo
             th Editar
             th Eliminar
 
@@ -34,7 +34,7 @@ block content
               form.formUpdateCorreoRH(action='/correoRHUpdate', method='post')#login-form.well.span4
                 .form-group
                   label(for='nombre' style="float:left") Correo:
-                  input#nombreCorreoRH.form-control( type="text", name="nombreCorreoRH")
+                  input#nombreCorreoRH.form-control( type= 'email', name="nombreCorreoRH")
 
 
                 button.btn.btn-success(type='submit') Actualizar
