@@ -876,7 +876,7 @@ module.exports = function(app, io) {
         Usuario.findById(req.params.id, function (err, empleado) {
             if (err) return res.json(err);
             else res.json(empleado);
-        });
+        }).populate('departamentos.departamento');
     });
 
 

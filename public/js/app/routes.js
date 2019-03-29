@@ -497,7 +497,6 @@ $("button[data-target=#editHorarioFijo]").click( function() {
             contador++;
         }
 
-
         var x = document.getElementById("estadoEmpleado");
         var option = document.createElement("option");
         option.text = data.estado;
@@ -525,9 +524,9 @@ $("button[data-target=#editHorarioFijo]").click( function() {
         }
 
         $('#nombre').val(data.nombre);
-        if(data.teleTrabajo=="on"){
-            $('#teleTrabajo').attr("checked",true);
 
+        if(data.teleTrabajo == "on"){
+            $('#teleTrabajo').attr("checked",true);
         }else {
             $('#teleTrabajo').attr("checked",false);
         }
@@ -540,30 +539,84 @@ $("button[data-target=#editHorarioFijo]").click( function() {
         $('#email').val(data.email);
         $('#codTarjeta').val(data.codTarjeta);
         $('#username').val(data.username);
-        $('#selectTipo').selectpicker('val', data.tipo);
+
         $('#selectHorario').selectpicker('val', data.horario);
         $('#selectHorarioFijo').selectpicker('val', data.horarioFijo);
         $('#HorarioEmpleado').selectpicker('val', data.horarioEmpleado);
-        $('#selectDepartamentos').selectpicker('val', data.horario);
+
         $('#idEmpleado').val(data._id);
         $("#idEmpleado").css('display','none');
 
-        var val = [];
-        for (var i = 0; i < data.departamentos.length; i++) {
-            val.push(data.departamentos[i].departamento);
-        }
-        $('#selectDepartamentos').selectpicker('val', val);
-        $('#selectDepartamentos').selectpicker('refresh');
         $('#selectHorario').selectpicker('refresh');
         $('#selectHorarioFijo').selectpicker('refresh');
         $('#HorarioEmpleado').selectpicker('refresh');
-        $('#selectTipo').selectpicker('refresh');
-        $('#estadoEmpleado').refresh();
+        $('#estadoEmpleado').selectpicker('refresh');
 
-
+        agregarLiUpdate(data.departamentos);
 
     });
 });
+
+ function agregarLiUpdate(departamentos){
+
+     var ul = document.getElementById("listDepartamentos");
+
+     var selected = [];
+
+     departamentos.forEach(function (departamento) {
+
+         var text = '';
+         if(departamento.departamento){
+             text = departamento.departamento._id + ';' + departamento.tipo;
+         }else{
+             text = 'Sin Departamento;' + departamento.tipo;
+         }
+
+         selected.push(text);
+
+        var li = document.createElement("li");
+
+        var button = document.createElement("BUTTON");
+         li.id = text;
+         button.innerHTML = "Eliminar";
+         button.classList.add('btn');
+         button.classList.add('btn-danger');
+         button.style.marginLeft = "5px";
+         button.style.marginBottom = "5px";
+
+         button.onclick = function() {
+
+             var selected = $('#rolesDepartamento').val().split("|");
+
+             var index = selected.indexOf(text);
+             if (index > -1) {
+                 selected.splice(index, 1);
+             }
+
+             $('#rolesDepartamento').val(selected.join('|'));
+
+             var lis = document.querySelectorAll('#listDepartamentos li');
+             for(var i=0; li=lis[i]; i++) {
+                 if(li.id === text){
+                     li.parentNode.removeChild(li);
+                 }
+             }
+         };
+         var text2 = '';
+         if (departamento.tipo !== 'Administrador' && departamento.tipo !== 'Administrador de Reportes'){
+             text2 = departamento.departamento.nombre + ' (' + departamento.tipo + ')';
+         } else {
+             text2 = 'Sin Departamento (' + departamento.tipo + ')';
+         }
+
+         li.appendChild(document.createTextNode(text2));
+         li.appendChild(button);
+         ul.appendChild(li);
+
+     });
+
+     $('#rolesDepartamento').val(selected.join('|'));
+ }
 
  $('.btnDescargaPdf').click(function(){
 

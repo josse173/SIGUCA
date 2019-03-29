@@ -248,7 +248,8 @@ exports.updateUsuario = function(data, cb){
 		data.empleado.fechaIngreso = 0;
 	}
 
-	data.empleado.estado=data.empleado.estadoEmpleado;
+	data.empleado.estado = data.empleado.estadoEmpleado;
+
 	delete data.empleado.estadoEmpleado;
 
 	if(data.empleado.horarioFijo && data.empleado.horarioFijo!="Sin horario" &&
@@ -259,6 +260,19 @@ exports.updateUsuario = function(data, cb){
 		delete data.empleado.horario;
 	}
 
+	var rolesDepartamento = data.empleado.rolesDepartamento.split("|");
+	var arrayDepartamentos = [];
+
+	rolesDepartamento.forEach(function (rolDepartamento) {
+		var rd = rolDepartamento.split(";");
+
+		if(rd[0] === ''){
+			arrayDepartamentos.push({departamento: '', tipo: rd[1]});
+		} else {
+			arrayDepartamentos.push({departamento: rd[0], tipo: rd[1]});
+		}
+	});
+
 	if(data.empleado.horarioFijo && data.empleado.horarioFijo!="Sin horario") {
 
 		Usuario.update({_id:data.id},{ $unset: {horario: ""}},function(error,correcto){});
@@ -267,28 +281,9 @@ exports.updateUsuario = function(data, cb){
 		Usuario.update({_id:data.id},{ $unset: {horarioEmpleado: ""}},function(error,correcto){});
 		delete data.empleado.horarioEmpleado;
 
-		var arrayTipo = [];
-		if(data.empleado.tipo instanceof Array){
-			for( var t in data.empleado.tipo){
-				arrayTipo.push(data.empleado.tipo[t]);
-			}
-		} else {
-			arrayTipo.push(data.empleado.tipo);
-		}
-		data.empleado.tipo = arrayTipo;
+		data.empleado.tipo = [];
 
-		//Genera el array de departamentos
-		var array = [];
-		if(data.empleado.departamentos instanceof Array){
-			for( var i in data.empleado.departamentos){
-				array.push({departamento:data.empleado.departamentos[i]});
-			}
-			data.empleado.departamentos = array;
-		} else if (data.empleado.departamentos){
-			array.push({departamento:data.empleado.departamentos});
-			data.empleado.departamentos = array;
-		}
-
+		data.empleado.departamentos = arrayDepartamentos;
 
 		if(data.empleado.password && data.empleado.password != ""){
 			data.empleado.password = Usuario.generateHash(data.empleado.password);

@@ -9,19 +9,17 @@ $('#btnActualizarEmpleado').click(function(){
         type: 'POST',
         dataType : "json",
         data:{"empleado":empleado},
-        success: function(data) {    
+        success: function(data) {
             if(data=="Correcto"){
                 $('#actualizarEmpleado').submit();
             }else{
                 alertify.error("el usuario ya existe");
-               
             }
-          
         },
         error: function(){
             alertify.error("error");
         }
-    }); 
+    });
 });
 
  $('[name="horario"]').change(function () {
