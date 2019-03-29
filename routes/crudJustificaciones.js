@@ -36,7 +36,7 @@ exports.conteoJustificaciones=function(usuario,cb){
 		departamentos.push(obj);
 
 	}
-	Usuario.find({tipo: {'$in': ['Empleado', 'Usuario sin acceso web']}},function(error,empleado){
+	Usuario.find({ departamentos : { $elemMatch: { tipo: {$in: ['Empleado', 'Usuario sin acceso web']}}}},function(error,empleado){
 		if(empleado){
 			for(var i=0;i<empleado.length;i++){
 				if(empleado[i].departamentos.length>0){//pregunta que si tiene mas de un departamento
@@ -101,7 +101,7 @@ exports.conteoJustificacionesTotal=function(usuario,cb){
 		departamentos.push(obj);
 
 	}
-	Usuario.find({tipo: {'$in': ['Empleado', 'Usuario sin acceso web']}},function(error,empleado){
+	Usuario.find({ departamentos : { $elemMatch: { tipo: {$in: ['Empleado', 'Usuario sin acceso web']}}}},function(error,empleado){
 		if(empleado){
 			for(var i=0;i<empleado.length;i++){
 				if(empleado[i].departamentos.length>0){//pregunta que si tiene mas de un departamento
@@ -217,7 +217,7 @@ exports.updateJust = function(justificacion, cb){
 			Justificaciones.findByIdAndUpdate(justificacion.id, justificacionActualizada, function (err, justActualizada) {
 
 				if (!err && just.estado=="Incompleto") {
-					Usuario.find({'tipo' : 'Supervisor', 'departamentos.departamento' : just.usuario.departamentos[0].departamento}, {'email' : 1}).exec(function (err, supervisor) {
+					Usuario.find({departamentos : { $elemMatch: { tipo: {$in: ['Supervisor']}}}, 'departamentos.departamento' : just.usuario.departamentos[0].departamento}, {'email' : 1}).exec(function (err, supervisor) {
 						if (err){
 							return cb(err);
 						}

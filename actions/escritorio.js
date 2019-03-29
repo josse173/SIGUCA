@@ -39,12 +39,11 @@ module.exports = {
 				_id:{
 					"$ne":ObjectId(req.user.id)
 				},
-				tipo:"Supervisor",
-				departamentos: {$elemMatch: {departamento: ObjectId(req.user.departamentos[0].departamento)}}
+				departamentos: {$elemMatch: {departamento: ObjectId(req.user.departamentos[0].departamento), tipo: 'Supervisor'}}
 			};
 			Contenido.find({seccion:"escritorio"},function(err,contenido){
 			    if (err) return res.json(error);
-			    var usuarioQuery = { tipo: {'$in': ['Empleado', 'Usuario sin acceso web']}};
+			    var usuarioQuery = { departamentos : { $elemMatch: { tipo: {$in: ['Empleado', 'Usuario sin acceso web']}}}};
 			    crudUsuario.get(querrySupervisores, function (err, supervisores){
 			        crudUsuario.getEmpleadoPorSupervisor(req.user.id, usuarioQuery,function(error, usuarios, departamentos){
 
@@ -122,7 +121,7 @@ module.exports = {
 																	req.user.tipo = req.session.name;
 
 																	//En caso de ser profesor no se pasan las justificaciones
-																	if(req.user.tipo.length > 1 && req.session.name == config.empleadoProfesor){
+																	if(req.user.tipo && req.session.name == config.empleadoProfesor){
 																		arrayJust = null;
 																	}
 

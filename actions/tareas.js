@@ -9,7 +9,7 @@ const Justificaciones = require('../models/Justificaciones');
 var Feriado = require('../models/Feriado');
 
 const WORKING_DAYS = ["Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"];
-const USER_TYPES = {ADMIN: 'Administrador', TEACHER: 'Profesor', REPORT_MANAGER: "Administrador de Reportes"};
+const USER_TYPES = {ADMIN: 'Administrador', TEACHER: 'Profesor', REPORT_MANAGER: "Administrador de Reportes", SUPERVISOR: "Supervisor"};
 const MAXIMUM_INTERVAL_WORKING = 12;
 const SCHEDULER_TYPE = {FIXED: 'horarioFijo', RANGE: 'horarios', EMPLOYEE_SCHEDULE: 'horariosEmpleado'};
 const AUTOMATIC_CLOSURE = 'Cierre Automático  de Sistema';
@@ -116,7 +116,7 @@ const CronJobOperations = {
         const today = moment();
         DBOperations.findUsers().then(users => {
             users.forEach(user => {
-                user.tipo.filter(type => type !== USER_TYPES.ADMIN && type !== USER_TYPES.REPORT_MANAGER).forEach(type =>{
+                user.departamentos.filter(departamento => departamento.tipo !== USER_TYPES.ADMIN && departamento.tipo !== USER_TYPES.REPORT_MANAGER && departamento.tipo !== USER_TYPES.SUPERVISOR).forEach(type =>{
                     const schedule = user.horarioEmpleado || user.horarioFijo || user.horario;
                     if (schedule) {
                         this.checkUserMarks(user, schedule, type, day, today).catch(error => console.log(error));
@@ -410,8 +410,7 @@ const DBOperations = {
                 nombre: 1,
                 horarioFijo: 1,
                 horario: 1,
-                horarioEmpleado: 1,
-                tipo: 1
+                horarioEmpleado: 1
             }).populate("horarioFijo").populate('horario').populate('horarioEmpleado')
                 .then(users => resolve(users))
                 .catch(error => reject(error));

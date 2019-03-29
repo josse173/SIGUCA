@@ -113,7 +113,7 @@ html
                           li
                             a.activeControl.son-1(href="/reportes/periodosUsuario") Periodos de usuario
 
-                  if(usuario.tipo == 'Supervisor' || usuario.tipo == 'Empleado' || usuario.tipo == config.empleadoProfesor)
+                  if(usuario.tipo == 'Empleado' || usuario.tipo == config.empleadoProfesor)
                     li
                       a.activeControl(href="/eventos")
                         i.icon-book.icon-large

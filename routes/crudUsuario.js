@@ -259,10 +259,7 @@ exports.updateUsuario = function(data, cb){
 		delete data.empleado.horario;
 	}
 
-
 	if(data.empleado.horarioFijo && data.empleado.horarioFijo!="Sin horario") {
-
-
 
 		Usuario.update({_id:data.id},{ $unset: {horario: ""}},function(error,correcto){});
 		delete data.empleado.horario;
@@ -291,6 +288,8 @@ exports.updateUsuario = function(data, cb){
 			array.push({departamento:data.empleado.departamentos});
 			data.empleado.departamentos = array;
 		}
+
+
 		if(data.empleado.password && data.empleado.password != ""){
 			data.empleado.password = Usuario.generateHash(data.empleado.password);
 		} else {
@@ -319,6 +318,7 @@ exports.updateUsuario = function(data, cb){
 		} else {
 			arrayTipo.push(data.empleado.tipo);
 		}
+
 		data.empleado.tipo = arrayTipo;
 
 		//Genera el array de departamentos
@@ -332,6 +332,7 @@ exports.updateUsuario = function(data, cb){
 			array.push({departamento:data.empleado.departamentos});
 			data.empleado.departamentos = array;
 		}
+
 		if(data.empleado.password && data.empleado.password != ""){
 			data.empleado.password = Usuario.generateHash(data.empleado.password);
 		} else {
@@ -346,9 +347,6 @@ exports.updateUsuario = function(data, cb){
 
 
 	else if(data.empleado.horarioEmpleado && data.empleado.horarioEmpleado!="Sin horario"){
-
-
-
 
 		Usuario.update({_id:data.id},{ $unset: {horarioFijo: ""}},function(error,correcto){});
 		delete data.empleado.horarioFijo;
@@ -377,6 +375,8 @@ exports.updateUsuario = function(data, cb){
 			array.push({departamento:data.empleado.departamentos});
 			data.empleado.departamentos = array;
 		}
+
+
 		if(data.empleado.password && data.empleado.password != ""){
 			data.empleado.password = Usuario.generateHash(data.empleado.password);
 		} else {
@@ -387,9 +387,6 @@ exports.updateUsuario = function(data, cb){
 			return cb(err, empleado);
 		});
 	}
-
-
-
 
 	else if(data.empleado.horario==="Sin horario" && data.empleado.horarioFijo==="Sin horario" && data.empleado.horarioEmpleado==="Sin horario"){
 
@@ -410,6 +407,7 @@ exports.updateUsuario = function(data, cb){
 		} else {
 			arrayTipo.push(data.empleado.tipo);
 		}
+
 		data.empleado.tipo = arrayTipo;
 
 		//Genera el array de departamentos
@@ -423,6 +421,7 @@ exports.updateUsuario = function(data, cb){
 			array.push({departamento:data.empleado.departamentos});
 			data.empleado.departamentos = array;
 		}
+
 		if(data.empleado.password && data.empleado.password != ""){
 			data.empleado.password = Usuario.generateHash(data.empleado.password);
 		} else {
@@ -432,7 +431,6 @@ exports.updateUsuario = function(data, cb){
 			return cb(err, empleado);
 		});
 	}else{
-
 
 
 		if(data.empleado.horarioFijo==="Sin horario"){
@@ -468,6 +466,7 @@ exports.updateUsuario = function(data, cb){
 			array.push({departamento:data.empleado.departamentos});
 			data.empleado.departamentos = array;
 		}
+
 		if(data.empleado.password && data.empleado.password != ""){
 			data.empleado.password = Usuario.generateHash(data.empleado.password);
 		} else {
@@ -482,10 +481,13 @@ exports.updateUsuario = function(data, cb){
 
 };
 
-exports.reset=function(){
+exports.reset = function(){
+
 	    var array=new Array();
+
 	    array.push('Supervisor');
 	    array.push('Administrador');
+
 	    var newUser = new Usuario({
 	        username: 'admingreencore',
 	        tipo: array,
@@ -577,7 +579,7 @@ exports.getEmpleadoPorSupervisor = function(idSupervisor, usuarioQuery, callback
 exports.getTodosEmpleados = function(callback){
 
 	Departamento.find().exec(function(error, departamentos){
-		Usuario.find({tipo: {"$in":["Empleado", "Supervisor", "Usuario sin acceso web"]}}).exec(function(error, usuarios){
+		Usuario.find({ departamentos : { $elemMatch: { tipo: {$in: ["Empleado", "Supervisor", "Usuario sin acceso web"]}}}}).exec(function(error, usuarios){
 			callback(error, usuarios, departamentos);
 		});
 	});
@@ -590,7 +592,7 @@ exports.updateVacaciones = function(){
 	var fechaActual = new Date();
 
 	//Obtiene usuarios activos
-	Usuario.find({estado: "Activo", fechaIngreso: {$exists: true, $ne:0}, tipo: {$ne:"Supervisor"}}).populate("departamentos").exec(function(err, listUserTem){
+	Usuario.find({estado: "Activo", fechaIngreso: {$exists: true, $ne:0}, departamentos : { $elemMatch: { tipo: { $ne: "Supervisor"}}}}).populate("departamentos").exec(function(err, listUserTem){
 
 		/**
 		 * Validaciones para optener los usuarios a los que se les debe aumentar vacaciones

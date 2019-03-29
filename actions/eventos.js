@@ -42,7 +42,7 @@ module.exports = {
       var permisosQuery = { tipoSolicitudes:'Permisos' };
       var marcaQuery = {};
       var cierreQuery = {};//{"usuarios.tiempo.horas":{"$gte":0}};
-      var usuarioQuery = { estado:"Activo", tipo:{'$in': ['Empleado', 'Usuario sin acceso web']}};
+      var usuarioQuery = { estado:"Activo", departamentos : { $elemMatch: { tipo: {$in: ['Empleado', 'Usuario sin acceso web']}}}};
       var populateQuery = {
         path: 'usuario'
       };
@@ -68,8 +68,7 @@ module.exports = {
           _id:{
             "$ne":ObjectId(req.user.id)
           },
-          tipo:"Supervisor",
-          departamentos: {$elemMatch: {departamento: ObjectId(req.user.departamentos[0].departamento)}}
+          departamentos: {$elemMatch: {departamento: ObjectId(req.user.departamentos[0].departamento), tipo:"Supervisor"}}
         };
 
         if(req.session.name === "Administrador de Reportes"){

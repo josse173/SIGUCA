@@ -513,7 +513,7 @@ module.exports = function(app, io) {
                     if (err) console.log(err);
                     if (usuario){
                         usuario.departamentos.forEach(function(departamento) {
-                            Usuario.find({departamentos: {$elemMatch: {departamento: ObjectId(departamento.departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisores){
+                            Usuario.find({departamentos: {$elemMatch: {departamento: ObjectId(departamento.departamento), tipo: "Supervisor"}}}).exec(function(error, supervisores){
                                 if (error) console.log(error);
 
                                 if(supervisores && supervisores.length > 0){
@@ -811,8 +811,6 @@ module.exports = function(app, io) {
                         if(user[h]._id==req.body.empleado._id){
                             contador++;
                         }
-
-
                     }
                     if(contador>0){
                         res.json("Correcto");
@@ -1109,24 +1107,6 @@ module.exports = function(app, io) {
         }
     });
 
-
-
- //  var storage = multer.diskStorage({
-   //     destination: function(req, file, cb) {
-    //        cb(null, './uploads/');
-    //    },
-    //    filename: function(req, file, cb) {
-    //        var ext = file.originalname.split('.').pop();
-    //        cb(null, file.fieldname + '-' + Date.now() + '.' + ext);
-    //    }
-   // });
-
-   // upload = multer({ storage: storage });
-   // app.post('/IMAGENXD/:id', autentificado,upload.single('upl'), function (req, res,next) {
-    //    res.redirect('/configuracion');
-    //});
-
-
 // Funcionalidad para cargar la imagen en el servidor, con la validacionde  png , la ruta donde  se  guarda
 // se define en /config/express.js
     app.post('/IMAGEN/:id', autentificado, function(req, res) {
@@ -1150,8 +1130,6 @@ module.exports = function(app, io) {
         res.redirect('/configuracion');
     }
     });
-
-
 
     /*
     *   Cambia la contraseña de los usuarios
@@ -1265,8 +1243,6 @@ module.exports = function(app, io) {
     /*
     *  Crea un nuevo horario
     */
-
-
 
     app.post('/horarioN', autentificado, function (req, res) {
         crud.addHorario(req.body, function() {
@@ -1454,7 +1430,6 @@ module.exports = function(app, io) {
 
     //asignarCorreo
     app.post('/asignarCorreo',autentificado, crudCorreo.insertarCorreo);
-
 
     app.get('/correo',autentificado,function(req,res){
         Correo.find(function(err,correos){
@@ -1771,7 +1746,7 @@ module.exports = function(app, io) {
 
             Justificaciones.findById(parametros.id).populate('usuario').exec(function (err, justificacion) {
                 if(err) return err;
-                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(justificacion.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(justificacion.usuario.departamentos[0].departamento), tipo: "Supervisor"}}}).exec(function(error, supervisor){
                     if(error) return error;
                     var nombreSupervisor = '';
                     if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){
@@ -1799,7 +1774,7 @@ module.exports = function(app, io) {
 
             Solicitudes.findById(parametros.id).populate('usuario').exec(function (err, solicitud) {
                 if(err) return err;
-                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento), tipo: "Supervisor"}}}).exec(function(error, supervisor){
                     if(error) return error;
                     var nombreSupervisor = '';
                     if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){
@@ -1830,7 +1805,7 @@ module.exports = function(app, io) {
 
             Solicitudes.findById(parametros.id).populate('usuario').exec(function (err, solicitud) {
                 if(err) return err;
-                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento), tipo: "Supervisor"}}}).exec(function(error, supervisor){
                     if(error) return error;
                     var nombreSupervisor = '';
                     if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){
@@ -1861,7 +1836,7 @@ module.exports = function(app, io) {
 
             Solicitudes.findById(parametros.id).populate('usuario').exec(function (err, solicitud) {
                 if(err) return err;
-                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento), tipo: "Supervisor"}}}).exec(function(error, supervisor){
                     if(error) return error;
                     var nombreSupervisor = '';
                     if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){
@@ -1892,7 +1867,7 @@ module.exports = function(app, io) {
 
             Solicitudes.findById(parametros.id).populate('usuario').exec(function (err, solicitud) {
                 if(err) return err;
-                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento), tipo: "Supervisor"}}}).exec(function(error, supervisor){
                     if(error) return error;
                     var nombreSupervisor = '';
                     if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){
@@ -1923,7 +1898,7 @@ module.exports = function(app, io) {
 
             Solicitudes.findById(parametros.id).populate('usuario').exec(function (err, solicitud) {
                 if(err) return err;
-                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento), tipo: "Supervisor"}}}).exec(function(error, supervisor){
                     if(error) return error;
                     var nombreSupervisor = '';
                     if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){
@@ -1956,7 +1931,7 @@ module.exports = function(app, io) {
             Solicitudes.findById(parametros.id).populate('usuario').exec(function (err, solicitud) {
                 if(err) return err;
 
-                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento), tipo: "Supervisor"}}}).exec(function(error, supervisor){
                     if(error) return error;
                     var nombreSupervisor = '';
                     if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){
@@ -1987,7 +1962,7 @@ module.exports = function(app, io) {
 
             HoraExtra.findById(parametros.id).populate('usuario').exec(function (err, horasExtra) {
                 if(err) return err;
-                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(horasExtra.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(horasExtra.usuario.departamentos[0].departamento), tipo: "Supervisor"}}}).exec(function(error, supervisor){
                     if(error) return error;
                     var nombreSupervisor = '';
                     if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){
@@ -2019,7 +1994,7 @@ module.exports = function(app, io) {
             Solicitudes.findById(parametros.id).populate('usuario').exec(function (err, solicitud) {
                 if(err) return err;
 
-                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento), tipo: "Supervisor"}}}).exec(function(error, supervisor){
                     if(error) return error;
                     var nombreSupervisor = '';
                     if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){
@@ -2051,7 +2026,7 @@ module.exports = function(app, io) {
             Solicitudes.findById(parametros.id).populate('usuario').exec(function (err, solicitud) {
                 if(err) return err;
 
-                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento), tipo: "Supervisor"}}}).exec(function(error, supervisor){
                     if(error) return error;
                     var nombreSupervisor = '';
                     if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){

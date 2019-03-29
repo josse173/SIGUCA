@@ -483,7 +483,7 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 	epochMax.hours(23);
 	epochMax.minutes(59);
 	epochMax.seconds(59);
-	Usuario.findById(_idUser,{_id:1, nombre:1, horarioEmpleado:1,horarioFijo: 1, tipo:1}).exec(
+	Usuario.findById(_idUser,{_id:1, nombre:1, horarioEmpleado:1,horarioFijo: 1}).exec(
 		function(err, usuario){
 			if(!err && usuario.horarioEmpleado && usuario.horarioEmpleado!=""){
 				crudHorario.getById(usuario.horarioEmpleado,
@@ -535,10 +535,7 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 									var mReal = tiempoDia.entrada;
 
 									if(util.compararHoras(mIn.hour(), mIn.minutes(),mReal.hora,mReal.minutos)==1){
-										if(
-											(usuario.tipo.length > 1 && tipoUsuario != config. empleadoProfesor) ||
-											(usuario.tipo.length == 1)
-										){
+										if( tipoUsuario != config. empleadoProfesor){
 
 											addJustIncompleta(_idUser, "Entrada tardía",
 												"Hora de entrada: "+ util.horaStr(horarioOriginal.hora, horarioOriginal.minutos)+
@@ -552,11 +549,7 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 									var mOut= moment.unix(marca.epoch);
 									var mReal = tiempoDia.salida;
 
-									if(
-											(usuario.tipo.length > 1 && tipoUsuario != config. empleadoProfesor) ||
-											(usuario.tipo.length == 1)
-										){
-
+									if(tipoUsuario != config. empleadoProfesor){
 											workedHour(_idUser, tiempoDia, mOut, mReal,cb);
 										}
 										else cb("");
@@ -630,15 +623,12 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 								if(marca.tipoMarca=="Entrada"){
 								var mIn = moment.unix(marca.epoch);
 
-								if(usuario.tipo.length>1 && tipoUsuario==="Profesor"){
+								if(tipoUsuario==="Profesor"){
 									return cb("");
 								}else{
 
 									if(util.compararHoras(mIn.hour(), mIn.minutes(),horaEntrada,minutosEntrada)==1){
-										if(
-											(usuario.tipo.length > 1 && tipoUsuario != config. empleadoProfesor) ||
-											(usuario.tipo.length == 1)
-										){
+										if(tipoUsuario != config. empleadoProfesor){
 											addJustIncompleta(_idUser, "Entrada tardía",
 												"Hora de entrada: "+ util.horaStr(horarioOriginal.hora, horarioOriginal.minutos)+
 												" - Hora de marca: "+ util.horaStr(mIn.hour(), mIn.minutes()),cb);
@@ -654,7 +644,7 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 								}
 								}else if(marca.tipoMarca=="Salida"){
 									var mOut= moment.unix(marca.epoch);
-									workedHourFix(_idUser,horaEntrada,minutosEntrada,horaSalida,minutosSalida, mOut,cb,usuario.tipo.length,tipoUsuario);
+									workedHourFix(_idUser,horaEntrada,minutosEntrada,horaSalida,minutosSalida, mOut,cb,usuario.departamentos.length,tipoUsuario);
 								}
 							}
 
@@ -674,7 +664,7 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 					if(!err && usuario.horario && usuario.horario!=""){
 						Horario.findById(usuario.horario,function(error,horarioEmpleado){
 							if(!error && horarioEmpleado!="" && horarioEmpleado && horarioEmpleado.tipo=="Libre"){
-								if(tipoUsuario==="Profesor" && usuario.tipo.length>1){
+								if(tipoUsuario === "Profesor"){
 									cb("");
 								}else{
 									var mOut= moment.unix(marca.epoch);
