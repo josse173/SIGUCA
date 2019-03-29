@@ -126,17 +126,15 @@ $('#agregarEmpleadoFormulario').validate({
 
 $('#agregarEmpleado').click(function(){
 
+    var empleado = new Object();
 
-    var empleado=new Object();
     empleado.cedula = $('#cedula').val();
     empleado.username = $('#username').val();
     empleado.codTarjeta = $('#codTarjeta').val();
 
-    var selectTipo = $('#selectTipo').get(0);
-    var selectDepartamentos = $('#selectDepartamentos').get(0);
+    var selectTipo = $('#rolesDepartamento').val();
 
-    if(selectTipo && selectTipo.selectedOptions.length > 0){
-        if(selectDepartamentos && selectDepartamentos.selectedOptions.length > 0){
+    if(selectTipo && selectTipo !== ''){
         $.ajax({
             url: "/verificarEmpleado",
             type: 'POST',
@@ -145,7 +143,6 @@ $('#agregarEmpleado').click(function(){
             success: function(data) {
                 if(data=="Correcto"){
                     $('#agregarEmpleadoFormulario').submit();
-                    //location.href="/escritorioEmpl";
                 }else{
                     alertify.error('El usuario ya existe');
                 }
@@ -155,13 +152,8 @@ $('#agregarEmpleado').click(function(){
                 alert("Error al insertar usuario");
             }
         });
-        }else{
-            alertify.error('Debe seleccionar al menos un departamento.');
-        }
     }else{
-        alertify.error('Debe seleccionar al menos un tipo de usuario.');
+        alertify.error('Debe agregar al menos un tipo de usuario.');
     }
-
-
 });
 

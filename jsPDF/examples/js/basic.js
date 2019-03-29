@@ -4,7 +4,7 @@ function demoTwoPageDocument() {
 	doc.text(20, 30, 'This is client-side Javascript, pumping out a PDF.');
 	doc.addPage();
 	doc.text(20, 20, 'Do you like that?');
-	
+
 	// Save the PDF
 	doc.save('Test.pdf');
 }
@@ -21,34 +21,34 @@ function demoFontSizes() {
 	var doc = new jsPDF();
 	doc.setFontSize(22);
 	doc.text(20, 20, 'This is a title');
-	
+
 	doc.setFontSize(16);
 	doc.text(20, 30, 'This is some normal sized text underneath.');
-	
+
 	doc.save('Test.pdf');
 }
 
 function demoFontTypes() {
 	var doc = new jsPDF();
-	
+
 	doc.text(20, 20, 'This is the default font.');
-	
+
 	doc.setFont("courier");
 	doc.setFontType("normal");
 	doc.text(20, 30, 'This is courier normal.');
-	
+
 	doc.setFont("times");
 	doc.setFontType("italic");
 	doc.text(20, 40, 'This is times italic.');
-	
+
 	doc.setFont("helvetica");
 	doc.setFontType("bold");
 	doc.text(20, 50, 'This is helvetica bold.');
-	
+
 	doc.setFont("courier");
 	doc.setFontType("bolditalic");
 	doc.text(20, 60, 'This is courier bolditalic.');
-	
+
 	doc.save('Test.pdf');
 }
 
@@ -57,19 +57,19 @@ function demoTextColors() {
 
 	doc.setTextColor(100);
 	doc.text(20, 20, 'This is gray.');
-	
+
 	doc.setTextColor(150);
 	doc.text(20, 30, 'This is light gray.');
-	
+
 	doc.setTextColor(255,0,0);
 	doc.text(20, 40, 'This is red.');
-	
+
 	doc.setTextColor(0,255,0);
 	doc.text(20, 50, 'This is green.');
-	
+
 	doc.setTextColor(0,0,255);
 	doc.text(20, 60, 'This is blue.');
-	
+
 	// Output as Data URI
 	doc.output('datauri');
 }
@@ -77,7 +77,7 @@ function demoTextColors() {
 function demoMetadata() {
 	var doc = new jsPDF();
 	doc.text(20, 20, 'This PDF has a title, subject, author, keywords and a creator.');
-	
+
 	// Optional - set properties on the document
 	doc.setProperties({
 		title: 'Title',
@@ -86,35 +86,35 @@ function demoMetadata() {
 		keywords: 'generated, javascript, web 2.0, ajax',
 		creator: 'MEEE'
 	});
-	
+
 	doc.save('Test.pdf');
 }
 
-function demoUserInput() {	
+function demoUserInput() {
 	var name = prompt('What is your name?');
 	var multiplier = prompt('Enter a number:');
 	multiplier = parseInt(multiplier);
 
 	var doc = new jsPDF();
-	doc.setFontSize(22);	
+	doc.setFontSize(22);
 	doc.text(20, 20, 'Questions');
 	doc.setFontSize(16);
 	doc.text(20, 30, 'This belongs to: ' + name);
-	
+
 	for(var i = 1; i <= 12; i ++) {
 		doc.text(20, 30 + (i * 10), i + ' x ' + multiplier + ' = ___');
 	}
-	
+
 	doc.addPage();
 	doc.setFontSize(22);
 	doc.text(20, 20, 'Answers');
 	doc.setFontSize(16);
-	
+
 	for (i = 1; i <= 12; i ++) {
 		doc.text(20, 30 + (i * 10), i + ' x ' + multiplier + ' = ' + (i * multiplier));
 	}
 	doc.save('Test.pdf');
-	
+
 }
 
 function demoRectangles() {
@@ -123,17 +123,17 @@ function demoRectangles() {
 	doc.rect(20, 20, 10, 10); // empty square
 
 	doc.rect(40, 20, 10, 10, 'F'); // filled square
-	
+
 	doc.setDrawColor(255, 0, 0);
 	doc.rect(60, 20, 10, 10); // empty red square
-	
+
 	doc.setDrawColor(255, 0, 0);
 	doc.rect(80, 20, 10, 10, 'FD'); // filled square with red borders
-	
+
 	doc.setDrawColor(0);
 	doc.setFillColor(255, 0, 0);
 	doc.rect(100, 20, 10, 10, 'F'); // filled red square
-	
+
 	doc.setDrawColor(0);
 	doc.setFillColor(255, 0, 0);
 	doc.rect(120, 20, 10, 10, 'FD'); // filled red square with black borders
@@ -149,30 +149,30 @@ function demoLines() {
 	var doc = new jsPDF();
 
 	doc.line(20, 20, 60, 20); // horizontal line
-		
+
 	doc.setLineWidth(0.5);
 	doc.line(20, 25, 60, 25);
-	
+
 	doc.setLineWidth(1);
 	doc.line(20, 30, 60, 30);
-	
+
 	doc.setLineWidth(1.5);
 	doc.line(20, 35, 60, 35);
-	
+
 	doc.setDrawColor(255,0,0); // draw red lines
-	
+
 	doc.setLineWidth(0.1);
 	doc.line(100, 20, 100, 60); // vertical line
-	
+
 	doc.setLineWidth(0.5);
 	doc.line(105, 20, 105, 60);
-	
+
 	doc.setLineWidth(1);
 	doc.line(110, 20, 110, 60);
-	
+
 	doc.setLineWidth(1.5);
 	doc.line(115, 20, 115, 60);
-	
+
 	// Output as Data URI
 	doc.output('datauri');
 }
@@ -184,7 +184,7 @@ function demoCircles() {
 
 	doc.setFillColor(0,0,255);
 	doc.ellipse(80, 20, 10, 5, 'F');
-	
+
 	doc.setLineWidth(1);
 	doc.setDrawColor(0);
 	doc.setFillColor(255,0,0);
@@ -197,12 +197,12 @@ function demoTriangles() {
 	var doc = new jsPDF();
 
 	doc.triangle(60, 100, 60, 120, 80, 110, 'FD');
-	
+
 	doc.setLineWidth(1);
 	doc.setDrawColor(255,0,0);
 	doc.setFillColor(0,0,255);
 	doc.triangle(100, 100, 110, 100, 120, 130, 'FD');
-	
+
 	doc.save('Test.pdf');
 }
 
@@ -217,7 +217,7 @@ function demoImages() {
 			data: null,
 			pending: true
 		};
-		
+
 		img.onError = function() {
 			throw new Error('Cannot load image: "'+url+'"');
 		};
@@ -298,7 +298,6 @@ function demoStringSplitting() {
 			// }
 			// Without these, .splitTextToSize will use current / default
 			// font Family, Style, Size.
-			console.log(lines);
 			pdf.text(0.5, verticalOffset + size / 72, lines)
 
 			verticalOffset += (lines.length + 0.5) * size / 72
@@ -315,9 +314,9 @@ function demoFromHTML() {
 	// to an actual DOM element from which the text will be scraped.
 	, source = $('#fromHTMLtestdiv')[0]
 
-	// we support special element handlers. Register them with jQuery-style 
+	// we support special element handlers. Register them with jQuery-style
 	// ID selector for either ID or node name. ("#iAmID", "div", "span" etc.)
-	// There is no support for any other type of selectors 
+	// There is no support for any other type of selectors
 	// (class, of compound) at this time.
 	, specialElementHandlers = {
 		// element with id of "bypass" - jQuery style selector
@@ -344,7 +343,7 @@ function demoFromHTML() {
     		, 'elementHandlers': specialElementHandlers
     	},
     	function (dispose) {
-    	  // dispose: object with X, Y of the last line add to the PDF 
+    	  // dispose: object with X, Y of the last line add to the PDF
     	  //          this allow the insertion of new lines after html
           pdf.save('Test.pdf');
         },
@@ -354,29 +353,29 @@ function demoFromHTML() {
 
 function demoTextAlign() {
 	var pdf = new jsPDF('p', 'pt', 'letter');
-	
+
 	pdf.setFillColor(0);
 	pdf.circle( 140, 50, 2, "F" );
 	pdf.text( 'This text is normally\raligned.', 140, 50 );
-	
+
 	pdf.circle( 140, 120, 2, "F" );
 	pdf.text( 'This text is centered\raround\rthis point.', 140, 120, 'center' );
-	
+
 	pdf.circle( 140, 300, 2, "F" );
 	pdf.text( 'This text is rotated\rand centered around\rthis point.', 140, 300, 45, 'center' );
-	
+
 	pdf.circle( 140, 400, 2, "F" );
 	pdf.text( 'This text is\raligned to the\rright.', 140, 400, 'right' );
-	
+
 	pdf.circle( 140, 550, 2, "F" );
 	pdf.text( 'This text is\raligned to the\rright.', 140, 550, 45, 'right' );
-	
+
 	pdf.circle( 460, 50, 2, "F" );
 	pdf.text( 'This single line is centered', 460, 50, 'center' );
 
 	pdf.circle( 460, 200, 2, "F" );
 	pdf.text( 'This right aligned text\r\rhas an empty line.', 460, 200, 'right' );
-	
-	
+
+
 	pdf.save('Test.pdf');
 }

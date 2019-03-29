@@ -303,7 +303,7 @@ module.exports = {
 	    						notFound = false;
 	    						array.push(evento[x]);
 	    					}
-	    					if(JSON.stringify(evento[x].usuario.tipo) ===
+	    					if(JSON.stringify(evento[x].usuario.departamentos[0].tipo) ===
 	    						JSON.stringify("Supervisor")  && notFound){
 	    						count++;
 	    						//
@@ -321,7 +321,7 @@ module.exports = {
 	    						count++;
 	    						notFound = false;
 	    					}
-	    					if(JSON.stringify(evento[x].usuario.tipo) === JSON.stringify("Supervisor")
+	    					if(JSON.stringify(evento[x].usuario.departamentos[0].tipo) === JSON.stringify("Supervisor")
 	    						&& JSON.stringify(evento[x].usuario._id) != JSON.stringify(supervisor._id) && notFound){
 	    						array.push(evento[x]);
 	    						//
@@ -346,7 +346,7 @@ module.exports = {
 			            		//
 			            		notFound = false;
 			            	}
-			            	else if(JSON.stringify(evento[x].tipo) === JSON.stringify("Supervisor")
+			            	else if(JSON.stringify(evento[x].departamentos[0].tipo) === JSON.stringify("Supervisor")
 			            		&& notFound){
 			            		array.push(evento[x]);
 			            		//
@@ -362,7 +362,7 @@ module.exports = {
 			            		//
 			            		notFound = false;
 			            	}
-			            	else if(JSON.stringify(evento[x].tipo) === JSON.stringify("Supervisor")
+			            	else if(JSON.stringify(evento[x].departamentos[0].tipo) === JSON.stringify("Supervisor")
 			            		&& JSON.stringify(evento[x]._id) != JSON.stringify(supervisor._id) && notFound){
 			            		array.push(evento[x]);
 			            		//

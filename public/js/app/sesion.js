@@ -16,16 +16,16 @@ $(document).keypress(function(e) {
             dataType : "json",
             data: {username2:username,password2 : password},
             success: function(data) {
-                if(data && data.tipo){
+                if(data){
                     var selectTem = document.getElementById("selectTem");
-                    if(data.tipo instanceof Array){
-                        for( var i in data.tipo){
+                    if(data.departamentos instanceof Array){
+                        for( var i in data.departamentos){
                             var option = document.createElement("option");
-                            option.text = data.tipo[i];
+                            option.text = data.departamentos[i].tipo;
                             selectTem.add(option);
                         }
 
-                        if(data.tipo.length <= 1){
+                        if(data.departamentos.length <= 1){
                             $("#login-form").submit();
                         }else{
                             global++;
@@ -34,8 +34,6 @@ $(document).keypress(function(e) {
                             $("#selectTem").css('display', 'block');
                             $("#btnVerificar").css('display', 'none');
                         }
-
-
                     }
                 }
 
@@ -64,16 +62,16 @@ function verificarTipos(){
         dataType : "json",
         data: {username2:username,password2 : password},
         success: function(data) {
-            if(data && data.tipo){
+            if(data){
                 var selectTem = document.getElementById("selectTem");
-                if(data.tipo instanceof Array){
-                    for( var i in data.tipo){
+                if(data.departamentos instanceof Array){
+                    for( var i in data.departamentos){
                         var option = document.createElement("option");
-                        option.text = data.tipo[i];
+                        option.text = data.departamentos[i].tipo;
                         selectTem.add(option);
                     }
 
-                    if(data.tipo.length <= 1){
+                    if(data.departamentos.length <= 1){
                         $("#login-form").submit();
                     }else{
                         /* Se muestran los input para iniciar sesion y se oculta el boton para verificar */

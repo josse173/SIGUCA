@@ -12,7 +12,7 @@ block content
             th Nombre
             th Apellidos
             th(data-hide="phone") Cédula
-            th(data-hide="phone") Tipo
+            th(data-hide="phone") Usuario
             th(data-hide="phone,small,medium" data-sort-ignore="true") Departamento
             th(data-hide="phone,small,medium") Horario libre
             th(data-hide="phone,small,medium") Horario Fijo
@@ -29,20 +29,14 @@ block content
               td #{empleado.nombre}
               td #{empleado.apellido1} #{empleado.apellido2}
               td #{empleado.cedula}
-              td
-                each tipo, t in empleado.tipo
-                  ul
-                    if(tipo)
-                      li #{tipo}
-                    else
-                      li No tiene tipos de usuario asignados
+              td #{empleado.username}
               td
                 each departamentos, i in empleado.departamentos
                   ul
                     if(departamentos.departamento)
-                      li #{departamentos.departamento.nombre}
+                      li #{departamentos.departamento.nombre} (#{departamentos.tipo})
                     else
-                      li No tiene departamento asignado
+                      li Sin departamento (#{departamentos.tipo})
               if(empleado.horario)
                 td #{empleado.horario.nombre}
 

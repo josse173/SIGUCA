@@ -263,10 +263,18 @@ $(document).ready(function()
 
  $("button[data-target=#editDep]").click( function() {
     var id = $(this).val();
+
     $('.formUpdate').attr('action', '/departamento/'+id);
 
     $.get('/departamento/editDepartamento/'+id, function( data ) {
         $('#nombreDepa').val(data.nombre);
+
+        if(data.departamentoSupervisor){
+            $('#selectDepartamentosEdit').selectpicker('val', data.departamentoSupervisor._id);
+        } else {
+            $('#selectDepartamentosEdit').selectpicker('val', '');
+        }
+
     });
 });
 

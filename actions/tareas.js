@@ -9,7 +9,7 @@ const Justificaciones = require('../models/Justificaciones');
 var Feriado = require('../models/Feriado');
 
 const WORKING_DAYS = ["Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"];
-const USER_TYPES = {ADMIN: 'Administrador', TEACHER: 'Profesor'};
+const USER_TYPES = {ADMIN: 'Administrador', TEACHER: 'Profesor', REPORT_MANAGER: "Administrador de Reportes"};
 const MAXIMUM_INTERVAL_WORKING = 12;
 const SCHEDULER_TYPE = {FIXED: 'horarioFijo', RANGE: 'horarios', EMPLOYEE_SCHEDULE: 'horariosEmpleado'};
 const AUTOMATIC_CLOSURE = 'Cierre Automático  de Sistema';
@@ -117,7 +117,7 @@ const CronJobOperations = {
         const today = moment();
         DBOperations.findUsers().then(users => {
             users.forEach(user => {
-                user.tipo.filter(type => type !== USER_TYPES.ADMIN).forEach(type =>{
+                user.tipo.filter(type => type !== USER_TYPES.ADMIN && type !== USER_TYPES.REPORT_MANAGER).forEach(type =>{
                     const schedule = user.horarioEmpleado || user.horarioFijo || user.horario;
                     if (schedule) {
                         this.checkUserMarks(user, schedule, type, day, today).catch(error => console.log(error));
@@ -558,15 +558,15 @@ function registroHorasRegulares(tipoUsuario, _idUser, marcas, tiempoDia, horario
         m: horario.tiempoReceso.minutos,
     };
     var totalJornada = util.ajustarHoras(hOut, hIn);
-    console.log("Calculando jornada de: " + _idUser);
-    console.log(totalJornada);
-    console.log(almuerzoT);
+    //console.log("Calculando jornada de: " + _idUser);
+    //console.log(totalJornada);
+    //console.log(almuerzoT);
     totalJornada = util.ajustarHoras(totalJornada, almuerzoT);
-    console.log(totalJornada);
-    console.log(recesoT);
+    //console.log(totalJornada);
+    //console.log(recesoT);
     totalJornada = util.ajustarHoras(totalJornada, recesoT);
-    console.log(totalJornada);
-    console.log(tiempo);
+    //console.log(totalJornada);
+    //console.log(tiempo);
     var comparaH = util.compararHoras(totalJornada.h, totalJornada.m, tiempo.h, tiempo.m);
     agregarUsuarioACierre(tipoUsuario, _idUser, {h: tiempo.h, m: tiempo.m});
     //No importa la hora que salió, lo importante es que cumpla la jornada

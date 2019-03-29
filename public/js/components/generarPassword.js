@@ -14,8 +14,8 @@ $(document).ready(function(){
        error: validacionError,           // called when an error reaching the validator has occured
    });
 
-	
-	
+
+
  });
 
 
@@ -28,7 +28,7 @@ var temp='';
 var domain = 'gcs@greencore.co.cr';
 var mailgun = new Mailgun({apiKey: api_key, domain: domain});
 
-	
+
 function dataEmail(domain, recipient, msj){
 	var data = {
 	  from:  domain,
@@ -39,7 +39,7 @@ function dataEmail(domain, recipient, msj){
 	return 2;
 }
 
-	
+
 function sendMssg(data){
 	mailgun.messages().send(data, function (error, body) {
 	  console.log(body);
@@ -60,11 +60,101 @@ function generatepass(plength){
 	$('#passInputText').text(temp);
 	$('#passInput').val(temp);
 	$('#correoMsj').html('<span class="success">La contraseña generada fue: </span>' + temp )
-	
+
 	//sendMssg(infoEmail);
 
-	
 }
+
+function agregarRolDepartamento(){
+
+	var selectDepartamentos = $('#selectDepartamentos').get(0);
+	var selectRoles = $('#selectTipo').get(0);
+
+	console.log(selectRoles.selectedOptions);
+    console.log(selectDepartamentos.selectedOptions);
+
+    if (selectRoles.selectedOptions[0].text !== 'Administrador' && selectRoles.selectedOptions[0].text !== 'Administrador de Reportes'){
+        if (selectDepartamentos.selectedOptions[0].text === 'Seleccione una opción' || selectRoles.selectedOptions[0].text === 'Seleccione una opción') {
+            alertify.error('Debe seleccionar un departamento y un rol.');
+            return;
+        }
+    }
+
+	if ($('#rolesDepartamento').val() && $('#rolesDepartamento').val() !== '') {
+
+        var selected = $('#rolesDepartamento').val().split("|");
+        var agregarlo = false;
+
+        selected.forEach(function (select) {
+
+            var rd = select.split(";");
+
+            if(rd[0] === selectDepartamentos.selectedOptions[0].value && rd[1] === selectRoles.selectedOptions[0].value ) {
+                alertify.error('La combinación ingresada ya ha sido seleccionada.');
+                agregarlo = false;
+            }else{
+                agregarlo = true;
+                var text = selectDepartamentos.selectedOptions[0].value + ';' + selectRoles.selectedOptions[0].text;
+                selected.push(text);
+            }
+        });
+
+        if(agregarlo){
+            $('#rolesDepartamento').val(selected.join('|'));
+            agregarLi(selectDepartamentos, selectRoles);
+        }
+
+    } else {
+        agregarLi(selectDepartamentos, selectRoles);
+        var text = selectDepartamentos.selectedOptions[0].value + ';' + selectRoles.selectedOptions[0].text;
+        $('#rolesDepartamento').val(text);
+    }
+}
+
+function agregarLi(selectDepartamentos, selectRoles){
+
+    var ul = document.getElementById("listDepartamentos");
+    var li = document.createElement("li");
+
+    var button = document.createElement("BUTTON");
+    var text = selectDepartamentos.selectedOptions[0].value + ';' + selectRoles.selectedOptions[0].text;
+
+    li.id = text;
+    button.innerHTML = "Eliminar";
+    button.classList.add('btn');
+    button.classList.add('btn-danger');
+    button.style.marginLeft = "5px";
+    button.style.marginBottom = "5px";
+
+    button.onclick = function() {
+
+        var selected = $('#rolesDepartamento').val().split("|");
+        var index = selected.indexOf(text);
+        if (index > -1) {
+            selected.splice(index, 1);
+        }
+
+        $('#rolesDepartamento').val(selected.join('|'));
+
+        var lis = document.querySelectorAll('#listDepartamentos li');
+        for(var i=0; li=lis[i]; i++) {
+            if(li.id === text){
+                li.parentNode.removeChild(li);
+            }
+        }
+    };
+
+    if (selectRoles.selectedOptions[0].text !== 'Administrador' && selectRoles.selectedOptions[0].text !== 'Administrador de Reportes'){
+        text = selectDepartamentos.selectedOptions[0].text + ' (' + selectRoles.selectedOptions[0].text + ')';
+    } else {
+        text = selectDepartamentos.selectedOptions[0].value + ' (' + selectRoles.selectedOptions[0].text + ')';
+    }
+
+    li.appendChild(document.createTextNode(text));
+    li.appendChild(button);
+    ul.appendChild(li);
+}
+
 
 $('#clearLabel').click(function(){
  $('#passInputText').css("display","none");
@@ -77,7 +167,7 @@ function sendEmail(sender, recipient,mensaje){
         'From:' + sender +
           '\nTo: ' +  recipient +
           '\nContent-Type: text/html; charset=utf-8' +
-          '\nSubject:' + mensaje ,        
+          '\nSubject:' + mensaje ,
         function(err) { err && console.log(err) });
 }
 
@@ -104,5 +194,5 @@ function get_suggestion_str(is_valid, alternate) {
 	} else {
 		return '<span class="error">Dirección inválida.</span>';
 	}
-} 
+}
 

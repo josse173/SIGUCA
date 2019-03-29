@@ -1,4 +1,4 @@
-/** SIGUCA 
+/** SIGUCA
  *
  * Modelo de Departamento
  *
@@ -12,6 +12,10 @@ var SchemaDepartamento = new Schema({
     nombre: {
         type: String,
         default: ''
+    },
+    departamentoSupervisor: {
+        type: Schema.ObjectId,
+        ref: 'Departamento'
     }
 });
 

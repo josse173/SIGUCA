@@ -29,31 +29,26 @@ exports.addUsuario = function(us, cb){
 		us.teleTrabajo="off";
 	}
 
-	var arrayTipo = [];
-	if(us.tipo instanceof Array){
-		for( var t in us.tipo){
-			arrayTipo.push(us.tipo[t]);
-		}
-	} else {
-		arrayTipo.push(us.tipo);
-	}
-
-	//Inserta los departamentos como array
+	var rolesDepartamento = us.rolesDepartamento.split("|");
 	var array = [];
-	if(us.idDepartamento instanceof Array){
-		for( var i in us.idDepartamento){
-			array.push({departamento: us.idDepartamento[i]});
+
+	rolesDepartamento.forEach(function (rolDepartamento) {
+		var rd = rolDepartamento.split(";");
+
+		if(rd[0] === ''){
+			array.push({departamento: '', tipo: rd[1]});
+		} else {
+			array.push({departamento: rd[0], tipo: rd[1]});
 		}
-	} else {
-		array.push({departamento: us.idDepartamento});
-	}
+	});
+
 	Usuario.findOne({ 'username' :  us.username }, function (err, user) {
 		if (err) return cb(err);
 		if (!user) {
 			if(us.idHorario){
 				var newUser = new Usuario({
 				username: us.username,
-				tipo: arrayTipo,
+				tipo: [],
 				estado: "Activo",
 				nombre: us.nombre,
 				apellido1: us.apellido1,
@@ -70,7 +65,7 @@ exports.addUsuario = function(us, cb){
 
 				var newUser = new Usuario({
 				username: us.username,
-				tipo: arrayTipo,
+				tipo: [],
 				estado: "Activo",
 				nombre: us.nombre,
 				apellido1: us.apellido1,
@@ -85,7 +80,7 @@ exports.addUsuario = function(us, cb){
 			}else if(us.personalizado){
 				var newUser = new Usuario({
 				username: us.username,
-				tipo: arrayTipo,
+				tipo: [],
 				estado: "Activo",
 				nombre: us.nombre,
 				apellido1: us.apellido1,
@@ -100,7 +95,7 @@ exports.addUsuario = function(us, cb){
 			}else{
 				var newUser = new Usuario({
 				username: us.username,
-				tipo: arrayTipo,
+				tipo: [],
 				estado: "Activo",
 				nombre: us.nombre,
 				apellido1: us.apellido1,
@@ -115,7 +110,7 @@ exports.addUsuario = function(us, cb){
 
 			//Se pasa la fecha a epoch
 			var splitDate1 = us.fechaIngreso.split('/');
-			console.log(us.fechaIngreso);
+			//console.log(us.fechaIngreso);
 			var day = splitDate1[0];
 			if(parseInt(day) > 28){
 				day = 28;

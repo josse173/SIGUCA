@@ -751,7 +751,7 @@ module.exports = function(app, io) {
               titulo:req.body.titulo,
               llave:req.body.llave
           });
-          console.log(content);
+          //console.log(content);
           content.save(function (err, user) {
               if (err) console.log(err);
               //console.log("El usuario se creo ");
@@ -921,7 +921,7 @@ module.exports = function(app, io) {
         Usuario.findOne({username:req.body.username2,estado:"Activo"}, function (err, user) {
             if (err || (user && !user.validPassword(req.body.password2))) { return res.json(err) }
             res.json(user);
-        });
+        }).populate('departamentos');
     });
     //******************************************************************************
     //Periodos de un usuario

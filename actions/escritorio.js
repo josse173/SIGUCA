@@ -198,7 +198,6 @@ module.exports = {
 				if (error) return res.json(error);
 				Marca.find({usuario: req.user.id, procesadaEnCierre: false, tipoUsuario: req.session.name}, {_id:0, tipoMarca:1, epoch:1, dispositivo:1, red:1}).exec( function(error, marcas) {
 					if (error) return res.json(error);
-					console.log({usuario: req.user.id, estado:'Incompleto', tipoUsuario: req.session.name});
 					Justificaciones.find({usuario: req.user.id, estado:'Incompleto', tipoUsuario: req.session.name}).exec(function(error, justificaciones) {
 						if (error) return res.json(error);
 
@@ -246,7 +245,7 @@ module.exports = {
 								var arrayJust = util.unixTimeToRegularDate(justificaciones, true);
 
 								//En caso de ser profesor no se pasan las justificaciones
-								if(req.user.tipo.length > 1 && req.session.name == config.empleadoProfesor){
+								if(req.user.departamentos.length > 1 && req.session.name == config.empleadoProfesor){
 									arrayJust = new Array();
 								}
 
