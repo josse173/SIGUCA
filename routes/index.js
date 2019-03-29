@@ -113,8 +113,7 @@ module.exports = function(app, io) {
 
     //var upload = multer({storage: 'pru/'});
    // app.post('/imagen',upload.single('myimage'),function(req,res,next){
-    //    console.log('test :'+ JSON.stringify(req.file));
-    //    console.log('test :'+ JSON.stringify(req.files));
+
     //    res.end('Imagen Cargada en el servidor');
     //});
 
@@ -306,9 +305,8 @@ module.exports = function(app, io) {
     */
 
     app.get('/solicitud/inciso', autentificado, function (req, res) {
-        //console.log('INCISO PRUEBA ID    ' + req.user.id)
+
         Solicitudes.find({usuario: req.user.id, "inciso":"Inciso C", "estado":"Aceptada" }).exec(function (err, quantity) {
-            //console.log(quantity);
             var size = quantity.length;
             res.json({quantity});
         });
@@ -319,24 +317,23 @@ module.exports = function(app, io) {
         fechaActual.hours(0);
         fechaActual.minutes(0);
         fechaActual.seconds(0);
-        //console.log("fechaActual: " + fechaActual.unix());
+
         var diaAnterior = moment(req.params.fecha).add(-1, 'days').unix();
-        //console.log("diaAnterior: " + diaAnterior);
+
         var diaSiguiente = moment(req.params.fecha).add(1, 'days').unix();
-        //console.log("diaSiguiente: " + diaSiguiente);
-        //console.log("fechaActual: " + fechaActual.unix());
+
         var coincidencias = 0;
-        //console.log({usuario: ObjectId(req.user.id), estado: "Aceptada", epochInicio: {$gte: fechaActual.unix()} });
+
         Solicitudes.find( {usuario: ObjectId(req.user.id), estado: "Aceptada", epochInicio: {$gte: fechaActual.unix()} }).exec(function (err, solicitudes) {
             if(solicitudes && solicitudes.length > 0){
-                //console.log("Cantidad: "+solicitudes.length);
+
                 solicitudes.forEach(function (solicitud) {
-                    //console.log("solicitud.epochInicio: " + solicitud.epochInicio);
+
                     if(solicitud.epochInicio === diaAnterior || solicitud.epochInicio === diaSiguiente){
                         coincidencias++;
                     }
                 });
-                //console.log("coincidencias: "+coincidencias);
+
                 res.json(coincidencias);
             } else {
                 res.json(coincidencias);
@@ -562,17 +559,16 @@ module.exports = function(app, io) {
                 var estaDisponible = false;
 
                 var entrada = marcas.filter(x => x.tipoMarca === 'Entrada');
-                // console.log('entrada: ' + entrada.length);
+
                 var salidaReceso = marcas.filter(x => x.tipoMarca === 'Salida a Receso');
-                // console.log('salidaReceso: ' + salidaReceso.length);
+
                 var entradaReceso = marcas.filter(x => x.tipoMarca === 'Entrada de Receso');
-                // console.log('entradaReceso: ' + entradaReceso.length);
+
                 var salidaAlmuerzo = marcas.filter(x => x.tipoMarca === 'Salida al Almuerzo');
-                // console.log('salidaAlmuerzo: ' + salidaAlmuerzo.length);
+
                 var entradaAlmuerzo = marcas.filter(x => x.tipoMarca === 'Entrada de Almuerzo');
-                // console.log('entradaAlmuerzo: ' + entradaAlmuerzo.length);
+
                 var salida = marcas.filter(x => x.tipoMarca === 'Salida');
-                // console.log('salida: ' + salida.length);
 
                 if(entrada.length === 1 && salidaReceso.length === entradaReceso.length && salidaAlmuerzo.length === entradaAlmuerzo.length && salida.length === 0){
                     estaDisponible = true;
@@ -754,7 +750,6 @@ module.exports = function(app, io) {
           //console.log(content);
           content.save(function (err, user) {
               if (err) console.log(err);
-              //console.log("El usuario se creo ");
           });
           res.redirect('/escritorioAdmin');
       });
@@ -929,8 +924,7 @@ module.exports = function(app, io) {
     *  Crea un nuevo periodo
     */
     app.post('/periodo/:id', autentificado, function (req, res) {
-        //console.log("post de periodo mandando el id " + req.params.id);
-        //console.log("ESTE ES usuario dentro del post     " + req.user);
+
         if (req.session.name == "Administrador") {
             req.body.usuario = req.params.id;
             crudPeriodo.addPeriodo(req.body, function() {
@@ -953,7 +947,7 @@ module.exports = function(app, io) {
             }else{
                 req.user.tipo = req.session.name;
                 Usuario.findById(req.params.id, function (err, empleado) {
-                    //console.log("NOMBRE USUARIO    " + empleado.nombre);
+
                     if (err) return res.json(err);
                     else{
                         return res.render('periodo', {
@@ -973,7 +967,7 @@ module.exports = function(app, io) {
    *  Modifica el estado de Activo a Inactivo de un periodo en específico
    */
     app.get('/periodo/delete/:id', autentificado, function (req, res) {
-        //console.log("ESTE ES id a eliminar   " + req.params.id);
+
         crudPeriodo.deletePeriodo(req.params.id, function (err, msj) {
             if (err) res.json(err);
             res.send(msj);
@@ -1129,9 +1123,6 @@ module.exports = function(app, io) {
 
    // upload = multer({ storage: storage });
    // app.post('/IMAGENXD/:id', autentificado,upload.single('upl'), function (req, res,next) {
-   //    //console.log('body', req.body);
-        //console.log('file', req.file);
-    //    console.log('file', req.files);
     //    res.redirect('/configuracion');
     //});
 
@@ -1143,7 +1134,7 @@ module.exports = function(app, io) {
 
         var extension=String(req.files.upl.type);
         var extension = extension.substring(6);
-        //console.log(extension);
+
         if(extension!=="png"){
             res.send("Solo se aceptan .png");
         }
@@ -1729,14 +1720,14 @@ module.exports = function(app, io) {
                     "$or": or
                 }
                 Cierre.find(queryOr).exec(function(err, cierre) {
-                    if (err) console.log('error al cargar los cierres: ' + err);
+                    if (err)
                     else {
                         socket.emit('listaCierre', cierre);
                     }
                 });
             } else {
                 Cierre.find({tipo: "General", departamento: option[1]}).exec(function(){
-                    if (err) console.log('error al cargar los cierres: ' + err);
+                    if (err)
                     else {
                         socket.emit('listaCierre', cierre);
                     }
@@ -1747,9 +1738,9 @@ module.exports = function(app, io) {
         function listarEmpleado(departamentoId){
             var option = departamentoId.split(',');
             Cierre.find({usuario: option[2]}).exec(function(err, cierre) {
-                if (err) console.log('error al cargar los cierres: ' + err);
+                if (err)
                 else {
-                    //console.log('consulta sin errores');
+
                     var result = {
                         cierre: cierre
                     }
@@ -1775,7 +1766,7 @@ module.exports = function(app, io) {
     app.post('/generarBoleta/:boleta', autentificado, function (req, res) {
 
         var parametros = JSON.parse(req.params.boleta);
-        //console.log(parametros);
+
         if (parametros.tipo === 'justificacion'){
 
             Justificaciones.findById(parametros.id).populate('usuario').exec(function (err, justificacion) {

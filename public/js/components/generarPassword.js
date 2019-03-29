@@ -42,7 +42,7 @@ function dataEmail(domain, recipient, msj){
 
 function sendMssg(data){
 	mailgun.messages().send(data, function (error, body) {
-	  console.log(body);
+
 	});
 }*/
 
@@ -69,9 +69,6 @@ function agregarRolDepartamento(){
 
 	var selectDepartamentos = $('#selectDepartamentos').get(0);
 	var selectRoles = $('#selectTipo').get(0);
-
-	console.log(selectRoles.selectedOptions);
-    console.log(selectDepartamentos.selectedOptions);
 
     if (selectRoles.selectedOptions[0].text !== 'Administrador' && selectRoles.selectedOptions[0].text !== 'Administrador de Reportes'){
         if (selectDepartamentos.selectedOptions[0].text === 'Seleccione una opción' || selectRoles.selectedOptions[0].text === 'Seleccione una opción') {

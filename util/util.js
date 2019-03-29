@@ -33,7 +33,6 @@ module.exports = {
             if("epoch" in list[x]){
                 var epochTime = list[x].epoch;
                 this.epochToStr(list[x], epochTime, detail);
-                //console.log(list[x].fecha);
             }
             if("fechaJustificada" in list[x]){
                 var epochTime = list[x].fechaJustificada;
@@ -335,7 +334,7 @@ module.exports = {
 			            *   - Filtra los usuarios por supervisor, sin mostrarse el mismo.
 			            *   - Se utiliza en los reportes.
 			            */
-                        //console.log(evento[x]);
+
                         if("reportes" == query && evento[x].departamentos){
                             /*if(!evento[x].departamentos){
                                 array.push(evento[x]);

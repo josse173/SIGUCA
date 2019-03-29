@@ -134,7 +134,7 @@ module.exports = {
                       listaCierre = util.unixTimeToRegularDate(listaCierre, true);
 
                       //En caso de ser profesor no se pasan las justificaciones
-                      if(req.user.tipo.length > 1 && req.session.name == config.empleadoProfesor){
+                      if(req.user.departamentos.length > 1 && req.session.name == config.empleadoProfesor){
                         arrayJust = new Array();
                         listaCierre = new Array();
                       }
@@ -228,7 +228,7 @@ module.exports = {
                     listaCierre = util.unixTimeToRegularDate(listaCierre, true);
 
                     //En caso de ser profesor no se pasan las justificaciones
-                    if(req.user.tipo.length > 1 && req.session.name == config.empleadoProfesor){
+                    if(req.user.departamentos.length > 1 && req.session.name == config.empleadoProfesor){
                       arrayJust = new Array();
                       listaCierre =  new Array();
                     }
@@ -493,7 +493,6 @@ function renderFiltro(req, res, titulo, usuario, departamentos, usuarios, marcas
     });
   }
 
-  // console.log(req.route.path.substring(0, 9));
   //Si el filtrado es por vacaciones
   if(filtrado && filtrado == "vacaciones" && req.route.path.substring(0, 9) =='/reportes'){
     filtro.vacaciones = true;

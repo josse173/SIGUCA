@@ -654,7 +654,6 @@ $("#extraLink").click(function(){
                      var promiseValidarFechaSiguienteAnterior = $.validarFechaSiguienteAnterior(usuario, fechaAConfirmar);
 
                      promiseValidarFechaSiguienteAnterior.done(function(repuestaValidacion){
-                         //console.log(repuestaValidacion);
                          if(repuestaValidacion > 0){
                              alertify.error('No puede ingresar Inciso C debido a que tiene una solicitud del mismo tipo el día anterior o el día siguiente');
                              return false;
@@ -1025,7 +1024,7 @@ $("#extraLink").click(function(){
 
     var marca = $(this).val();
     var split = marca.split(',');
-    //console.log(split);
+
     alertify.dialog('confirm')
     .set({
         'labels':{ok:'Eliminar', cancel:'Cancelar'},

@@ -60,10 +60,9 @@ module.exports = {
 
                     for (usuario in usuarios) {
 
-                        //console.log(usuarios[usuario]);
                         //Solo se hacen los cierres para quien tenga el horario personalizado hecho
                         if (usuarios[usuario].horarioEmpleado && usuarios[usuario].horarioEmpleado != "") {
-                            //console.log(usuarios[usuario].horarioEmpleado);
+
                             buscarHorario(usuarios[usuario]._id, tipoUsuario, epochMin, epochMax,
                                 usuarios[usuario].horarioEmpleado, usuarios[usuario].tipo.length);
                         }
@@ -558,15 +557,11 @@ function registroHorasRegulares(tipoUsuario, _idUser, marcas, tiempoDia, horario
         m: horario.tiempoReceso.minutos,
     };
     var totalJornada = util.ajustarHoras(hOut, hIn);
-    //console.log("Calculando jornada de: " + _idUser);
-    //console.log(totalJornada);
-    //console.log(almuerzoT);
+
     totalJornada = util.ajustarHoras(totalJornada, almuerzoT);
-    //console.log(totalJornada);
-    //console.log(recesoT);
+
     totalJornada = util.ajustarHoras(totalJornada, recesoT);
-    //console.log(totalJornada);
-    //console.log(tiempo);
+
     var comparaH = util.compararHoras(totalJornada.h, totalJornada.m, tiempo.h, tiempo.m);
     agregarUsuarioACierre(tipoUsuario, _idUser, {h: tiempo.h, m: tiempo.m});
     //No importa la hora que salió, lo importante es que cumpla la jornada

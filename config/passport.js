@@ -33,8 +33,7 @@ module.exports = function (passport, config) {
       Usuario.findOne({ 'username': username }, function (err, user) {
         if (err) { return done(err) }
         if (!user) {
-          return done(null, false, { messages: 'Usuario desconocido.' }) 
-          console.log("Usuario desconocido");
+          return done(null, false, { messages: 'Usuario desconocido.' })
         }
         if (!user.validPassword(password)) {
           return done(null, false, { messages: 'Contraseña inválida.' })
@@ -74,7 +73,7 @@ module.exports = function (passport, config) {
                       return done(null, newUser);
                   });
               }
-          });   
+          });
         });
-    })); 
+    }));
 };

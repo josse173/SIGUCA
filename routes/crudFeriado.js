@@ -9,8 +9,7 @@ exports.insertarFeriado = function(req, res){
             epochGte.year(date[2]).month(date[1]-1).date(date[0]);
             //epochGte.hour(0).minutes(0).seconds(0);
             var fecha=epochGte.unix();
-           //console.log(moment.unix(fecha).format("MM/DD/YYYY")) Linea importante
-           
+
            var feriado = new Feriados({
 			   nombreFeriado:req.body.nombreFeriado,
                epoch:fecha
@@ -18,11 +17,11 @@ exports.insertarFeriado = function(req, res){
           feriado.save(function (err, feriado) {
 				if (err) console.log(err);
 				res.redirect('/escritorioAdmin');
-               
-            });//Crea Usuari  
-           
-           
-        }else{ 
+
+            });//Crea Usuari
+
+
+        }else{
             res.redirect('/escritorioAdmin');
         }
 };
@@ -30,7 +29,7 @@ exports.insertarFeriado = function(req, res){
 exports.deleteFeriado = function(id, cb){
     Feriados.findByIdAndRemove(id,function(err,feriado){
         if(!err){
-            
+
             return cb(err, 'Se elimino');
         }else{
             return cb("");
@@ -47,7 +46,7 @@ exports.actualizarFeriado = function(req,res){
           var obj={
             epoch:fecha,
             nombreFeriado:req.body.nombreFeriado
-         };  
+         };
          Feriados.findByIdAndUpdate(req.params.id,obj,function(err,feriado){
             res.redirect('feriado');
          });
@@ -63,7 +62,7 @@ exports.listaFeriados=function(cb){
                 var obj=new Object();
                 obj._id=feriados[i]._id;
                 obj.nombreFeriado=feriados[i].nombreFeriado;
-                
+
                 var anTemporal=moment.unix(feriados[i].epoch).format("DD/MM/YY").split("/");
                 var obj=new Object();
                 obj._id=feriados[i]._id;
@@ -81,7 +80,7 @@ exports.listaFeriados=function(cb){
 
 
             }
-        
+
             cb(feriadosArreglado);
         }
     });

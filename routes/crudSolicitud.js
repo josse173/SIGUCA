@@ -145,7 +145,6 @@ exports.updateExtra = function(extra, cb, idUser){
 //--------------------------------------------------------------------
 exports.addPermiso = function(permiso, cb, idUser){
 
-	//console.log(permiso);
 	var epochTime = moment().unix();
 	var epochInicio = moment(permiso.diaInicio).unix();
 	var epochFinal = moment(permiso.diaFinal).unix();
@@ -176,7 +175,7 @@ exports.addPermiso = function(permiso, cb, idUser){
         fechaCreada: newSolicitud.fechaCreada
     }).populate('usuario').exec(function (err, solicitud) {
         if (solicitud.length == 0) {
-            // console.log(newSolicitud);
+
             newSolicitud.save(function (err, soli) {
                 Usuario.find({
                     'tipo': 'Supervisor',
