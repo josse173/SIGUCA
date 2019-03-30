@@ -576,7 +576,7 @@ $("button[data-target=#editHorarioFijo]").click( function() {
 
         var li = document.createElement("li");
 
-        var button = document.createElement("BUTTON");
+        var button = document.createElement("a");
          li.id = text;
          button.innerHTML = "Eliminar";
          button.classList.add('btn');

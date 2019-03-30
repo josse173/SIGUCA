@@ -113,7 +113,7 @@ function agregarLi(selectDepartamentos, selectRoles){
     var ul = document.getElementById("listDepartamentos");
     var li = document.createElement("li");
 
-    var button = document.createElement("BUTTON");
+    var button = document.createElement("a");
     var text = selectDepartamentos.selectedOptions[0].value + ';' + selectRoles.selectedOptions[0].text;
 
     li.id = text;
