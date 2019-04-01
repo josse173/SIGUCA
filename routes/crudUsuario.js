@@ -35,7 +35,7 @@ exports.addUsuario = function(us, cb){
 	rolesDepartamento.forEach(function (rolDepartamento) {
 		var rd = rolDepartamento.split(";");
 
-		if(rd[0] === ''){
+		if(rd[0] === '' || rd[0] === 'Sin Departamento'){
 			array.push({departamento: '', tipo: rd[1]});
 		} else {
 			array.push({departamento: rd[0], tipo: rd[1]});
@@ -266,8 +266,8 @@ exports.updateUsuario = function(data, cb){
 	rolesDepartamento.forEach(function (rolDepartamento) {
 		var rd = rolDepartamento.split(";");
 
-		if(rd[0] === ''){
-			arrayDepartamentos.push({departamento: '', tipo: rd[1]});
+		if(rd[0] === '' || rd[0] === 'Sin Departamento'){
+			arrayDepartamentos.push({departamento: null, tipo: rd[1]});
 		} else {
 			arrayDepartamentos.push({departamento: rd[0], tipo: rd[1]});
 		}

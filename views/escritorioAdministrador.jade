@@ -226,6 +226,15 @@
                   label(for='nombre') #{textos[12].titulo}
                     input#group.form-control( type="text", placeholder='#{textos[12].titulo}', name= "nombre")
               .form-group
+                label(for='nombre') Nivel
+                  br
+                  select.form-control#nivelDepartamento.selectpicker(data-style="btn-inverse", data-width="200px", type="text", name="nivel" )
+                    option 1
+                    option 2
+                    option 3
+                    option 4
+                    option 5
+              .form-group
                 label(for='selectDepartamentos') Departamento Supervisor:
                   br
                   select.form-control#selectDepartamentosAgregar.selectpicker(data-style="btn-inverse", data-width="200px", data-selected-text-format="count>2", type="text", name="departamentoSupervisor")

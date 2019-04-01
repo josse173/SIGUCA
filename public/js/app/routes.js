@@ -268,6 +268,11 @@ $(document).ready(function()
 
     $.get('/departamento/editDepartamento/'+id, function( data ) {
         $('#nombreDepa').val(data.nombre);
+        if(data.nivel){
+            $('#nivelDepartamento').selectpicker('val', data.nivel);
+        }else{
+            $('#nivelDepartamento').selectpicker('val', '1');
+        }
 
         if(data.departamentoSupervisor){
             $('#selectDepartamentosEdit').selectpicker('val', data.departamentoSupervisor._id);

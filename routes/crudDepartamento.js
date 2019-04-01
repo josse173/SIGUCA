@@ -9,9 +9,9 @@ exports.addDepa = function(departamento, cb){
 	var newDepartamento = {};
 
 	if(departamento.departamentoSupervisor){
-		newDepartamento = Departamento({nombre: departamento.nombre, departamentoSupervisor: departamento.departamentoSupervisor});
+		newDepartamento = Departamento({nombre: departamento.nombre, departamentoSupervisor: departamento.departamentoSupervisor, nivel: departamento.nivel});
 	}else{
-		newDepartamento = Departamento({nombre: departamento.nombre, departamentoSupervisor: null});
+		newDepartamento = Departamento({nombre: departamento.nombre, departamentoSupervisor: null, nivel: departamento.nivel});
 	}
 
 	newDepartamento.save(function(err, creado) {

@@ -16,6 +16,10 @@ var SchemaDepartamento = new Schema({
     departamentoSupervisor: {
         type: Schema.ObjectId,
         ref: 'Departamento'
+    },
+    nivel: {
+        type: String,
+        default: ''
     }
 });
 
