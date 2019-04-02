@@ -33,6 +33,7 @@ $(document).keypress(function(e) {
                             $("#btnIngresar").css('display', 'block');
                             $("#selectTem").css('display', 'block');
                             $("#btnVerificar").css('display', 'none');
+                            alertify.success('Seleccione el rol con el que desea ingresar.').delay(10);
                         }
                     }
                 }
@@ -82,11 +83,15 @@ function verificarTipos(){
                     if(data.departamentos.length <= 1){
                         $("#login-form").submit();
                     }else{
+
+
+
+                        alertify.success('Seleccione el rol con el que desea ingresar.').delay(10);
+
                         /* Se muestran los input para iniciar sesion y se oculta el boton para verificar */
                         $("#btnIngresar").css('display', 'block');
                         $("#selectTem").css('display', 'block');
                         $("#btnVerificar").css('display', 'none');
-                        alertify.success('Seleccione el rol con el que desea ingresar.').delay(10);
                     }
                 }
             }else{
@@ -101,7 +106,6 @@ function verificarTipos(){
     });
 
     return false;
-
 }
 
 /**
