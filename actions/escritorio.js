@@ -198,7 +198,6 @@ module.exports = {
 				if (error) return res.json(error);
 				Marca.find({usuario: req.user.id, procesadaEnCierre: false, tipoUsuario: req.session.name}, {_id:0, tipoMarca:1, epoch:1, dispositivo:1, red:1}).exec( function(error, marcas) {
 					if (error) return res.json(error);
-					console.log({usuario: req.user.id, estado:'Incompleto', tipoUsuario: req.session.name});
 					Justificaciones.find({usuario: req.user.id, estado:'Incompleto', tipoUsuario: req.session.name}).exec(function(error, justificaciones) {
 						if (error) return res.json(error);
 
