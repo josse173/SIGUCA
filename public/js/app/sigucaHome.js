@@ -303,9 +303,16 @@ $('#selectMotivo').change(function (){
         $("#divTotalDiasDisponibles").attr('style','display:block') &&
         $("#divDiasSolicitadosVacaciones").attr('style','display:block') &&
         $("#divSaldoDisfrutarVacaciones").attr('style','display:block');
-    else if($('#selectMotivo').val() == 'Permiso sin goce de salario')
-        $("#selectOpcionesPermisosSinSalario").attr('style','display:block') &&
-        $("#diaFinal").attr('disabled','disabled');
+    else if($('#selectMotivo').val() == 'Permiso sin goce de salario'){
+        $("#selectOpcionesPermisosSinSalario").attr('style','display:block');
+        console.log($("#selectPermisosSinSalario").val().split(';')[1]);
+        if($("#selectPermisosSinSalario").val().split(';')[1] == '1'){
+            $("#diaFinal").attr('disabled','');
+        }else{
+            $("#diaFinal").attr('disabled','disabled');
+        }
+    }
+
     if($('#selectMotivo').val() !== 'Permiso sin goce de salario')
         $("#selectOpcionesPermisosSinSalario").attr('style','display:none') &&
         $("#diaFinal").attr('disabled',false);
