@@ -326,22 +326,23 @@
                 h4 #{textos[17].titulo}
                 label(for='nombre' style="float:left;margin-right:10px;") #{textos[16].titulo}
                   input.form-control#textInput( type="text", name="nombre")
-                label.labelHorarioFijo(style="margin-left: 4px;") L
-                label.labelHorarioFijo(style="margin-left: 6px;") K
-                label.labelHorarioFijo(style="margin-left: 5px;") M
-                label.labelHorarioFijo(style="margin-left: 6px;") J
-                label.labelHorarioFijo(style="margin-left: 7px;") V
-                label.labelHorarioFijo(style="margin-left: 6px;") S
-                label.labelHorarioFijo(style="margin-left: 7px;") D
+                label
                 .from-group
-                  input.checkboxHorarioFijo(type='checkbox',name='Lunes',id='Lunes',value='Lunes')
-                  input.checkboxHorarioFijo(type='checkbox',name='Martes',id='Martes',value='Martes')
-                  input.checkboxHorarioFijo(type='checkbox',name='Miercoles',id='Miercoles',value='Miercoles')
-                  input.checkboxHorarioFijo(type='checkbox',name='Jueves',id='Jueves', value='Jueves')
-                  input.checkboxHorarioFijo(type='checkbox',name='Viernes',id='Viernes',value='Viernes')
-                  input.checkboxHorarioFijo(type='checkbox',name='Sabado',id='Sabado',value='Sabado')
-                  input.checkboxHorarioFijo(type='checkbox',name='Domingo',id='Domingo',value='Domingo')
-
+                    label L:&nbsp;
+                        input.checkboxHorarioFijo(type='checkbox',name='Lunes',id='Lunes',value='Lunes')
+                    label K:&nbsp;
+                      input.checkboxHorarioFijo(type='checkbox',name='Martes',id='Martes',value='Martes')
+                    label M:&nbsp;
+                      input.checkboxHorarioFijo(type='checkbox',name='Miercoles',id='Miercoles',value='Miercoles')
+                    label J:&nbsp;
+                      input.checkboxHorarioFijo(type='checkbox',name='Jueves',id='Jueves', value='Jueves')
+                    label V:&nbsp;
+                      input.checkboxHorarioFijo(type='checkbox',name='Viernes',id='Viernes',value='Viernes')
+                    label S:&nbsp;
+                      input.checkboxHorarioFijo(type='checkbox',name='Sabado',id='Sabado',value='Sabado')
+                    label D:&nbsp;
+                      input.checkboxHorarioFijo(type='checkbox',name='Domingo',id='Domingo',value='Domingo')
+                br
               .form-group
                 label(for='horaEntrada') #{textos[18].titulo}
                   div#timepicker5.input-group

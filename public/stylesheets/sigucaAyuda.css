@@ -306,8 +306,8 @@ body {
 }
 
 .checkboxHorarioFijo{
-	margin-left: 3px;
-	margin-top: -30px!important;
+	margin-top: 0px !important;
+	float: right;
 }
 
 .labelTeletrabajo{
