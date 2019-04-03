@@ -295,7 +295,7 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos, marcaQu
 
   Justificaciones.find(justQuery).populate(populateQuery).exec(function(error, justificaciones){
     HoraExtra.find(extraQuery).populate(populateQuery).exec(function(error, extras) {
-      Solicitudes.find(permisosQuery).populate(populateQuery).exec(function(error, permisos) {
+      Solicitudes.find(permisosQuery).populate('usuario._id').exec(function(error, permisos) {
         PermisoSinSalario.find().sort({numero: 1}).exec(function(error, permisosSinSalario) {
 
             var permisosTemp = [];
