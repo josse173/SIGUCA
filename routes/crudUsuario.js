@@ -724,7 +724,7 @@ exports.validarPeriodoUsuario = function (usuario, periodos) {
 			}
 		});
 
-		Solicitudes.find({usuario: ObjectID(usuario._id), estado: "Aceptada", epochInicio: { "$gte": mayorPeriodo.fechaFinal, "$lte": fechaActual} , motivo: "Permiso sin goce de salario"}).sort({ "epochInicio" : 1}).exec(function (error, permisosSinGoceSalario) {
+		Solicitudes.find({usuario: ObjectID(usuario._id), estado: "Aceptada", epochInicio: { "$gte": mayorPeriodo.fechaFinal, "$lte": fechaActual} , motivo: "Permiso sin goce de salario", $or: [ { inciso: { $regex: ".*;6.*" } }, { inciso: { $regex: ".*;12.*" } }, { inciso: { $regex: ".*;24.*" } }, { inciso: { $regex: ".*;48.*" } } ]}).sort({ "epochInicio" : 1}).exec(function (error, permisosSinGoceSalario) {
 
 			if(permisosSinGoceSalario && permisosSinGoceSalario.length > 0){
 
@@ -783,7 +783,7 @@ exports.validarPeriodoUsuario = function (usuario, periodos) {
 
 		var cierreFechaCreacion = usuario.fechaIngreso + 30240000; // 30240000 = 50 semanas
 
-		Solicitudes.find({usuario: ObjectID(usuario._id), estado: "Aceptada", epochInicio: { "$gte": usuario.fechaIngreso, "$lte": fechaActual} , motivo: "Permiso sin goce de salario"}).sort({ "epochInicio" : 1}).exec(function (error, permisosSinGoceSalario) {
+		Solicitudes.find({usuario: ObjectID(usuario._id), estado: "Aceptada", epochInicio: { "$gte": usuario.fechaIngreso, "$lte": fechaActual} , motivo: "Permiso sin goce de salario", $or: [ { inciso: { $regex: ".*;6.*" } }, { inciso: { $regex: ".*;12.*" } }, { inciso: { $regex: ".*;24.*" } }, { inciso: { $regex: ".*;48.*" } } ]}).sort({ "epochInicio" : 1}).exec(function (error, permisosSinGoceSalario) {
 
 			if(permisosSinGoceSalario && permisosSinGoceSalario.length > 0){
 
