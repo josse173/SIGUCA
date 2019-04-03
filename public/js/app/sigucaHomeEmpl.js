@@ -335,11 +335,29 @@ $('#selectMotivo').change(function (){
 
         if($("#selectPermisosSinSalario").val().split(';')[1] !== "1"){
             $("#diaFinal").attr('readonly','true');
+        }else{
+            $("#diaFinal").removeAttr('readonly');
         }
     }
     if($('#selectMotivo').val() !== 'Permiso sin goce de salario')
         $("#selectOpcionesPermisosSinSalario").attr('style','display:none') &&
         $("#diaFinal").attr('readonly',false);
+});
+
+$('#selectPermisosSinSalario').change(function (){
+    if($("#selectPermisosSinSalario").val().split(';')[1] !== "1"){
+        $("#diaFinal").attr('readonly','true');
+    }else{
+        $("#diaFinal").removeAttr('readonly');
+    }
+});
+
+$('#selectPermisosSinSalario').change(function (){
+    if($("#selectPermisosSinSalario").val().split(';')[1] !== "1"){
+        $("#diaFinal").attr('readonly','true');
+    }else{
+        $("#diaFinal").removeAttr('readonly');
+    }
 });
 
 $('#selectDerechoDisfrutar').change(function (){

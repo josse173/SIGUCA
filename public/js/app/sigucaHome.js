@@ -305,17 +305,24 @@ $('#selectMotivo').change(function (){
         $("#divSaldoDisfrutarVacaciones").attr('style','display:block');
     else if($('#selectMotivo').val() == 'Permiso sin goce de salario'){
         $("#selectOpcionesPermisosSinSalario").attr('style','display:block');
-        console.log($("#selectPermisosSinSalario").val().split(';')[1]);
-        if($("#selectPermisosSinSalario").val().split(';')[1] == '1'){
-            $("#diaFinal").attr('disabled','');
+        if($("#selectPermisosSinSalario").val().split(';')[1] !== "1"){
+            $("#diaFinal").attr('readonly','true');
         }else{
-            $("#diaFinal").attr('disabled','disabled');
+            $("#diaFinal").removeAttr('readonly');
         }
     }
 
     if($('#selectMotivo').val() !== 'Permiso sin goce de salario')
         $("#selectOpcionesPermisosSinSalario").attr('style','display:none') &&
         $("#diaFinal").attr('disabled',false);
+});
+
+$('#selectPermisosSinSalario').change(function (){
+    if($("#selectPermisosSinSalario").val().split(';')[1] !== "1"){
+        $("#diaFinal").attr('readonly','true');
+    }else{
+        $("#diaFinal").removeAttr('readonly');
+    }
 });
 
 $('#selectDerechoDisfrutar').change(function (){
