@@ -24,7 +24,7 @@ var ObjectId = mongoose.Types.ObjectId;
 
 module.exports = {
   filtrarEventos : function (req, res) {
-
+    console.log('1');
     if (req.session.name === "Supervisor" || req.session.name === "Administrador de Reportes") {
       var usuarioId;
       var option;
@@ -295,7 +295,7 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos, marcaQu
 
   Justificaciones.find(justQuery).populate(populateQuery).exec(function(error, justificaciones){
     HoraExtra.find(extraQuery).populate(populateQuery).exec(function(error, extras) {
-      Solicitudes.find(permisosQuery).populate('usuario._id').exec(function(error, permisos) {
+      Solicitudes.find(permisosQuery).populate('usuario').exec(function(error, permisos) {
         PermisoSinSalario.find().sort({numero: 1}).exec(function(error, permisosSinSalario) {
 
             var permisosTemp = [];

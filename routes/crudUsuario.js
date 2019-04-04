@@ -273,7 +273,7 @@ exports.updateUsuario = function(data, cb){
 		}
 	});
 
-	if(data.empleado.horarioFijo && data.empleado.horarioFijo!="Sin horario") {
+	if(data.empleado.horarioFijo && data.empleado.horarioFijo != "Sin horario") {
 
 		Usuario.update({_id:data.id},{ $unset: {horario: ""}},function(error,correcto){});
 		delete data.empleado.horario;
@@ -295,9 +295,7 @@ exports.updateUsuario = function(data, cb){
 		});
 
 	}
-	else if(data.empleado.horario && data.empleado.horario!="Sin horario"){
-
-
+	else if(data.empleado.horario && data.empleado.horario != "Sin horario"){
 
 		Usuario.update({_id:data.id},{ $unset: {horarioFijo: ""}},function(error,correcto){});
 		delete data.empleado.horarioFijo;
@@ -305,28 +303,9 @@ exports.updateUsuario = function(data, cb){
 		Usuario.update({_id:data.id},{ $unset: {horarioEmpleado: ""}},function(error,correcto){});
 		delete data.empleado.horarioEmpleado;
 
-		var arrayTipo = [];
-		if(data.empleado.tipo instanceof Array){
-			for( var t in data.empleado.tipo){
-				arrayTipo.push(data.empleado.tipo[t]);
-			}
-		} else {
-			arrayTipo.push(data.empleado.tipo);
-		}
+		data.empleado.tipo = [];
 
-		data.empleado.tipo = arrayTipo;
-
-		//Genera el array de departamentos
-		var array = [];
-		if(data.empleado.departamentos instanceof Array){
-			for( var i in data.empleado.departamentos){
-				array.push({departamento:data.empleado.departamentos[i]});
-			}
-			data.empleado.departamentos = array;
-		} else if (data.empleado.departamentos){
-			array.push({departamento:data.empleado.departamentos});
-			data.empleado.departamentos = array;
-		}
+		data.empleado.departamentos = arrayDepartamentos;
 
 		if(data.empleado.password && data.empleado.password != ""){
 			data.empleado.password = Usuario.generateHash(data.empleado.password);
@@ -339,8 +318,6 @@ exports.updateUsuario = function(data, cb){
 		});
 	}
 
-
-
 	else if(data.empleado.horarioEmpleado && data.empleado.horarioEmpleado!="Sin horario"){
 
 		Usuario.update({_id:data.id},{ $unset: {horarioFijo: ""}},function(error,correcto){});
@@ -349,28 +326,9 @@ exports.updateUsuario = function(data, cb){
 		Usuario.update({_id:data.id},{ $unset: {horario: ""}},function(error,correcto){});
 		delete data.empleado.horario;
 
-		var arrayTipo = [];
-		if(data.empleado.tipo instanceof Array){
-			for( var t in data.empleado.tipo){
-				arrayTipo.push(data.empleado.tipo[t]);
-			}
-		} else {
-			arrayTipo.push(data.empleado.tipo);
-		}
-		data.empleado.tipo = arrayTipo;
+		data.empleado.tipo = [];
 
-		//Genera el array de departamentos
-		var array = [];
-		if(data.empleado.departamentos instanceof Array){
-			for( var i in data.empleado.departamentos){
-				array.push({departamento:data.empleado.departamentos[i]});
-			}
-			data.empleado.departamentos = array;
-		} else if (data.empleado.departamentos){
-			array.push({departamento:data.empleado.departamentos});
-			data.empleado.departamentos = array;
-		}
-
+		data.empleado.departamentos = arrayDepartamentos;
 
 		if(data.empleado.password && data.empleado.password != ""){
 			data.empleado.password = Usuario.generateHash(data.empleado.password);
@@ -385,8 +343,6 @@ exports.updateUsuario = function(data, cb){
 
 	else if(data.empleado.horario==="Sin horario" && data.empleado.horarioFijo==="Sin horario" && data.empleado.horarioEmpleado==="Sin horario"){
 
-
-
 		Usuario.update({_id:data.id},{ $unset: {horario: ""}},function(error,correcto){});
 		Usuario.update({_id:data.id},{ $unset: {horarioFijo: ""}},function(error,correcto){});
 		Usuario.update({_id:data.id},{ $unset: {horarioEmpleado: ""}},function(error,correcto){});
@@ -394,28 +350,9 @@ exports.updateUsuario = function(data, cb){
 		delete data.empleado.horarioFijo;
 		delete data.empleado.horarioEmpleado;
 
-		var arrayTipo = [];
-		if(data.empleado.tipo instanceof Array){
-			for( var t in data.empleado.tipo){
-				arrayTipo.push(data.empleado.tipo[t]);
-			}
-		} else {
-			arrayTipo.push(data.empleado.tipo);
-		}
+		data.empleado.tipo = [];
 
-		data.empleado.tipo = arrayTipo;
-
-		//Genera el array de departamentos
-		var array = [];
-		if(data.empleado.departamentos instanceof Array){
-			for( var i in data.empleado.departamentos){
-				array.push({departamento:data.empleado.departamentos[i]});
-			}
-			data.empleado.departamentos = array;
-		} else if (data.empleado.departamentos){
-			array.push({departamento:data.empleado.departamentos});
-			data.empleado.departamentos = array;
-		}
+		data.empleado.departamentos = arrayDepartamentos;
 
 		if(data.empleado.password && data.empleado.password != ""){
 			data.empleado.password = Usuario.generateHash(data.empleado.password);
@@ -439,28 +376,9 @@ exports.updateUsuario = function(data, cb){
 			delete data.empleado.horarioEmpleado;
 		}
 
+		data.empleado.tipo = [];
 
-		var arrayTipo = [];
-		if(data.empleado.tipo instanceof Array){
-			for( var t in data.empleado.tipo){
-				arrayTipo.push(data.empleado.tipo[t]);
-			}
-		} else {
-			arrayTipo.push(data.empleado.tipo);
-		}
-		data.empleado.tipo = arrayTipo;
-
-		//Genera el array de departamentos
-		var array = [];
-		if(data.empleado.departamentos instanceof Array){
-			for( var i in data.empleado.departamentos){
-				array.push({departamento:data.empleado.departamentos[i]});
-			}
-			data.empleado.departamentos = array;
-		} else if (data.empleado.departamentos){
-			array.push({departamento:data.empleado.departamentos});
-			data.empleado.departamentos = array;
-		}
+		data.empleado.departamentos = arrayDepartamentos;
 
 		if(data.empleado.password && data.empleado.password != ""){
 			data.empleado.password = Usuario.generateHash(data.empleado.password);
