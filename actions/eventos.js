@@ -24,7 +24,7 @@ var ObjectId = mongoose.Types.ObjectId;
 
 module.exports = {
   filtrarEventos : function (req, res) {
-    console.log('1');
+
     if (req.session.name === "Supervisor" || req.session.name === "Administrador de Reportes") {
       var usuarioId;
       var option;

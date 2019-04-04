@@ -474,12 +474,17 @@ exports.changePassword = function(data, cb){
 };
 
 exports.getEmpleadoPorSupervisor = function(idSupervisor, usuarioQuery, callback){
-	Usuario.find({_id:idSupervisor}).exec(function(error, supervisor){
+	Usuario.findOne({_id:idSupervisor}).exec(function(error, supervisor){
 		var depIds = [];
-		for(depSup in supervisor[0].departamentos){
-			if(supervisor[0].departamentos[depSup].departamento)
-				depIds.push(supervisor[0].departamentos[depSup].departamento.toString());
+
+		if(supervisor.departamentos && supervisor.departamentos.length > 0){
+			supervisor.departamentos.forEach(function (departamento) {
+				if(departamento.tipo === "Supervisor"){
+					depIds.push(departamento.departamento);
+				}
+			})
 		}
+
 		Departamento.find({_id:{"$in":depIds}}).exec(function(error, departamentos){
 			usuarioQuery.departamentos = {$elemMatch:{departamento:{"$in":depIds}}};
 			Usuario.find(usuarioQuery).exec(function(error, usuarios){
