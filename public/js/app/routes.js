@@ -743,6 +743,20 @@ $("#extraLink").click(function(){
              }
          }
      }else {
+
+         if(val === 'Permiso sin goce de salario' ){
+             if($('#selectPermisosSinSalario').val()){
+                 var tipoPermisoSinSalario = $('#selectPermisosSinSalario').val().split(';')[1];
+
+                 if(tipoPermisoSinSalario === '1'){
+                     if(cantidadDias > 30){
+                         alertify.error('La cantidad de días no debe ser mayor a 30');
+                         return false;
+                     }
+                 }
+             }
+         }
+
          $('.formSoli').attr('action', '/solicitud_permisos/');
          $self.off('click').get(0).click();
      }
