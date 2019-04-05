@@ -486,7 +486,7 @@ exports.getEmpleadoPorSupervisor = function(idSupervisor, usuarioQuery, callback
 		}
 
 		Departamento.find({_id:{"$in":depIds}}).exec(function(error, departamentos){
-			usuarioQuery.departamentos = {$elemMatch:{departamento:{"$in":depIds}}};
+			usuarioQuery.departamentos = { $elemMatch: { departamento: {"$in":depIds} } };
 			Usuario.find(usuarioQuery).exec(function(error, usuarios){
 				callback(error, usuarios, departamentos);
 			});

@@ -36,12 +36,7 @@ module.exports = {
 
 			/*
 			*/
-			var querrySupervisores = {
-				_id:{
-					"$ne":ObjectId(req.user.id)
-				},
-				departamentos: {$elemMatch: {departamento: ObjectId(req.user.departamentos[0].departamento), tipo: 'Supervisor'}}
-			};
+			var querrySupervisores = {_id:{ "$ne": ObjectId(req.user.id) }, departamentos: {$elemMatch: {departamento: ObjectId(req.user.departamentos[0].departamento), tipo: 'Supervisor'}}};
 
 			var arrayDepartamentosUsuarioEsSupervisor = [];
 
@@ -55,7 +50,7 @@ module.exports = {
 
 			Contenido.find({seccion:"escritorio"},function(err,contenido){
 			    if (err) return res.json(error);
-			    var usuarioQuery = { departamentos : { $elemMatch: { tipo: {$in: ['Empleado', 'Usuario sin acceso web']}, departamento: {$in: arrayDepartamentosUsuarioEsSupervisor}}}};
+			    var usuarioQuery = { _id: { "$ne": ObjectId(req.user.id) }, departamentos : { $elemMatch: { tipo: {$in: ['Empleado', 'Usuario sin acceso web']}, departamento: {$in: arrayDepartamentosUsuarioEsSupervisor}}}};
 
 			    crudUsuario.get(querrySupervisores, function (err, supervisores){
 

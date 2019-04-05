@@ -42,7 +42,7 @@ module.exports = {
       var permisosQuery = { tipoSolicitudes:'Permisos' };
       var marcaQuery = {};
       var cierreQuery = {};//{"usuarios.tiempo.horas":{"$gte":0}};
-      var usuarioQuery = { estado:"Activo", departamentos : { $elemMatch: { tipo: {$in: ['Empleado', 'Usuario sin acceso web']}}}};
+      var usuarioQuery = { _id: { "$ne": ObjectId(req.user.id) }, estado:"Activo", departamentos : { $elemMatch: { tipo: {$in: ['Empleado', 'Usuario sin acceso web']}}}};
       var populateQuery = {
         path: 'usuario'
       };
