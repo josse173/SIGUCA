@@ -13,14 +13,7 @@ $(document).ready(function(){
         success: validacionExitosa,         // called when validator has returned
         error: validacionError,           // called when an error reaching the validator has occured
     });
-
-
-
 });
-
-
-
-
 
 var keylist="abcdefghijklmnopqrstuvwxyz123456789";
 var temp='';
@@ -80,16 +73,17 @@ function agregarRolDepartamento(){
     if ($('#rolesDepartamento').val() && $('#rolesDepartamento').val() !== '') {
 
         var selected = $('#rolesDepartamento').val().split("|");
-        var agregarlo = true;
+        var validarlo = true;
         var agregadoAlArray = false;
 
         selected.forEach(function (select) {
 
-            if(!agregadoAlArray){
+            if(validarlo){
                 var rd = select.split(";");
                 if(rd[0] === selectDepartamentos.selectedOptions[0].value && rd[1] === selectRoles.selectedOptions[0].value ) {
                     alertify.error('La combinación ingresada ya ha sido seleccionada.');
-                    agregarlo = false;
+                    agregadoAlArray = false;
+                    validarlo = false;
                 }else{
                     var text = selectDepartamentos.selectedOptions[0].value + ';' + selectRoles.selectedOptions[0].text;
                     selected.push(text);
@@ -98,7 +92,7 @@ function agregarRolDepartamento(){
             }
         });
 
-        if(agregarlo){
+        if(agregadoAlArray){
             $('#rolesDepartamento').val(selected.join('|'));
             agregarLi(selectDepartamentos, selectRoles);
         }

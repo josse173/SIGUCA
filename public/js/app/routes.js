@@ -1564,3 +1564,32 @@ $('.tableJustificaciones').footable().on('click', '.justificacionBoleta',
  $("button[data-target=#addEmpl]").click( function() {
      alertify.error('La fecha de creación no se podrá modificar una vez creado el usuario');
  });
+
+ $('#addEmpl').on('hidden.bs.modal', function () {
+     $('#cedula').val('');
+     $('#apellido1').val('');
+     $('#fechaIngresoo').val('');
+     $('#vacaciones').val('');
+     $('#apellido2').val('');
+     $('#email').val('');
+     $('#codTarjeta').val('');
+     $('#username').val('');
+
+     $('#selectHorario').selectpicker('val', 'Sin horario');
+     $('#selectHorarioFijo').selectpicker('val', 'Sin horario');
+     $('#HorarioEmpleado').selectpicker('val', 'Sin horario');
+     $('#selectDepartamentos').selectpicker('val', 'Sin Departamento');
+     $('#selectTipo').selectpicker('val', 'Seleccione una opción');
+
+
+     $('#idEmpleado').val('');
+     $("#idEmpleado").css('display','none');
+
+     $('#selectHorario').selectpicker('refresh');
+     $('#selectHorarioFijo').selectpicker('refresh');
+     $('#HorarioEmpleado').selectpicker('refresh');
+     $('#estadoEmpleado').selectpicker('refresh');
+     $('#selectDepartamentos').selectpicker('refresh');
+     $('#selectTipo').selectpicker('refresh');
+     $('#listDepartamentos').empty();
+ });
