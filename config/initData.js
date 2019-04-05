@@ -241,11 +241,25 @@ Contenido.findOne({ seccion: 'Eventos', llave: 'Tabla Solicitudes de horas extra
     }
 });
 
-PermisoSinSalario.findOne({ nombre: '6 meses', numero: '1'}, function (err, permisoSinSalario) {
+PermisoSinSalario.findOne({ nombre: '1 a 30 días', numero: '1'}, function (err, permisoSinSalario) {
+    if (!permisoSinSalario) {
+        var permisoSinSalario = new PermisoSinSalario({
+            nombre: '1 a 30 días',
+            numero: 1,
+            cantidadMeses: 1
+        });
+
+        permisoSinSalario.save(function (err, respuesta) {
+            if (err) console.log(err);
+        });
+    }
+});
+
+PermisoSinSalario.findOne({ nombre: '6 meses', numero: '2'}, function (err, permisoSinSalario) {
     if (!permisoSinSalario) {
         var permisoSinSalario = new PermisoSinSalario({
             nombre: '6 meses',
-            numero: 1,
+            numero: 2,
             cantidadMeses: 6
         });
 
@@ -255,11 +269,11 @@ PermisoSinSalario.findOne({ nombre: '6 meses', numero: '1'}, function (err, perm
     }
 });
 
-PermisoSinSalario.findOne({ nombre: '1 año', numero: '2'}, function (err, permisoSinSalario) {
+PermisoSinSalario.findOne({ nombre: '1 año', numero: '3'}, function (err, permisoSinSalario) {
     if (!permisoSinSalario) {
         var permisoSinSalario = new PermisoSinSalario({
             nombre: '1 año',
-            numero: 2,
+            numero: 3,
             cantidadMeses: 12
         });
 
@@ -269,11 +283,11 @@ PermisoSinSalario.findOne({ nombre: '1 año', numero: '2'}, function (err, permi
     }
 });
 
-PermisoSinSalario.findOne({ nombre: '2 años', numero: '3'}, function (err, permisoSinSalario) {
+PermisoSinSalario.findOne({ nombre: '2 años', numero: '4'}, function (err, permisoSinSalario) {
     if (!permisoSinSalario) {
         var permisoSinSalario = new PermisoSinSalario({
             nombre: '2 años',
-            numero: 3,
+            numero: 4,
             cantidadMeses: 24
         });
 
@@ -283,11 +297,11 @@ PermisoSinSalario.findOne({ nombre: '2 años', numero: '3'}, function (err, perm
     }
 });
 
-PermisoSinSalario.findOne({ nombre: '4 años', numero: '4'}, function (err, permisoSinSalario) {
+PermisoSinSalario.findOne({ nombre: '4 años', numero: '5'}, function (err, permisoSinSalario) {
     if (!permisoSinSalario) {
         var permisoSinSalario = new PermisoSinSalario({
             nombre: '4 años',
-            numero: 4,
+            numero: 5,
             cantidadMeses: 48
         });
 

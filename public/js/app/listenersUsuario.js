@@ -354,13 +354,16 @@ $("#diaFinal,#diaInicio").change(function(e){
         var selectPermisosSinSalario = document.getElementById("selectPermisosSinSalario");
         var fechaInicio = new Date(document.getElementById("diaInicio").value);
 
-        if(selectMotivo.options[selectMotivo.selectedIndex].value === 'Permiso sin goce de salario'){
-            var cantidadMeses = Number(selectPermisosSinSalario.options[selectPermisosSinSalario.selectedIndex].value.split(';')[1]);
-            fechaInicio.setMonth(fechaInicio.getMonth() + cantidadMeses);
-            var mes = Number(fechaInicio.getMonth()+1) < 10 ? '0' + Number(fechaInicio.getMonth()+1) : Number(fechaInicio.getMonth()+1);
-            document.getElementById("diaFinal").value = fechaInicio.getFullYear() + '/' + mes + '/' +fechaInicio.getDate();
-        }
+        console.log(selectPermisosSinSalario[selectPermisosSinSalario.selectedIndex].value.split(';')[1]);
 
+        if(selectMotivo.options[selectMotivo.selectedIndex].value === 'Permiso sin goce de salario'){
+            if(selectPermisosSinSalario[selectPermisosSinSalario.selectedIndex].value.split(';')[1] !== '1'){
+                var cantidadMeses = Number(selectPermisosSinSalario.options[selectPermisosSinSalario.selectedIndex].value.split(';')[1]);
+                fechaInicio.setMonth(fechaInicio.getMonth() + cantidadMeses);
+                var mes = Number(fechaInicio.getMonth()+1) < 10 ? '0' + Number(fechaInicio.getMonth()+1) : Number(fechaInicio.getMonth()+1);
+                document.getElementById("diaFinal").value = fechaInicio.getFullYear() + '-' + mes + '-' +fechaInicio.getDate();
+            }
+        }
 
         var fecha1 = new Date(document.getElementById("diaInicio").value);
         var fecha2 = new Date(document.getElementById("diaFinal").value);
@@ -393,7 +396,7 @@ $("#selectMotivo,#selectPermisosSinSalario").change(function(e){
                 var cantidadMeses = Number(selectPermisosSinSalario.options[selectPermisosSinSalario.selectedIndex].value.split(';')[1]);
                 fechaInicio.setMonth(fechaInicio.getMonth() + cantidadMeses);
                 var mes = Number(fechaInicio.getMonth()+1) < 10 ? '0' + Number(fechaInicio.getMonth()+1) : Number(fechaInicio.getMonth()+1);
-                document.getElementById("diaFinal").value = fechaInicio.getFullYear() + '/' + mes + '/' +fechaInicio.getDate();
+                document.getElementById("diaFinal").value = fechaInicio.getFullYear() + '-' + mes + '-' +fechaInicio.getDate();
 
                 var fecha1 = new Date(document.getElementById("diaInicio").value);
                 var fecha2 = new Date(document.getElementById("diaFinal").value);
