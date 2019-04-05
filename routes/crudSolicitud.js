@@ -13,6 +13,7 @@ emailSIGUCA 	= 'siguca@greencore.co.cr',
 HoraExtra		= require('../models/HoraExtra');
 PeriodoUsuario  = require('../models/PeriodoUsuario');
 var enviarCorreo = require('../config/enviarCorreo');
+const log = require('node-file-logger');
 
 exports.get = function(query, cb){
 	Solicitudes.find(query, function(error, solicitudes){
@@ -51,6 +52,14 @@ exports.addExtra = function(extra, cb){
 			Usuario.findOne({_id: horaExtraCreada.usuario}).populate('departamentos').exec(function (err, usuarioExtra) {
 				Usuario.find({ departamentos : { $elemMatch: { tipo: {$in: ['Supervisor']}, departamento: usuarioExtra.departamentos[0].departamento}}}, {'email': 1}).exec(function (err, supervisor) {
 					if (err) return cb(err);
+					var text = " El usuario " + usuarioExtra.nombre + " " + usuarioExtra.apellido1 + " " + usuarioExtra.apellido2
+						+ " ha creado la siguiente solicitud de hora extra: "
+						+ "\r\n Día de Inicio: " + moment.unix(epochInicio).format("YYYY-MM-DD hh:mm:ss") + '<br>'
+						+ "\r\n Día de termino: " + moment.unix(epochTermino).format("YYYY-MM-DD hh:mm:ss")+ '<br>'
+						+ "\r\n Ubicación: " + extra.cliente + '<br>'
+						+ "\r\n Detalle: " + extra.motivo + '<br>';
+					log.Info(text);
+
 					Correo.find({}, function (errorCritico, listaCorreos) {
 						if (!errorCritico && listaCorreos.length > 0) {
 
@@ -60,12 +69,6 @@ exports.addExtra = function(extra, cb){
 									var to = supervisor[i].email;
 									var subject = 'Creación de una solicitud de hora extra en SIGUCA';
 									var titulo = 'Estimado supervisor';
-									var text = " El usuario " + usuarioExtra.nombre + " " + usuarioExtra.apellido1 + " " + usuarioExtra.apellido2
-										+ " ha creado la siguiente solicitud de hora extra: "
-										+ "\r\n Día de Inicio: " + moment.unix(epochInicio).format("YYYY-MM-DD hh:mm:ss") + '<br>'
-										+ "\r\n Día de termino: " + moment.unix(epochTermino).format("YYYY-MM-DD hh:mm:ss")+ '<br>'
-										+ "\r\n Ubicación: " + extra.cliente + '<br>'
-										+ "\r\n Detalle: " + extra.motivo + '<br>';
 
 								enviarCorreo.enviar(from, to, subject, titulo, text, '');
 							}
@@ -109,24 +112,25 @@ exports.updateExtra = function(extra, cb, idUser){
 			Usuario.findOne({_id: extraActualizada.usuario}).exec(function (err, usuarioExtra) {
 				Usuario.find({ 'tipo': 'Supervisor', 'departamentos.departamento': extraActualizada.usuario.departamentos[0].departamento}, {'email': 1}).exec(function (err, supervisor) {
 					if (err) return cb(err);
+					var text = " El usuario " + usuarioExtra.nombre + " " + usuarioExtra.apellido1 + " " + usuarioExtra.apellido2
+						+ " ha modificado la siguiente solicitud de hora extra: "
+						+ "<br> Día de Inicio: " + moment.unix(epochInicio).format("YYYY-MM-DD hh:mm:ss")
+						+ "<br> Día de termino: " + moment.unix(epochTermino).format("YYYY-MM-DD hh:mm:ss")
+						+ "<br> Motivo: " + extra.motivo
+						+ "<br> Detalle: " + extra.detalle
+						+ "<br><br> A continuación se muestran los cambios de la solicitud de hora extra modificada:"
+						+ "<br> Día de Inicio: " + moment.unix(extraActualizada.fechaInicial).format("YYYY-MM-DD hh:mm:ss")
+						+ "<br> Día de termino: " + moment.unix(extraActualizada.fechaFinal).format("YYYY-MM-DD hh:mm:ss")
+						+ "<br> Motivo: " + extraActualizada.motivo
+						+ "<br> Detalle: " + extraActualizada.detalle;
+					log.Info(text);
 					Correo.find({}, function (errorCritico, listaCorreos) {
 						if (!errorCritico && listaCorreos.length > 0) {
 
 							for (var i = 0; i < supervisor.length; i++) {
 								var from = listaCorreos[0].nombreCorreo,
 									to = supervisor[i].email,
-									subject = 'Modificación de una solicitud de hora extraordiaria en SIGUCA',
-									text = " El usuario " + usuarioExtra.nombre + " " + usuarioExtra.apellido1 + " " + usuarioExtra.apellido2
-										+ " ha modificado la siguiente solicitud de hora extra: "
-										+ "<br> Día de Inicio: " + moment.unix(epochInicio).format("YYYY-MM-DD hh:mm:ss")
-										+ "<br> Día de termino: " + moment.unix(epochTermino).format("YYYY-MM-DD hh:mm:ss")
-										+ "<br> Motivo: " + extra.motivo
-										+ "<br> Detalle: " + extra.detalle
-										+ "<br><br> A continuación se muestran los cambios de la solicitud de hora extra modificada:"
-										+ "<br> Día de Inicio: " + moment.unix(extraActualizada.fechaInicial).format("YYYY-MM-DD hh:mm:ss")
-										+ "<br> Día de termino: " + moment.unix(extraActualizada.fechaFinal).format("YYYY-MM-DD hh:mm:ss")
-										+ "<br> Motivo: " + extraActualizada.motivo
-										+ "<br> Detalle: " + extraActualizada.detalle;
+									subject = 'Modificación de una solicitud de hora extraordiaria en SIGUCA';
 
 								enviarCorreo.enviar(from, to, subject, '', text, '');
 							}
@@ -179,6 +183,13 @@ exports.addPermiso = function(permiso, cb, idUser){
             newSolicitud.save(function (err, soli) {
                 Usuario.find({ departamentos : { $elemMatch: { tipo: {$in: ['Supervisor']}, departamento: permiso.departamento}}}, {'email': 1}).exec(function (err, supervisor) {
                     if (err) console.log(err);
+                    var text = " El usuario " + permiso.usuario.nombre + " " + permiso.usuario.apellido1 + " " + permiso.usuario.apellido2 + " ha enviado el siguiente permiso anticipado: <br>"
+						+ "<br> Día de Inicio: " + soli.diaInicio
+						+ "<br>  Día de termino: " + soli.diaFinal
+						+ "<br>  Cantidad de días: " + soli.cantidadDias
+						+ "<br>  Motivo: " + soli.motivo
+						+ "<br>  Detalle: " + soli.detalle;
+					log.Info(text);
                     Correo.find({}, function (errorCritico, listaCorreos) {
                         if (!errorCritico && listaCorreos.length > 0) {
 
@@ -186,13 +197,8 @@ exports.addPermiso = function(permiso, cb, idUser){
 
                                     var from = listaCorreos[0].nombreCorreo,
                                     to = supervisor[i].email,
-                                    subject = 'Nueva solicitud de permiso anticipado en SIGUCA',
-                                    text = " El usuario " + permiso.usuario.nombre + " " + permiso.usuario.apellido1 + " " + permiso.usuario.apellido2 + " ha enviado el siguiente permiso anticipado: <br>"
-                                        + "<br> Día de Inicio: " + soli.diaInicio
-                                        + "<br>  Día de termino: " + soli.diaFinal
-										+ "<br>  Cantidad de días: " + soli.cantidadDias
-                                        + "<br>  Motivo: " + soli.motivo
-                                        + "<br>  Detalle: " + soli.detalle
+                                    subject = 'Nueva solicitud de permiso anticipado en SIGUCA';
+
 								enviarCorreo.enviar(from, to, subject, '', text, '');
                             }
                         }
@@ -230,24 +236,27 @@ exports.updatePermiso = function(permiso, cb, idUser){
 				Usuario.find({ departamentos : { $elemMatch: { tipo: {$in: ['Supervisor']}, departamento: solicitud.usuario.departamentos[0].departamento}}}, {'email' : 1}
 					).exec(function (err, supervisor) {
 						if (!err) {
+							var text = " El usuario " + solicitud.usuario.nombre + " " + solicitud.usuario.apellido1 + " " + solicitud.usuario.apellido2
+								+ " ha modificado el siguiente permiso anticipado: "
+								+ "<br> Día de Inicio: " + soli.diaInicio
+								+ "<br>Día de termino: " + soli.diaFinal
+								+ "<br> Motivo: " + soli.motivo
+								+ "<br> Detalle: " + soli.detalle
+								+ "<br><br> A continuación se muestra el permiso anticipado modificado "
+								+ "<br> Día de Inicio: " + solicitudActualizada.diaInicio
+								+ "<br> Día de termino: " + solicitudActualizada.diaFinal
+								+ "<br> Motivo: " + solicitud.motivo
+								+ "<br> Detalle: " + solicitudActualizada.detalle;
+
+							log.Info(text);
+
 							Correo.find({},function(errorCritico,listaCorreos){
 								if(!errorCritico &&listaCorreos.length>0){
 
 									for (var i = 0; i < supervisor.length; i++) {
 										var from = listaCorreos[0].nombreCorreo,
 											to= supervisor[i].email,
-											subject= 'Modificación de una solicitud de permiso anticipado en SIGUCA',
-											text= " El usuario " + solicitud.usuario.nombre + " " + solicitud.usuario.apellido1 + " " + solicitud.usuario.apellido2
-											+ " ha modificado el siguiente permiso anticipado: "
-											+ "<br> Día de Inicio: " + soli.diaInicio
-											+ "<br>Día de termino: " + soli.diaFinal
-											+ "<br> Motivo: " + soli.motivo
-											+ "<br> Detalle: " + soli.detalle
-											+ "<br><br> A continuación se muestra el permiso anticipado modificado "
-											+ "<br> Día de Inicio: " + solicitudActualizada.diaInicio
-											+ "<br> Día de termino: " + solicitudActualizada.diaFinal
-											+ "<br> Motivo: " + solicitud.motivo
-											+ "<br> Detalle: " + solicitudActualizada.detalle;
+											subject= 'Modificación de una solicitud de permiso anticipado en SIGUCA';
 
 										enviarCorreo.enviar(from, to, subject, '', text, '');
 									}
@@ -256,10 +265,10 @@ exports.updatePermiso = function(permiso, cb, idUser){
 
 						}
 					});
-}
-return cb();
-});
-});
+				}
+			return cb();
+		});
+	});
 }
 
 //--------------------------------------------------------------------
@@ -319,6 +328,7 @@ exports.deleteSoli = function(id, cb, idUser){
 						+ "<br> Motivo: " + soli.motivo
 						+ "<br> Estado: " + soli.estado
 						+ "<br> Comentario supervisor: " + soli.comentarioSupervisor;
+					log.Info(text);
 					enviarCorreo.enviar(from, to, subject, '', text, '');
 				} else {
 					var	from = listaCorreos[0].nombreCorreo,
@@ -334,6 +344,7 @@ exports.deleteSoli = function(id, cb, idUser){
 						+ "<br> Detalle: " + soli.detalle
 						+ "<br> Estado: " + soli.estado
 						+ "<br> Comentario supervisor: " + soli.comentarioSupervisor;
+					log.Info(text);
 					enviarCorreo.enviar(from, to, subject, '', text, '');
 				}
 			}
@@ -404,6 +415,7 @@ exports.gestionarSoli = function(solicitud, cb, idUser){
 				+ "<br> " + solicitud.comentarioSupervisor
 				+ "<br><br> Saludos cordiales.";
 
+			log.Info(text);
 
 			/*
 			 * Envía el correo electrónico a Recursos humanos
@@ -481,7 +493,7 @@ exports.gestionarHorasExtras = function(horaExtra, cb, idUser){
 					+ ' por el supervisor ' + superV
 					+ ', con el siguiente comentario: <br>'+ horaExtra.comentarioSupervisor
 					+ '<br><br>Saludos cordiales.';
-
+					log.Info(text);
 					enviarCorreo.enviar(listaCorreos[0].nombreCorreo, soli.usuario.email, 'Respuesta a solicitud en SIGUCA', 'Estimado(a) ' + soli.usuario.nombre + ' '+ soli.usuario.apellido1 + ',', text, '');
 
 				}

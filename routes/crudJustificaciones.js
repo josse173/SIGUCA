@@ -9,6 +9,8 @@ util 			= require('../util/util'),
 config 			= require('../config.json'),
 emailSIGUCA 	= 'siguca@greencore.co.cr';
 var enviarCorreo = require('../config/enviarCorreo');
+const log = require('node-file-logger');
+
 //--------------------------------------------------------------------
 //	Métodos Justificaciones
 //	---------------------------------------------------------------------*/
@@ -240,8 +242,8 @@ exports.updateJust = function(justificacion, cb){
 											+ "<br> A continuación se muestra la justificación modificada"
 											+ "<br> Motivo: " + justActualizada.motivo
 											+ "<br> Detalle: " + justificacion.detalle;
-
-											enviarCorreo.enviar(from, to, subject, '', text, '');
+										log.Info(text);
+										enviarCorreo.enviar(from, to, subject, '', text, '');
 									}
 								}
 							});
@@ -276,7 +278,7 @@ exports.deleteJust = function(id, cb){
 						+ "<br> Fecha: " + fecha
 						+ "<br> Motivo: " + just.motivo
 						+ "<br> Detalle: " + just.detalle;
-
+				log.Info(text);
 				enviarCorreo.enviar(from, to, subject, '', text, '');
 			}else{
 				console.log("error al enviar correo de eliminado de justificación");
@@ -305,7 +307,7 @@ exports.deleteJustMasa = function(id, cb){
 						+ "<br> Fecha: " + fecha
 						+ "<br> Motivo: " + just.motivo
 						+ "<br> Detalle: " + just.detalle;
-
+				log.Info(text);
 				enviarCorreo.enviar(from, to, subject, '', text, '');
 			}
 		});
@@ -348,7 +350,7 @@ exports.gestionarJust = function(justificacion, cb, idUser){
 							+ ", con el siguiente comentario:"
 							+ "<br><br> " + justificacion.comentarioSupervisor
 							+ "<br><br>Saludos cordiales.";
-
+						log.Info(texto);
 						enviarCorreo.enviar(from, to, subject, titulo, texto, '');
 
 					}
@@ -397,6 +399,7 @@ exports.gestionarJustifcacion = function(justificacion, cb, idUser){
 							+ ", con el siguiente comentario"
 							+ "<br><br> " + justificacion.comentarioSupervisor
 							+ "<br><br> Saludos cordiales.";
+						log.Info(text);
 						enviarCorreo.enviar(from, to, subject, '', text, '');
 					}else{
 						//console.log("problemas 2");
