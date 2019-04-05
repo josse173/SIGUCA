@@ -4,7 +4,7 @@ block content
   .container
     br
     h3 Lista de Departamentos
-    table.footable.tableDepartamento
+    table.footable(data-page-navigation=".pagination" data-page-size="10").tableDepartamento
         thead
           tr
             th Nombre
@@ -30,7 +30,10 @@ block content
               td
                 button.departamentoDelete.btn.btn-default(value=departamento.nombre+','+departamento.id)
                   i.icon-trash.icon-large.i-danger
-
+        tfoot
+          tr
+            td(colspan='5')
+              .pagination.pagination-centered.hide-if-no-paging
     //muestra departamento
     #editDep.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
       .modal-dialog

@@ -418,6 +418,17 @@ exports.gestionarSoli = function(solicitud, cb, idUser){
 			log.Info(text);
 
 			/*
+			 * Envía el correo electrónico al usuario
+			 */
+
+			Correo.find({},function(errorCritico, listaCorreos) {
+				if (!errorCritico && listaCorreos.length > 0) {
+					enviarCorreo.enviar(listaCorreos[0].nombreCorreo, soli.usuario.email, 'Respuesta a solicitud en SIGUCA', 'Estimado(a) ' + soli.usuario.nombre + ' ' + soli.usuario.apellido1 + ',', text, '');
+				}
+			});
+
+
+			/*
 			 * Envía el correo electrónico a Recursos humanos
 			 */
 
@@ -433,7 +444,7 @@ exports.gestionarSoli = function(solicitud, cb, idUser){
 
 										var cc = Array.prototype.map.call(correosRH, function(item) { return item.correo; }).join(",");
 
-										enviarCorreo.enviar(listaCorreos[0].nombreCorreo, soli.usuario.email, 'Respuesta a solicitud en SIGUCA', 'Estimado(a) ' + soli.usuario.nombre + ' ' + soli.usuario.apellido1 + ',', text, cc);
+										enviarCorreo.enviar(listaCorreos[0].nombreCorreo, cc, 'Respuesta a solicitud en SIGUCA', 'Estimado(a) ' + soli.usuario.nombre + ' ' + soli.usuario.apellido1 + ',', text, '');
 									}
 								});
 							}
@@ -450,8 +461,7 @@ exports.gestionarSoli = function(solicitud, cb, idUser){
 
 									var cc = Array.prototype.map.call(correosRH, function(item) { return item.correo; }).join(",");
 
-									enviarCorreo.enviar(listaCorreos[0].nombreCorreo, soli.usuario.email, 'Respuesta a solicitud en SIGUCA', 'Estimado(a) ' + soli.usuario.nombre + ' ' + soli.usuario.apellido1 + ',', text, cc);
-
+									enviarCorreo.enviar(listaCorreos[0].nombreCorreo, cc, 'Respuesta a solicitud en SIGUCA', 'Estimado(a) ' + soli.usuario.nombre + ' ' + soli.usuario.apellido1 + ',', text, '');
 								}
 							});
 						}
