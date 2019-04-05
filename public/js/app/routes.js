@@ -1593,3 +1593,16 @@ $('.tableJustificaciones').footable().on('click', '.justificacionBoleta',
      $('#selectTipo').selectpicker('refresh');
      $('#listDepartamentos').empty();
  });
+
+ $('#selectTipo').change(function (){
+     var selectRoles = $('#selectTipo').get(0);
+
+     if (selectRoles.selectedOptions[0].text !== 'Administrador' && selectRoles.selectedOptions[0].text !== 'Administrador de Reportes'){
+         $("#selectDepartamentos").removeAttr('disabled');
+         $('#selectDepartamentos').selectpicker('refresh');
+     }else{
+         $("#selectDepartamentos").attr("disabled", "disabled");
+         $('#selectDepartamentos').selectpicker('val', 'Sin Departamento');
+         $('#selectDepartamentos').selectpicker('refresh');
+     }
+ });
