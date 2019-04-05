@@ -1,16 +1,13 @@
 
 var mongoose 		= require('mongoose'),
-nodemailer 		= require('nodemailer'),
 moment 			= require('moment'),
 Usuario 		= require('../models/Usuario'),
 Correo		= require('../models/Correo'),
 Justificaciones = require('../models/Justificaciones'),
 util 			= require('../util/util'),
-config 			= require('../config.json'),
-emailSIGUCA 	= 'siguca@greencore.co.cr';
-var enviarCorreo = require('../config/enviarCorreo');
+enviarCorreo = require('../config/enviarCorreo');
 const log = require('node-file-logger');
-
+var ObjectId = mongoose.Types.ObjectId;
 //--------------------------------------------------------------------
 //	Métodos Justificaciones
 //	---------------------------------------------------------------------*/
@@ -41,7 +38,7 @@ exports.conteoJustificaciones=function(usuario,cb){
 		}
 	}
 
-	Usuario.find({ departamentos : { $elemMatch: { tipo: {$in: ['Empleado', 'Usuario sin acceso web']}}}},function(error,empleado){
+	Usuario.find({_id: { "$ne": ObjectId(usuario.id) }, departamentos : { $elemMatch: { tipo: {$in: ['Empleado', 'Usuario sin acceso web']}}}},function(error,empleado){
 		if(empleado){
 			for(var i=0;i<empleado.length;i++){
 				if(empleado[i].departamentos.length > 0){//pregunta que si tiene mas de un departamento
@@ -107,7 +104,7 @@ exports.conteoJustificacionesTotal=function(usuario,cb){
 		}
 
 	}
-	Usuario.find({ departamentos : { $elemMatch: { tipo: {$in: ['Empleado', 'Usuario sin acceso web']}}}},function(error,empleado){
+	Usuario.find({_id:{ "$ne": ObjectId(usuario.id) }, departamentos : { $elemMatch: { tipo: {$in: ['Empleado', 'Usuario sin acceso web']}}}},function(error,empleado){
 		if(empleado){
 			for(var i=0;i<empleado.length;i++){
 				if(empleado[i].departamentos.length>0){//pregunta que si tiene mas de un departamento

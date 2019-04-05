@@ -138,7 +138,7 @@ module.exports = {
 																	crudJustificaciones.conteoJustificacionesTotal(req.user,function (conteoTotal){
 
 																		if(conteoTotal&& conteoTotal>0){
-																			conteoJustificacionesTotal=conteoTotal;
+																			conteoJustificacionesTotal = conteoTotal;
 
 																			return retornaRenderSupervisor(supervisor[0].departamentos, arrayJust, soli, justCount.length, (soliCount.length + extras.length), array, req.user, marcas, cierreUsuarios, conteoJustificacionesTotal, contenido, departamentosUsuario, infoPeriodo, permisosSinSalario);
 
