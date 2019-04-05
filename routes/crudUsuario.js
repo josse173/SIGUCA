@@ -17,9 +17,11 @@ util 			= require('../util/util'),
 emailSIGUCA 	= 'siguca@greencore.co.cr',
 Periodo = require('../models/Periodo'),
 PeriodoUsuario = require('../models/PeriodoUsuario');
+EventosTeletrabajo = require('../models/EventosTeletrabajo');
 var config 			= require('../config');
 var enviarCorreo = require('../config/enviarCorreo');
 var ObjectID = require('mongodb').ObjectID;
+const log = require('node-file-logger');
 
 //--------------------------------------------------------------------
 //	Métodos Usuario
@@ -440,6 +442,9 @@ exports.deleteUsuario = function(id, cb){
 	PeriodoUsuario.remove({usuario:id}, function (err, solicitudes) {
 	});
 
+	EventosTeletrabajo.remove({usuario:id}, function (err, eventosTeletrabajo) {
+	});
+
 	Usuario.remove({_id:id}, function (err, empleados) {
 		if (err) return cb(err, '');
 		return cb(err, 'Se elimino');
@@ -768,7 +773,7 @@ exports.validarPeriodoUsuario = function (usuario, periodos) {
 			diasAsignados: diasAsignados,
 			numeroPeriodo: numeroPeriodo
 		});
-
+		log.Info("Periodo creado para el usuario: " + usuario + " Fecha creación: " + fechaCreada + " fechaInicio: " + fechaInicio + " fechaFinal: " + fechaFinal);
 		periodoUsuario.save(function (err, respuesta) {
 			if (err) console.log(err);
 		});

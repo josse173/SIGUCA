@@ -1,8 +1,8 @@
 /*
  * 	SIGUCA (Sistema de Gestión de Usuarios y Control de Asistencia)
- * 	Aplicación principal	
+ * 	Aplicación principal
  */
- 
+
 /**
 * Dependencias del módulo
 */
@@ -10,7 +10,7 @@ var path = require('path'),
 	express = require('express'),
 	http = require('http'),
 	mongoose = require('mongoose'),
-	passport = require('passport'); 
+	passport = require('passport');
 	bodyParser = require('body-parser');
 /*
 	Leer la configuración de ./config/config
@@ -44,7 +44,7 @@ require('./config/express')(app, config, passport);
 var server = http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
 });
- 
+
 //Importamos socket.io utilizando el servidor creado anteriormente.
 var io = require('socket.io').listen(server);
 
@@ -56,3 +56,24 @@ require('./routes/index')(app,io);
  * y mantener un administrador por defecto)
  */
 require('./config/initData');
+
+/**
+ * Configuración inicial de los archivos de log
+ */
+
+const options = {
+	timeZone: 'America/Costa_Rica',
+	folderPath: './logs/',
+	dateBasedFileNaming: true,
+	fileNamePrefix: 'LogDiario_',
+	fileNameExtension: '.log',
+	dateFormat: 'YYYY_MM_DD',
+	timeFormat: 'hh:mm:ss A',
+};
+
+const log = require('node-file-logger');
+
+log.SetUserOptions(options);
+
+log.Info('Conectado a SIGUCADB');
+log.Info("Express server listening on port " + app.get('port'));
