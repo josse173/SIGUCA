@@ -2,6 +2,7 @@
 
 var Departamento 	= require('../models/Departamento'),
 Usuario 			= require('../models/Usuario');
+const log = require('node-file-logger');
 //--------------------------------------------------------------------
 //Métodos Departamento
 //---------------------------------------------------------------------
@@ -13,6 +14,8 @@ exports.addDepa = function(departamento, cb){
 	}else{
 		newDepartamento = Departamento({nombre: departamento.nombre, departamentoSupervisor: null, nivel: departamento.nivel});
 	}
+
+	console.log(departamento);
 
 	newDepartamento.save(function(err, creado) {
 		return cb();

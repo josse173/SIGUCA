@@ -1,8 +1,14 @@
 var mongoose 		= require('mongoose');
 var Feriados 		= require('../models/Feriado');
 var moment = require('moment');
+const log = require('node-file-logger');
 
 exports.insertarFeriado = function(req, res){
+
+    log.Info('Insertar Feriado');
+    log.Info('Admin: ' +req.user._id);
+    log.Info(req.body);
+
     if(req.body.date && req.body.date.split("/").length == 3){
             var date = req.body.date.split("/");
             var epochGte = moment();
@@ -39,6 +45,12 @@ exports.deleteFeriado = function(id, cb){
 
 
 exports.actualizarFeriado = function(req,res){
+
+    log.Info('Eliminar Feriado');
+    log.Info('Admin: ' +req.user._id);
+    log.Info('Id del refiado: ' + req.params.id);
+    log.Info(req.body);
+
     var date = req.body.epoch.split("/");
           var epo = moment();
           epo.year(date[2]).month(date[1]-1).date(date[0]);

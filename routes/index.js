@@ -4,7 +4,6 @@
  */
  var fs = require('fs');
  var mongoose = require('mongoose');
- var nodemailer = require('nodemailer');
  var moment = require('moment');
  var passport = require('passport');
  var enviarCorreo = require('../config/enviarCorreo');
@@ -50,31 +49,19 @@ var Contenido = require('../models/Contenido');
 var Red = require('../models/Red');
 var CorreoRH = require('../models/CorreoRH');
 var Usuario = require('../models/Usuario');
-var Horario = require('../models/Horario');
 var HorarioFijo = require('../models/HorarioFijo');
 var HorarioPersonalizado = require('../models/HorarioEmpleado');
-var Departamento = require('../models/Departamento');
 var Justificaciones = require('../models/Justificaciones');
 var Solicitudes = require('../models/Solicitudes');
 var PeriodoUsuario = require('../models/PeriodoUsuario');
-var PeriodoSolicitud = require('../models/PeriodoUsuario');
 var Cierre = require('../models/Cierre');
-var emailSIGUCA = 'siguca@greencore.co.cr';
-var Articulo51 = require('../models/Articulo51');
 var Configuracion = require('../models/Configuracion');
 var Alerta = require('../models/Alerta');
 var EventosTeletrabajo = require('../models/EventosTeletrabajo');
 var HoraExtra = require('../models/HoraExtra');
-//***************************************
-//var multer=require('multer');
-//var upload = multer({ dest: '' });
-
-var multer  =  require('multer');
-
-//***************************************
+const log = require('node-file-logger');
 var config 			= require('../config');
 
-//************************************
 module.exports = function(app, io) {
     /*
     *   Redirecciona a la página principal (index.html)
@@ -842,6 +829,9 @@ module.exports = function(app, io) {
     */
     app.post('/empleado', autentificado, function (req, res) {
         if (req.session.name == "Administrador") {
+            log.Info('Creación de usuario');
+            log.Info('Admin: ' +req.user._id);
+            log.Info(req.body);
             crudUsuario.addUsuario(req.body, function() {
                 if (req.session.name == "Administrador"){
                  res.redirect('/escritorioAdmin');
@@ -889,6 +879,9 @@ module.exports = function(app, io) {
             id: req.params.id,
             empleado: req.body
         };
+        log.Info('Actualizar usuario');
+        log.Info('Admin: ' +req.user._id);
+        log.Info(req.body);
         crudUsuario.updateUsuario(data, function() {
             res.redirect('/empleado');
         });
@@ -901,6 +894,9 @@ module.exports = function(app, io) {
     *  Modifica el estado de Activo a Inactivo de un usuario en específico
     */
     app.get('/empleado/delete/:id', autentificado, function (req, res) {
+        log.Info('Borrar usuario');
+        log.Info('Admin: ' +req.user._id);
+        log.Info('Usuaruio: ' +req.params.id);
         crudUsuario.deleteUsuario(req.params.id, function (err, msj) {
             if (err) res.json(err);
             res.send(msj);
@@ -1010,6 +1006,9 @@ module.exports = function(app, io) {
     *  Crea un nuevo departamento
     */
     app.post('/departamento',autentificado, function (req, res) {
+        log.Info('Crear departamento');
+        log.Info('Admin: ' +req.user._id);
+        log.Info(req.body);
         crudDepartamento.addDepa(req.body, function() {
             if (req.session.name == "Administrador") {
                 res.redirect('/escritorioAdmin');
@@ -1050,6 +1049,9 @@ module.exports = function(app, io) {
             departamento: req.body,
             id: req.params.id
         };
+        log.Info('Actualiza departamento');
+        log.Info('Admin: ' +req.user._id);
+        log.Info(req.body);
         crudDepartamento.updateDepa(data, function() {
             res.redirect('/departamento');
         });
@@ -1059,6 +1061,9 @@ module.exports = function(app, io) {
     *  Elimina un departamento en específico
     */
     app.get('/departamento/delete/:id', autentificado, function (req, res) {
+        log.Info('Elimina departamento');
+        log.Info('Admin: ' +req.user._id);
+        log.Info('Departamento: ' + req.params.id);
         crudDepartamento.deleteDepa(req.params.id, function (msj) {
             res.send(msj);
         });
@@ -1097,6 +1102,9 @@ module.exports = function(app, io) {
     app.post('/cambioUsername/:id', autentificado, function (req, res) {
 
         if(req.session.name != "Administrador"){
+            log.Info('Cambia el username de los usuarios');
+            log.Info('Admin: ' +req.user._id);
+            log.Info(req.body);
             var user = {
                 id: req.params.id,
                 username: req.body.username
@@ -1137,6 +1145,9 @@ module.exports = function(app, io) {
     app.post('/cambioPassword/:id', autentificado, function (req, res) {
         var user = req.body;
         user.id = req.params.id;
+        log.Info('Cambia la contraseña de los usuarios');
+        log.Info('Admin: ' +req.user._id);
+        log.Info(req.body);
         crudUsuario.changePassword(user, function () {
             res.redirect('/configuracion');
         });
@@ -1245,6 +1256,9 @@ module.exports = function(app, io) {
     */
 
     app.post('/horarioN', autentificado, function (req, res) {
+        log.Info('Crea un nuevo horario');
+        log.Info('Admin: ' +req.user._id);
+        log.Info(req.body);
         crud.addHorario(req.body, function() {
             if (req.session.name == "Administrador") {
                 res.redirect('/escritorioAdmin');
@@ -1253,6 +1267,9 @@ module.exports = function(app, io) {
     });
 
     app.post('/horarioFijo', autentificado, function (req, res) {
+        log.Info('Crea un nuevo horario fijo');
+        log.Info('Admin: ' +req.user._id);
+        log.Info(req.body);
        crud.addHorarioFIjo(req.body,function(){
            if (req.session.name == "Administrador") {
                 res.redirect('/escritorioAdmin');
@@ -1318,6 +1335,10 @@ module.exports = function(app, io) {
     */
     app.post('/horarioN/:id',autentificado, function (req, res) {
         var data = { horario: req.body, id: req.params.id };
+        log.Info('Actualiza horario');
+        log.Info('Admin: ' +req.user._id);
+        log.Info('Id del horario' + req.params.id);
+        log.Info(req.body);
         crud.updateHorario(data, function (err, horarios) {
             if (err) return res.json(err);
             res.redirect('/horarioN');
@@ -1326,8 +1347,11 @@ module.exports = function(app, io) {
 
     app.post('/formUpdatePersonalizado/:id',autentificado, function (req, res) {
 
-
         var data = { horario: req.body, id: req.params.id };
+        log.Info('Actualiza horario');
+        log.Info('Admin: ' +req.user._id);
+        log.Info('Id del horario' + req.params.id);
+        log.Info(req.body);
         crud.updateHorarioPersonalizado(data, function (err, horarios) {
             if (err) return res.json(err);
             res.redirect('/horarioN');
@@ -1338,6 +1362,10 @@ module.exports = function(app, io) {
     //Actualiza los datos de un horario fijo en especifico
      app.post('/horarioFijoN/:id',autentificado, function (req, res) {
         var data = { horario: req.body, id: req.params.id };
+         log.Info('Actualiza horario fijo');
+         log.Info('Admin: ' +req.user._id);
+         log.Info('Id del horario' + req.params.id);
+         log.Info(req.body);
         crud.updateHorarioFijo(data, function (err, horarios) {
             if (err) return res.json(err);
             res.redirect('/horarioN');
@@ -1348,6 +1376,10 @@ module.exports = function(app, io) {
     *  Elimina un horario libre
     */
     app.get('/horarioN/delete/:id', autentificado, function (req, res) {
+        log.Info('Elimina horario libre');
+        log.Info('Admin: ' +req.user._id);
+        log.Info('Id del horario' + req.params.id);
+
         crud.deleteHorario(req.params.id, function (err, msj) {
             if (err) return res.json(err);
             else res.send(msj);
@@ -1355,6 +1387,10 @@ module.exports = function(app, io) {
     });
     //Elimina un horario fijo
     app.get('/horarioFijo/delete/:id', autentificado, function (req, res) {
+        log.Info('Elimina horario fijo');
+        log.Info('Admin: ' +req.user._id);
+        log.Info('Id del horario' + req.params.id);
+
         crud.deleteHorarioFijo(req.params.id, function (err, msj) {
             if (err) return res.json(err);
             else res.send(msj);
@@ -1363,6 +1399,10 @@ module.exports = function(app, io) {
 
     //eliminar horario personalizado
     app.get('/horarioPersonalizado/delete/:id', autentificado, function (req, res) {
+        log.Info('Elimina horario personalizado');
+        log.Info('Admin: ' +req.user._id);
+        log.Info('Id del horario' + req.params.id);
+
         crud.deleteHorarioPersonalizado(req.params.id, function (err, msj) {
             if (err) return res.json(err);
             else res.send(msj);
@@ -1466,6 +1506,9 @@ module.exports = function(app, io) {
     });
 
     app.get('/red/delete/:id', autentificado, function (req, res) {
+        log.Info('Elimina red');
+        log.Info('Admin: ' +req.user._id);
+        log.Info('Id de la red' + req.params.id);
         crudRed.deleteRed(req.params.id, function (err, msj) {
             if (err) return res.json(err);
             else res.send(msj);
@@ -1506,6 +1549,9 @@ module.exports = function(app, io) {
     });
 
     app.get('/correoRH/delete/:id', autentificado, function (req, res) {
+        log.Info('Elimina correo');
+        log.Info('Admin: ' +req.user._id);
+        log.Info('Id del correo' + req.params.id);
         crudCorreoRH.deleteCorreoRH(req.params.id, function (err, msj) {
             if (err) return res.json(err);
             else res.send(msj);
@@ -1630,6 +1676,9 @@ module.exports = function(app, io) {
     });
 
     app.get('/feriado/delete/:id', autentificado, function (req, res) {
+        log.Info('Eliminar Feriado');
+        log.Info('Admin: ' +req.user._id);
+        log.Info('Id del feriado: ' + req.params.id);
         crudFeriado.deleteFeriado(req.params.id, function (err, msj) {
             if (err) return res.json(err);
             else res.send(msj);
@@ -1637,6 +1686,9 @@ module.exports = function(app, io) {
     });
 
     app.get('/correo/delete/:id', autentificado, function (req, res) {
+        log.Info('Eliminar Correo');
+        log.Info('Admin: ' +req.user._id);
+        log.Info('Id del correo: ' + req.params.id);
         crudCorreo.deleteCorreo(req.params.id, function (err, msj) {
             if (err) return res.json(err);
             else res.send(msj);
