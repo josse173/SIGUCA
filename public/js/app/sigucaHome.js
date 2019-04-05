@@ -347,7 +347,6 @@ $('#selectMotivoJust').change(function (){
 
 //Si nos desconectamos, muestra el log y cambia el mensaje.
 socket.on('disconnect', function () {
-    //console.log('Desconectado!');
 });
 
 $('#btn-marca').click(function(){

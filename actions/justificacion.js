@@ -5,15 +5,15 @@ var Justificaciones = require('../models/Justificaciones');
  var util = require('../util/util');
 module.exports = {
 	edit:function (req, res) {
-		crudJustificaciones.loadJust(req.params.id, function(just) { 
+		crudJustificaciones.loadJust(req.params.id, function(just) {
 			res.json(just);
-		}); 
+		});
 	},
 	nueva : function (req, res) {
-		var just = req.body; 
+		var just = req.body;
 		just.id = req.user.id;
 		just.tipoUsuario = req.session.name;
-		//console.log(just);
+
 		crudJustificaciones.addJust(just, function (){
 			if (req.session.name == "Empleado" || req.session.name == config.empleadoProfesor) {
 				res.redirect('/escritorioEmpl');
@@ -21,7 +21,7 @@ module.exports = {
         });///verificar
 	},
 	actualiza: function (req, res) {
-		var just = req.body; 
+		var just = req.body;
 		just.id = req.params.id;
 		just.usuario = req.user.id;
 		crudJustificaciones.updateJust(just, function (err){
@@ -39,14 +39,13 @@ module.exports = {
 	justificacionEnMasa:function(req,res){
 
 		for(var i=0;i<req.body.vector.length;i++){
-            console.log(req.body.vector[i].id);
+
         }
-		//console.log("llege");
-		//console.log(req.body.justArray);
+
 		/*
 		var epochTime = moment().unix();
         var detalle = (req.body.detalle);
-        console.log(detalle);
+
 
         var justificacionActualizada = {
                 detalle: detalle,
@@ -58,12 +57,12 @@ module.exports = {
         var arrayJust = util.unixTimeToRegularDate(justificaciones, true);
         for(temporal in arrayJust){
              Justificaciones.findByIdAndUpdate(arrayJust[temporal]._id, justificacionActualizada, function (err, justActualizada) {
-        
+
             });
 		}
-		
-	
-		
+
+
+
 		});
 		res.redirect('/escritorioEmpl');
 		*/

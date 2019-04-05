@@ -8,20 +8,30 @@ block content
         thead
           tr
             th Nombre
+            th Nivel
+            th Departamento Supervisor
             th Editar
             th Eliminar
-        tbody 
+        tbody
           each departamento, i in departamentos
             tr
-              td #{departamento.nombre} 
+              td #{departamento.nombre}
+              if(departamento.nivel)
+                td #{departamento.nivel}
+              else
+                td No tiene nivel
+              if(departamento.departamentoSupervisor)
+                td #{departamento.departamentoSupervisor.nombre}
+              else
+                td No tiene departamento supervisor asignado
               td
                 button.departamentoUpdate.btn.btn-default(data-toggle="modal" data-target="#editDep" value=departamento._id)
                   i.icon-pencil.icon-large.i-success
               td
-                button.departamentoDelete.btn.btn-default(value=departamento.nombre+','+departamento.id)   
+                button.departamentoDelete.btn.btn-default(value=departamento.nombre+','+departamento.id)
                   i.icon-trash.icon-large.i-danger
 
-    //muestra departamento         
+    //muestra departamento
     #editDep.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
       .modal-dialog
           .modal-content
@@ -33,6 +43,22 @@ block content
                 .form-group
                     label(for='nombre') Nombre:
                       input#nombreDepa.form-control( type="text", placeholder='Nombre del area', name= "nombre")
+                .form-group
+                  label(for='nivel') Nivel
+                    br
+                    select.form-control#nivelDepartamento.selectpicker(data-style="btn-inverse", data-width="200px", type="text", name="nivel" )
+                      option(value='1') 1
+                      option(value='2') 2
+                      option(value='3') 3
+                      option(value='4') 4
+                      option(value='5') 5
+                .form-group
+                  label(for='selectDepartamentosEdit') Departamento Supervisor:
+                    br
+                    select.form-control#selectDepartamentosEdit.selectpicker(data-style="btn-inverse", data-width="200px", data-selected-text-format="count>2", type="text", name="departamentoSupervisor")
+                      option(value='') Seleccione una opción
+                      each departamento, i in departamentos
+                        option(value= departamento.id) #{departamento.nombre}
                 button.btn.btn-success(type='submit') Actualizar
 
-                button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar   
+                button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar

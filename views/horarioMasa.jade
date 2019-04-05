@@ -5,100 +5,92 @@ block content
 
     br
     h3 Configuración de horarios de empleado
-    
+
 
     h5(id='titulo',style='display:none') Agregar usuarios en masa
     .form-group
         label(style='display:none',id='lbLibre') Horario libre:
                   br
-                  select.hLibre(data-style="btn-inverse", data-width="140px", type="text", id="hLibre",style='display:none') 
-                    option(value="") Sin horario  
+                  select.hLibre(data-style="btn-inverse", data-width="140px", type="text", id="hLibre",style='display:none')
+                    option(value="") Sin horario
                     each horario, i in horarios
                         option(value= horario.id) #{horario.nombre}
 
         label(style='display:none',id='lbFijo') Horario fijo:
                   br
-                  select.hFijo(data-style="btn-inverse", data-width="140px", type="text",id="hFijo" ,style='display:none') 
-                    option(value="") Sin horario  
+                  select.hFijo(data-style="btn-inverse", data-width="140px", type="text",id="hFijo" ,style='display:none')
+                    option(value="") Sin horario
                     each horario, i in horarioFijo
                         option(value= horario._id) #{horario.nombre}
 
          label(style='display:none',id='lbPersonalizado') Horario personalizado:
                   br
-                  select.hPersonalizado(data-style="btn-inverse", data-width="140px", type="text",id="hPersonalizado" ,style='display:none') 
-                    option(value="") Sin horario  
+                  select.hPersonalizado(data-style="btn-inverse", data-width="140px", type="text",id="hPersonalizado" ,style='display:none')
+                    option(value="") Sin horario
                     each horario, i in horarioPersonalizado
                         option(value= horario._id) #{horario.nombreHorarioPersonalizado}
 
-         button(type='button',id='horarioMasa' ,style='display:none;float:left') 
-          i.icon-ok.icon-large.i-success       
-   
+         button(type='button',id='horarioMasa' ,style='display:none;float:left')
+          i.icon-ok.icon-large.i-success
+
     table.footable.tableEmpleado(data-page-navigation=".pagination" data-page-size="20")
         thead
           tr
-            th 
+            th
             th Código Tarjeta
             th Nombre
             th Apellidos
             th(data-hide="phone") Cédula
             th(data-hide="phone,small,medium,large") Email
-            th(data-hide="phone") Tipo
             th(data-hide="phone,small,medium" data-sort-ignore="true") Departamento
             th(data-hide="phone,small,medium") Horario libre
             th(data-hide="phone,small,medium") Horario Fijo
             th(data-hide="phone,small,medium") Horario personalizado
             th(data-hide="phone,small") Estado
-      
 
-        tbody 
+
+        tbody
           each empleado, i in empleados
             tr
               td
                 input.horario.horarioId(type='checkbox',checked=false, id='check' ,value=empleado._id)
               td #{empleado.codTarjeta}
               td #{empleado.nombre}
-              td #{empleado.apellido1} #{empleado.apellido2} 
-              td #{empleado.cedula} 
-              td #{empleado.email} 
+              td #{empleado.apellido1} #{empleado.apellido2}
+              td #{empleado.cedula}
+              td #{empleado.email}
               td
-                each tipo, t in empleado.tipo
-                  ul
-                    if(tipo)
-                      li #{tipo}
-                    else
-                      li No tiene tipos de usuario asignados
-              td 
                 each departamentos, i in empleado.departamentos
                   ul
                     if(departamentos.departamento)
-                      li #{departamentos.departamento.nombre}
+                      li #{departamentos.departamento.nombre} (#{departamentos.tipo})
                     else
-                      li No tiene departamento asignado
+                      li No tiene departamento asignado (#{departamentos.tipo})
               if(empleado.horario)
-                td #{empleado.horario.nombre} 
-                
+                td #{empleado.horario.nombre}
+
               else
                 td No tiene horario asignado
-                
+
               if(empleado.horarioFijo)
-                td #{empleado.horarioFijo.nombre} 
-                
+                td #{empleado.horarioFijo.nombre}
+
               else
                 td No tiene horario asignado
 
               if(empleado.horarioEmpleado)
-                td #{empleado.horarioEmpleado.nombreHorarioPersonalizado} 
-                
+                td #{empleado.horarioEmpleado.nombreHorarioPersonalizado}
+
               else
                 td No tiene horario asignado
 
 
 
-               td #{empleado.estado} 
-              
+               td #{empleado.estado}
+
         tfoot
           tr
             td(colspan='11')
               .pagination.pagination-centered.hide-if-no-paging
-block sigucaJS  
+block sigucaJS
   script(src="/js/app/gestionarEventos.js")

@@ -8,7 +8,7 @@ var mongoose = require('mongoose'),
     Periodo = mongoose.model('Periodo'),
     PermisoSinSalario = require('../models/PermisoSinSalario');
 
-Usuario.findOne({ 'tipo' :  'Administrador' }, function (err, user) {
+Usuario.findOne({ departamentos : { $elemMatch: { tipo: 'Administrador'}}}, function (err, user) {
     if (!user) {
 
 
@@ -30,7 +30,6 @@ Usuario.findOne({ 'tipo' :  'Administrador' }, function (err, user) {
         /* Se crea el usuario por defecto tipo administrador */
         var newUser = new Usuario({
             username: 'admin',
-            tipo: 'Administrador',
             estado: "Activo",
             nombre: 'administrador',
             apellido1: 'GreenCore',
@@ -38,9 +37,10 @@ Usuario.findOne({ 'tipo' :  'Administrador' }, function (err, user) {
             email: 'soporte@greencore.co.cr',
             cedula: 0,
             codTarjeta: 0,
-            departamentos: {
-                nombre: 'adminDefault'
-            },
+            departamentos:[{
+                departamento: null,
+                tipo: 'Administrador',
+            }],
             horario: horario,
         });
         newUser.password = Usuario.generateHash('admin');

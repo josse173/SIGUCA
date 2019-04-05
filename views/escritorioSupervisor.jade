@@ -1,0 +1,102 @@
+.col-xs-8
+
+  //-Perfil personal
+  div.col-md-6
+    div.img-circle
+      img.img-responsive(src="/uploads/"+usuario.codTarjeta+".png" border="5" alt="#{textos[0].titulo}" style="height:200px;")
+
+      h3.text-success #{textos[1].titulo}
+      input(type="hidden" id="tiempoRespuesta" value="#{tiempoRespuesta}")
+      input(type="hidden" id="alertas" value="#{alertas}")
+
+      table.table-responsive.tableInfo
+
+        tbody
+          tr
+            td
+              b #{textos[2].titulo}
+            td #{usuario.nombre}
+          tr
+            td
+              b #{textos[3].titulo}
+            td #{usuario.apellido1} #{usuario.apellido2}
+          tr
+            td
+              b #{textos[4].titulo}
+            td #{usuario.tipo === "Empleado" ? "Colaborador" : usuario.tipo }
+          tr
+            td
+              b Cédula:
+            td #{usuario.cedula}
+          tr
+            td
+              b #{textos[6].titulo}
+            td #{infoPeriodos.diasDisponibles}
+
+
+
+ .col-xs-4
+  if(usuario.tipo == 'Supervisor')
+    h4.headerFont #{textos[54].titulo}
+    ul.list-group
+      li.list-group-item
+        a(href='/gestionarEventos/extras')
+          span.badge #{soliCount}
+          |   #{textos[55].titulo}
+      li.list-group-item
+        a(href='/gestionarEventos/justificaciones')
+          span.badge #{justCount}
+          |   #{textos[56].titulo}
+
+    h4.headerFont #{textos[57].titulo}
+    ul.list-group
+      a(href='/justificacionesPendientes')
+        span.badge #{contJust}
+        |   #{textos[57].titulo}
+
+
+
+input(id='ipOrigen',name='ipOrigen' ,value='', style='display:none')
+//Ventana modal que se abre al inicio dee la pagina escritoroUsuario.jade en caso de que hayan justificaciones pendientes
+
+#mostrarSolicitudes.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+  .modal-dialog
+    .modal-content
+      .modal-header
+        button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+        h3#myModalLabel.modal-title Justificaciones pendientes
+        textarea#detalleJustificacionMasa.detalleJustificacionMasa.form-control(rows="4" cols="50" name='motivo' required ,style='display:none')
+        button#botonJustificacionMasa.btn.btn-success(type='button',style='display:none' ) Justificaciones en masa
+      .modal-body
+          .row
+              .col-xs-4
+              div.justTable.table-responsive
+                div
+                  table#tablaJust.footable(data-page-navigation=".pagination" data-page-size="4" )
+                    thead
+                      tr
+                        th(data-sort-ignore="true" data-type="numeric" ) En masa
+                        th(data-sort-ignore="true" data-type="numeric" ) Fecha creada
+                        th(data-sort-ignore="true" data-type="numeric" ) Fecha justificada
+                        th(data-sort-ignore="true") Motivo
+                        th(data-sort-ignore="true" data-type="numeric" ) Información
+                        th Justificar
+                    tbody.justDetalle
+                      each just, i in justificaciones
+                        tr
+                          td
+                            input.justificarMasaUsuario(type='checkbox',checked=false, id='justificarMasaUsuario' ,value=just._id+":/"+just.motivo)
+                          td #{just.fecha.str}
+                          td #{just.fechaJust.str}
+                          td #{just.motivo}
+                          td #{just.informacion}
+                          td
+                            button.btn.btn-success(type='button',data-toggle="modal", data-target="#updateJustificacion" ,data-value=just._id ) Justificar
+                    tfoot
+                      tr
+                        td(colspan='8')
+                          .pagination.pagination-centered.hide-if-no-paging
+
+
+
+

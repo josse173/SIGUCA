@@ -4,11 +4,11 @@ var crudHorario = require('../routes/crudHorario');
 var Usuario = require('../models/Usuario.js');
 var async = require("async");
 module.exports = {
-    
+
 
     create: function (req, res) {
-        
-        deserializeHorario(req.body, 
+
+        deserializeHorario(req.body,
             function(err,nuevoHorario){
                 if (err)
                       res.redirect('/escritorioAdmin');
@@ -23,31 +23,31 @@ module.exports = {
                              Usuario.update({_id:req.body.usuario},{ $unset: {horarioFijo: ""}},function(error,correcto){
                             });
                             res.redirect('/escritorioAdmin');
-                        }    
-                       
+                        }
+
                     });
 
-                    
+
                 }
-                
+
             });
     },
     //
     updateByUser : function (req, res) {
-        deserializeHorario(req.body, 
+        deserializeHorario(req.body,
             function(err,nuevoHorario){
                 if (err)
                     return res.json({error:err});
                 crudHorario.updateByUser(req.body.usuario,
                     nuevoHorario, function(error, horario){
-                        //console.log(horario);
+
                         if (error)
                             return res.json({error:error});
                         Usuario.update({_id:req.body.usuario},{ $unset: {horario: ""}},function(error,correcto){
                             if(error){
 
                             }else{
-                                
+
                             }
                         });
 
@@ -65,11 +65,11 @@ function deserializeHorario(serialHorario, cb){
         }
     }
     async.reduce(
-        ["lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo"], 
+        ["lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo"],
         {
             tiempoReceso: tiempo(serialHorario, "tiempoReceso"),
             tiempoAlmuerzo: tiempo(serialHorario, "tiempoAlmuerzo")
-        }, 
+        },
         function(nuevoHorario, dia, callback){
             nuevoHorario[dia] = {
                 entrada: tiempo(serialHorario, dia+"HoraEntrada"),

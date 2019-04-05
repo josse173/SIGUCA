@@ -31,22 +31,24 @@ exports.conteoJustificaciones=function(usuario,cb){
 	var identificadores=new Array();
 
 	for(var i=0;i<usuario.departamentos.length;i++){
-		var obj=new Object();
-		obj.idDepartamento=usuario.departamentos[i].departamento;
-		departamentos.push(obj);
 
+		if(usuario.departamentos[i].tipo === "Supervisor"){
+			var obj = {};
+			obj.idDepartamento = usuario.departamentos[i].departamento;
+			departamentos.push(obj);
+		}
 	}
-	Usuario.find({tipo: {'$in': ['Empleado', 'Usuario sin acceso web']}},function(error,empleado){
+
+	Usuario.find({ departamentos : { $elemMatch: { tipo: {$in: ['Empleado', 'Usuario sin acceso web']}}}},function(error,empleado){
 		if(empleado){
 			for(var i=0;i<empleado.length;i++){
-				if(empleado[i].departamentos.length>0){//pregunta que si tiene mas de un departamento
+				if(empleado[i].departamentos.length > 0){//pregunta que si tiene mas de un departamento
 					for(var j=0;j<empleado[i].departamentos.length;j++){//rrecore los departamentos
-						for(var h=0;h<departamentos.length;h++){
-							if(empleado[i].departamentos[j].departamento&&
-								empleado[i].departamentos[j].departamento.equals(departamentos[h].idDepartamento)){
+						for(var h=0; h < departamentos.length; h++){
+							if(empleado[i].departamentos[j].departamento && empleado[i].departamentos[j].departamento.equals(departamentos[h].idDepartamento)){
 								h=h.length;
 								j=j.length;
-								var usuarioTemporal=new Object();
+								var usuarioTemporal = new Object();
 								usuarioTemporal.empleado=empleado[i];
 								usuariosConDepartamento.push(usuarioTemporal);
 								identificadores.push(usuarioTemporal.empleado._id)
@@ -96,12 +98,14 @@ exports.conteoJustificacionesTotal=function(usuario,cb){
 	var identificadores=new Array();
 
 	for(var i=0;i<usuario.departamentos.length;i++){
-		var obj=new Object();
-		obj.idDepartamento=usuario.departamentos[i].departamento;
-		departamentos.push(obj);
+		if(usuario.departamentos[i].tipo === "Supervisor"){
+			var obj=new Object();
+			obj.idDepartamento=usuario.departamentos[i].departamento;
+			departamentos.push(obj);
+		}
 
 	}
-	Usuario.find({tipo: {'$in': ['Empleado', 'Usuario sin acceso web']}},function(error,empleado){
+	Usuario.find({ departamentos : { $elemMatch: { tipo: {$in: ['Empleado', 'Usuario sin acceso web']}}}},function(error,empleado){
 		if(empleado){
 			for(var i=0;i<empleado.length;i++){
 				if(empleado[i].departamentos.length>0){//pregunta que si tiene mas de un departamento
@@ -217,7 +221,7 @@ exports.updateJust = function(justificacion, cb){
 			Justificaciones.findByIdAndUpdate(justificacion.id, justificacionActualizada, function (err, justActualizada) {
 
 				if (!err && just.estado=="Incompleto") {
-					Usuario.find({'tipo' : 'Supervisor', 'departamentos.departamento' : just.usuario.departamentos[0].departamento}, {'email' : 1}).exec(function (err, supervisor) {
+					Usuario.find({departamentos : { $elemMatch: { tipo: {$in: ['Supervisor']}}}, 'departamentos.departamento' : just.usuario.departamentos[0].departamento}, {'email' : 1}).exec(function (err, supervisor) {
 						if (err){
 							return cb(err);
 						}

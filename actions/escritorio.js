@@ -26,7 +26,8 @@ var ObjectId = mongoose.Types.ObjectId;
 
 module.exports = {
 	escritorio : function (req, res) {
-		var conteoJustificacionesTotal=0;
+
+		var conteoJustificacionesTotal = 0;
 		req.user.tipo = req.session.name;
 		if (req.session.name === "Supervisor" || req.session.name === "Administrador de Reportes") {
 			var epochGte = moment().hours(0).minutes(0).seconds(0).milliseconds(0);
@@ -39,19 +40,32 @@ module.exports = {
 				_id:{
 					"$ne":ObjectId(req.user.id)
 				},
-				tipo:"Supervisor",
-				departamentos: {$elemMatch: {departamento: ObjectId(req.user.departamentos[0].departamento)}}
+				departamentos: {$elemMatch: {departamento: ObjectId(req.user.departamentos[0].departamento), tipo: 'Supervisor'}}
 			};
+
+			var arrayDepartamentosUsuarioEsSupervisor = [];
+
+			if(req.user.departamentos && req.user.departamentos.length > 0){
+				req.user.departamentos.forEach(function (departamento) {
+					if(departamento.tipo === "Supervisor"){
+						arrayDepartamentosUsuarioEsSupervisor.push(departamento.departamento)
+					}
+				})
+			}
+
 			Contenido.find({seccion:"escritorio"},function(err,contenido){
 			    if (err) return res.json(error);
-			    var usuarioQuery = { tipo: {'$in': ['Empleado', 'Usuario sin acceso web']}};
+			    var usuarioQuery = { departamentos : { $elemMatch: { tipo: {$in: ['Empleado', 'Usuario sin acceso web']}, departamento: {$in: arrayDepartamentosUsuarioEsSupervisor}}}};
+
 			    crudUsuario.get(querrySupervisores, function (err, supervisores){
+
 			        crudUsuario.getEmpleadoPorSupervisor(req.user.id, usuarioQuery,function(error, usuarios, departamentos){
 
 						var queryInUsers = {
 							usuario: {"$in":util.getIdsList(usuarios.concat(supervisores))},
 							estado: 'Pendiente'
 						};
+
 						Justificaciones.find(queryInUsers).populate('usuario').exec(function(error, justCount) {
 							Solicitudes.find(queryInUsers).populate('usuario').exec(function(error, soliCount) {
 								HoraExtra.find(queryInUsers).populate('usuario').exec(function(error, extras) {
@@ -95,16 +109,12 @@ module.exports = {
 
 																	});
 
-																	// console.log('cargoAlosPeriodos: ' + infoPeriodo.cargoAlosPeriodos);
-																	// console.log('diasDerechoDisfrutar: ' + infoPeriodo.diasDerechoDisfrutar);
-																	// console.log('diasDisfrutados: ' + infoPeriodo.diasDisfrutados);
 																	infoPeriodo.diasDisponibles = infoPeriodo.diasDerechoDisfrutar-infoPeriodo.diasDisfrutados;
-																	// console.log('saldoPorDisfrutar: ' + infoPeriodo.diasDisponibles);
 
 																	var cierreUsuarios = [];
 																	if(cierres && cierres.length>0)
 																		cierreUsuarios = cierres[0];
-																	//result.forEach(function(supervisor){
+
 																	var sup = {departamentos: [1]};
 																	var arrayMarcas = util.eventosAjuste(marcas, sup, "escritorioEmpl");
 
@@ -120,13 +130,13 @@ module.exports = {
 																	*/
 																	var arrayJust = util.unixTimeToRegularDate(justificaciones);
 																	if (error) return res.json(error);
-																	//console.log(cierreUsuarios);
+
 
 																	//Se modifica el tipo tomando el cuenta el tipo con el cual ha iniciado sesion
 																	req.user.tipo = req.session.name;
 
 																	//En caso de ser profesor no se pasan las justificaciones
-																	if(req.user.tipo.length > 1 && req.session.name == config.empleadoProfesor){
+																	if(req.user.tipo && req.session.name == config.empleadoProfesor){
 																		arrayJust = null;
 																	}
 
@@ -191,7 +201,7 @@ module.exports = {
 
 		//Se busca en la base de datos todas las marcas realizadas por el usuario
 		//Se busca en la base de datos las marcas del mismo día
-		//console.log(req.user.id);
+
 		Contenido.find({seccion:"escritorioEmpl"},function(error,contenido){
 			if (error) return res.json(error);
 			PermisoSinSalario.find().sort({numero: 1}).exec(function(error, permisosSinSalario) {
@@ -234,18 +244,14 @@ module.exports = {
 
 								crudUsuario.validarPeriodoUsuario(req.user, periodos);
 
-								 // console.log('cargoAlosPeriodos: ' + infoPeriodo.cargoAlosPeriodos);
-								 // console.log('diasDerechoDisfrutar: ' + infoPeriodo.diasDerechoDisfrutar);
-								 // console.log('diasDisfrutados: ' + infoPeriodo.diasDisfrutados);
 								 infoPeriodo.diasDisponibles = infoPeriodo.diasDerechoDisfrutar-infoPeriodo.diasDisfrutados;
-								 // console.log('saldoPorDisfrutar: ' + infoPeriodo.diasDisponibles);
 
 								var supervisor = {departamentos: [1]};
 								var arrayMarcas = util.eventosAjuste(marcas, supervisor, "escritorioEmpl");
 								var arrayJust = util.unixTimeToRegularDate(justificaciones, true);
 
 								//En caso de ser profesor no se pasan las justificaciones
-								if(req.user.tipo.length > 1 && req.session.name == config.empleadoProfesor){
+								if(req.user.departamentos.length > 1 && req.session.name == config.empleadoProfesor){
 									arrayJust = new Array();
 								}
 
@@ -267,7 +273,7 @@ module.exports = {
 												var crearAlertas = true;
 
 												alertas.forEach(function(alerta) {
-													// console.log('alerta: ' + alerta);
+
 													if(alerta.usuario.toString() === req.user.id.toString()){
 														crearAlertas = false;
 														listaAlertas.push(alerta);
@@ -284,11 +290,6 @@ module.exports = {
 													if(req.user.horarioFijo){
 														HorarioFijo.findOne({_id: req.user.horarioFijo}, function(err, horarioFijo){
 															if (err) return res.json(err);
-															// console.log(horarioFijo);
-															// console.log(horarioFijo.horaEntrada.split(":")[0]);
-															// console.log(horarioFijo.horaSalida.split(":")[0]);
-															// console.log(horarioFijo.horaEntrada.split(":")[1]);
-															// console.log(horarioFijo.horaSalida.split(":")[1]);
 
 															horaEntrada = horarioFijo.horaEntrada.split(":")[0];
 															horaSalida = horarioFijo.horaSalida.split(":")[0];
@@ -307,13 +308,9 @@ module.exports = {
 														Horario.findOne({_id: req.user.horario}, function(err, horario){
 															if (err) return res.json(err);
 															horaEntrada = fechaActual.getHours().toString();
-															// console.log("horaEntrada: " + horaEntrada);
 															horaSalida = (fechaActual.getHours() + Number(horario.rangoJornada.split(":")[0])).toString();
-															// console.log("horaSalida: " + horaSalida);
 															minutosEntrada = fechaActual.getMinutes().toString();
-															// console.log("minutosEntrada: " + minutosEntrada);
 															minutosSalida = '59';
-															// console.log("minutosSalida: " + minutosSalida);
 
 															let i;
 															for (i = 0; i < cantidadAlertas.valor; i++) {
@@ -326,7 +323,7 @@ module.exports = {
 													} else if(req.user.horarioEmpleado){
 														HorarioPersonalizado.findOne({_id: req.user.horarioEmpleado}, function(err, horarioPersonalizado){
 															if (err) return res.json(err);
-															// console.log(horarioPersonalizado);
+
 															switch (fechaActual.getDay()) {
 																case 0:
 																	horaEntrada = horarioPersonalizado.domingo.entrada.hora.toString();
@@ -442,28 +439,15 @@ module.exports = {
 
     function fechaAleatoria(horaInicial, horaFinal, minutosInicial, minutosfinal) {
 
-        // console.log('horaInicial: ' + horaInicial);
-        // console.log('horaFinal: ' + horaFinal);
-        // console.log('minutosInicial: ' + minutosInicial);
-        // console.log('minutosfinal: ' + minutosfinal);
-
 		horaFinal = horaFinal -1;
 
         var fecha = new Date();
         var horaAleatoria = Math.floor(Math.random()*(horaFinal-horaInicial+1)+horaInicial) ;
 		var minutosAleatorio = Math.floor(Math.random() * minutosfinal) + minutosInicial;
 
-        // console.log('horaAleatoria: ' + horaAleatoria);
-        // console.log('minutosAleatorio: ' + minutosAleatorio);
 
 		fecha.setHours(horaAleatoria);
         fecha.setMinutes(minutosAleatorio);
-
-        // console.log('Año: ' + fecha.getFullYear());
-        // console.log('Mes: ' + fecha.getMonth());
-        // console.log('Dia: ' + fecha.getDate());
-        // console.log('Hora: ' + fecha.getHours());
-        // console.log('Minutos: ' + fecha.getMinutes());
 
         return fecha;
     }

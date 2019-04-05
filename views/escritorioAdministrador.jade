@@ -225,6 +225,22 @@
               .form-group
                   label(for='nombre') #{textos[12].titulo}
                     input#group.form-control( type="text", placeholder='#{textos[12].titulo}', name= "nombre")
+              .form-group
+                label(for='nombre') Nivel
+                  br
+                  select.form-control#nivelDepartamento.selectpicker(data-style="btn-inverse", data-width="200px", type="text", name="nivel" )
+                    option 1
+                    option 2
+                    option 3
+                    option 4
+                    option 5
+              .form-group
+                label(for='selectDepartamentos') Departamento Supervisor:
+                  br
+                  select.form-control#selectDepartamentosAgregar.selectpicker(data-style="btn-inverse", data-width="200px", data-selected-text-format="count>2", type="text", name="departamentoSupervisor")
+                    option(value='') Seleccione una opción
+                    each departamento, i in departamentos
+                      option(value= departamento.id) #{departamento.nombre}
               button.btn.btn-success(type='submit') #{textos[13].titulo}
               button.btn.btn-danger(type='button', data-dismiss='modal') #{textos[14].titulo}
 
@@ -282,13 +298,15 @@
               .form-group
                 label(for='selectDepartamentos') Departamento:
                   br
-                  select.form-control#selectDepartamentos.selectpicker(data-style="btn-success", data-width="150px", data-selected-text-format="count>2", type="text", name="idDepartamento", multiple="multiple")
+                  select.form-control#selectDepartamentos.selectpicker(data-style="btn-inverse", data-width="200px", data-selected-text-format="count>2", type="text", name="idDepartamento")
+                    option(value='Sin Departamento') Seleccione una opción
                     each departamento, i in departamentos
                       option(value= departamento.id) #{departamento.nombre}
 
                 label(for="selectTipo") Tipo de Usuario:
                   br
-                  select.form-control#selectTipo.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="tipo", multiple="multiple")
+                  select.form-control#selectTipo.selectpicker(data-style="btn-inverse", data-width="200px", type="text", name="tipo")
+                    option Seleccione una opción
                     option Empleado
                     option Supervisor
                     option Administrador
@@ -296,6 +314,12 @@
                     option #{empleadoProfesor}
                     option Administrador de Reportes
 
+                label(for="selectTipo")
+                  br
+                  button.btn.btn-info(type='button', onclick='agregarRolDepartamento()') Agregar
+              .form-group
+                input.form-control(type="hidden" id="rolesDepartamento", name="rolesDepartamento")
+                ul#listDepartamentos
               .form-group
                 label.labelFiltro(for='fechaIngreso') Fecha Ingreso:
                   input#fechaIngreso.form-control(style="cursor:pointer; cursor: hand;", type="text", name='fechaIngreso', readonly="readonly", placeholder="Fecha Ingreso" )
@@ -311,7 +335,7 @@
                 label#passInputText
 
             button.btn.btn-success#agregarEmpleado(type='button') Ingresar
-              button.btn.btn-danger#clearLabel(type='button', data-dismiss='modal') Cancelar
+            button.btn.btn-danger#clearLabel(type='button', data-dismiss='modal', style='margin-left:10px;') Cancelar
 
   //
   #addHorario.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')

@@ -16,16 +16,24 @@ $(document).keypress(function(e) {
             dataType : "json",
             data: {username2:username,password2 : password},
             success: function(data) {
-                if(data && data.tipo){
+                if(data){
                     var selectTem = document.getElementById("selectTem");
-                    if(data.tipo instanceof Array){
-                        for( var i in data.tipo){
+                    if(data.departamentos instanceof Array){
+                        var roles = [];
+
+                        data.departamentos.forEach(function (departamento) {
+                            if(!roles.includes(departamento.tipo)){
+                                roles.push(departamento.tipo);
+                            }
+                        });
+
+                        for( var i in roles){
                             var option = document.createElement("option");
-                            option.text = data.tipo[i];
+                            option.text = roles[i];
                             selectTem.add(option);
                         }
 
-                        if(data.tipo.length <= 1){
+                        if(data.departamentos.length <= 1){
                             $("#login-form").submit();
                         }else{
                             global++;
@@ -35,8 +43,6 @@ $(document).keypress(function(e) {
                             $("#btnVerificar").css('display', 'none');
                             alertify.success('Seleccione el rol con el que desea ingresar.').delay(10);
                         }
-
-
                     }
                 }
 
@@ -65,16 +71,24 @@ function verificarTipos(){
         dataType : "json",
         data: {username2:username,password2 : password},
         success: function(data) {
-            if(data && data.tipo){
+            if(data){
                 var selectTem = document.getElementById("selectTem");
-                if(data.tipo instanceof Array){
-                    for( var i in data.tipo){
+
+                if(data.departamentos instanceof Array){
+                    var roles = [];
+                    data.departamentos.forEach(function (departamento) {
+                        if(!roles.includes(departamento.tipo)){
+                            roles.push(departamento.tipo);
+                        }
+                    });
+
+                    for( var i in roles){
                         var option = document.createElement("option");
-                        option.text = data.tipo[i];
+                        option.text = roles[i];
                         selectTem.add(option);
                     }
 
-                    if(data.tipo.length <= 1){
+                    if(data.departamentos.length <= 1){
                         $("#login-form").submit();
                     }else{
 

@@ -42,7 +42,7 @@ module.exports = {
       var permisosQuery = { tipoSolicitudes:'Permisos' };
       var marcaQuery = {};
       var cierreQuery = {};//{"usuarios.tiempo.horas":{"$gte":0}};
-      var usuarioQuery = { estado:"Activo", tipo:{'$in': ['Empleado', 'Usuario sin acceso web']}};
+      var usuarioQuery = { estado:"Activo", departamentos : { $elemMatch: { tipo: {$in: ['Empleado', 'Usuario sin acceso web']}}}};
       var populateQuery = {
         path: 'usuario'
       };
@@ -68,8 +68,7 @@ module.exports = {
           _id:{
             "$ne":ObjectId(req.user.id)
           },
-          tipo:"Supervisor",
-          departamentos: {$elemMatch: {departamento: ObjectId(req.user.departamentos[0].departamento)}}
+          departamentos: {$elemMatch: {departamento: ObjectId(req.user.departamentos[0].departamento), tipo:"Supervisor"}}
         };
 
         if(req.session.name === "Administrador de Reportes"){
@@ -134,7 +133,7 @@ module.exports = {
                       listaCierre = util.unixTimeToRegularDate(listaCierre, true);
 
                       //En caso de ser profesor no se pasan las justificaciones
-                      if(req.user.tipo.length > 1 && req.session.name == config.empleadoProfesor){
+                      if(req.user.departamentos.length > 1 && req.session.name == config.empleadoProfesor){
                         arrayJust = new Array();
                         listaCierre = new Array();
                       }
@@ -228,7 +227,7 @@ module.exports = {
                     listaCierre = util.unixTimeToRegularDate(listaCierre, true);
 
                     //En caso de ser profesor no se pasan las justificaciones
-                    if(req.user.tipo.length > 1 && req.session.name == config.empleadoProfesor){
+                    if(req.user.departamentos.length > 1 && req.session.name == config.empleadoProfesor){
                       arrayJust = new Array();
                       listaCierre =  new Array();
                     }
@@ -296,7 +295,7 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos, marcaQu
 
   Justificaciones.find(justQuery).populate(populateQuery).exec(function(error, justificaciones){
     HoraExtra.find(extraQuery).populate(populateQuery).exec(function(error, extras) {
-      Solicitudes.find(permisosQuery).populate('usuario._id').exec(function(error, permisos) {
+      Solicitudes.find(permisosQuery).populate('usuario').exec(function(error, permisos) {
         PermisoSinSalario.find().sort({numero: 1}).exec(function(error, permisosSinSalario) {
 
             var permisosTemp = [];
@@ -493,7 +492,6 @@ function renderFiltro(req, res, titulo, usuario, departamentos, usuarios, marcas
     });
   }
 
-  // console.log(req.route.path.substring(0, 9));
   //Si el filtrado es por vacaciones
   if(filtrado && filtrado == "vacaciones" && req.route.path.substring(0, 9) =='/reportes'){
     filtro.vacaciones = true;

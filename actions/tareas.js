@@ -9,7 +9,7 @@ const Justificaciones = require('../models/Justificaciones');
 var Feriado = require('../models/Feriado');
 
 const WORKING_DAYS = ["Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"];
-const USER_TYPES = {ADMIN: 'Administrador', TEACHER: 'Profesor'};
+const USER_TYPES = {ADMIN: 'Administrador', TEACHER: 'Profesor', REPORT_MANAGER: "Administrador de Reportes", SUPERVISOR: "Supervisor"};
 const MAXIMUM_INTERVAL_WORKING = 12;
 const SCHEDULER_TYPE = {FIXED: 'horarioFijo', RANGE: 'horarios', EMPLOYEE_SCHEDULE: 'horariosEmpleado'};
 const AUTOMATIC_CLOSURE = 'Cierre Automático  de Sistema';
@@ -60,10 +60,9 @@ module.exports = {
 
                     for (usuario in usuarios) {
 
-                        //console.log(usuarios[usuario]);
                         //Solo se hacen los cierres para quien tenga el horario personalizado hecho
                         if (usuarios[usuario].horarioEmpleado && usuarios[usuario].horarioEmpleado != "") {
-                            //console.log(usuarios[usuario].horarioEmpleado);
+
                             buscarHorario(usuarios[usuario]._id, tipoUsuario, epochMin, epochMax,
                                 usuarios[usuario].horarioEmpleado, usuarios[usuario].tipo.length);
                         }
@@ -117,10 +116,10 @@ const CronJobOperations = {
         const today = moment();
         DBOperations.findUsers().then(users => {
             users.forEach(user => {
-                user.tipo.filter(type => type !== USER_TYPES.ADMIN).forEach(type =>{
+                user.departamentos.filter(departamento => departamento.tipo !== USER_TYPES.ADMIN && departamento.tipo !== USER_TYPES.REPORT_MANAGER && departamento.tipo !== USER_TYPES.SUPERVISOR).forEach(type =>{
                     const schedule = user.horarioEmpleado || user.horarioFijo || user.horario;
                     if (schedule) {
-                        this.checkUserMarks(user, schedule, type, day, today).catch(error => console.log(error));
+                        this.checkUserMarks(user, schedule, type.tipo, day, today).catch(error => console.log(error));
                     }else {
                         console.log(`El usuario ${user._id} no tiene un horario asociado`);
                     }
@@ -129,6 +128,7 @@ const CronJobOperations = {
         }).catch(error => console.log("Error retrieving users", JSON.stringify(error)));
     },
     checkUserMarks(user, userSchedule, userType, currentDay, today) {
+        console.log('1');
         const _idUser = user._id;
         return DBOperations.findMarks(_idUser, userType).then(marks => {
             ScheduleOperations.groupMarks(marks, userSchedule, today).forEach(definedWorkHours => {
@@ -406,14 +406,7 @@ const DBOperations = {
     findUsers(){
         return new Promise((resolve, reject) => {
             //The closure is created for all users except for the administrator type
-            User.find({estado: "Activo"}, {
-                _id: 1,
-                nombre: 1,
-                horarioFijo: 1,
-                horario: 1,
-                horarioEmpleado: 1,
-                tipo: 1
-            }).populate("horarioFijo").populate('horario').populate('horarioEmpleado')
+            User.find({estado: "Activo"}).populate("horarioFijo").populate('horario').populate('horarioEmpleado')
                 .then(users => resolve(users))
                 .catch(error => reject(error));
         });

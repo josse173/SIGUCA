@@ -1,4 +1,4 @@
-/** SIGUCA 
+/** SIGUCA
  *
  * Modelo de Departamento
  *
@@ -10,6 +10,14 @@ var mongoose = require('mongoose'),
  //Crear el esquema de Departamento
 var SchemaDepartamento = new Schema({
     nombre: {
+        type: String,
+        default: ''
+    },
+    departamentoSupervisor: {
+        type: Schema.ObjectId,
+        ref: 'Departamento'
+    },
+    nivel: {
         type: String,
         default: ''
     }

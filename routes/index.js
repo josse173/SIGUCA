@@ -113,8 +113,7 @@ module.exports = function(app, io) {
 
     //var upload = multer({storage: 'pru/'});
    // app.post('/imagen',upload.single('myimage'),function(req,res,next){
-    //    console.log('test :'+ JSON.stringify(req.file));
-    //    console.log('test :'+ JSON.stringify(req.files));
+
     //    res.end('Imagen Cargada en el servidor');
     //});
 
@@ -306,9 +305,8 @@ module.exports = function(app, io) {
     */
 
     app.get('/solicitud/inciso', autentificado, function (req, res) {
-        //console.log('INCISO PRUEBA ID    ' + req.user.id)
+
         Solicitudes.find({usuario: req.user.id, "inciso":"Inciso C", "estado":"Aceptada" }).exec(function (err, quantity) {
-            //console.log(quantity);
             var size = quantity.length;
             res.json({quantity});
         });
@@ -319,24 +317,23 @@ module.exports = function(app, io) {
         fechaActual.hours(0);
         fechaActual.minutes(0);
         fechaActual.seconds(0);
-        //console.log("fechaActual: " + fechaActual.unix());
+
         var diaAnterior = moment(req.params.fecha).add(-1, 'days').unix();
-        //console.log("diaAnterior: " + diaAnterior);
+
         var diaSiguiente = moment(req.params.fecha).add(1, 'days').unix();
-        //console.log("diaSiguiente: " + diaSiguiente);
-        //console.log("fechaActual: " + fechaActual.unix());
+
         var coincidencias = 0;
-        //console.log({usuario: ObjectId(req.user.id), estado: "Aceptada", epochInicio: {$gte: fechaActual.unix()} });
+
         Solicitudes.find( {usuario: ObjectId(req.user.id), estado: "Aceptada", epochInicio: {$gte: fechaActual.unix()} }).exec(function (err, solicitudes) {
             if(solicitudes && solicitudes.length > 0){
-                //console.log("Cantidad: "+solicitudes.length);
+
                 solicitudes.forEach(function (solicitud) {
-                    //console.log("solicitud.epochInicio: " + solicitud.epochInicio);
+
                     if(solicitud.epochInicio === diaAnterior || solicitud.epochInicio === diaSiguiente){
                         coincidencias++;
                     }
                 });
-                //console.log("coincidencias: "+coincidencias);
+
                 res.json(coincidencias);
             } else {
                 res.json(coincidencias);
@@ -516,7 +513,7 @@ module.exports = function(app, io) {
                     if (err) console.log(err);
                     if (usuario){
                         usuario.departamentos.forEach(function(departamento) {
-                            Usuario.find({departamentos: {$elemMatch: {departamento: ObjectId(departamento.departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisores){
+                            Usuario.find({departamentos: {$elemMatch: {departamento: ObjectId(departamento.departamento), tipo: "Supervisor"}}}).exec(function(error, supervisores){
                                 if (error) console.log(error);
 
                                 if(supervisores && supervisores.length > 0){
@@ -562,17 +559,16 @@ module.exports = function(app, io) {
                 var estaDisponible = false;
 
                 var entrada = marcas.filter(x => x.tipoMarca === 'Entrada');
-                // console.log('entrada: ' + entrada.length);
+
                 var salidaReceso = marcas.filter(x => x.tipoMarca === 'Salida a Receso');
-                // console.log('salidaReceso: ' + salidaReceso.length);
+
                 var entradaReceso = marcas.filter(x => x.tipoMarca === 'Entrada de Receso');
-                // console.log('entradaReceso: ' + entradaReceso.length);
+
                 var salidaAlmuerzo = marcas.filter(x => x.tipoMarca === 'Salida al Almuerzo');
-                // console.log('salidaAlmuerzo: ' + salidaAlmuerzo.length);
+
                 var entradaAlmuerzo = marcas.filter(x => x.tipoMarca === 'Entrada de Almuerzo');
-                // console.log('entradaAlmuerzo: ' + entradaAlmuerzo.length);
+
                 var salida = marcas.filter(x => x.tipoMarca === 'Salida');
-                // console.log('salida: ' + salida.length);
 
                 if(entrada.length === 1 && salidaReceso.length === entradaReceso.length && salidaAlmuerzo.length === entradaAlmuerzo.length && salida.length === 0){
                     estaDisponible = true;
@@ -751,10 +747,9 @@ module.exports = function(app, io) {
               titulo:req.body.titulo,
               llave:req.body.llave
           });
-          console.log(content);
+          //console.log(content);
           content.save(function (err, user) {
               if (err) console.log(err);
-              //console.log("El usuario se creo ");
           });
           res.redirect('/escritorioAdmin');
       });
@@ -816,8 +811,6 @@ module.exports = function(app, io) {
                         if(user[h]._id==req.body.empleado._id){
                             contador++;
                         }
-
-
                     }
                     if(contador>0){
                         res.json("Correcto");
@@ -883,7 +876,7 @@ module.exports = function(app, io) {
         Usuario.findById(req.params.id, function (err, empleado) {
             if (err) return res.json(err);
             else res.json(empleado);
-        });
+        }).populate('departamentos.departamento');
     });
 
 
@@ -921,7 +914,7 @@ module.exports = function(app, io) {
         Usuario.findOne({username:req.body.username2,estado:"Activo"}, function (err, user) {
             if (err || (user && !user.validPassword(req.body.password2))) { return res.json(err) }
             res.json(user);
-        });
+        }).populate('departamentos');
     });
     //******************************************************************************
     //Periodos de un usuario
@@ -929,8 +922,7 @@ module.exports = function(app, io) {
     *  Crea un nuevo periodo
     */
     app.post('/periodo/:id', autentificado, function (req, res) {
-        //console.log("post de periodo mandando el id " + req.params.id);
-        //console.log("ESTE ES usuario dentro del post     " + req.user);
+
         if (req.session.name == "Administrador") {
             req.body.usuario = req.params.id;
             crudPeriodo.addPeriodo(req.body, function() {
@@ -953,7 +945,7 @@ module.exports = function(app, io) {
             }else{
                 req.user.tipo = req.session.name;
                 Usuario.findById(req.params.id, function (err, empleado) {
-                    //console.log("NOMBRE USUARIO    " + empleado.nombre);
+
                     if (err) return res.json(err);
                     else{
                         return res.render('periodo', {
@@ -973,7 +965,7 @@ module.exports = function(app, io) {
    *  Modifica el estado de Activo a Inactivo de un periodo en específico
    */
     app.get('/periodo/delete/:id', autentificado, function (req, res) {
-        //console.log("ESTE ES id a eliminar   " + req.params.id);
+
         crudPeriodo.deletePeriodo(req.params.id, function (err, msj) {
             if (err) res.json(err);
             res.send(msj);
@@ -1115,27 +1107,6 @@ module.exports = function(app, io) {
         }
     });
 
-
-
- //  var storage = multer.diskStorage({
-   //     destination: function(req, file, cb) {
-    //        cb(null, './uploads/');
-    //    },
-    //    filename: function(req, file, cb) {
-    //        var ext = file.originalname.split('.').pop();
-    //        cb(null, file.fieldname + '-' + Date.now() + '.' + ext);
-    //    }
-   // });
-
-   // upload = multer({ storage: storage });
-   // app.post('/IMAGENXD/:id', autentificado,upload.single('upl'), function (req, res,next) {
-   //    //console.log('body', req.body);
-        //console.log('file', req.file);
-    //    console.log('file', req.files);
-    //    res.redirect('/configuracion');
-    //});
-
-
 // Funcionalidad para cargar la imagen en el servidor, con la validacionde  png , la ruta donde  se  guarda
 // se define en /config/express.js
     app.post('/IMAGEN/:id', autentificado, function(req, res) {
@@ -1143,7 +1114,7 @@ module.exports = function(app, io) {
 
         var extension=String(req.files.upl.type);
         var extension = extension.substring(6);
-        //console.log(extension);
+
         if(extension!=="png"){
             res.send("Solo se aceptan .png");
         }
@@ -1159,8 +1130,6 @@ module.exports = function(app, io) {
         res.redirect('/configuracion');
     }
     });
-
-
 
     /*
     *   Cambia la contraseña de los usuarios
@@ -1274,8 +1243,6 @@ module.exports = function(app, io) {
     /*
     *  Crea un nuevo horario
     */
-
-
 
     app.post('/horarioN', autentificado, function (req, res) {
         crud.addHorario(req.body, function() {
@@ -1463,7 +1430,6 @@ module.exports = function(app, io) {
 
     //asignarCorreo
     app.post('/asignarCorreo',autentificado, crudCorreo.insertarCorreo);
-
 
     app.get('/correo',autentificado,function(req,res){
         Correo.find(function(err,correos){
@@ -1729,14 +1695,14 @@ module.exports = function(app, io) {
                     "$or": or
                 }
                 Cierre.find(queryOr).exec(function(err, cierre) {
-                    if (err) console.log('error al cargar los cierres: ' + err);
+                    if (err)
                     else {
                         socket.emit('listaCierre', cierre);
                     }
                 });
             } else {
                 Cierre.find({tipo: "General", departamento: option[1]}).exec(function(){
-                    if (err) console.log('error al cargar los cierres: ' + err);
+                    if (err)
                     else {
                         socket.emit('listaCierre', cierre);
                     }
@@ -1747,9 +1713,9 @@ module.exports = function(app, io) {
         function listarEmpleado(departamentoId){
             var option = departamentoId.split(',');
             Cierre.find({usuario: option[2]}).exec(function(err, cierre) {
-                if (err) console.log('error al cargar los cierres: ' + err);
+                if (err)
                 else {
-                    //console.log('consulta sin errores');
+
                     var result = {
                         cierre: cierre
                     }
@@ -1775,12 +1741,12 @@ module.exports = function(app, io) {
     app.post('/generarBoleta/:boleta', autentificado, function (req, res) {
 
         var parametros = JSON.parse(req.params.boleta);
-        //console.log(parametros);
+
         if (parametros.tipo === 'justificacion'){
 
             Justificaciones.findById(parametros.id).populate('usuario').exec(function (err, justificacion) {
                 if(err) return err;
-                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(justificacion.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(justificacion.usuario.departamentos[0].departamento), tipo: "Supervisor"}}}).exec(function(error, supervisor){
                     if(error) return error;
                     var nombreSupervisor = '';
                     if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){
@@ -1808,7 +1774,7 @@ module.exports = function(app, io) {
 
             Solicitudes.findById(parametros.id).populate('usuario').exec(function (err, solicitud) {
                 if(err) return err;
-                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento), tipo: "Supervisor"}}}).exec(function(error, supervisor){
                     if(error) return error;
                     var nombreSupervisor = '';
                     if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){
@@ -1839,7 +1805,7 @@ module.exports = function(app, io) {
 
             Solicitudes.findById(parametros.id).populate('usuario').exec(function (err, solicitud) {
                 if(err) return err;
-                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento), tipo: "Supervisor"}}}).exec(function(error, supervisor){
                     if(error) return error;
                     var nombreSupervisor = '';
                     if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){
@@ -1870,7 +1836,7 @@ module.exports = function(app, io) {
 
             Solicitudes.findById(parametros.id).populate('usuario').exec(function (err, solicitud) {
                 if(err) return err;
-                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento), tipo: "Supervisor"}}}).exec(function(error, supervisor){
                     if(error) return error;
                     var nombreSupervisor = '';
                     if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){
@@ -1901,7 +1867,7 @@ module.exports = function(app, io) {
 
             Solicitudes.findById(parametros.id).populate('usuario').exec(function (err, solicitud) {
                 if(err) return err;
-                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento), tipo: "Supervisor"}}}).exec(function(error, supervisor){
                     if(error) return error;
                     var nombreSupervisor = '';
                     if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){
@@ -1932,7 +1898,7 @@ module.exports = function(app, io) {
 
             Solicitudes.findById(parametros.id).populate('usuario').exec(function (err, solicitud) {
                 if(err) return err;
-                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento), tipo: "Supervisor"}}}).exec(function(error, supervisor){
                     if(error) return error;
                     var nombreSupervisor = '';
                     if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){
@@ -1965,7 +1931,7 @@ module.exports = function(app, io) {
             Solicitudes.findById(parametros.id).populate('usuario').exec(function (err, solicitud) {
                 if(err) return err;
 
-                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento), tipo: "Supervisor"}}}).exec(function(error, supervisor){
                     if(error) return error;
                     var nombreSupervisor = '';
                     if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){
@@ -1996,7 +1962,7 @@ module.exports = function(app, io) {
 
             HoraExtra.findById(parametros.id).populate('usuario').exec(function (err, horasExtra) {
                 if(err) return err;
-                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(horasExtra.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(horasExtra.usuario.departamentos[0].departamento), tipo: "Supervisor"}}}).exec(function(error, supervisor){
                     if(error) return error;
                     var nombreSupervisor = '';
                     if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){
@@ -2028,7 +1994,7 @@ module.exports = function(app, io) {
             Solicitudes.findById(parametros.id).populate('usuario').exec(function (err, solicitud) {
                 if(err) return err;
 
-                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento), tipo: "Supervisor"}}}).exec(function(error, supervisor){
                     if(error) return error;
                     var nombreSupervisor = '';
                     if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){
@@ -2060,7 +2026,7 @@ module.exports = function(app, io) {
             Solicitudes.findById(parametros.id).populate('usuario').exec(function (err, solicitud) {
                 if(err) return err;
 
-                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento), tipo: "Supervisor"}}}).exec(function(error, supervisor){
                     if(error) return error;
                     var nombreSupervisor = '';
                     if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){

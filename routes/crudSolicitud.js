@@ -49,7 +49,7 @@ exports.addExtra = function(extra, cb){
 		}
 		else {
 			Usuario.findOne({_id: horaExtraCreada.usuario}).populate('departamentos').exec(function (err, usuarioExtra) {
-				Usuario.find({ 'tipo': 'Supervisor', 'departamentos.departamento': usuarioExtra.departamentos[0].departamento}, {'email': 1}).exec(function (err, supervisor) {
+				Usuario.find({ departamentos : { $elemMatch: { tipo: {$in: ['Supervisor']}, departamento: usuarioExtra.departamentos[0].departamento}}}, {'email': 1}).exec(function (err, supervisor) {
 					if (err) return cb(err);
 					Correo.find({}, function (errorCritico, listaCorreos) {
 						if (!errorCritico && listaCorreos.length > 0) {
@@ -145,7 +145,6 @@ exports.updateExtra = function(extra, cb, idUser){
 //--------------------------------------------------------------------
 exports.addPermiso = function(permiso, cb, idUser){
 
-	//console.log(permiso);
 	var epochTime = moment().unix();
 	var epochInicio = moment(permiso.diaInicio).unix();
 	var epochFinal = moment(permiso.diaFinal).unix();
@@ -176,12 +175,9 @@ exports.addPermiso = function(permiso, cb, idUser){
         fechaCreada: newSolicitud.fechaCreada
     }).populate('usuario').exec(function (err, solicitud) {
         if (solicitud.length == 0) {
-            // console.log(newSolicitud);
+
             newSolicitud.save(function (err, soli) {
-                Usuario.find({
-                    'tipo': 'Supervisor',
-                    'departamentos.departamento': permiso.departamento
-                }, {'email': 1}).exec(function (err, supervisor) {
+                Usuario.find({ departamentos : { $elemMatch: { tipo: {$in: ['Supervisor']}, departamento: permiso.departamento}}}, {'email': 1}).exec(function (err, supervisor) {
                     if (err) console.log(err);
                     Correo.find({}, function (errorCritico, listaCorreos) {
                         if (!errorCritico && listaCorreos.length > 0) {
@@ -231,7 +227,7 @@ exports.updatePermiso = function(permiso, cb, idUser){
 	Solicitudes.findById(permiso.id).exec(function (err, soli) {
 		Solicitudes.findByIdAndUpdate(permiso.id, solicitudActualizada).populate('usuario').exec(function (err, solicitud) {
 			if(!err) {
-				Usuario.find({'tipo' : 'Supervisor', 'departamentos.departamento' : solicitud.usuario.departamentos[0].departamento}, {'email' : 1}
+				Usuario.find({ departamentos : { $elemMatch: { tipo: {$in: ['Supervisor']}, departamento: solicitud.usuario.departamentos[0].departamento}}}, {'email' : 1}
 					).exec(function (err, supervisor) {
 						if (!err) {
 							Correo.find({},function(errorCritico,listaCorreos){
