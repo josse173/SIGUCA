@@ -556,7 +556,7 @@ $("button[data-target=#editHorarioFijo]").click( function() {
         $('#selectHorarioFijo').selectpicker('refresh');
         $('#HorarioEmpleado').selectpicker('refresh');
         $('#estadoEmpleado').selectpicker('refresh');
-
+        $('#listDepartamentos').empty();
         agregarLiUpdate(data.departamentos);
 
     });

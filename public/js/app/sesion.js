@@ -19,9 +19,17 @@ $(document).keypress(function(e) {
                 if(data){
                     var selectTem = document.getElementById("selectTem");
                     if(data.departamentos instanceof Array){
-                        for( var i in data.departamentos){
+                        var roles = [];
+
+                        data.departamentos.forEach(function (departamento) {
+                            if(!roles.includes(departamento.tipo)){
+                                roles.push(departamento.tipo);
+                            }
+                        });
+
+                        for( var i in roles){
                             var option = document.createElement("option");
-                            option.text = data.departamentos[i].tipo;
+                            option.text = roles[i];
                             selectTem.add(option);
                         }
 

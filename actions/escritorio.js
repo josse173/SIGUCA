@@ -26,7 +26,8 @@ var ObjectId = mongoose.Types.ObjectId;
 
 module.exports = {
 	escritorio : function (req, res) {
-		var conteoJustificacionesTotal=0;
+
+		var conteoJustificacionesTotal = 0;
 		req.user.tipo = req.session.name;
 		if (req.session.name === "Supervisor" || req.session.name === "Administrador de Reportes") {
 			var epochGte = moment().hours(0).minutes(0).seconds(0).milliseconds(0);
@@ -41,16 +42,30 @@ module.exports = {
 				},
 				departamentos: {$elemMatch: {departamento: ObjectId(req.user.departamentos[0].departamento), tipo: 'Supervisor'}}
 			};
+
+			var arrayDepartamentosUsuarioEsSupervisor = [];
+
+			if(req.user.departamentos && req.user.departamentos.length > 0){
+				req.user.departamentos.forEach(function (departamento) {
+					if(departamento.tipo === "Supervisor"){
+						arrayDepartamentosUsuarioEsSupervisor.push(departamento.departamento)
+					}
+				})
+			}
+
 			Contenido.find({seccion:"escritorio"},function(err,contenido){
 			    if (err) return res.json(error);
-			    var usuarioQuery = { departamentos : { $elemMatch: { tipo: {$in: ['Empleado', 'Usuario sin acceso web']}}}};
+			    var usuarioQuery = { departamentos : { $elemMatch: { tipo: {$in: ['Empleado', 'Usuario sin acceso web']}, departamento: {$in: arrayDepartamentosUsuarioEsSupervisor}}}};
+
 			    crudUsuario.get(querrySupervisores, function (err, supervisores){
+
 			        crudUsuario.getEmpleadoPorSupervisor(req.user.id, usuarioQuery,function(error, usuarios, departamentos){
 
 						var queryInUsers = {
 							usuario: {"$in":util.getIdsList(usuarios.concat(supervisores))},
 							estado: 'Pendiente'
 						};
+
 						Justificaciones.find(queryInUsers).populate('usuario').exec(function(error, justCount) {
 							Solicitudes.find(queryInUsers).populate('usuario').exec(function(error, soliCount) {
 								HoraExtra.find(queryInUsers).populate('usuario').exec(function(error, extras) {

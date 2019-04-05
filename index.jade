@@ -8,9 +8,9 @@ block sigucaNavbarItems
   ul#nav.main
     li
      a.active(href='/Ayuda')
-      |Ayuda 
-      i.icon-question-sign.icon-large  
-              
+      |Ayuda
+      i.icon-question-sign.icon-large
+
 block content
   .wrapper
           form
@@ -20,13 +20,13 @@ block content
                   label(for='xlInput') X-Large input
                   .input
                     input#xlInput.xlarge(name='xlInput', size='30', type='text')
-            
 
-           a.btn.btn-primary.btn-large(href='#ingresaEmpleado', data-toggle='modal')  
-             | Ingresar 
+
+           a.btn.btn-primary.btn-large(href='#ingresaEmpleado', data-toggle='modal')
+             | Ingresar
 
 
 block sigucaJS
-  
-  script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js')
+
+  script(src='/js/jquery.min.js')
   script(src='/twitter-bootstrap/twitter-bootstrap-v2/js/bootstrap-modal.js')
