@@ -58,6 +58,59 @@ module.exports = {
 }
 
 function deserializeHorario(serialHorario, cb){
+
+    var horario = {};
+
+    horario.lunes = {
+        entrada: obtenerHoraMinutos(serialHorario.lunesHoraEntrada),
+        salida: obtenerHoraMinutos(serialHorario.lunesHoraSalida)
+    };
+
+    horario.martes = {
+        entrada: obtenerHoraMinutos(serialHorario.martesHoraEntrada),
+        salida: obtenerHoraMinutos(serialHorario.martesHoraSalida)
+    };
+
+    horario.miercoles = {
+        entrada: obtenerHoraMinutos(serialHorario.miercolesHoraEntrada),
+        salida: obtenerHoraMinutos(serialHorario.miercolesHoraSalida)
+    };
+
+    horario.jueves = {
+        entrada: obtenerHoraMinutos(serialHorario.juevesHoraEntrada),
+        salida: obtenerHoraMinutos(serialHorario.juevesHoraSalida)
+    };
+
+    horario.viernes = {
+        entrada: obtenerHoraMinutos(serialHorario.viernesHoraEntrada),
+        salida: obtenerHoraMinutos(serialHorario.viernesHoraSalida)
+    };
+
+    horario.sabado = {
+        entrada: obtenerHoraMinutos(serialHorario.sabadoHoraEntrada),
+        salida: obtenerHoraMinutos(serialHorario.sabadoHoraSalida)
+    };
+
+    horario.domingo = {
+        entrada: obtenerHoraMinutos(serialHorario.domingoHoraEntrada),
+        salida: obtenerHoraMinutos(serialHorario.domingoHoraSalida)
+    };
+
+    horario.tiempoReceso = obtenerHoraMinutos(serialHorario.tiempoReceso[0]);
+    horario.tiempoAlmuerzo = obtenerHoraMinutos(serialHorario.tiempoAlmuerzo[0]);
+
+    cb(null, horario);
+
+    function obtenerHoraMinutos(tiempo){
+        return {
+            hora: parseInt(tiempo.split(":")[0]),
+            minutos: parseInt(tiempo.split(":")[1])
+        }
+    }
+}
+
+/*
+function deserializeHorario(serialHorario, cb){
     function tiempo(obj, name){
         return {
             hora: parseInt(obj[name].split(":")[0]),
@@ -78,3 +131,4 @@ function deserializeHorario(serialHorario, cb){
             callback(null, nuevoHorario);
         }, cb);
 }
+*/

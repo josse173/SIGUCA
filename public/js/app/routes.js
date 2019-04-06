@@ -369,7 +369,6 @@ $("button[data-target=#editHorarioPersonalizado]").click( function() {
             $('#juevesSalida').val(data.jueves.salida.hora+":"+data.jueves.salida.minutos)
         }
 
-
         if(data.viernes.entrada.minutos<10){
             $('#viernesEntrada').val(data.viernes.entrada.hora+":"+0+data.viernes.entrada.minutos);
         }else{
@@ -381,7 +380,6 @@ $("button[data-target=#editHorarioPersonalizado]").click( function() {
         }else{
             $('#viernesSalida').val(data.viernes.salida.hora+":"+data.viernes.salida.minutos)
         }
-
 
         if(data.sabado.entrada.minutos<10){
             $('#sabadoEntrada').val(data.sabado.entrada.hora+":"+0+data.sabado.entrada.minutos);
@@ -407,21 +405,17 @@ $("button[data-target=#editHorarioPersonalizado]").click( function() {
             $('#domingoSalida').val(data.domingo.salida.hora+":"+data.domingo.salida.minutos)
         }
 
-
         if(data.tiempoAlmuerzo.minutos<10){
             $('#tiempoAlmuerzoo').val(data.tiempoAlmuerzo.hora+":"+0+data.tiempoAlmuerzo.minutos);
         }else{
             $('#tiempoAlmuerzoo').val(data.tiempoAlmuerzo.hora+":"+data.tiempoAlmuerzo.minutos)
         }
 
-
         if(data.tiempoReceso.minutos<10){
             $('#tiempoRecesoo').val(data.tiempoReceso.hora+":"+0+data.tiempoReceso.minutos);
         }else{
             $('#tiempoRecesoo').val(data.tiempoReceso.hora+":"+data.tiempoReceso.minutos)
         }
-
-
     });
 });
 
