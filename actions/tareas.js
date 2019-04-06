@@ -7,6 +7,7 @@ var CronJob = require('cron').CronJob;
 var crudHorario = require('../routes/crudHorario');
 const Justificaciones = require('../models/Justificaciones');
 var Feriado = require('../models/Feriado');
+var Solicitudes = require('../models/Solicitudes');
 
 const WORKING_DAYS = ["Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"];
 const USER_TYPES = {ADMIN: 'Administrador', TEACHER: 'Profesor', REPORT_MANAGER: "Administrador de Reportes", SUPERVISOR: "Supervisor"};
@@ -116,19 +117,28 @@ const CronJobOperations = {
         const today = moment();
         DBOperations.findUsers().then(users => {
             users.forEach(user => {
-                user.departamentos.filter(departamento => departamento.tipo !== USER_TYPES.ADMIN && departamento.tipo !== USER_TYPES.REPORT_MANAGER && departamento.tipo !== USER_TYPES.SUPERVISOR).forEach(type =>{
-                    const schedule = user.horarioEmpleado || user.horarioFijo || user.horario;
-                    if (schedule) {
-                        this.checkUserMarks(user, schedule, type.tipo, day, today).catch(error => console.log(error));
-                    }else {
-                        console.log(`El usuario ${user._id} no tiene un horario asociado`);
+
+                DBOperations.findActiveRequest(user).then(request =>{
+
+                    if(request && request.length > 0){
+                        console.log(`El usuario ${user._id} (${user.username}) se encuentra en un permiso por lo cual no sera tomado en cuenta en este cierre`);
+                    } else {
+                        user.departamentos.filter(departamento => departamento.tipo !== USER_TYPES.ADMIN && departamento.tipo !== USER_TYPES.REPORT_MANAGER && departamento.tipo !== USER_TYPES.SUPERVISOR).forEach(type =>{
+                            const schedule = user.horarioEmpleado || user.horarioFijo || user.horario;
+                            if (schedule) {
+                                this.checkUserMarks(user, schedule, type.tipo, day, today).catch(error => console.log(error));
+                            }else {
+                                console.log(`El usuario ${user._id} (${user.username}) no tiene un horario asociado`);
+                            }
+                        });
                     }
                 });
+
             });
         }).catch(error => console.log("Error retrieving users", JSON.stringify(error)));
     },
     checkUserMarks(user, userSchedule, userType, currentDay, today) {
-        console.log('1');
+
         const _idUser = user._id;
         return DBOperations.findMarks(_idUser, userType).then(marks => {
             ScheduleOperations.groupMarks(marks, userSchedule, today).forEach(definedWorkHours => {
@@ -167,7 +177,7 @@ const CronJobOperations = {
                                     });
                                 }).catch(error => console.log(error));
                             } else {
-                                console.log(`No se ha encontrado una marca de salida asociada a la marca de entrada, pero no es posible agregar la marca de salida aún, debido al intervalo maximo de 12 horas. Usuario ${user.nombre}`);
+                                console.log(`No se ha encontrado una marca de salida asociada a la marca de entrada, pero no es posible agregar la marca de salida aún, debido al intervalo maximo de 12 horas. Usuario ${user.username}`);
                             }
                         }
                     }
@@ -408,6 +418,15 @@ const DBOperations = {
             //The closure is created for all users except for the administrator type
             User.find({estado: "Activo"}).populate("horarioFijo").populate('horario').populate('horarioEmpleado')
                 .then(users => resolve(users))
+                .catch(error => reject(error));
+        });
+    },
+    findActiveRequest(user){
+        return new Promise((resolve, reject) => {
+            //The closure is created for all users except for the administrator type
+            var currentDate = moment().unix();
+            Solicitudes.find({usuario: user._id, estado: "Aceptada", epochInicio: { "$lte": currentDate}, epochTermino : {"$gte": currentDate },  motivo: {$in: ["Permiso sin goce de salario", "Vacaciones", "Articulo 51", "Salida-Visita (INS)"]}})
+                .then(request => resolve(request))
                 .catch(error => reject(error));
         });
     },
