@@ -483,7 +483,7 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 	epochMax.hours(23);
 	epochMax.minutes(59);
 	epochMax.seconds(59);
-	Usuario.findById(_idUser,{_id:1, nombre:1, horarioEmpleado:1,horarioFijo: 1}).exec(
+	Usuario.findById(_idUser).exec(
 		function(err, usuario){
 			if(!err && usuario.horarioEmpleado && usuario.horarioEmpleado!=""){
 				crudHorario.getById(usuario.horarioEmpleado,
@@ -659,7 +659,7 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 
 			}
 			else if(marca.tipoMarca=="Salida") {
-				Usuario.findById(_idUser,{_id:1, nombre:1, horario:1, tipo:1}).exec(
+				Usuario.findById(_idUser).exec(
 					function(err, usuario){
 					if(!err && usuario.horario && usuario.horario!=""){
 						Horario.findById(usuario.horario,function(error,horarioEmpleado){
