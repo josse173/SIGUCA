@@ -370,10 +370,9 @@ module.exports = {
 
 															return retornarRenderEmpleado(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify(listaAlertas), tiempoRespuesta.valor, departamentosUsuario, infoPeriodo, periodos, permisosSinSalario);
 														});
+													} else {
+														return retornarRenderEmpleado(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify(listaAlertas), tiempoRespuesta.valor, departamentosUsuario, infoPeriodo, periodos, permisosSinSalario);
 													}
-
-													return retornarRenderEmpleado(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify(listaAlertas), tiempoRespuesta.valor, departamentosUsuario, infoPeriodo, periodos, permisosSinSalario);
-
 												} else {
 													return retornarRenderEmpleado(req.user, arrayMarcas, arrayJust, contenido, JSON.stringify(listaAlertas), tiempoRespuesta.valor, departamentosUsuario, infoPeriodo, periodos, permisosSinSalario);
 												}
