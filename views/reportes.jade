@@ -352,10 +352,6 @@ block content
                           td #{justificacion.detalle}
                           td #{justificacion.comentarioSupervisor}
                           td #{justificacion.estado}
-                          td
-                            if(justificacion.usuario)
-                              button.btn.btn-default.justificacionDelete(value=justificacion.usuario.nombre+' '+justificacion.usuario.apellido1+' '+justificacion.usuario.apellido2+','+justificacion.id+','+justificacion.fecha.str, name='eliminar')
-                                i.icon-trash.icon-large.i-danger
             else
               h3 #{textos[30].titulo}
               p #{textos[15].titulo}
@@ -392,10 +388,6 @@ block content
                           td #{extra.motivo}
                           td #{extra.comentarioSupervisor}
                           td #{extra.estado}
-                          td
-                            if(extra.usuario)
-                              button.btn.btn-default.solicitudDelete(value=extra.usuario.nombre+' '+extra.usuario.apellido1+' '+extra.usuario.apellido2+','+extra.id+','+extra.fecha.str, name='eliminar')
-                                i.icon-trash.icon-large.i-danger
 
           //-Solicitudes Permisos
           if(permisos)
@@ -416,7 +408,6 @@ block content
                         th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[66].titulo}
                         th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[67].titulo}
                         th #{textos[68].titulo}
-                        th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[69].titulo}
                     tbody
                       each permiso, i in permisos.filter(x => x.motivo !== 'Permiso sin goce de salario')
                         tr
@@ -434,10 +425,6 @@ block content
                           td #{permiso.detalle}
                           td #{permiso.comentarioSupervisor}
                           td #{permiso.estado}
-                          td
-                            if(permiso.usuario)
-                              button.btn.btn-default.solicitudDelete(value=permiso.usuario.nombre+' '+permiso.usuario.apellido1+' '+permiso.usuario.apellido2+','+permiso.id+','+permiso.fecha.str, name='eliminar')
-                                i.icon-trash.icon-large.i-danger
             else
               h3 #{textos[59].titulo}
               p #{textos[15].titulo}
@@ -475,10 +462,6 @@ block content
                           td #{permiso.detalle}
                           td #{permiso.comentarioSupervisor}
                           td #{permiso.estado}
-                          td
-                            if(permiso.usuario)
-                              button.btn.btn-default.solicitudDelete(value=permiso.usuario.nombre+' '+permiso.usuario.apellido1+' '+permiso.usuario.apellido2+','+permiso.id+','+permiso.fecha.str, name='eliminar')
-                                i.icon-trash.icon-large.i-danger
 
           //-lista de feriados
           if(feriado)
