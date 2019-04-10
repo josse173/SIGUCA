@@ -424,8 +424,10 @@ const DBOperations = {
     findActiveRequest(user){
         return new Promise((resolve, reject) => {
             //The closure is created for all users except for the administrator type
-            var currentDate = moment().unix();
-            Solicitudes.find({usuario: user._id, estado: "Aceptada", epochInicio: { "$lte": currentDate}, epochTermino : {"$gt": currentDate },  motivo: {$in: ["Permiso sin goce de salario", "Vacaciones", "Articulo 51", "Salida-Visita (INS)"]}})
+            var date = moment();
+            date.set({hour:0,minute:0,second:0,millisecond:0});
+            var currentDate  = date.unix();
+            Solicitudes.find({usuario: user._id, estado: "Aceptada", epochInicio: { "$lte": currentDate}, epochTermino : {"$gte": currentDate },  motivo: {$in: ["Permiso sin goce de salario", "Vacaciones", "Articulo 51", "Salida-Visita (INS)"]}})
                 .then(request => resolve(request))
                 .catch(error => reject(error));
         });

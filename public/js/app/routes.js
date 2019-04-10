@@ -906,13 +906,11 @@ $("#extraLink").click(function(){
              });
      });
 
-
-
     $('.tableVacaciones').footable().on('click', '.row-delete',
         function(e) {
             e.preventDefault();
             //get the footable object
-            var footable = $('.tableSolicitudes').data('footable');
+            var footable = $('.tableVacaciones').data('footable');
 
             //get the row we are wanting to delete
             var row = $(this).parents('tr:first');
@@ -944,7 +942,7 @@ $("#extraLink").click(function(){
             $.post('/getionarSolicitudAjax/'+id,
                 {comentarioSupervisor: comentarioSupervisor, estado: estado, motivo: motivo},
                 function (data){
-                    alertify.success('Hora extra actualizada.');
+                    alertify.success('Solicitud actualizada.');
                     if(estado !== 'Pendiente'){
                         footable.removeRow(row);
                     }
