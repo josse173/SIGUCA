@@ -297,35 +297,30 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos, marcaQu
     HoraExtra.find(extraQuery).populate(populateQuery).exec(function(error, extras) {
       Solicitudes.find(permisosQuery).populate('usuario').exec(function(error, permisos) {
         PermisoSinSalario.find().sort({numero: 1}).exec(function(error, permisosSinSalario) {
-
-            var permisosTemp = [];
+          PeriodoUsuario.find().populate('usuario').sort({numeroPeriodo: 1}).exec(function(error, periodos) {
+            if (error) return res.json(err);
 
             if(permisos && permisos.length > 0 ){
-              permisos.forEach(function (permiso) {
 
+              permisos.forEach(function (permiso) {
                 var infoPeriodo = {
                   diasDerechoDisfrutar: 0,
                   diasDisfrutados: 0,
                   diasDisponibles: 0
                 };
 
-                PeriodoUsuario.find({usuario: permiso.usuario._id}).sort({numeroPeriodo: 1}).exec(function(error, periodos) {
-                  if (error) return res.json(err);
-
-                  periodos.forEach(function (periodo) {
+                periodos.forEach(function (periodo) {
+                  if(permiso.usuario._id.equals(periodo.usuario._id)){
                     infoPeriodo.diasDerechoDisfrutar = infoPeriodo.diasDerechoDisfrutar + periodo.diasAsignados;
                     infoPeriodo.diasDisfrutados = infoPeriodo.diasDisfrutados + periodo.diasDisfrutados;
-                  });
-
-                  infoPeriodo.diasDisponibles = infoPeriodo.diasDerechoDisfrutar-infoPeriodo.diasDisfrutados;
-                  permiso.usuario.vacaciones = infoPeriodo.diasDisponibles;
-
+                  }
                 });
-                permisosTemp.push(permiso)
+
+                infoPeriodo.diasDisponibles = infoPeriodo.diasDerechoDisfrutar-infoPeriodo.diasDisfrutados;
+                permiso.usuario.vacaciones = infoPeriodo.diasDisponibles;
+
               });
             }
-
-            permisos = permisosTemp;
 
             if(req.route.path.substring(0, 9) !=='/reportes'){
               //Se asigna el tipo de usuario con el cual ha iniciado sesion
@@ -350,18 +345,19 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos, marcaQu
                   }
 
                   CierrePersonal.find(cierreQuery).populate("usuario").exec(function(error, cierres) {
-                        //Se asigna el tipo de usuario con el cual ha iniciado sesion
-                        req.user.tipo = req.session.name;
-                        EventosTeletrabajo.find(marcaQuery).populate('alerta').exec(function(error, eventosTeletrabajo) {
-                          PeriodoUsuario.find(periodosUsuarioQuery).populate('usuario').populate('periodo').sort({usuario: 1, numeroPeriodo: 1}).exec(function(error, periodoUsuarios) {
-                            return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, marcas,
-                              justificaciones, extras, permisos, cierres, nombreUsuario, eventosTeletrabajo, periodoUsuarios, permisosSinSalario);
-                          });
-                        });
+                    //Se asigna el tipo de usuario con el cual ha iniciado sesion
+                    req.user.tipo = req.session.name;
+                    EventosTeletrabajo.find(marcaQuery).populate('alerta').exec(function(error, eventosTeletrabajo) {
+                      PeriodoUsuario.find(periodosUsuarioQuery).populate('usuario').populate('periodo').sort({usuario: 1, numeroPeriodo: 1}).exec(function(error, periodoUsuarios) {
+                        return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, marcas,
+                            justificaciones, extras, permisos, cierres, nombreUsuario, eventosTeletrabajo, periodoUsuarios, permisosSinSalario);
                       });
+                    });
+                  });
                 });//Fin usuarios filtrados por departamento
-            });//Marcas
-          }
+              });//Marcas
+            }
+          });
         });
       });//Solicitudes permisos
     });//Solicitudes horas extra
