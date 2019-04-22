@@ -419,7 +419,7 @@ while True:
                 ct = ct[0:index]
             if str(dec) == ct:
                 print post
-                listTipo =  post["tipo"]
+                listTipo =  post["departamentos"].tipo
 		if (len(listTipo) == 1):
                     obtieneMarca(dec,str(listTipo[0]))
                 else:
