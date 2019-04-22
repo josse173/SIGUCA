@@ -425,8 +425,9 @@ while True:
                 ct = ct[0:index]
             if str(dec) == ct:
                 listTipo =  post["departamentos"]
+                print listTipo
 		if (len(listTipo) == 1):
-                    obtieneMarca(dec,str(listTipo.tipo))
+                    obtieneMarca(dec,str(listTipo[0].tipo))
                 else:
                     #Se obtiene el tipo de usuario
                     tipoUsuario = obtieneTipoUsuario(dec,listTipo)
