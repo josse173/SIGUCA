@@ -75,6 +75,7 @@ function agregarRolDepartamento(){
         var selected = $('#rolesDepartamento').val().split("|");
         var validarlo = true;
         var agregadoAlArray = false;
+        var nuevoElemento = '';
 
         selected.forEach(function (select) {
 
@@ -85,14 +86,14 @@ function agregarRolDepartamento(){
                     agregadoAlArray = false;
                     validarlo = false;
                 }else{
-                    var text = selectDepartamentos.selectedOptions[0].value + ';' + selectRoles.selectedOptions[0].text;
-                    selected.push(text);
+                    nuevoElemento = selectDepartamentos.selectedOptions[0].value + ';' + selectRoles.selectedOptions[0].text;
                     agregadoAlArray = true;
                 }
             }
         });
 
         if(agregadoAlArray){
+            selected.push(nuevoElemento);
             $('#rolesDepartamento').val(selected.join('|'));
             agregarLi(selectDepartamentos, selectRoles);
         }
