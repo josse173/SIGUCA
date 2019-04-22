@@ -335,31 +335,37 @@ def obtieneTipoUsuario(dec,listTipo):
 	professorProfile = "Profesor"
 	employeeProfile = "Empleado"
 	noWebAccessProfile = "Usuario sin acceso web"
+	adminReportProfile = "Administrador de Reportes"
 
 	for profile in listTipo:
 	    button = None
 	    if str(profile.tipo) == "Administrador":
-	        button = Button(rootTipo, text=str(profile), command=lambda: obtieneMarca(dec, adminProfile), fg="white",
+	        button = Button(rootTipo, text=str(profile.tipo), command=lambda: obtieneMarca(dec, adminProfile), fg="white",
 		    activeforeground="white", activebackground="green", bg="green", width=20, height=4, bd=0,
 		    font="Helveltica 17 bold")
 
+        if str(profile.tipo) == "Administrador de Reportes":
+            button = Button(rootTipo, text=str(profile.tipo), command=lambda: obtieneMarca(dec, adminReportProfile), fg="white",
+            activeforeground="white", activebackground="green", bg="green", width=20, height=4, bd=0,
+            font="Helveltica 17 bold")
+
 	    if str(profile.tipo) == "Supervisor":
-		    button = Button(rootTipo, text=str(profile), command=lambda: obtieneMarca(dec, supervisorProfile), fg="white",
+		    button = Button(rootTipo, text=str(profile.tipo), command=lambda: obtieneMarca(dec, supervisorProfile), fg="white",
 		    activeforeground="white", activebackground="green", bg="green", width=20, height=4, bd=0,
 		    font="Helveltica 17 bold")
 
 	    if str(profile.tipo) == "Empleado":
-		    button = Button(rootTipo, text=str(profile), command=lambda: obtieneMarca(dec, employeeProfile), fg="white",
+		    button = Button(rootTipo, text=str(profile.tipo), command=lambda: obtieneMarca(dec, employeeProfile), fg="white",
 		    activeforeground="white", activebackground="green", bg="green", width=20, height=4, bd=0,
 		    font="Helveltica 17 bold")
 
 	    if str(profile.tipo) == "Usuario sin acceso web":
-		    button = Button(rootTipo, text=str(profile), command=lambda: obtieneMarca(dec, noWebAccessProfile), fg="white",
+		    button = Button(rootTipo, text=str(profile.tipo), command=lambda: obtieneMarca(dec, noWebAccessProfile), fg="white",
 		    activeforeground="white", activebackground="green", bg="green", width=20, height=4, bd=0,
 		    font="Helveltica 17 bold")
 
 	    if str(profile.tipo) == "Profesor":
-		    button = Button(rootTipo, text=str(profile), command=lambda: obtieneMarca(dec, professorProfile), fg="white",
+		    button = Button(rootTipo, text=str(profile.tipo), command=lambda: obtieneMarca(dec, professorProfile), fg="white",
 		    activeforeground="white", activebackground="green", bg="green", width=20, height=4, bd=0,
 		    font="Helveltica 17 bold")
 
@@ -420,7 +426,7 @@ while True:
             if str(dec) == ct:
                 listTipo =  post["departamentos"]
 		if (len(listTipo) == 1):
-                    obtieneMarca(dec,str(listTipo[0].tipo))
+                    obtieneMarca(dec,str(listTipo.tipo))
                 else:
                     #Se obtiene el tipo de usuario
                     tipoUsuario = obtieneTipoUsuario(dec,listTipo)
