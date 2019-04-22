@@ -38,7 +38,7 @@ exports.addUsuario = function(us, cb){
 		var rd = rolDepartamento.split(";");
 
 		if(rd[0] === '' || rd[0] === 'Sin Departamento'){
-			array.push({departamento: '', tipo: rd[1]});
+			array.push({departamento: null, tipo: rd[1]});
 		} else {
 			array.push({departamento: rd[0], tipo: rd[1]});
 		}
@@ -95,6 +95,7 @@ exports.addUsuario = function(us, cb){
 				teleTrabajo:us.teleTrabajo
 				});
 			}else{
+				console.log(array);
 				var newUser = new Usuario({
 				username: us.username,
 				tipo: [],
