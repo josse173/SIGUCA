@@ -338,27 +338,27 @@ def obtieneTipoUsuario(dec,listTipo):
 
 	for profile in listTipo:
 	    button = None
-	    if str(profile) == "Administrador":
+	    if str(profile.tipo) == "Administrador":
 	        button = Button(rootTipo, text=str(profile), command=lambda: obtieneMarca(dec, adminProfile), fg="white",
 		    activeforeground="white", activebackground="green", bg="green", width=20, height=4, bd=0,
 		    font="Helveltica 17 bold")
 
-	    if str(profile) == "Supervisor":
+	    if str(profile.tipo) == "Supervisor":
 		    button = Button(rootTipo, text=str(profile), command=lambda: obtieneMarca(dec, supervisorProfile), fg="white",
 		    activeforeground="white", activebackground="green", bg="green", width=20, height=4, bd=0,
 		    font="Helveltica 17 bold")
 
-	    if str(profile) == "Empleado":
+	    if str(profile.tipo) == "Empleado":
 		    button = Button(rootTipo, text=str(profile), command=lambda: obtieneMarca(dec, employeeProfile), fg="white",
 		    activeforeground="white", activebackground="green", bg="green", width=20, height=4, bd=0,
 		    font="Helveltica 17 bold")
 
-	    if str(profile) == "Usuario sin acceso web":
+	    if str(profile.tipo) == "Usuario sin acceso web":
 		    button = Button(rootTipo, text=str(profile), command=lambda: obtieneMarca(dec, noWebAccessProfile), fg="white",
 		    activeforeground="white", activebackground="green", bg="green", width=20, height=4, bd=0,
 		    font="Helveltica 17 bold")
 
-	    if str(profile) == "Profesor":
+	    if str(profile.tipo) == "Profesor":
 		    button = Button(rootTipo, text=str(profile), command=lambda: obtieneMarca(dec, professorProfile), fg="white",
 		    activeforeground="white", activebackground="green", bg="green", width=20, height=4, bd=0,
 		    font="Helveltica 17 bold")
@@ -418,10 +418,9 @@ while True:
 	    if index > 0:
                 ct = ct[0:index]
             if str(dec) == ct:
-                print post
-                listTipo =  post["departamentos"].tipo
+                listTipo =  post["departamentos"]
 		if (len(listTipo) == 1):
-                    obtieneMarca(dec,str(listTipo[0]))
+                    obtieneMarca(dec,str(listTipo[0].tipo))
                 else:
                     #Se obtiene el tipo de usuario
                     tipoUsuario = obtieneTipoUsuario(dec,listTipo)
