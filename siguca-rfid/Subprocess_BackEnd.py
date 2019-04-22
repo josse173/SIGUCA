@@ -411,13 +411,14 @@ while True:
 
         #Si tiene mas de un rol se solicita un tipo sino de una ves la marca
         codigosExistentes=list(collection.find({"estado":"Activo"},{"departamentos.tipo":  1,"codTarjeta": 1,"_id":0}))
-        print codigosExistentes
+
         for post in codigosExistentes:
 	    ct = str(post['codTarjeta'])
             index = ct.find('.')
 	    if index > 0:
                 ct = ct[0:index]
             if str(dec) == ct:
+                print post
                 listTipo =  post["tipo"]
 		if (len(listTipo) == 1):
                     obtieneMarca(dec,str(listTipo[0]))
