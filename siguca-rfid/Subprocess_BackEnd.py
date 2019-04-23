@@ -416,9 +416,12 @@ while True:
         root1.mainloop()
 
         #Si tiene mas de un rol se solicita un tipo sino de una ves la marca
-        codigosExistentes=list(collection.find({"estado":"Activo"},{"departamentos.tipo":  1,"codTarjeta": 1,"_id":0}))
+        codigosExistentes=list(collection.find({"estado":"Activo"},{"departamentos":  1,"codTarjeta": 1,"_id":0}))
+        print codigosExistentes
 
         for post in codigosExistentes:
+        print 'post'
+        print post
 	    ct = str(post['codTarjeta'])
             index = ct.find('.')
 	    if index > 0:
@@ -427,6 +430,8 @@ while True:
                 listTipo =  post["departamentos"]
                 print listTipo
 		if (len(listTipo) == 1):
+		            print 'obtieneMarca'
+		            print listTipo
                     obtieneMarca(dec,str(listTipo[0].tipo))
                 else:
                     #Se obtiene el tipo de usuario
