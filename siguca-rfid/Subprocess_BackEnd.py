@@ -338,6 +338,7 @@ def obtieneTipoUsuario(dec,listTipo):
 	adminReportProfile = "Administrador de Reportes"
 
 	for profile in listTipo:
+	    print profile['tipo']
 	    button = None
 	    if str(profile['tipo']) == "Empleado":
 		    button = Button(rootTipo, text=str(profile['tipo']), command=lambda: obtieneMarca(dec, employeeProfile), fg="white",
@@ -361,9 +362,9 @@ def obtieneTipoUsuario(dec,listTipo):
             count = count + 1
             index = index + 1
             if count > 3:
-            yAxis = 100
-            xAxis = 480
-            count = 1
+                yAxis = 100
+                xAxis = 480
+                count = 1
 
             listBox.insert(0,*buttonList)
 
