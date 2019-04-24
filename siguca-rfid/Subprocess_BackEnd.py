@@ -421,17 +421,15 @@ while True:
                         profileList.append(profile)
                     if str(profile['tipo']) == "Profesor":
                         profileList.append(profile)
-                listTipo = profileList;
-                print "Cantidad Roles:"
-                print len(listTipo)
+                listTipo = profileList
 		if (len(listTipo) == 1):
-                tipoObj = listTipo[0]
-                print "obtieneMarca"
-                obtieneMarca(dec,tipoObj['tipo'])
-            else:
-                #Se obtiene el tipo de usuario
-                print "obtieneTipoUsuario"
-                tipoUsuario = obtieneTipoUsuario(dec,listTipo)
+		    tipoObj = listTipo[0]
+		    print "obtieneMarca"
+		    obtieneMarca(dec,tipoObj['tipo'])
+        else:
+            #Se obtiene el tipo de usuario
+            print "obtieneTipoUsuario"
+            tipoUsuario = obtieneTipoUsuario(dec,listTipo)
 
     else:
         os.system('clear')
