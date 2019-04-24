@@ -426,10 +426,10 @@ while True:
 		    tipoObj = listTipo[0]
 		    print "obtieneMarca"
 		    obtieneMarca(dec,tipoObj['tipo'])
-        else:
-            #Se obtiene el tipo de usuario
-            print "obtieneTipoUsuario"
-            tipoUsuario = obtieneTipoUsuario(dec,listTipo)
+            else:
+                #Se obtiene el tipo de usuario
+                print "obtieneTipoUsuario"
+                tipoUsuario = obtieneTipoUsuario(dec,listTipo)
 
     else:
         os.system('clear')
