@@ -41,7 +41,7 @@ import UtilImg
 #SETTINGS AND CONFIGURATIONS
 #IP OF NODE JS SERVER WHERE SIGUCA IS RUNNING
 #server_IP='siguca.gps.int'
-server_IP='192.168.1.8'
+server_IP='10.42.22.43'
 #PORT OF THE MONGODB
 port='27017'
 #PORT OF OF SIGUCA NODE JS PORT
@@ -403,11 +403,9 @@ while True:
 
         #Si tiene mas de un rol se solicita un tipo sino de una ves la marca
         codigosExistentes=list(collection.find({"estado":"Activo"},{"departamentos":  1,"codTarjeta": 1,"_id":0}))
-        print codigosExistentes
         listTipo = list();
-        print str(dec)
         for post in codigosExistentes:
-	        ct = str(post['codTarjeta']);
+	    ct = str(post['codTarjeta']);
             index = ct.find('.');
 
             if index > 0:
@@ -415,8 +413,6 @@ while True:
 
             if str(dec) == ct:
                 listTipo =  post["departamentos"];
-                print "listTipo"
-                print listTipo
 
                 profileList = list();
 
