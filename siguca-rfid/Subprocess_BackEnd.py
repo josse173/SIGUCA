@@ -404,13 +404,17 @@ while True:
         #Si tiene mas de un rol se solicita un tipo sino de una ves la marca
         codigosExistentes=list(collection.find({"estado":"Activo"},{"departamentos":  1,"codTarjeta": 1,"_id":0}))
 
+        listTipo = list();
+        print str(dec)
         for post in codigosExistentes:
-	    ct = str(post['codTarjeta'])
-            index = ct.find('.')
-	    if index > 0:
-                ct = ct[0:index]
+	        ct = str(post['codTarjeta']);
+            index = ct.find('.');
+
+            if index > 0:
+                ct = ct[0:index];
+
             if str(dec) == ct:
-                listTipo =  post["departamentos"]
+                listTipo =  post["departamentos"];
                 print "listTipo"
                 print listTipo
 
@@ -418,23 +422,25 @@ while True:
 
                 for profile in listTipo:
                     if str(profile['tipo']) == "Empleado":
-                        profileList.append(profile)
+                        profileList.append(profile);
                     if str(profile['tipo']) == "Usuario sin acceso web":
-                        profileList.append(profile)
+                        profileList.append(profile);
                     if str(profile['tipo']) == "Profesor":
-                        profileList.append(profile)
-                listTipo = profileList
+                        profileList.append(profile);
+                listTipo = profileList;
                 print "profileList"
                 print profileList
+
 		print len(listTipo)
+
 		if (len(listTipo) == 1):
-		    tipoObj = listTipo[0]
+		    tipoObj = listTipo[0];
 		    print "obtieneMarca"
-		    obtieneMarca(dec,tipoObj['tipo'])
+		    obtieneMarca(dec,tipoObj['tipo']);
         else:
             #Se obtiene el tipo de usuario
             print "obtieneTipoUsuario"
-            tipoUsuario = obtieneTipoUsuario(dec,listTipo)
+            tipoUsuario = obtieneTipoUsuario(dec,listTipo);
 
     else:
         os.system('clear')
