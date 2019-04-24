@@ -339,16 +339,6 @@ def obtieneTipoUsuario(dec,listTipo):
 
 	for profile in listTipo:
 	    button = None
-	    if str(profile['tipo']) == "Administrador":
-	        button = Button(rootTipo, text=str(profile['tipo']), command=lambda: obtieneMarca(dec, adminProfile), fg="white",
-		    activeforeground="white", activebackground="green", bg="green", width=20, height=4, bd=0,
-		    font="Helveltica 17 bold")
-
-	    if str(profile['tipo']) == "Supervisor":
-		    button = Button(rootTipo, text=str(profile['tipo']), command=lambda: obtieneMarca(dec, supervisorProfile), fg="white",
-		    activeforeground="white", activebackground="green", bg="green", width=20, height=4, bd=0,
-		    font="Helveltica 17 bold")
-
 	    if str(profile['tipo']) == "Empleado":
 		    button = Button(rootTipo, text=str(profile['tipo']), command=lambda: obtieneMarca(dec, employeeProfile), fg="white",
 		    activeforeground="white", activebackground="green", bg="green", width=20, height=4, bd=0,
@@ -422,7 +412,7 @@ while True:
                 listTipo =  post["departamentos"]
 		if (len(listTipo) == 1):
 		            tipoObj = listTipo[0]
-                    obtieneMarca(dec,str(tipoObj['tipo']))
+                        obtieneMarca(dec,str(tipoObj['tipo']))
                 else:
                     #Se obtiene el tipo de usuario
                     tipoUsuario = obtieneTipoUsuario(dec,listTipo)
