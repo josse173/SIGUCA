@@ -338,27 +338,13 @@ def obtieneTipoUsuario(dec,listTipo):
 	adminReportProfile = "Administrador de Reportes"
 
 	for profile in listTipo:
-	    print profile['tipo']
 	    button = None
 	    if str(profile['tipo']) == "Empleado":
 		    button = Button(rootTipo, text=str(profile['tipo']), command=lambda: obtieneMarca(dec, employeeProfile), fg="white",
 		    activeforeground="white", activebackground="green", bg="green", width=20, height=4, bd=0,
-		    font="Helveltica 17 bold")
-
-	    if str(profile['tipo']) == "Usuario sin acceso web":
-		    button = Button(rootTipo, text=str(profile['tipo']), command=lambda: obtieneMarca(dec, noWebAccessProfile), fg="white",
-		    activeforeground="white", activebackground="green", bg="green", width=20, height=4, bd=0,
-		    font="Helveltica 17 bold")
-
-	    if str(profile['tipo']) == "Profesor":
-		    button = Button(rootTipo, text=str(profile['tipo']), command=lambda: obtieneMarca(dec, professorProfile), fg="white",
-		    activeforeground="white", activebackground="green", bg="green", width=20, height=4, bd=0,
-		    font="Helveltica 17 bold")
-
-        if button is not None:
-            button.place(x=xAxis,y=yAxis)
-            buttonList.append(button)
-            yAxis = yAxis + 110
+		    font="Helveltica 17 bold").place(x=xAxis,y=yAxis)
+		    buttonList.append(button)
+		    yAxis = yAxis + 110
             count = count + 1
             index = index + 1
             if count > 3:
@@ -366,15 +352,41 @@ def obtieneTipoUsuario(dec,listTipo):
                 xAxis = 480
                 count = 1
 
-        listBox.insert(0,*buttonList)
+	    if str(profile['tipo']) == "Usuario sin acceso web":
+		    button = Button(rootTipo, text=str(profile['tipo']), command=lambda: obtieneMarca(dec, noWebAccessProfile), fg="white",
+		    activeforeground="white", activebackground="green", bg="green", width=20, height=4, bd=0,
+		    font="Helveltica 17 bold").place(x=xAxis,y=yAxis)
+		    buttonList.append(button)
+		    yAxis = yAxis + 110
+            count = count + 1
+            index = index + 1
+            if count > 3:
+                yAxis = 100
+                xAxis = 480
+                count = 1
 
-        buttonCancelar = Button(rootTipo,text="Cancelar",command=lambda: rootTipo.destroy(),fg="white",activeforeground="white",activebackground="red",bg="red",width=15,height=2,bd=6,font="Helveltica 17 bold").place(x=480,y=350)
+	    if str(profile['tipo']) == "Profesor":
+		    button = Button(rootTipo, text=str(profile['tipo']), command=lambda: obtieneMarca(dec, professorProfile), fg="white",
+		    activeforeground="white", activebackground="green", bg="green", width=20, height=4, bd=0,
+		    font="Helveltica 17 bold").place(x=xAxis,y=yAxis)
+		    buttonList.append(button)
+		    yAxis = yAxis + 110
+            count = count + 1
+            index = index + 1
+            if count > 3:
+                yAxis = 100
+                xAxis = 480
+                count = 1
 
-       # buttonAceptar = Button(rootTipo,text="Aceptar",command= lambda: obtieneTipoSeleccionado(dec,listBox),fg="white",activeforeground="white",activebackground="#008800",bg="#00cc00",width=15,height=2,bd=6,font="Helveltica 17 bold").place(x=500,y=200)
+    listBox.insert(0,*buttonList)
 
-        rootTipo.after(5000, lambda: rootTipo.destroy())
-        rootTipo.mainloop()
-        return "Correcto"
+    buttonCancelar = Button(rootTipo,text="Cancelar",command=lambda: rootTipo.destroy(),fg="white",activeforeground="white",activebackground="red",bg="red",width=15,height=2,bd=6,font="Helveltica 17 bold").place(x=480,y=350)
+
+   # buttonAceptar = Button(rootTipo,text="Aceptar",command= lambda: obtieneTipoSeleccionado(dec,listBox),fg="white",activeforeground="white",activebackground="#008800",bg="#00cc00",width=15,height=2,bd=6,font="Helveltica 17 bold").place(x=500,y=200)
+
+    rootTipo.after(5000, lambda: rootTipo.destroy())
+    rootTipo.mainloop()
+    return "Correcto"
 
 #En esta sección tenemos el orden de como se van a ir ejecutando los métodos dentro del sistema , esto es  lo que se ejecutará cuando se lance el script.
 while True:
