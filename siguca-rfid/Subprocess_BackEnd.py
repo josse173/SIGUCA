@@ -354,7 +354,7 @@ def obtieneTipoUsuario(dec,listTipo):
 		    activeforeground="white", activebackground="green", bg="green", width=20, height=4, bd=0,
 		    font="Helveltica 17 bold")
 
-        if button != None
+        if button is not None:
             button.place(x=xAxis,y=yAxis)
             buttonList.append(button)
             yAxis = yAxis + 110
