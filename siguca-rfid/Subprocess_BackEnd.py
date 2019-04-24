@@ -411,6 +411,8 @@ while True:
                 ct = ct[0:index]
             if str(dec) == ct:
                 listTipo =  post["departamentos"]
+                print "listTipo"
+                print listTipo
 
                 profileList = list();
 
@@ -422,14 +424,17 @@ while True:
                     if str(profile['tipo']) == "Profesor":
                         profileList.append(profile)
                 listTipo = profileList
+                print "profileList"
+                print profileList
+		print len(listTipo)
 		if (len(listTipo) == 1):
 		    tipoObj = listTipo[0]
 		    print "obtieneMarca"
 		    obtieneMarca(dec,tipoObj['tipo'])
-            else:
-                #Se obtiene el tipo de usuario
-                print "obtieneTipoUsuario"
-                tipoUsuario = obtieneTipoUsuario(dec,listTipo)
+        else:
+            #Se obtiene el tipo de usuario
+            print "obtieneTipoUsuario"
+            tipoUsuario = obtieneTipoUsuario(dec,listTipo)
 
     else:
         os.system('clear')
