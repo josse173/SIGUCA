@@ -337,17 +337,7 @@ def obtieneTipoUsuario(dec,listTipo):
 	noWebAccessProfile = "Usuario sin acceso web"
 	adminReportProfile = "Administrador de Reportes"
 
-	profileList = list();
-
 	for profile in listTipo:
-	    if str(profile['tipo']) == "Empleado":
-	        profileList.append(profile)
-	    if str(profile['tipo']) == "Usuario sin acceso web":
-	        profileList.append(profile)
-	    if str(profile['tipo']) == "Profesor":
-	        profileList.append(profile)
-
-	for profile in profileList:
 	    button = None
 	    print profile['tipo']
 	    if str(profile['tipo']) == "Empleado":
@@ -421,6 +411,17 @@ while True:
                 ct = ct[0:index]
             if str(dec) == ct:
                 listTipo =  post["departamentos"]
+
+                profileList = list();
+
+                for profile in listTipo:
+                    if str(profile['tipo']) == "Empleado":
+                        profileList.append(profile)
+                    if str(profile['tipo']) == "Usuario sin acceso web":
+                        profileList.append(profile)
+                    if str(profile['tipo']) == "Profesor":
+                        profileList.append(profile)
+                listTipo = profileList;
 		if (len(listTipo) == 1):
 		    tipoObj = listTipo[0]
 		    obtieneMarca(dec,tipoObj['tipo'])
