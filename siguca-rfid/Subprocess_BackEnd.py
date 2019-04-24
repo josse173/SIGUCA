@@ -403,7 +403,7 @@ while True:
 
         #Si tiene mas de un rol se solicita un tipo sino de una ves la marca
         codigosExistentes=list(collection.find({"estado":"Activo"},{"departamentos":  1,"codTarjeta": 1,"_id":0}))
-
+        print codigosExistentes
         listTipo = list();
         print str(dec)
         for post in codigosExistentes:
@@ -428,18 +428,14 @@ while True:
                     if str(profile['tipo']) == "Profesor":
                         profileList.append(profile);
                 listTipo = profileList;
-                print "profileList"
-                print profileList
 
-		print len(listTipo)
-
-		if (len(listTipo) == 1):
-		    tipoObj = listTipo[0];
-		    obtieneMarca(dec,tipoObj['tipo']);
-		    print "obtieneMarca"
-        else:
-            tipoUsuario = obtieneTipoUsuario(dec,listTipo);
-            print "obtieneTipoUsuario"
+                if (len(listTipo) == 1):
+                    tipoObj = listTipo[0];
+                    obtieneMarca(dec,tipoObj['tipo']);
+                    print "obtieneMarca"
+                else:
+                    tipoUsuario = obtieneTipoUsuario(dec,listTipo);
+                    print "obtieneTipoUsuario"
 
 
     else:
