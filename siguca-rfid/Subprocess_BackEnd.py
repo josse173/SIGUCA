@@ -366,7 +366,7 @@ def obtieneTipoUsuario(dec,listTipo):
                 xAxis = 480
                 count = 1
 
-            listBox.insert(0,*buttonList)
+        listBox.insert(0,*buttonList)
 
         buttonCancelar = Button(rootTipo,text="Cancelar",command=lambda: rootTipo.destroy(),fg="white",activeforeground="white",activebackground="red",bg="red",width=15,height=2,bd=6,font="Helveltica 17 bold").place(x=480,y=350)
 
