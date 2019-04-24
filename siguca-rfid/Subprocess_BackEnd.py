@@ -354,17 +354,18 @@ def obtieneTipoUsuario(dec,listTipo):
 		    activeforeground="white", activebackground="green", bg="green", width=20, height=4, bd=0,
 		    font="Helveltica 17 bold")
 
-	    button.place(x=xAxis,y=yAxis)
-	    buttonList.append(button)
-	    yAxis = yAxis + 110
-	    count = count + 1
-	    index = index + 1
-	    if count > 3:
-		 yAxis = 100
-	   	 xAxis = 480
-         	 count = 1
+        if button != None
+            button.place(x=xAxis,y=yAxis)
+            buttonList.append(button)
+            yAxis = yAxis + 110
+            count = count + 1
+            index = index + 1
+            if count > 3:
+            yAxis = 100
+            xAxis = 480
+            count = 1
 
-        listBox.insert(0,*buttonList)
+            listBox.insert(0,*buttonList)
 
         buttonCancelar = Button(rootTipo,text="Cancelar",command=lambda: rootTipo.destroy(),fg="white",activeforeground="white",activebackground="red",bg="red",width=15,height=2,bd=6,font="Helveltica 17 bold").place(x=480,y=350)
 
@@ -411,11 +412,11 @@ while True:
             if str(dec) == ct:
                 listTipo =  post["departamentos"]
 		if (len(listTipo) == 1):
-		            tipoObj = listTipo[0]
-                        obtieneMarca(dec,str(tipoObj['tipo']))
-                else:
-                    #Se obtiene el tipo de usuario
-                    tipoUsuario = obtieneTipoUsuario(dec,listTipo)
+		    tipoObj = listTipo[0]
+		    obtieneMarca(dec,tipoObj['tipo'])
+        else:
+            #Se obtiene el tipo de usuario
+            tipoUsuario = obtieneTipoUsuario(dec,listTipo)
 
     else:
         os.system('clear')
