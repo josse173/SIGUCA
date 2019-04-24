@@ -342,51 +342,37 @@ def obtieneTipoUsuario(dec,listTipo):
 	    if str(profile['tipo']) == "Empleado":
 		    button = Button(rootTipo, text=str(profile['tipo']), command=lambda: obtieneMarca(dec, employeeProfile), fg="white",
 		    activeforeground="white", activebackground="green", bg="green", width=20, height=4, bd=0,
-		    font="Helveltica 17 bold").place(x=xAxis,y=yAxis)
-		    buttonList.append(button)
-		    yAxis = yAxis + 110
-            count = count + 1
-            index = index + 1
-            if count > 3:
-                yAxis = 100
-                xAxis = 480
-                count = 1
+		    font="Helveltica 17 bold")
 
 	    if str(profile['tipo']) == "Usuario sin acceso web":
 		    button = Button(rootTipo, text=str(profile['tipo']), command=lambda: obtieneMarca(dec, noWebAccessProfile), fg="white",
 		    activeforeground="white", activebackground="green", bg="green", width=20, height=4, bd=0,
-		    font="Helveltica 17 bold").place(x=xAxis,y=yAxis)
-		    buttonList.append(button)
-		    yAxis = yAxis + 110
-            count = count + 1
-            index = index + 1
-            if count > 3:
-                yAxis = 100
-                xAxis = 480
-                count = 1
+		    font="Helveltica 17 bold")
 
 	    if str(profile['tipo']) == "Profesor":
 		    button = Button(rootTipo, text=str(profile['tipo']), command=lambda: obtieneMarca(dec, professorProfile), fg="white",
 		    activeforeground="white", activebackground="green", bg="green", width=20, height=4, bd=0,
-		    font="Helveltica 17 bold").place(x=xAxis,y=yAxis)
-		    buttonList.append(button)
-		    yAxis = yAxis + 110
-            count = count + 1
-            index = index + 1
-            if count > 3:
-                yAxis = 100
-                xAxis = 480
-                count = 1
+		    font="Helveltica 17 bold")
 
-    listBox.insert(0,*buttonList)
+	    button.place(x=xAxis,y=yAxis)
+	    buttonList.append(button)
+	    yAxis = yAxis + 110
+	    count = count + 1
+	    index = index + 1
+	    if count > 3:
+		 yAxis = 100
+	   	 xAxis = 480
+         	 count = 1
 
-    buttonCancelar = Button(rootTipo,text="Cancelar",command=lambda: rootTipo.destroy(),fg="white",activeforeground="white",activebackground="red",bg="red",width=15,height=2,bd=6,font="Helveltica 17 bold").place(x=480,y=350)
+        listBox.insert(0,*buttonList)
 
-   # buttonAceptar = Button(rootTipo,text="Aceptar",command= lambda: obtieneTipoSeleccionado(dec,listBox),fg="white",activeforeground="white",activebackground="#008800",bg="#00cc00",width=15,height=2,bd=6,font="Helveltica 17 bold").place(x=500,y=200)
+        buttonCancelar = Button(rootTipo,text="Cancelar",command=lambda: rootTipo.destroy(),fg="white",activeforeground="white",activebackground="red",bg="red",width=15,height=2,bd=6,font="Helveltica 17 bold").place(x=480,y=350)
 
-    rootTipo.after(5000, lambda: rootTipo.destroy())
-    rootTipo.mainloop()
-    return "Correcto"
+       # buttonAceptar = Button(rootTipo,text="Aceptar",command= lambda: obtieneTipoSeleccionado(dec,listBox),fg="white",activeforeground="white",activebackground="#008800",bg="#00cc00",width=15,height=2,bd=6,font="Helveltica 17 bold").place(x=500,y=200)
+
+        rootTipo.after(5000, lambda: rootTipo.destroy())
+        rootTipo.mainloop()
+        return "Correcto"
 
 #En esta sección tenemos el orden de como se van a ir ejecutando los métodos dentro del sistema , esto es  lo que se ejecutará cuando se lance el script.
 while True:
@@ -415,7 +401,7 @@ while True:
         root1.mainloop()
 
         #Si tiene mas de un rol se solicita un tipo sino de una ves la marca
-        codigosExistentes=list(collection.find({"estado":"Activo"},{"departamentos":  1,"codTarjeta": 1,"_id":0}))
+        codigosExistentes=list(collection.find({"estado":"Activo", departamentos : { $elemMatch: { tipo: {$in: ['Empleado', 'Usuario sin acceso web', 'Profesor']}}}},{"departamentos":  1,"codTarjeta": 1,"_id":0}))
 
         for post in codigosExistentes:
 	    ct = str(post['codTarjeta'])
