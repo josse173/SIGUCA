@@ -337,7 +337,17 @@ def obtieneTipoUsuario(dec,listTipo):
 	noWebAccessProfile = "Usuario sin acceso web"
 	adminReportProfile = "Administrador de Reportes"
 
+	profileList = list();
+
 	for profile in listTipo:
+	    if str(profile['tipo']) == "Empleado":
+	        profileList.append(profile)
+	    if str(profile['tipo']) == "Usuario sin acceso web":
+	        profileList.append(profile)
+	    if str(profile['tipo']) == "Profesor":
+	        profileList.append(profile)
+
+	for profile in profileList:
 	    button = None
 	    print profile['tipo']
 	    if str(profile['tipo']) == "Empleado":
@@ -402,7 +412,7 @@ while True:
         root1.mainloop()
 
         #Si tiene mas de un rol se solicita un tipo sino de una ves la marca
-        codigosExistentes=list(collection.find({"departamentos" : { "$elemMatch": { "tipo": {"$in": ["Empleado", "Usuario sin acceso web", "Profesor"]}}}},{"departamentos":  1,"codTarjeta": 1,"_id":0}))
+        codigosExistentes=list(collection.find({"estado":"Activo"},{"departamentos":  1,"codTarjeta": 1,"_id":0}))
 
         for post in codigosExistentes:
 	    ct = str(post['codTarjeta'])
