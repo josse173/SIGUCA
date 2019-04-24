@@ -401,7 +401,7 @@ while True:
         root1.mainloop()
 
         #Si tiene mas de un rol se solicita un tipo sino de una ves la marca
-        codigosExistentes=list(collection.find({"estado":"Activo", departamentos : { $elemMatch: { tipo: {$in: ['Empleado', 'Usuario sin acceso web', 'Profesor']}}}},{"departamentos":  1,"codTarjeta": 1,"_id":0}))
+        codigosExistentes=list(collection.find({"estado":"Activo", "departamentos" : { "$elemMatch": { "tipo": {"$in": ["Empleado", "Usuario sin acceso web", "Profesor"]}}}},{"departamentos":  1,"codTarjeta": 1,"_id":0}))
 
         for post in codigosExistentes:
 	    ct = str(post['codTarjeta'])
