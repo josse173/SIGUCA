@@ -339,6 +339,7 @@ def obtieneTipoUsuario(dec,listTipo):
 
 	for profile in listTipo:
 	    button = None
+	    print profile['tipo']
 	    if str(profile['tipo']) == "Empleado":
 		    button = Button(rootTipo, text=str(profile['tipo']), command=lambda: obtieneMarca(dec, employeeProfile), fg="white",
 		    activeforeground="white", activebackground="green", bg="green", width=20, height=4, bd=0,
