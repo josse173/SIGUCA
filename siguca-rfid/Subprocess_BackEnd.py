@@ -429,9 +429,11 @@ while True:
                     tipoObj = listTipo[0];
                     obtieneMarca(dec,tipoObj['tipo']);
                     print "obtieneMarca"
-                else:
+                elif (len(listTipo) > 1):
                     tipoUsuario = obtieneTipoUsuario(dec,listTipo);
                     print "obtieneTipoUsuario"
+                else:
+                    print "Sin roles de marca"
 
 
     else:
