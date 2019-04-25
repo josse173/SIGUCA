@@ -41,7 +41,7 @@ import UtilImg
 #SETTINGS AND CONFIGURATIONS
 #IP OF NODE JS SERVER WHERE SIGUCA IS RUNNING
 #server_IP='siguca.gps.int'
-server_IP='192.168.1.8'
+server_IP='10.42.22.43'
 #PORT OF THE MONGODB
 port='27017'
 #PORT OF OF SIGUCA NODE JS PORT
@@ -337,17 +337,7 @@ def obtieneTipoUsuario(dec,listTipo):
 	noWebAccessProfile = "Usuario sin acceso web"
 	adminReportProfile = "Administrador de Reportes"
 
-	profileList = list();
-
 	for profile in listTipo:
-	    if str(profile['tipo']) == "Empleado":
-	        profileList.append(profile)
-	    if str(profile['tipo']) == "Usuario sin acceso web":
-	        profileList.append(profile)
-	    if str(profile['tipo']) == "Profesor":
-	        profileList.append(profile)
-
-	for profile in profileList:
 	    button = None
 	    print profile['tipo']
 	    if str(profile['tipo']) == "Empleado":
@@ -413,20 +403,36 @@ while True:
 
         #Si tiene mas de un rol se solicita un tipo sino de una ves la marca
         codigosExistentes=list(collection.find({"estado":"Activo"},{"departamentos":  1,"codTarjeta": 1,"_id":0}))
-
+        listTipo = list();
         for post in codigosExistentes:
-	    ct = str(post['codTarjeta'])
-            index = ct.find('.')
-	    if index > 0:
-                ct = ct[0:index]
+	    ct = str(post['codTarjeta']);
+            index = ct.find('.');
+
+            if index > 0:
+                ct = ct[0:index];
+
             if str(dec) == ct:
-                listTipo =  post["departamentos"]
-		if (len(listTipo) == 1):
-		    tipoObj = listTipo[0]
-		    obtieneMarca(dec,tipoObj['tipo'])
-        else:
-            #Se obtiene el tipo de usuario
-            tipoUsuario = obtieneTipoUsuario(dec,listTipo)
+                listTipo =  post["departamentos"];
+
+                profileList = list();
+
+                for profile in listTipo:
+                    if str(profile['tipo']) == "Empleado":
+                        profileList.append(profile);
+                    if str(profile['tipo']) == "Usuario sin acceso web":
+                        profileList.append(profile);
+                    if str(profile['tipo']) == "Profesor":
+                        profileList.append(profile);
+                listTipo = profileList;
+
+                if (len(listTipo) == 1):
+                    tipoObj = listTipo[0];
+                    obtieneMarca(dec,tipoObj['tipo']);
+                    print "obtieneMarca"
+                else:
+                    tipoUsuario = obtieneTipoUsuario(dec,listTipo);
+                    print "obtieneTipoUsuario"
+
 
     else:
         os.system('clear')
