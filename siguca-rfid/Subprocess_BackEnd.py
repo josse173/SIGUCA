@@ -41,7 +41,7 @@ import UtilImg
 #SETTINGS AND CONFIGURATIONS
 #IP OF NODE JS SERVER WHERE SIGUCA IS RUNNING
 #server_IP='siguca.gps.int'
-server_IP='192.168.1.8'
+server_IP='10.42.22.43'
 #PORT OF THE MONGODB
 port='27017'
 #PORT OF OF SIGUCA NODE JS PORT
@@ -235,7 +235,7 @@ def read_rfid():
 #Obtiene la marca del usuario
 def obtieneMarca(dec,tipo):
     print "Obteniendo marca para ID: " + dec + " Tipo Usuario: " + tipo
-        
+
     #Se crea el entorno gráfico  para realizar las marcas
     root = Tk()
     root.attributes('-fullscreen', True)
@@ -335,31 +335,23 @@ def obtieneTipoUsuario(dec,listTipo):
 	professorProfile = "Profesor"
 	employeeProfile = "Empleado"
 	noWebAccessProfile = "Usuario sin acceso web"
+	adminReportProfile = "Administrador de Reportes"
 
 	for profile in listTipo:
 	    button = None
-	    if str(profile) == "Administrador":
-	        button = Button(rootTipo, text=str(profile), command=lambda: obtieneMarca(dec, adminProfile), fg="white",
+	    print profile['tipo']
+	    if str(profile['tipo']) == "Empleado":
+		    button = Button(rootTipo, text=str(profile['tipo']), command=lambda: obtieneMarca(dec, employeeProfile), fg="white",
 		    activeforeground="white", activebackground="green", bg="green", width=20, height=4, bd=0,
 		    font="Helveltica 17 bold")
 
-	    if str(profile) == "Supervisor":
-		    button = Button(rootTipo, text=str(profile), command=lambda: obtieneMarca(dec, supervisorProfile), fg="white",
+	    if str(profile['tipo']) == "Usuario sin acceso web":
+		    button = Button(rootTipo, text=str(profile['tipo']), command=lambda: obtieneMarca(dec, noWebAccessProfile), fg="white",
 		    activeforeground="white", activebackground="green", bg="green", width=20, height=4, bd=0,
 		    font="Helveltica 17 bold")
 
-	    if str(profile) == "Empleado":
-		    button = Button(rootTipo, text=str(profile), command=lambda: obtieneMarca(dec, employeeProfile), fg="white",
-		    activeforeground="white", activebackground="green", bg="green", width=20, height=4, bd=0,
-		    font="Helveltica 17 bold")
-
-	    if str(profile) == "Usuario sin acceso web":
-		    button = Button(rootTipo, text=str(profile), command=lambda: obtieneMarca(dec, noWebAccessProfile), fg="white",
-		    activeforeground="white", activebackground="green", bg="green", width=20, height=4, bd=0,
-		    font="Helveltica 17 bold")
-
-	    if str(profile) == "Profesor":
-		    button = Button(rootTipo, text=str(profile), command=lambda: obtieneMarca(dec, professorProfile), fg="white",
+	    if str(profile['tipo']) == "Profesor":
+		    button = Button(rootTipo, text=str(profile['tipo']), command=lambda: obtieneMarca(dec, professorProfile), fg="white",
 		    activeforeground="white", activebackground="green", bg="green", width=20, height=4, bd=0,
 		    font="Helveltica 17 bold")
 
@@ -410,19 +402,37 @@ while True:
         root1.mainloop()
 
         #Si tiene mas de un rol se solicita un tipo sino de una ves la marca
-        codigosExistentes=list(collection.find({"estado":"Activo"},{"tipo":  1,"codTarjeta": 1,"_id":0}))
+        codigosExistentes=list(collection.find({"estado":"Activo"},{"departamentos":  1,"codTarjeta": 1,"_id":0}))
+        listTipo = list();
         for post in codigosExistentes:
-	    ct = str(post['codTarjeta'])
-            index = ct.find('.')
-	    if index > 0:
-                ct = ct[0:index]
+	    ct = str(post['codTarjeta']);
+            index = ct.find('.');
+
+            if index > 0:
+                ct = ct[0:index];
+
             if str(dec) == ct:
-                listTipo =  post["tipo"]
-		if (len(listTipo) == 1):
-                    obtieneMarca(dec,str(listTipo[0]))
+                listTipo =  post["departamentos"];
+
+                profileList = list();
+
+                for profile in listTipo:
+                    if str(profile['tipo']) == "Empleado":
+                        profileList.append(profile);
+                    if str(profile['tipo']) == "Usuario sin acceso web":
+                        profileList.append(profile);
+                    if str(profile['tipo']) == "Profesor":
+                        profileList.append(profile);
+                listTipo = profileList;
+
+                if (len(listTipo) == 1):
+                    tipoObj = listTipo[0];
+                    obtieneMarca(dec,tipoObj['tipo']);
+                    print "obtieneMarca"
                 else:
-                    #Se obtiene el tipo de usuario
-                    tipoUsuario = obtieneTipoUsuario(dec,listTipo)
+                    tipoUsuario = obtieneTipoUsuario(dec,listTipo);
+                    print "obtieneTipoUsuario"
+
 
     else:
         os.system('clear')
