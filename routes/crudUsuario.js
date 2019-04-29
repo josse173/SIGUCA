@@ -148,7 +148,10 @@ exports.addUsuario = function(us, cb){
 
 	function crearPeriodo(periodos, fechaActual, usuario, fechaIngreso, cantidadSemanas, numeroPeriodo) {
 
-		var fechaFinalPeriodo = fechaIngreso + 31536000;
+
+		var fechaFinalPeriodo = getFechaFinal(fechaIngreso);
+
+
 		var fechaPeriodo = fechaIngreso + 30240000;
 
 		//console.log('fechaActual: '+ moment.unix(fechaActual).format("YYYY-MM-DD hh:mm:ss"));
@@ -182,6 +185,14 @@ exports.addUsuario = function(us, cb){
 			});
 		}
 
+	}
+
+	function getFechaFinal(fechaInicio) {
+
+		var fechaFinalPeriodo = moment.unix(fechaInicio);
+		fechaFinalPeriodo.set("year", fechaFinalPeriodo.get("year") + 1);
+
+		return fechaFinalPeriodo.unix();
 	}
 };
 
@@ -670,7 +681,7 @@ exports.validarPeriodoUsuario = function (usuario, periodos) {
 				var fechaFinal = moment.unix(mayorPeriodo.fechaFinal);
 
 				fechaFinal.add(totalDiasPermisoSinSalario, 'days');
-				fechaFinal.add(1, 'year');
+				fechaFinal.set("year", fechaFinal.get("year") + 1);
 
 				if(fechaFinalUltimoPeriodo.unix() < fechaActual){
 
@@ -700,7 +711,9 @@ exports.validarPeriodoUsuario = function (usuario, periodos) {
 						if (error) return res.json(error);
 						periodos.forEach(function (periodo) {
 							if (semanasLaboradas >= periodo.rangoInicial && semanasLaboradas < periodo.rangoFinal) {
-								crearPeriodo(fechaActual, usuario.id, periodo._id, periodo.nombre, mayorPeriodo.fechaFinal, cierreSiguientePeriodo, periodo.cantidadDias, (mayorPeriodo.numeroPeriodo + 1), (mayorPeriodo.fechaFinal+31536000));
+								var fechaFi = moment.unix(mayorPeriodo.fechaFinal);
+								fechaFi.set("year", fechaFi.get("year") + 1);
+								crearPeriodo(fechaActual, usuario.id, periodo._id, periodo.nombre, mayorPeriodo.fechaFinal, cierreSiguientePeriodo, periodo.cantidadDias, (mayorPeriodo.numeroPeriodo + 1), fechaFi);
 							}
 						});
 					});
@@ -729,7 +742,7 @@ exports.validarPeriodoUsuario = function (usuario, periodos) {
 				var fechaFinal = moment.unix(usuario.fechaIngreso);
 
 				fechaFinal.add(totalDiasPermisoSinSalario, 'days');
-				fechaFinal.add(1, 'year');
+				fechaFinal.set("year", fechaFinal.get("year") + 1);
 
 				if(fechaFinalUltimoPeriodo.unix() < fechaActual){
 
@@ -753,7 +766,8 @@ exports.validarPeriodoUsuario = function (usuario, periodos) {
 
 					Periodo.find().sort({ "numeroPeriodo" : 1}).exec(function (error, periodos) {
 						if (error) console.log(error);
-						var fechaF = usuario.fechaIngreso + 31536000;
+						var fechaF = moment.unix(usuario.fechaIngreso);
+						fechaF.set("year", fechaF.get("year") + 1);
 						crearPeriodo(fechaActual, usuario.id, periodos[0]._id, periodos[0].nombre, usuario.fechaIngreso, cierreFechaCreacion, periodos[0].cantidadDias, 1, fechaF);
 					});
 				}
@@ -770,7 +784,7 @@ exports.validarPeriodoUsuario = function (usuario, periodos) {
 			nombrePeriodoPadre: nombrePeriodoPadre,
 			fechaInicio: fechaInicio,
 			fechaDisfrute: fechaDisfrute,
-			fechaFinal: fechaFinal,
+			fechaFinal: fechaFinal.unix(),
 			diasAsignados: diasAsignados,
 			numeroPeriodo: numeroPeriodo
 		});
