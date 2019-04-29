@@ -6,7 +6,12 @@ var mongoose = require('mongoose'),
     Configuracion = mongoose.model('Configuracion'),
     Contenido = mongoose.model('Contenido'),
     Periodo = mongoose.model('Periodo'),
-    PermisoSinSalario = require('../models/PermisoSinSalario');
+    PermisoSinSalario = require('../models/PermisoSinSalario'),
+    PeriodoUsuario = require('../models/PeriodoUsuario'),
+    moment 			= require('moment'),
+    ObjectID = require('mongodb').ObjectID;
+
+var crudUsuario = require('../routes/crudUsuario');
 
 Usuario.findOne({ departamentos : { $elemMatch: { tipo: 'Administrador'}}}, function (err, user) {
     if (!user) {
@@ -309,4 +314,80 @@ PermisoSinSalario.findOne({ nombre: '4 años', numero: '5'}, function (err, perm
             if (err) console.log(err);
         });
     }
+});
+
+
+PeriodoUsuario.find({numeroPeriodo : 1}, function (err, periodosUsuario) {
+
+    if (periodosUsuario && periodosUsuario.length > 0) {
+
+        PeriodoUsuario.find({}, function (err, periodosBorrar) {
+
+            periodosBorrar.forEach(function (periodoBorrar) {
+
+                PeriodoUsuario.remove( { _id: ObjectID(periodoBorrar._id) }, function (error, mensaje) {
+
+                } );
+
+            });
+
+            periodosUsuario.forEach(function (periodoUser) {
+
+                Periodo.find({}).sort({ "numeroPeriodo" : 1}).exec(function(error, periodos){
+
+                    var fechaActual = moment().unix();
+                    var cantidadSemanas = moment.unix(periodoUser.fechaInicio).diff(fechaActual, 'week');
+
+
+                    if(cantidadSemanas > 50){
+                        crearPeriodo(periodos, fechaActual, periodoUser.usuario, periodoUser.fechaInicio, 50, 1);
+                    }
+
+                });
+
+            });
+        });
+    }
+
+    function crearPeriodo(periodos, fechaActual, usuario, fechaIngreso, cantidadSemanas, numeroPeriodo) {
+
+
+        var fechaFinalPeriodo = getFechaFinal(fechaIngreso);
+        var fechaPeriodo = fechaIngreso + 30240000;
+
+        if(fechaPeriodo <= fechaActual){
+            periodos.forEach(function(periodo) {
+                if(cantidadSemanas >= periodo.rangoInicial && cantidadSemanas < periodo.rangoFinal){
+
+                    var periodoUsuario = new PeriodoUsuario({
+                        fechaCreada: fechaActual,
+                        usuario: usuario,
+                        periodo: periodo._id,
+                        nombrePeriodoPadre: periodo.nombre,
+                        fechaInicio: fechaIngreso,
+                        fechaFinal: fechaFinalPeriodo,
+                        fechaDisfrute: fechaPeriodo,
+                        diasAsignados: periodo.cantidadDias,
+                        numeroPeriodo: numeroPeriodo
+                    });
+
+                    periodoUsuario.save(function (err, respuesta) {
+                        if (err) console.log(err);
+                    });
+
+                    crearPeriodo(periodos, fechaActual, usuario, fechaFinalPeriodo, (cantidadSemanas + 50), (numeroPeriodo + 1));
+                }
+            });
+        }
+
+    }
+
+    function getFechaFinal(fechaInicio) {
+
+        var fechaFinalPeriodo = moment.unix(fechaInicio);
+        fechaFinalPeriodo.set("year", fechaFinalPeriodo.get("year") + 1);
+
+        return fechaFinalPeriodo.unix();
+    }
+
 });
