@@ -57,7 +57,7 @@ module.exports = {
 			        crudUsuario.getEmpleadoPorSupervisor(req.user.id, usuarioQuery,function(error, usuarios, departamentos){
 
 						var queryInUsers = {
-							usuario: {"$in":util.getIdsList(usuarios.concat(supervisores))},
+							usuario: {"$in":util.getIdsList(usuarios)},
 							estado: 'Pendiente'
 						};
 

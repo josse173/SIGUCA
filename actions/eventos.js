@@ -81,16 +81,13 @@ module.exports = {
           });
 
         }else{
-
-          crudUsuario.get(querrySupervisores, function (err, supervisores){
             crudUsuario.getEmpleadoPorSupervisor(req.user.id, usuarioQuery, function(error, usuarios, departamentos){
               if(!usuarioId || usuarioId === 'todos'){
-                var queryUsers = {"$in":util.getIdsList(usuarios.concat(supervisores))};
+                var queryUsers = {"$in":util.getIdsList(usuarios)};
                 justQuery.usuario = extraQuery.usuario = permisosQuery.usuario = marcaQuery.usuario = queryUsers;
               }
-              getInformacionRender(req, res, titulo, usuarios.concat(supervisores), departamentos, marcaQuery, justQuery, extraQuery, permisosQuery, cierreQuery, populateQuery, ((!err && usuario) ? (usuario.apellido1+" "+usuario.apellido2+", "+usuario.nombre) : null), periodosUsuarioQuery);
+              getInformacionRender(req, res, titulo, usuarios, departamentos, marcaQuery, justQuery, extraQuery, permisosQuery, cierreQuery, populateQuery, ((!err && usuario) ? (usuario.apellido1+" "+usuario.apellido2+", "+usuario.nombre) : null), periodosUsuarioQuery);
             });
-          });
         }
       });
     } else {
