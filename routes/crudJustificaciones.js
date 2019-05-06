@@ -38,53 +38,60 @@ exports.conteoJustificaciones=function(usuario,cb){
 		}
 	}
 
-	Usuario.find({_id: { "$ne": ObjectId(usuario.id) }, departamentos : { $elemMatch: { tipo: {$in: ['Empleado', 'Usuario sin acceso web']}}}},function(error,empleado){
-		if(empleado){
-			for(var i=0;i<empleado.length;i++){
-				if(empleado[i].departamentos.length > 0){//pregunta que si tiene mas de un departamento
-					for(var j=0;j<empleado[i].departamentos.length;j++){//rrecore los departamentos
-						for(var h=0; h < departamentos.length; h++){
-							if(empleado[i].departamentos[j].departamento && empleado[i].departamentos[j].departamento.equals(departamentos[h].idDepartamento)){
-								h=h.length;
-								j=j.length;
-								var usuarioTemporal = new Object();
-								usuarioTemporal.empleado=empleado[i];
-								usuariosConDepartamento.push(usuarioTemporal);
-								identificadores.push(usuarioTemporal.empleado._id)
+	Usuario.findOne({_id:usuario.id}).exec(function(error, supervisor){
+		var depIds = [];
+
+		if(supervisor.departamentos && supervisor.departamentos.length > 0){
+			supervisor.departamentos.forEach(function (departamento) {
+				if(departamento.tipo === "Supervisor"){
+					depIds.push(departamento.departamento);
+				}
+			})
+		}
+
+		Usuario.find({_id: { "$ne": ObjectId(usuario.id) }, departamentos : { $elemMatch: { departamento: {"$in":depIds}, tipo: {$in: ['Empleado', 'Usuario sin acceso web']}}}},function(error,empleado){
+			if(empleado){
+				for(var i=0;i<empleado.length;i++){
+					if(empleado[i].departamentos.length > 0){//pregunta que si tiene mas de un departamento
+						for(var j=0;j<empleado[i].departamentos.length;j++){//rrecore los departamentos
+							for(var h=0; h < departamentos.length; h++){
+								if(empleado[i].departamentos[j].departamento && empleado[i].departamentos[j].departamento.equals(departamentos[h].idDepartamento)){
+									h=h.length;
+									j=j.length;
+									var usuarioTemporal = new Object();
+									usuarioTemporal.empleado=empleado[i];
+									usuariosConDepartamento.push(usuarioTemporal);
+									identificadores.push(usuarioTemporal.empleado._id)
+								}
 							}
 						}
 					}
 				}
-			}
 
-		}//fin del if que pregunta si existe el empleado.
-		Justificaciones.find({usuario:{$in:identificadores},estado:"Incompleto"},function(error,cantidad){
-			if(cantidad){
-				for(var i=0;i<usuariosConDepartamento.length;i++){
-					var contador=0;
-					for (var j=0;j<cantidad.length;j++) {
-						if(usuariosConDepartamento[i].empleado.equals(cantidad[j].usuario)){
-							contador++;
+			}//fin del if que pregunta si existe el empleado.
+			Justificaciones.find({usuario:{$in:identificadores},estado:"Incompleto"},function(error,cantidad){
+				if(cantidad){
+					for(var i=0;i<usuariosConDepartamento.length;i++){
+						var contador=0;
+						for (var j=0;j<cantidad.length;j++) {
+							if(usuariosConDepartamento[i].empleado.equals(cantidad[j].usuario)){
+								contador++;
+							}
 						}
-
+						usuariosConDepartamento[i].empleado.contadorJustificaciones=contador;
 					}
-					usuariosConDepartamento[i].empleado.contadorJustificaciones=contador;
+
+					cb(usuariosConDepartamento);
+
+				}else{
+					cb();
 				}
-
-				cb(usuariosConDepartamento);
-
-			}else{
-				cb();
-			}
+			});
 
 
-		});
+		});//fin de la consulta
 
-
-	});//fin de la consulta
-
-
-
+	});
 
 };
 
@@ -104,45 +111,57 @@ exports.conteoJustificacionesTotal=function(usuario,cb){
 		}
 
 	}
-	Usuario.find({_id:{ "$ne": ObjectId(usuario.id) }, departamentos : { $elemMatch: { tipo: {$in: ['Empleado', 'Usuario sin acceso web']}}}},function(error,empleado){
-		if(empleado){
-			for(var i=0;i<empleado.length;i++){
-				if(empleado[i].departamentos.length>0){//pregunta que si tiene mas de un departamento
-					for(var j=0;j<empleado[i].departamentos.length;j++){//rrecore los departamentos
-						for(var h=0;h<departamentos.length;h++){
-							if(empleado[i].departamentos[j].departamento&&
-								empleado[i].departamentos[j].departamento.equals(departamentos[h].idDepartamento)){
-								h=h.length;
-								j=j.length;
-								var usuarioTemporal=new Object();
-								usuarioTemporal.empleado=empleado[i];
-								usuariosConDepartamento.push(usuarioTemporal);
-								identificadores.push(usuarioTemporal.empleado._id)
+
+	Usuario.findOne({_id:usuario.id}).exec(function(error, supervisor){
+		var depIds = [];
+
+		if(supervisor.departamentos && supervisor.departamentos.length > 0){
+			supervisor.departamentos.forEach(function (departamento) {
+				if(departamento.tipo === "Supervisor"){
+					depIds.push(departamento.departamento);
+				}
+			})
+		}
+
+		Usuario.find({_id:{ "$ne": ObjectId(usuario.id) }, departamentos : { $elemMatch: { departamento: {"$in":depIds}, tipo: {$in: ['Empleado', 'Usuario sin acceso web']}}}},function(error,empleado){
+			if(empleado){
+				for(var i=0;i<empleado.length;i++){
+					if(empleado[i].departamentos.length>0){//pregunta que si tiene mas de un departamento
+						for(var j=0;j<empleado[i].departamentos.length;j++){//rrecore los departamentos
+							for(var h=0;h<departamentos.length;h++){
+								if(empleado[i].departamentos[j].departamento &&	empleado[i].departamentos[j].departamento.equals(departamentos[h].idDepartamento)){
+									h=h.length;
+									j=j.length;
+									var usuarioTemporal=new Object();
+									usuarioTemporal.empleado=empleado[i];
+									usuariosConDepartamento.push(usuarioTemporal);
+									identificadores.push(usuarioTemporal.empleado._id)
+								}
 							}
 						}
 					}
 				}
-			}
 
-		}//fin del if que pregunta si existe el empleado.
-		Justificaciones.find({usuario:{$in:identificadores},estado:"Incompleto"},function(error,cantidad){
-			if(cantidad){
-				for(var i=0;i<usuariosConDepartamento.length;i++){
-					for (var j=0;j<cantidad.length;j++) {
-						if(usuariosConDepartamento[i].empleado.equals(cantidad[j].usuario)){
-							contador++;
+			}//fin del if que pregunta si existe el empleado.
+			Justificaciones.find({usuario:{$in:identificadores},estado:"Incompleto"},function(error,cantidad){
+				if(cantidad){
+					for(var i=0;i<usuariosConDepartamento.length;i++){
+						for (var j=0;j<cantidad.length;j++) {
+							if(usuariosConDepartamento[i].empleado.equals(cantidad[j].usuario)){
+								contador++;
+							}
+
 						}
-
 					}
+
+					cb(contador++);
+
+				}else{
+					cb(contador);
 				}
-
-				cb(contador++);
-
-			}else{
-				cb(contador);
-			}
-		});
-	});//fin de la consulta
+			});
+		});//fin de la consulta
+	});
 };
 
 exports.addJust = function(justificacion, cb){
