@@ -56,7 +56,6 @@ function marca (ipOrigen,tipoUsuario, marca, cb) {
 				else
 				tempRed=tempRed+"."+arrayOrigen[i];
 			}
-
 		}
 
 		marca.ipOrigen=ipOrigen;
@@ -72,14 +71,8 @@ function marca (ipOrigen,tipoUsuario, marca, cb) {
 				newMarca.red="Desconocida";
 			}
 
-
 		if(newMarca.red=="local"){
-			Marca.find(
-				{
-					epoch:{'$gte': epochTimeGte, '$lte': epochTimeLte},
-					usuario: newMarca.usuario,
-					tipoUsuario: tipoUsuario
-				}).sort({epoch: 1}).exec(function (err, marcas){
+			Marca.find({ epoch:{'$gte': epochTimeGte, '$lte': epochTimeLte}, usuario: newMarca.usuario,	tipoUsuario: tipoUsuario}).sort({epoch: 1}).exec(function (err, marcas){
 					var marcas = util.clasificarMarcas(marcas);
 					if(newMarca.tipoMarca=="Entrada" ){
 						if(!marcas.entrada && !marcas.salida
@@ -216,10 +209,11 @@ function marca (ipOrigen,tipoUsuario, marca, cb) {
 					else return cb("Surgió un error no contemplado con la marca,"+
 						"vuelva a intentarlo o contacto con el administrador");
 				});
-		}else{
+		}
+		else{
 			Usuario.findById(newMarca.usuario,function(error,empleado){
 				if(!error && empleado){
-					if(empleado.teleTrabajo=="on"){
+					if(empleado.teleTrabajo == "on"){
 						Marca.find(
 							{
 								epoch:{'$gte': epochTimeGte, '$lte': epochTimeLte},
@@ -391,8 +385,6 @@ function verificarRed(tempRed,cb){
 
 exports.deleteMarca = function(id,tipoMarca,usuarioId, tipoUsuario, cb){
 
-
-
 	var date = new Date();
 	var epoch1 = (date.getTime() - date.getMilliseconds())/1000-200;
 	var epochMin = moment();
@@ -442,6 +434,7 @@ exports.deleteMarca = function(id,tipoMarca,usuarioId, tipoUsuario, cb){
 		}
 	});
 }
+
 exports.find = function(query, cb){
 	Marca.find(query, function (err, marcas) {
 		cb(err, marcas);
@@ -473,7 +466,6 @@ exports.rfidReader = function(tipoUsuario, codTarjeta, tipoMarca, ip, cb) {
 }
 
 function revisarMarca(tipoUsuario, _idUser, marca, cb){
-
 
 	var epochMin = moment();
 	epochMin.hours(0);
@@ -553,9 +545,6 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 											workedHour(_idUser, tiempoDia, mOut, mReal,cb);
 										}
 										else cb("");
-
-
-
 								}
 								else cb("");
                         		//Evaluar si se pasó el tiempo de receso o almuerzo
@@ -576,7 +565,6 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 							"Jueves", "Viernes", "Sabado"][today.day()];
 							var tiempoDia = horarioFijo[dia];
 
-
 							var horarioOriginal={minutos:parseInt(String(horarioFijo.horaEntrada).substr(3,2)),
 								hora:parseInt(String(horarioFijo.horaEntrada).substr(0,2))};
 
@@ -587,10 +575,9 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 								horaEntrada=parseInt(String(horarioFijo.horaEntrada).substr(0,2));
 								horaSalida=parseInt(String(horarioFijo.horaSalida).substr(0,2));
 
-
 								/**
-							 * Se agrega el tiempo de grancia para la marca de entrada y de salida
-							 */
+								 * Se agrega el tiempo de grancia para la marca de entrada y de salida
+								 */
 							//Rango entrada
 							if(minutosEntrada + config.rangoMarcaEntrada > 60){
 								horaEntrada += 1;
@@ -652,7 +639,6 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 							else{
 								return cb("");
 							}
-
 
 					}
 				});

@@ -13,15 +13,13 @@ var ObjectId = mongoose.Types.ObjectId;
 //	---------------------------------------------------------------------*/
 
 exports.deleteJustificationExit = function(usuarioId,epoch1,epochMax){
-	Justificaciones.remove({'usuario':usuarioId,fechaCreada: { "$gte": epoch1 ,"$lte":epochMax}},function(err,marcaE){
-
-	});
-}
+	Justificaciones.remove({'usuario':usuarioId, fechaCreada: { "$gte": epoch1 , "$lte":epochMax}, motivo : {$in: ["Jornada laborada menor que la establecida", "Salida antes de hora establecida"]} },function(err,marcaE){});
+};
 
 exports.deleteJustificationEntrance = function(usuarioId,epochMin,epochMax){
-	Justificaciones.remove({'usuario':usuarioId,tipoUsuario: globalTipoUsuario, fechaCreada: { "$gte": epochMin,"$lte":epochMax}},function(err,marcaE){});
+	Justificaciones.remove({'usuario':usuarioId,tipoUsuario: globalTipoUsuario, fechaCreada: { "$gte": epochMin,"$lte":epochMax}, motivo: "Entrada tardía"}, function(err,marcaE){});
+};
 
-}
 exports.conteoJustificaciones=function(usuario,cb){
 
 	var arrayJustificaciones =new Array();
