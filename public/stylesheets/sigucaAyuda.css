@@ -170,6 +170,7 @@ body {
 }
 .tablasReportes {
 	display: inline-block;
+	min-width: 1300px;
 }
 /** Media Queries **/
 @media(max-width: 1200px) {
