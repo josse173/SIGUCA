@@ -177,7 +177,7 @@ block content
             if(horasEmpleado.length > 0)
               br
               h3 #{textos[39].titulo}
-              table.tableSolicitudes.footable#totalHorasEmpleado
+              table.tableSolicitudes#totalHorasEmpleado
                   thead
                     tr
                       th #{textos[40].titulo}
@@ -198,6 +198,10 @@ block content
                         td #{empleado.tipoUsuario}
                         td #{empleado.usuario.nombre} #{empleado.usuario.apellido1}
                         td #{tiempo}
+                  tfoot
+                    tr
+                      td(colspan='3')
+                        .pagination.pagination-centered.hide-if-no-paging
 
             else
               h3  #{textos[39].titulo}
@@ -209,7 +213,7 @@ block content
             if(cierreUsuarios.length > 0)
               br
               h3 #{textos[43].titulo}
-              table.tableCierres.footable#horaTablaPDF
+              table.tableCierres#horaTablaPDF
                   thead
                     tr
                       th #{textos[44].titulo}
@@ -233,6 +237,10 @@ block content
                         td #{cierre.tipoUsuario}
                         td #{cierre.usuario.nombre} #{cierre.usuario.apellido1}
                         td #{tiempo}
+                  tfoot
+                    tr
+                      td(colspan='4')
+                        .pagination.pagination-centered.hide-if-no-paging
             else
               h3 #{textos[43].titulo}
               p  #{textos[15].titulo}
@@ -241,7 +249,7 @@ block content
           if(marcas)
             if(marcas.length > 0)
               h3 #{textos[10].titulo}
-              table.footable#marcasPDF
+              table#marcasPDF
                   thead
                     tr
                       th(data-type="numeric" data-sort-initial="descending") #{textos[14].titulo}
@@ -255,6 +263,10 @@ block content
                         td #{marca.usuario.nombre} #{marca.usuario.apellido1}
                         td #{marca.tipoMarca}
                         td #{marca.tipoUsuario}
+                  tfoot
+                    tr
+                      td(colspan='4')
+                        .pagination.pagination-centered.hide-if-no-paging
             else
               h3 #{textos[10].titulo}
               p #{textos[15].titulo}
@@ -265,7 +277,7 @@ block content
           if(arregloTardias)
             if(arregloTardias.length > 0)
               h3 #{textos[25].titulo}
-              table.footable#tardiasPDF
+              table#tardiasPDF
                   thead
                     tr
                       th #{textos[26].titulo}
@@ -273,13 +285,10 @@ block content
                       th #{textos[29].titulo}
                       th Hora entrada
                       th Hora marca
-
-
-
                   tbody
                     -for (var g = 0; g <arregloTardias.length; g++)
                       tr
-                        th #{arregloTardias[g].tipoUsuario}
+                        td #{arregloTardias[g].tipoUsuario}
                         td #{arregloTardias[g].nombre} #{arregloTardias[g].apellido}
                         td #{arregloTardias[g].fecha.split(", ")[0]}
                         if(arregloTardias[g].horarioMinutos < 10)
@@ -287,6 +296,10 @@ block content
                         else
                           td #{arregloTardias[g].horarioHora+":"+arregloTardias[g].horarioMinutos}
                         td #{arregloTardias[g].fecha.split(", ")[1]}
+                  tfoot
+                    tr
+                      td(colspan='5')
+                        .pagination.pagination-centered.hide-if-no-paging
             else
               h3 #{textos[25].titulo}
               p #{textos[15].titulo}
@@ -294,7 +307,7 @@ block content
           if(marcasPorDia)
             if(marcasPorDia.length > 0)
                 h3 #{textos[16].titulo}
-                table.footable#marcassPDF
+                table#marcassPDF
                     thead
                       tr
                         th #{textos[17].titulo}
@@ -316,6 +329,10 @@ block content
                           td  #{marcasPorDia[s].salidaReceso}
                           td  #{marcasPorDia[s].entradaReceso}
                           td  #{marcasPorDia[s].salida}
+                    tfoot
+                      tr
+                        td(colspan='8')
+                          .pagination.pagination-centered.hide-if-no-paging
               else
                 h3 #{textos[16].titulo}
                 p #{textos[15].titulo}
@@ -327,13 +344,13 @@ block content
               table.tableJustificaciones#justificacionesPDF
                   thead
                     tr
-                      th(data-type="numeric" data-sort-initial="descending") #{textos[31].titulo}
+                      th #{textos[31].titulo}
                       th #{textos[32].titulo}
-                      th(data-hide="phone,small") #{textos[33].titulo}
-                      th(data-hide="phone,small" data-sort-ignore="true") #{textos[34].titulo}
-                      th(data-hide="phone,small" data-sort-ignore="true") #{textos[35].titulo}
+                      th #{textos[33].titulo}
+                      th #{textos[34].titulo}
+                      th #{textos[35].titulo}
                       th #{textos[36].titulo}
-                      th(data-hide="phone,small" data-sort-ignore="true") #{textos[37].titulo}
+                      th #{textos[37].titulo}
                   tbody
                     each justificacion, i in justificaciones
                       tr
@@ -345,6 +362,10 @@ block content
                         td #{justificacion.detalle}
                         td #{justificacion.comentarioSupervisor}
                         td #{justificacion.estado}
+                  tfoot
+                    tr
+                      td(colspan='7')
+                        .pagination.pagination-centered.hide-if-no-paging
             else
               h3 #{textos[30].titulo}
               p #{textos[15].titulo}
@@ -354,7 +375,7 @@ block content
             if(extras.length > 0)
               br
               h3 #{textos[48].titulo}
-              table.tableSolicitudes.footable#extraPDF
+              table.tableSolicitudes#extraPDF
                   thead
                     tr
                       th(data-type="numeric" data-sort-initial="descending") #{textos[49].titulo}
@@ -379,13 +400,17 @@ block content
                         td #{extra.motivo}
                         td #{extra.comentarioSupervisor}
                         td #{extra.estado}
+                  tfoot
+                    tr
+                      td(colspan='9')
+                        .pagination.pagination-centered.hide-if-no-paging
 
           //-Solicitudes Permisos
           if(permisos)
             if(permisos.length > 0 && (permisos.filter(x => x.motivo !== 'Permiso sin goce de salario').length > 0))
               br
               h3 #{textos[59].titulo}
-              table.tableSolicitudes.footable#permisoPDF
+              table.tableSolicitudes#permisoPDF
                   thead
                     tr
                       th(data-type="numeric" data-sort-initial="descending") #{textos[60].titulo}
@@ -415,6 +440,10 @@ block content
                         td #{permiso.detalle}
                         td #{permiso.comentarioSupervisor}
                         td #{permiso.estado}
+                  tfoot
+                    tr
+                      td(colspan='9')
+                        .pagination.pagination-centered.hide-if-no-paging
             else
               h3 #{textos[59].titulo}
               p #{textos[15].titulo}
@@ -425,7 +454,7 @@ block content
             if(permisos.length > 0 && (permisos.filter(x => x.motivo === 'Permiso sin goce de salario').length > 0))
               br
               h3 Permisos sin goce de salario
-              table.tableSolicitudesSinGoce.footable#permisoSinGocePDF
+              table.tableSolicitudesSinGoce#permisoSinGocePDF
                   thead
                     tr
                       th(data-type="numeric" data-sort-initial="descending") #{textos[60].titulo}
@@ -451,13 +480,17 @@ block content
                         td #{permiso.detalle}
                         td #{permiso.comentarioSupervisor}
                         td #{permiso.estado}
+                  tfoot
+                    tr
+                      td(colspan='8')
+                        .pagination.pagination-centered.hide-if-no-paging
 
           //-lista de feriados
           if(feriado)
             if(feriado.lenght!=0)
               br
               h3 #{textos[77].titulo}
-              table.footable.tableFeriado
+              table.tableFeriado
                   thead
                     tr
                       th #{textos[78].titulo}
@@ -469,6 +502,10 @@ block content
                       tr
                         td #{feriadoCurrent.nombreFeriado}
                         td #{feriadoCurrent.epoch}
+                  tfoot
+                    tr
+                      td(colspan='8')
+                        .pagination.pagination-centered.hide-if-no-paging
             else
               h3 #{textos[77].titulo}
               p #{textos[15].titulo}
@@ -477,7 +514,7 @@ block content
           if(vacaciones)
               br
               h3 #{textos[70].titulo}
-              table.tableSolicitudes.footable#permisoPDF
+              table.tableSolicitudes#permisoPDF
                   thead
                     tr
 
@@ -497,10 +534,14 @@ block content
                             td #{elemento.email}
                             td #{elemento.estado}
                             td.text-center #{elemento.vacaciones}
+                  tfoot
+                    tr
+                      td(colspan='6')
+                        .pagination.pagination-centered.hide-if-no-paging
 
           if(tipoReporte === 'confirmacionPresencia')
               h3 Confirmación de Presencia
-              table.footable.tableContenido(data-page-navigation=".pagination" ,data-page-size="25")#opcionesTablaConfirmacionPresencia
+              table.tableContenido#opcionesTablaConfirmacionPresencia
                 thead
                   tr
                     th(data-sort-ignore="true") Usuario
@@ -519,10 +560,14 @@ block content
                       td #{moment.unix(eventoTeletrabajo.alerta.fechaAlertaUnix).format("hh:mm:ss")}
                       td #{eventoTeletrabajo.fechaAceptacion === 0 ? '' : moment.unix(eventoTeletrabajo.fechaAceptacion).format("hh:mm:ss")}
                       td #{eventoTeletrabajo.presente ? 'Si' : 'No'}
+                tfoot
+                  tr
+                    td(colspan='8')
+                      .pagination.pagination-centered.hide-if-no-paging
 
           if(tipoReporte === 'periodosUsuario' && periodosUsuario && periodosUsuario.length > 0)
             h3 Periodos de los empleados
-            table.footable.tableContenido(data-page-navigation=".pagination" ,data-page-size="25")#opcionesTablaPeriodosUsuario
+            table.tableContenido#opcionesTablaPeriodosUsuario
               thead
                 tr
                   th Usuario
@@ -533,7 +578,6 @@ block content
                   th Tipo de periodo
                   th Días asignados
                   th Días disfrutados
-
               tbody
                 each periodoUsuario, i in periodosUsuario
                   tr
@@ -545,6 +589,11 @@ block content
                     td #{periodoUsuario.periodo.nombre}
                     td #{periodoUsuario.diasAsignados}
                     td #{periodoUsuario.diasDisfrutados}
+
+              tfoot
+                tr
+                  td(colspan='8')
+                    .pagination.pagination-centered.hide-if-no-paging
 block sigucaJS
   script(src="/js/app/reportes.js")
   script(src="/socket.io/socket.io.js")

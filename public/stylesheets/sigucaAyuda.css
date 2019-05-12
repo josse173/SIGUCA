@@ -319,3 +319,10 @@ body {
 .botonGenerarContrasena{
 	margin-bottom: 0!important;
 }
+
+table.dataTable thead {
+	-webkit-box-sizing: content-box;
+	box-sizing: content-box;
+	background-color: #004277;
+	color: white;
+}
