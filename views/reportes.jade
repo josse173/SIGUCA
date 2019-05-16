@@ -173,33 +173,35 @@ block content
                   tr
                     td(colspan='2')
 
-
           if(horasEmpleado)
             if(horasEmpleado.length > 0)
               br
               h3 #{textos[39].titulo}
-              .tableSolicitudes.footable
-                table#totalHorasEmpleado
-                    thead
-                      tr
-                        th #{textos[40].titulo}
-                        th #{textos[41].titulo}
-                        th #{textos[42].titulo}
+              table.tableSolicitudes#totalHorasEmpleado
+                  thead
+                    tr
+                      th #{textos[40].titulo}
+                      th #{textos[41].titulo}
+                      th #{textos[42].titulo}
 
-                    tbody
-                      each empleado, p in horasEmpleado
-                        - var x = JSON.stringify(empleado);
-                        - var tiempo ="";
-                        - var h =""+empleado.tiempo.horas;
-                        - var m =""+empleado.tiempo.minutos;
-                        - if(empleado.tiempo.horas<10) h = "0"+h;
-                        - if(empleado.tiempo.minutos<10) m = "0"+m;
-                        - tiempo = h+":"+m;
-                        - if(empleado.tiempo.horas<=0 && empleado.tiempo.minutos<=0) tiempo = "El usuario se ausentó o no marcó salida."
-                        tr
-                          td #{empleado.tipoUsuario}
-                          td #{empleado.usuario.nombre} #{empleado.usuario.apellido1}
-                          td #{tiempo}
+                  tbody
+                    each empleado, p in horasEmpleado
+                      - var x = JSON.stringify(empleado);
+                      - var tiempo ="";
+                      - var h =""+empleado.tiempo.horas;
+                      - var m =""+empleado.tiempo.minutos;
+                      - if(empleado.tiempo.horas<10) h = "0"+h;
+                      - if(empleado.tiempo.minutos<10) m = "0"+m;
+                      - tiempo = h+":"+m;
+                      - if(empleado.tiempo.horas<=0 && empleado.tiempo.minutos<=0) tiempo = "El usuario se ausentó o no marcó salida."
+                      tr
+                        td #{empleado.tipoUsuario}
+                        td #{empleado.usuario.nombre} #{empleado.usuario.apellido1}
+                        td #{tiempo}
+                  tfoot
+                    tr
+                      td(colspan='3')
+                        .pagination.pagination-centered.hide-if-no-paging
 
             else
               h3  #{textos[39].titulo}
@@ -211,31 +213,34 @@ block content
             if(cierreUsuarios.length > 0)
               br
               h3 #{textos[43].titulo}
-              .tableCierres.footable
-                table#horaTablaPDF
-                    thead
-                      tr
-                        th #{textos[44].titulo}
-                        th #{textos[45].titulo}
-                        th #{textos[46].titulo}
-                        th #{textos[47].titulo}
+              table.tableCierres#horaTablaPDF
+                  thead
+                    tr
+                      th #{textos[44].titulo}
+                      th #{textos[45].titulo}
+                      th #{textos[46].titulo}
+                      th #{textos[47].titulo}
 
-                    tbody
-                      each cierre, i in cierreUsuarios
-                        - var x = JSON.stringify(cierre);
-                        - var tiempo ="";
-                        - var h =""+cierre.tiempo.horas;
-                        - var m =""+cierre.tiempo.minutos;
-                        - if(cierre.tiempo.horas<10) h = "0"+h;
-                        - if(cierre.tiempo.minutos<10) m = "0"+m;
-                        - tiempo = h+":"+m;
-                        - if(cierre.tiempo.horas<=0 && cierre.tiempo.minutos<=0)
-                          -tiempo = "El usuario se ausentó o no marcó salida."
-                        tr
-                          td(data-value=cierre.epoch) #{cierre.fecha.str}
-                          td #{cierre.tipoUsuario}
-                          td #{cierre.usuario.nombre} #{cierre.usuario.apellido1}
-                          td #{tiempo}
+                  tbody
+                    each cierre, i in cierreUsuarios
+                      - var x = JSON.stringify(cierre);
+                      - var tiempo ="";
+                      - var h =""+cierre.tiempo.horas;
+                      - var m =""+cierre.tiempo.minutos;
+                      - if(cierre.tiempo.horas<10) h = "0"+h;
+                      - if(cierre.tiempo.minutos<10) m = "0"+m;
+                      - tiempo = h+":"+m;
+                      - if(cierre.tiempo.horas<=0 && cierre.tiempo.minutos<=0)
+                        -tiempo = "El usuario se ausentó o no marcó salida."
+                      tr
+                        td(data-value=cierre.epoch) #{cierre.fecha.str}
+                        td #{cierre.tipoUsuario}
+                        td #{cierre.usuario.nombre} #{cierre.usuario.apellido1}
+                        td #{tiempo}
+                  tfoot
+                    tr
+                      td(colspan='4')
+                        .pagination.pagination-centered.hide-if-no-paging
             else
               h3 #{textos[43].titulo}
               p  #{textos[15].titulo}
@@ -244,21 +249,24 @@ block content
           if(marcas)
             if(marcas.length > 0)
               h3 #{textos[10].titulo}
-              .footable
-                table#marcasPDF
-                    thead
+              table#marcasPDF
+                  thead
+                    tr
+                      th(data-type="numeric" data-sort-initial="descending") #{textos[14].titulo}
+                      th #{textos[11].titulo}
+                      th #{textos[12].titulo}
+                      th #{textos[13].titulo}
+                  tbody
+                    each marca, i in marcas
                       tr
-                        th(data-type="numeric" data-sort-initial="descending") #{textos[14].titulo}
-                        th #{textos[11].titulo}
-                        th #{textos[12].titulo}
-                        th #{textos[13].titulo}
-                    tbody
-                      each marca, i in marcas
-                        tr
-                          td(data-value=marca.epoch) #{marca.fecha.str}
-                          td #{marca.usuario.nombre} #{marca.usuario.apellido1}
-                          td #{marca.tipoMarca}
-                          td #{marca.tipoUsuario}
+                        td(data-value=marca.epoch) #{marca.fecha.str}
+                        td #{marca.usuario.nombre} #{marca.usuario.apellido1}
+                        td #{marca.tipoMarca}
+                        td #{marca.tipoUsuario}
+                  tfoot
+                    tr
+                      td(colspan='4')
+                        .pagination.pagination-centered.hide-if-no-paging
             else
               h3 #{textos[10].titulo}
               p #{textos[15].titulo}
@@ -269,29 +277,29 @@ block content
           if(arregloTardias)
             if(arregloTardias.length > 0)
               h3 #{textos[25].titulo}
-              .footable
-                table#tardiasPDF
-                    thead
+              table#tardiasPDF
+                  thead
+                    tr
+                      th #{textos[26].titulo}
+                      th #{textos[27].titulo}
+                      th #{textos[29].titulo}
+                      th Hora entrada
+                      th Hora marca
+                  tbody
+                    -for (var g = 0; g <arregloTardias.length; g++)
                       tr
-                        th #{textos[26].titulo}
-                        th #{textos[27].titulo}
-                        th #{textos[29].titulo}
-                        th Hora entrada
-                        th Hora marca
-
-
-
-                    tbody
-                      -for (var g = 0; g <arregloTardias.length; g++)
-                        tr
-                          th #{arregloTardias[g].tipoUsuario}
-                          td #{arregloTardias[g].nombre} #{arregloTardias[g].apellido}
-                          td #{arregloTardias[g].fecha.split(", ")[0]}
-                          if(arregloTardias[g].horarioMinutos < 10)
-                            td #{arregloTardias[g].horarioHora+":"+arregloTardias[g].horarioMinutos+""+0}
-                          else
-                            td #{arregloTardias[g].horarioHora+":"+arregloTardias[g].horarioMinutos}
-                          td #{arregloTardias[g].fecha.split(", ")[1]}
+                        td #{arregloTardias[g].tipoUsuario}
+                        td #{arregloTardias[g].nombre} #{arregloTardias[g].apellido}
+                        td #{arregloTardias[g].fecha.split(", ")[0]}
+                        if(arregloTardias[g].horarioMinutos < 10)
+                          td #{arregloTardias[g].horarioHora+":"+arregloTardias[g].horarioMinutos+""+0}
+                        else
+                          td #{arregloTardias[g].horarioHora+":"+arregloTardias[g].horarioMinutos}
+                        td #{arregloTardias[g].fecha.split(", ")[1]}
+                  tfoot
+                    tr
+                      td(colspan='5')
+                        .pagination.pagination-centered.hide-if-no-paging
             else
               h3 #{textos[25].titulo}
               p #{textos[15].titulo}
@@ -299,29 +307,32 @@ block content
           if(marcasPorDia)
             if(marcasPorDia.length > 0)
                 h3 #{textos[16].titulo}
-                .footable
-                  table#marcassPDF
-                      thead
+                table#marcassPDF
+                    thead
+                      tr
+                        th #{textos[17].titulo}
+                        th #{textos[18].titulo}
+                        th #{textos[19].titulo}
+                        th #{textos[20].titulo}
+                        th #{textos[21].titulo}
+                        th #{textos[22].titulo}
+                        th #{textos[23].titulo}
+                        th #{textos[24].titulo}
+                    tbody
+                      -for(var s=0;s<marcasPorDia.length;s++)
                         tr
-                          th #{textos[17].titulo}
-                          th #{textos[18].titulo}
-                          th #{textos[19].titulo}
-                          th #{textos[20].titulo}
-                          th #{textos[21].titulo}
-                          th #{textos[22].titulo}
-                          th #{textos[23].titulo}
-                          th #{textos[24].titulo}
-                      tbody
-                        -for(var s=0;s<marcasPorDia.length;s++)
-                          tr
-                            td  #{marcasPorDia[s].tipoUsuario}
-                            td  #{marcasPorDia[s].nombre} #{marcasPorDia[s].apellido1}
-                            td  #{marcasPorDia[s].entrada}
-                            td  #{marcasPorDia[s].salidaAlmuerzo}
-                            td  #{marcasPorDia[s].entradaAlmuerzo}
-                            td  #{marcasPorDia[s].salidaReceso}
-                            td  #{marcasPorDia[s].entradaReceso}
-                            td  #{marcasPorDia[s].salida}
+                          td  #{marcasPorDia[s].tipoUsuario}
+                          td  #{marcasPorDia[s].nombre} #{marcasPorDia[s].apellido1}
+                          td  #{marcasPorDia[s].entrada}
+                          td  #{marcasPorDia[s].salidaAlmuerzo}
+                          td  #{marcasPorDia[s].entradaAlmuerzo}
+                          td  #{marcasPorDia[s].salidaReceso}
+                          td  #{marcasPorDia[s].entradaReceso}
+                          td  #{marcasPorDia[s].salida}
+                    tfoot
+                      tr
+                        td(colspan='8')
+                          .pagination.pagination-centered.hide-if-no-paging
               else
                 h3 #{textos[16].titulo}
                 p #{textos[15].titulo}
@@ -330,28 +341,31 @@ block content
           if(justificaciones)
             if(justificaciones.length > 0)
               h3 #{textos[30].titulo}
-              .tableJustificaciones
-                table#justificacionesPDF
-                    thead
+              table.tableJustificaciones#justificacionesPDF
+                  thead
+                    tr
+                      th #{textos[31].titulo}
+                      th #{textos[32].titulo}
+                      th #{textos[33].titulo}
+                      th #{textos[34].titulo}
+                      th #{textos[35].titulo}
+                      th #{textos[36].titulo}
+                      th #{textos[37].titulo}
+                  tbody
+                    each justificacion, i in justificaciones
                       tr
-                        th(data-type="numeric" data-sort-initial="descending") #{textos[31].titulo}
-                        th #{textos[32].titulo}
-                        th(data-hide="phone,small") #{textos[33].titulo}
-                        th(data-hide="phone,small" data-sort-ignore="true") #{textos[34].titulo}
-                        th(data-hide="phone,small" data-sort-ignore="true") #{textos[35].titulo}
-                        th #{textos[36].titulo}
-                        th(data-hide="phone,small" data-sort-ignore="true") #{textos[37].titulo}
-                    tbody
-                      each justificacion, i in justificaciones
-                        tr
-                          td(data-value=justificacion.fechaCreada) #{justificacion.fecha.str}
-                          if(justificacion.usuario)
-                            td #{justificacion.usuario.nombre} #{justificacion.usuario.apellido1}
-                          td #{justificacion.tipoUsuario}
-                          td #{justificacion.motivo}
-                          td #{justificacion.detalle}
-                          td #{justificacion.comentarioSupervisor}
-                          td #{justificacion.estado}
+                        td(data-value=justificacion.fechaCreada) #{justificacion.fecha.str}
+                        if(justificacion.usuario)
+                          td #{justificacion.usuario.nombre} #{justificacion.usuario.apellido1}
+                        td #{justificacion.tipoUsuario}
+                        td #{justificacion.motivo}
+                        td #{justificacion.detalle}
+                        td #{justificacion.comentarioSupervisor}
+                        td #{justificacion.estado}
+                  tfoot
+                    tr
+                      td(colspan='7')
+                        .pagination.pagination-centered.hide-if-no-paging
             else
               h3 #{textos[30].titulo}
               p #{textos[15].titulo}
@@ -361,70 +375,75 @@ block content
             if(extras.length > 0)
               br
               h3 #{textos[48].titulo}
-              .tableSolicitudes.footable
-                table#extraPDF
-                    thead
+              table.tableSolicitudes#extraPDF
+                  thead
+                    tr
+                      th(data-type="numeric" data-sort-initial="descending") #{textos[49].titulo}
+                      th #{textos[50].titulo}
+                      th(data-hide="phone,small" data-sort-ignore="true") #{textos[51].titulo}
+                      th(data-hide="phone,small" data-sort-ignore="true") #{textos[52].titulo}
+                      th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[53].titulo}
+                      th(data-hide="phone,small,medium") #{textos[54].titulo}
+                      th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[55].titulo}
+                      th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[56].titulo}
+                      th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[57].titulo}
+                  tbody
+                    each extra, i in extras
                       tr
-                        th(data-type="numeric" data-sort-initial="descending") #{textos[49].titulo}
-                        th #{textos[50].titulo}
-                        th(data-hide="phone,small" data-sort-ignore="true") #{textos[51].titulo}
-                        th(data-hide="phone,small" data-sort-ignore="true") #{textos[52].titulo}
-                        th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[53].titulo}
-                        th(data-hide="phone,small,medium") #{textos[54].titulo}
-                        th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[55].titulo}
-                        th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[56].titulo}
-                        th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[57].titulo}
-                        th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[58].titulo}
-                    tbody
-                      each extra, i in extras
-                        tr
-                          td(data-value=extra.fechaCreada) #{extra.fecha.str}
-                          if(extra.usuario)
-                          td #{extra.usuario.nombre} #{extra.usuario.apellido1}
-                          td #{moment.unix(extra.fechaInicial).format("YYYY-MM-DD hh:mm:ss")}
-                          td #{moment.unix(extra.fechaFinal).format("YYYY-MM-DD hh:mm:ss")}
-                          td #{extra.cantHoras}
-                          td #{extra.ubicacion}
-                          td #{extra.motivo}
-                          td #{extra.comentarioSupervisor}
-                          td #{extra.estado}
+                        td(data-value=extra.fechaCreada) #{extra.fecha.str}
+                        if(extra.usuario)
+                        td #{extra.usuario.nombre} #{extra.usuario.apellido1}
+                        td #{moment.unix(extra.fechaInicial).format("YYYY-MM-DD hh:mm:ss")}
+                        td #{moment.unix(extra.fechaFinal).format("YYYY-MM-DD hh:mm:ss")}
+                        td #{extra.cantHoras}
+                        td #{extra.ubicacion}
+                        td #{extra.motivo}
+                        td #{extra.comentarioSupervisor}
+                        td #{extra.estado}
+                  tfoot
+                    tr
+                      td(colspan='9')
+                        .pagination.pagination-centered.hide-if-no-paging
 
           //-Solicitudes Permisos
           if(permisos)
             if(permisos.length > 0 && (permisos.filter(x => x.motivo !== 'Permiso sin goce de salario').length > 0))
               br
               h3 #{textos[59].titulo}
-              .tableSolicitudes.footable
-                table#permisoPDF
-                    thead
+              table.tableSolicitudes#permisoPDF
+                  thead
+                    tr
+                      th(data-type="numeric" data-sort-initial="descending") #{textos[60].titulo}
+                      th  #{textos[61].titulo}
+                      th(data-hide="phone,small") #{textos[62].titulo}
+                      th(data-hide="phone,small") #{textos[63].titulo}
+                      th(data-hide="phone,small") #{textos[64].titulo}
+                      th(data-hide="phone,small,medium") #{textos[65].titulo}
+                      th Motivo Articulo 51
+                      th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[66].titulo}
+                      th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[67].titulo}
+                      th #{textos[68].titulo}
+                  tbody
+                    each permiso, i in permisos.filter(x => x.motivo !== 'Permiso sin goce de salario')
                       tr
-                        th(data-type="numeric" data-sort-initial="descending") #{textos[60].titulo}
-                        th  #{textos[61].titulo}
-                        th(data-hide="phone,small") #{textos[62].titulo}
-                        th(data-hide="phone,small") #{textos[63].titulo}
-                        th(data-hide="phone,small") #{textos[64].titulo}
-                        th(data-hide="phone,small,medium") #{textos[65].titulo}
-                        th Motivo Articulo 51
-                        th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[66].titulo}
-                        th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[67].titulo}
-                        th #{textos[68].titulo}
-                    tbody
-                      each permiso, i in permisos.filter(x => x.motivo !== 'Permiso sin goce de salario')
-                        tr
-                          td(data-value=permiso.fechaCreada) #{permiso.fecha.str}
-                          if(permiso.usuario)
-                            td #{permiso.usuario.nombre} #{permiso.usuario.apellido1}
-                          td #{permiso.diaInicio}
-                          td #{permiso.diaFinal}
-                          td #{permiso.cantidadDias}
-                          td #{permiso.motivo}
-                          if(permiso.motivo == 'Articulo 51')
-                            td #{permiso.motivoArticulo51}
-                          else
-                            td N/A
-                          td #{permiso.detalle}
-                          td #{permiso.comentarioSupervisor}
-                          td #{permiso.estado}
+                        td(data-value=permiso.fechaCreada) #{permiso.fecha.str}
+                        if(permiso.usuario)
+                          td #{permiso.usuario.nombre} #{permiso.usuario.apellido1}
+                        td #{permiso.diaInicio}
+                        td #{permiso.diaFinal}
+                        td #{permiso.cantidadDias}
+                        td #{permiso.motivo}
+                        if(permiso.motivo == 'Articulo 51')
+                          td #{permiso.motivoArticulo51}
+                        else
+                          td N/A
+                        td #{permiso.detalle}
+                        td #{permiso.comentarioSupervisor}
+                        td #{permiso.estado}
+                  tfoot
+                    tr
+                      td(colspan='9')
+                        .pagination.pagination-centered.hide-if-no-paging
             else
               h3 #{textos[59].titulo}
               p #{textos[15].titulo}
@@ -435,40 +454,43 @@ block content
             if(permisos.length > 0 && (permisos.filter(x => x.motivo === 'Permiso sin goce de salario').length > 0))
               br
               h3 Permisos sin goce de salario
-              .tableSolicitudesSinGoce.footable
-                table#permisoSinGocePDF
-                    thead
+              table.tableSolicitudesSinGoce#permisoSinGocePDF
+                  thead
+                    tr
+                      th(data-type="numeric" data-sort-initial="descending") #{textos[60].titulo}
+                      th  #{textos[61].titulo}
+                      th(data-hide="phone,small") #{textos[62].titulo}
+                      th(data-hide="phone,small") #{textos[63].titulo}
+                      th(data-hide="phone,small") #{textos[64].titulo}
+                      th(data-hide="phone,small,medium") #{textos[65].titulo}
+                      th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[66].titulo}
+                      th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[67].titulo}
+                      th #{textos[68].titulo}
+                      th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[69].titulo}
+                  tbody
+                    each permiso in permisos.filter(x => x.motivo === 'Permiso sin goce de salario')
                       tr
-                        th(data-type="numeric" data-sort-initial="descending") #{textos[60].titulo}
-                        th  #{textos[61].titulo}
-                        th(data-hide="phone,small") #{textos[62].titulo}
-                        th(data-hide="phone,small") #{textos[63].titulo}
-                        th(data-hide="phone,small") #{textos[64].titulo}
-                        th(data-hide="phone,small,medium") #{textos[65].titulo}
-                        th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[66].titulo}
-                        th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[67].titulo}
-                        th #{textos[68].titulo}
-                        th(data-hide="phone,small,medium" data-sort-ignore="true") #{textos[69].titulo}
-                    tbody
-                      each permiso in permisos.filter(x => x.motivo === 'Permiso sin goce de salario')
-                        tr
-                          td(data-value=permiso.fechaCreada) #{permiso.fecha.str}
-                          if(permiso.usuario)
-                            td #{permiso.usuario.nombre} #{permiso.usuario.apellido1}
-                          td #{permiso.diaInicio}
-                          td #{permiso.diaFinal}
-                          td #{permiso.cantidadDias}
-                          td #{permiso.motivo}
-                          td #{permiso.detalle}
-                          td #{permiso.comentarioSupervisor}
-                          td #{permiso.estado}
+                        td(data-value=permiso.fechaCreada) #{permiso.fecha.str}
+                        if(permiso.usuario)
+                          td #{permiso.usuario.nombre} #{permiso.usuario.apellido1}
+                        td #{permiso.diaInicio}
+                        td #{permiso.diaFinal}
+                        td #{permiso.cantidadDias}
+                        td #{permiso.motivo}
+                        td #{permiso.detalle}
+                        td #{permiso.comentarioSupervisor}
+                        td #{permiso.estado}
+                  tfoot
+                    tr
+                      td(colspan='8')
+                        .pagination.pagination-centered.hide-if-no-paging
 
           //-lista de feriados
           if(feriado)
             if(feriado.lenght!=0)
               br
               h3 #{textos[77].titulo}
-              table.footable.tableFeriado
+              table.tableFeriado
                   thead
                     tr
                       th #{textos[78].titulo}
@@ -480,6 +502,10 @@ block content
                       tr
                         td #{feriadoCurrent.nombreFeriado}
                         td #{feriadoCurrent.epoch}
+                  tfoot
+                    tr
+                      td(colspan='8')
+                        .pagination.pagination-centered.hide-if-no-paging
             else
               h3 #{textos[77].titulo}
               p #{textos[15].titulo}
@@ -488,31 +514,34 @@ block content
           if(vacaciones)
               br
               h3 #{textos[70].titulo}
-              .tableSolicitudes.footable
-                table#permisoPDF
-                    thead
-                      tr
+              table.tableSolicitudes#permisoPDF
+                  thead
+                    tr
 
-                        th #{textos[71].titulo}
-                        th #{textos[72].titulo}
-                        th(data-hide="phone") #{textos[73].titulo}
-                        th(data-hide="phone,small,medium,large") #{textos[74].titulo}
-                        th(data-hide="phone,small") #{textos[75].titulo}
-                        th(data-hide="phone,small") #{textos[76].titulo}
-                    tbody
-                      form(method="POST", action="/vacacionesUpdate")
-                        each elemento, i in usuarios
-                            tr
-                              td #{elemento.nombre}
-                              td #{elemento.apellido1} #{elemento.apellido2}
-                              td #{elemento.cedula}
-                              td #{elemento.email}
-                              td #{elemento.estado}
-                              td.text-center #{elemento.vacaciones}
+                      th #{textos[71].titulo}
+                      th #{textos[72].titulo}
+                      th(data-hide="phone") #{textos[73].titulo}
+                      th(data-hide="phone,small,medium,large") #{textos[74].titulo}
+                      th(data-hide="phone,small") #{textos[75].titulo}
+                      th(data-hide="phone,small") #{textos[76].titulo}
+                  tbody
+                    form(method="POST", action="/vacacionesUpdate")
+                      each elemento, i in usuarios
+                          tr
+                            td #{elemento.nombre}
+                            td #{elemento.apellido1} #{elemento.apellido2}
+                            td #{elemento.cedula}
+                            td #{elemento.email}
+                            td #{elemento.estado}
+                            td.text-center #{elemento.vacaciones}
+                  tfoot
+                    tr
+                      td(colspan='6')
+                        .pagination.pagination-centered.hide-if-no-paging
 
           if(tipoReporte === 'confirmacionPresencia')
               h3 Confirmación de Presencia
-              table.footable.tableContenido(data-page-navigation=".pagination" ,data-page-size="25")#opcionesTablaConfirmacionPresencia
+              table.tableContenido#opcionesTablaConfirmacionPresencia
                 thead
                   tr
                     th(data-sort-ignore="true") Usuario
@@ -531,10 +560,14 @@ block content
                       td #{moment.unix(eventoTeletrabajo.alerta.fechaAlertaUnix).format("hh:mm:ss")}
                       td #{eventoTeletrabajo.fechaAceptacion === 0 ? '' : moment.unix(eventoTeletrabajo.fechaAceptacion).format("hh:mm:ss")}
                       td #{eventoTeletrabajo.presente ? 'Si' : 'No'}
+                tfoot
+                  tr
+                    td(colspan='8')
+                      .pagination.pagination-centered.hide-if-no-paging
 
           if(tipoReporte === 'periodosUsuario' && periodosUsuario && periodosUsuario.length > 0)
             h3 Periodos de los empleados
-            table.footable.tableContenido(data-page-navigation=".pagination" ,data-page-size="25")#opcionesTablaPeriodosUsuario
+            table.tableContenido#opcionesTablaPeriodosUsuario
               thead
                 tr
                   th Usuario
@@ -545,7 +578,6 @@ block content
                   th Tipo de periodo
                   th Días asignados
                   th Días disfrutados
-
               tbody
                 each periodoUsuario, i in periodosUsuario
                   tr
@@ -557,6 +589,11 @@ block content
                     td #{periodoUsuario.periodo.nombre}
                     td #{periodoUsuario.diasAsignados}
                     td #{periodoUsuario.diasDisfrutados}
+
+              tfoot
+                tr
+                  td(colspan='8')
+                    .pagination.pagination-centered.hide-if-no-paging
 block sigucaJS
   script(src="/js/app/reportes.js")
   script(src="/socket.io/socket.io.js")
