@@ -113,9 +113,10 @@ exports.addUsuario = function(us, cb){
 
 			//Se pasa la fecha a epoch
 			var splitDate1 = us.fechaIngreso.split('/');
-			//console.log(us.fechaIngreso);
+			//console.log(splitDate1);
 			var day = splitDate1[0];
-			if(parseInt(day) > 28){
+			var month = splitDate1[1];
+			if(parseInt(month) === 2 && parseInt(day) > 28){
 				day = 28;
 			}
     		var date1 = new Date(splitDate1[2], splitDate1[1]-1, day);

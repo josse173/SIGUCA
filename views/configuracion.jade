@@ -23,16 +23,16 @@ block content
               label(for='username') #{texto[3].titulo}
             else
               label(for='username') Username
-            input.form-control(type='text', placeholder='username', name='username', value=usuario.username)
+            input.form-control(type='text', placeholder='username', name='username', value=usuario.username, readonly="readonly")
           .form-group
             if(texto[4])
-              button#ingreso.btn.btn-success(name='ingreso') #{texto[4].titulo}
+              button#ingreso.btn.btn-success(name='ingreso', disabled=true) #{texto[4].titulo}
             else
-              button#ingreso.btn.btn-success(name='ingreso') Ingresar
+              button#ingreso.btn.btn-success(name='ingreso', disabled=true) Ingresar
             if(texto[5])
-              button#cancelar.btn.btn-danger(name='cancelar') #{texto[5].titulo}
+              button#cancelar.btn.btn-danger(name='cancelar', disabled=true) #{texto[5].titulo}
             else
-              button#cancelar.btn.btn-danger(name='cancelar') Cancelar
+              button#cancelar.btn.btn-danger(name='cancelar', disabled=true) Cancelar
 
       .col-xs-6
         if(texto[2])
