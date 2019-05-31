@@ -1,0 +1,44 @@
+extends layout
+
+block content
+  .container
+
+    br
+    h3 Lista de Correos Recursos Humanos
+    table.footable.tableCorreoRH
+        thead
+          tr
+            th Correo
+            th Editar
+            th Eliminar
+
+        tbody
+          each redCurrent, i in correos
+            tr
+              td #{redCurrent.correo}
+              td
+                button.btn.btn-default(data-toggle="modal" data-target="#editCorreoRH" value=redCurrent._id)
+                  i.icon-pencil.icon-large.i-success
+
+              td
+                button.correoRHDelete.btn.btn-default(value=redCurrent.correo+','+redCurrent._id)
+                  i.icon-trash.icon-large.i-danger
+
+    #editCorreoRH.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+      .modal-dialog
+          .modal-content
+            .modal-header
+              button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+              h4#myModalLabel.modal-title Actualizar Correo
+            .modal-body
+              form.formUpdateCorreoRH(action='/correoRHUpdate', method='post')#login-form.well.span4
+                .form-group
+                  label(for='nombre' style="float:left") Correo:
+                  input#nombreCorreoRH.form-control( type= 'email', name="nombreCorreoRH")
+
+
+                button.btn.btn-success(type='submit') Actualizar
+                alertify.myAlert("Browser dialogs made easy!")
+                button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
+
+block sigucaJS

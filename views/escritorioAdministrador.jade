@@ -1,7 +1,7 @@
 .col-xs-4.col-sm-offset-2.col-md-offset-3.col-lg-offset-4
     h3#labelIMEC(class="text-center")
       |#{textos[0].titulo}
-    table.footable(data-page-size="11")
+    table.footable(data-page-size="12")
       thead
         tr
           th #{textos[1].titulo}
@@ -108,6 +108,17 @@
                 button.btn.btn-primary(type = 'submit')
                   i.icon-edit.icon-large
 
+        tr
+          td Correos Recursos humanos
+            td
+              button.btn.btn-success(type = 'submit' data-toggle="modal" data-target="#asignarCorreoRH")
+                i.icon-plus.icon-large
+
+            td
+              form(action= '/correoRH')
+                button.btn.btn-primary(type = 'submit')
+                  i.icon-edit.icon-large
+
 .col-xs-2
   #addHorarioPersonalizado.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
     .modal-dialog
@@ -128,27 +139,27 @@
                   - var strSalida =  dia+"HoraSalida";
                   - var strDia =  dia.charAt(0).toUpperCase() + dia.slice(1);
                   label #{strDia}:
-                  br
-                  label(for = strEntrada) #{textos[18].titulo}
-                    div#timepicker.input-group
-                      input.input-small.form-control(type="text", name= strEntrada, id=strEntrada)
-                      span.input-group-addon
-                        i.icon-time
-                  label(for = strSalida) #{textos[19].titulo}
-                    div#timepicker1.input-group
-                      input.input-small.form-control(type="text", name= strSalida, id=strSalida)
-                      span.input-group-addon
-                        i.icon-time
-                label(for = "tiempoAlmuerzo") #{textos[21].titulo}
-                  div#timepicker3.input-group
-                    input.input-small.form-control(type="text", name= "tiempoAlmuerzo", id= "tiempoAlmuerzo")
-                    span.input-group-addon
-                      i.icon-time
-                label(for = "tiempoReceso") #{textos[20].titulo}
-                  div#timepicker5.input-group
-                    input.input-small.form-control(type="text", name= "tiempoReceso", id= "tiempoReceso")
-                    span.input-group-addon
-                      i.icon-time
+                    br
+                    label(for = strEntrada) #{textos[18].titulo}
+                      div#timepicker.input-group
+                        input.input-small.form-control(type="text", name= strEntrada, id=strEntrada)
+                        span.input-group-addon
+                          i.icon-time
+                    label(for = strSalida) #{textos[19].titulo}
+                      div#timepicker1.input-group
+                        input.input-small.form-control(type="text", name= strSalida, id=strSalida)
+                        span.input-group-addon
+                          i.icon-time
+                    label(for = "tiempoAlmuerzo") #{textos[21].titulo}
+                      div#timepicker3.input-group
+                        input.input-small.form-control(type="text", name= "tiempoAlmuerzo", id= "tiempoAlmuerzo")
+                        span.input-group-addon
+                          i.icon-time
+                    label(for = "tiempoReceso") #{textos[20].titulo}
+                      div#timepicker5.input-group
+                        input.input-small.form-control(type="text", name= "tiempoReceso", id= "tiempoReceso")
+                        span.input-group-addon
+                          i.icon-time
 
               button.btn.btn-success(type='submit') #{textos[13].titulo}
               button.btn.btn-danger(type='button', data-dismiss='modal') #{textos[14].titulo}
@@ -214,13 +225,29 @@
               .form-group
                   label(for='nombre') #{textos[12].titulo}
                     input#group.form-control( type="text", placeholder='#{textos[12].titulo}', name= "nombre")
+              .form-group
+                label(for='nombre') Nivel
+                  br
+                  select.form-control#nivelDepartamento.selectpicker(data-style="btn-inverse", data-width="200px", type="text", name="nivel" )
+                    option 1
+                    option 2
+                    option 3
+                    option 4
+                    option 5
+              .form-group
+                label(for='selectDepartamentos') Departamento Supervisor:
+                  br
+                  select.form-control#selectDepartamentosAgregar.selectpicker(data-style="btn-inverse", data-width="200px", data-selected-text-format="count>2", type="text", name="departamentoSupervisor")
+                    option(value='') Seleccione una opción
+                    each departamento, i in departamentos
+                      option(value= departamento.id) #{departamento.nombre}
               button.btn.btn-success(type='submit') #{textos[13].titulo}
               button.btn.btn-danger(type='button', data-dismiss='modal') #{textos[14].titulo}
 
 
   //agregar empleados
   #addEmpl.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
-    .modal-dialog
+    .modal-dialog(style="width:700px;")
       .modal-content
         .modal-body
           button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
@@ -230,13 +257,13 @@
                 h3 Información Básica
                 label(for='nombre') Nombre:
                   input#nombre.form-control(type= 'text', placeholder='Carlos', name= 'nombre')
-                label(for='cedula') Cédula:
-                 input#cedula.form-control(type= 'text', placeholder='110459625', name='cedula')
-              .form-group
                 label(for='apellido1') Primer Apellido:
                   input#apellido1.form-control(type= 'text', placeholder='Corella', name= 'apellido1')
                 label(for='apellido2') Segundo Apellido:
-                 input#apellido2.form-control(type= 'text', placeholder='Sandi', name='apellido2')
+                  input#apellido2.form-control(type= 'text', placeholder='Sandi', name='apellido2')
+              .form-group
+                label(for='cedula') Cédula:
+                  input#cedula.form-control(type= 'text', placeholder='110459625', name='cedula')
                 label(for='email') Correo Eléctronico:
                   input#email.form-control(type= 'email', placeholder='alguien@ejemplo.com', name='email')
               .form-group
@@ -246,61 +273,69 @@
                   input.form-control#username(type="text", name="username", placeholder="Usuario")
                 label(for='codTarjeta') Código de Empleado:
                   input#codTarjeta.form-control(type= 'text', placeholder='Código de Empleado', name='codTarjeta')
-
+              .form-group
                 label Horario libre:
                   br
-                  select.form-control#textInput.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="idHorario")
+                  select.form-control#textInput.selectpicker(data-style="btn-inverse", data-width="200px", type="text", name="idHorario")
                     option(value="") Sin horario
                     each horario, i in horarios
                         option(value= horario.id) #{horario.nombre}
 
-
                 label(for='textInput') Horario Fijo:
                   br
-                  select.form-control#textInput.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="horarioFijo")
+                  select.form-control#textInput.selectpicker(data-style="btn-inverse", data-width="200px", type="text", name="horarioFijo")
                     option(value="") Sin horario
                     each horarioFijo, i in arregloHorarioFijo
                         option(value= horarioFijo._id) #{horarioFijo.nombre}
 
                 label(for='textInput') Horario personalizado:
                   br
-                  select.form-control#textInput.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="personalizado")
+                  select.form-control#textInput.selectpicker(data-style="btn-inverse", data-width="200px", type="text", name="personalizado")
                     option(value="") Sin horario
                     each personalizado, i in horarioPersonalizado
                         option(value=personalizado._id) #{personalizado.nombreHorarioPersonalizado}
 
+              .form-group
+                label(for='selectDepartamentos') Departamento:
+                  br
+                  select.form-control#selectDepartamentos.selectpicker(data-style="btn-inverse", data-width="200px", data-selected-text-format="count>2", type="text", name="idDepartamento")
+                    option(value='Sin Departamento') Seleccione una opción
+                    each departamento, i in departamentos
+                      option(value= departamento.id) #{departamento.nombre}
 
                 label(for="selectTipo") Tipo de Usuario:
                   br
-                  select.form-control#selectTipo.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="tipo", multiple="multiple")
+                  select.form-control#selectTipo.selectpicker(data-style="btn-inverse", data-width="200px", type="text", name="tipo")
+                    option Seleccione una opción
                     option Empleado
                     option Supervisor
                     option Administrador
                     option #{tipoEmpleado}
                     option #{empleadoProfesor}
+                    option Administrador de Reportes
 
-                label(for='selectDepartamentos') Departamento:
+                label(for="selectTipo")
                   br
-                  select.form-control#selectDepartamentos.selectpicker(data-style="btn-success", data-width="150px", data-selected-text-format="count>2", type="text", name="idDepartamento", multiple="multiple")
-                    each departamento, i in departamentos
-                        option(value= departamento.id) #{departamento.nombre}
-
+                  button.btn.btn-info(type='button', onclick='agregarRolDepartamento()') Agregar
+              .form-group
+                input.form-control(type="hidden" id="rolesDepartamento", name="rolesDepartamento")
+                ul#listDepartamentos
+              .form-group
                 label.labelFiltro(for='fechaIngreso') Fecha Ingreso:
-                    input#fechaIngreso.form-control(style="cursor:pointer; cursor: hand;", type="text", name='fechaIngreso', readonly="readonly", placeholder="Fecha Ingreso" )
+                  input#fechaIngreso.form-control(style="cursor:pointer; cursor: hand;", type="text", name='fechaIngreso', readonly="readonly", placeholder="Fecha Ingreso" )
 
-                label(for='teleTrabajo') Tele trabajo:
-                  input#teleTrabajo.form-control(type='checkbox',checked=false, name="teleTrabajo")
+                label.labelTeletrabajo(for='teleTrabajo') Tele trabajo:
+                  input#teleTrabajo.form-control(type='checkbox', checked=false, name="teleTrabajo")
 
               .form-group
                 label(for="passInput")
                   |Contraseña:
                   input.form-control#passInput(type='password', size='18', name="password", placeholder="Contraseña")
-                  label#passInputText
-                  br
-                  button.btn.btn-default(type='button', onclick='generatepass(8)') Generar Contraseña
+                button.btn.btn-default.botonGenerarContrasena(type='button', onclick='generatepass(8)') Generar Contraseña
+                label#passInputText
 
-              button.btn.btn-success#agregarEmpleado(type='button') Ingresar
-              button.btn.btn-danger#clearLabel(type='button', data-dismiss='modal') Cancelar
+            button.btn.btn-success#agregarEmpleado(type='button') Ingresar
+            button.btn.btn-danger#clearLabel(type='button', data-dismiss='modal', style='margin-left:10px;') Cancelar
 
   //
   #addHorario.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
@@ -313,37 +348,25 @@
             form(action='/horarioFijo', method='post')#login-form.well.span4
               .form-group
                 h4 #{textos[17].titulo}
-                label(for='nombre' style="float:left") #{textos[16].titulo}
+                label(for='nombre' style="float:left;margin-right:10px;") #{textos[16].titulo}
                   input.form-control#textInput( type="text", name="nombre")
-
-                label(for='dias') L
-                label(for='dias')
-                label(for='dias')
-                label(for='dias') K
-                label(for='dias')
-                label(for='dias')
-                label(for='dias') M
-                label(for='dias')
-                label(for='dias')
-                label(for='dias') J
-                label(for='dias')
-                label(for='dias')
-                label(for='dias') V
-                label(for='dias')
-                label(for='dias')
-                label(for='dias') S
-                label(for='dias')
-                label(for='dias')
-                label(for='dias') D
+                label
                 .from-group
-                  input(type='checkbox',name='Lunes',id='Lunes',value='Lunes')
-                  input(type='checkbox',name='Martes',id='Martes',value='Martes')
-                  input(type='checkbox',name='Miercoles',id='Miercoles',value='Miercoles')
-                  input(type='checkbox',name='Jueves',id='Jueves', value='Jueves')
-                  input(type='checkbox',name='Viernes',id='Viernes',value='Viernes')
-                  input(type='checkbox',name='Sabado',id='Sabado',value='Sabado')
-                  input(type='checkbox',name='Domingo',id='Domingo',value='Domingo')
-
+                    label L:&nbsp;
+                        input.checkboxHorarioFijo(type='checkbox',name='Lunes',id='Lunes',value='Lunes')
+                    label K:&nbsp;
+                      input.checkboxHorarioFijo(type='checkbox',name='Martes',id='Martes',value='Martes')
+                    label M:&nbsp;
+                      input.checkboxHorarioFijo(type='checkbox',name='Miercoles',id='Miercoles',value='Miercoles')
+                    label J:&nbsp;
+                      input.checkboxHorarioFijo(type='checkbox',name='Jueves',id='Jueves', value='Jueves')
+                    label V:&nbsp;
+                      input.checkboxHorarioFijo(type='checkbox',name='Viernes',id='Viernes',value='Viernes')
+                    label S:&nbsp;
+                      input.checkboxHorarioFijo(type='checkbox',name='Sabado',id='Sabado',value='Sabado')
+                    label D:&nbsp;
+                      input.checkboxHorarioFijo(type='checkbox',name='Domingo',id='Domingo',value='Domingo')
+                br
               .form-group
                 label(for='horaEntrada') #{textos[18].titulo}
                   div#timepicker5.input-group
@@ -481,6 +504,21 @@
               h4 #{textos[17].titulo}
               label(for='nombre' style="float:left") #{textos[35].titulo}
                 input.form-control#textInput( type="text", name="nombreRed",required)
+              div.clearfix
+              button.btn.btn-success(type='submit') #{textos[13].titulo}
+              button.btn.btn-danger(type='button', data-dismiss='modal') #{textos[14].titulo}
+  #asignarCorreoRH.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+    .modal-dialog
+      .modal-content
+        .modal-header
+          button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+          h4#myModalLabel.modal-title Asignar Correo Recursos Humanos
+        .modal-body
+          form(action='/asignarCorreoRH', method='post')#login-form.well.span4
+            .form-group
+              h4 #{textos[17].titulo}
+              label(for='nombre' style="float:left") Correo:
+                input.form-control#textInput( type= 'email', name="nombreCorreoRH",required)
               div.clearfix
               button.btn.btn-success(type='submit') #{textos[13].titulo}
               button.btn.btn-danger(type='button', data-dismiss='modal') #{textos[14].titulo}

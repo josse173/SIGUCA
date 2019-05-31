@@ -14,8 +14,9 @@ block content
             th Nombre
             th Fecha Creacion
             th Tipo Periodo
-            th Fecha Inicio
+            th Fecha Ajustada Para Vacaciones
             th Fecha Final
+            th Fecha Disfrute
             th Dias Asignados
             th Dias Disfrutados
             th(data-hide="phone,small" data-sort-ignore="true") Editar
@@ -27,8 +28,9 @@ block content
               td #{nombreUsuario}
               td #{moment.unix(periodoCurrent.fechaCreada).format("YYYY-MM-DD hh:mm:ss")}
               td #{periodoCurrent.nombrePeriodoPadre}
-              td #{moment.unix(periodoCurrent.fechaInicio).format("YYYY-MM-DD hh:mm:ss")}
-              td #{moment.unix(periodoCurrent.fechaFinal).format("YYYY-MM-DD hh:mm:ss")}
+              td #{moment.unix(periodoCurrent.fechaInicio).format("YYYY-MM-DD")}
+              td #{moment.unix(periodoCurrent.fechaFinal).format("YYYY-MM-DD")}
+              td #{moment.unix(periodoCurrent.fechaDisfrute).format("YYYY-MM-DD")}
               td #{periodoCurrent.diasAsignados}
               td #{periodoCurrent.diasDisfrutados}
               td
@@ -54,9 +56,9 @@ block content
                   label(for='fechaCreada') Fecha de Creación :
                     input#fechaCreadaUpdate.form-control(type= 'text', name= 'fechaCreada', readonly="readonly")
                 .form-group
-                  label(for='fechaInicio') Fecha Inicio:
+                  label(for='fechaInicio') Fecha Ajustada Para Vacaciones:
                     input#fechaInicioUpdate.form-control(type= 'text', name='fechaInicio', readonly="readonly")
-                  label(for='fechaFinal') Fecha Final :
+                  label(for='fechaFinal') &nbsp; Fecha Final:
                     input#fechaFinalUpdate.form-control(type= 'text', name= 'fechaFinal', readonly="readonly")
                 .form-group
                   label(for='diasAsignados') Dias Asignados:

@@ -23,12 +23,6 @@ var SchemaUsuario = new Schema({
    type: String,
    default: ''
  },
- tipo : [
-    {
-        type: String,
-        default: ''
-    }
-  ],
  estado: {
    type: String,
    default: 'Activo'
@@ -82,13 +76,18 @@ fechaIngreso: {
    ref: 'horarioFijo'
  },
  departamentos: [
-    {//
+    {
       departamento: {
         type: Schema.ObjectId,
         ref: 'Departamento'
+      },
+      tipo : {
+        type: String,
+        default: ''
       }
     },
-    {_id:false}]
+    {_id:false}
+    ]
   });
 
 SchemaUsuario.plugin(passportLocalMongoose);

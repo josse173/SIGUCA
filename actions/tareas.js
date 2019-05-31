@@ -7,9 +7,10 @@ var CronJob = require('cron').CronJob;
 var crudHorario = require('../routes/crudHorario');
 const Justificaciones = require('../models/Justificaciones');
 var Feriado = require('../models/Feriado');
+var Solicitudes = require('../models/Solicitudes');
 
 const WORKING_DAYS = ["Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"];
-const USER_TYPES = {ADMIN: 'Administrador', TEACHER: 'Profesor'};
+const USER_TYPES = {ADMIN: 'Administrador', TEACHER: 'Profesor', REPORT_MANAGER: "Administrador de Reportes", SUPERVISOR: "Supervisor"};
 const MAXIMUM_INTERVAL_WORKING = 12;
 const SCHEDULER_TYPE = {FIXED: 'horarioFijo', RANGE: 'horarios', EMPLOYEE_SCHEDULE: 'horariosEmpleado'};
 const AUTOMATIC_CLOSURE = 'Cierre Automático  de Sistema';
@@ -53,17 +54,16 @@ module.exports = {
         epochMax.minutes(59);
         epochMax.seconds(59);
 
-        //Se realiza el cierre para todos los usuarios menos el tipo administrador
+        //Se realiza el cierre para todos los usuarios menos el tipo administrador-supervisor-Administrador de reportes
         User.find({_id: id}, {_id: 1, nombre: 1, horarioEmpleado: 1, tipo: 1}).exec(
             function (err, usuarios) {
                 if (!err && usuarios[0].horarioEmpleado) {
 
                     for (usuario in usuarios) {
 
-                        //console.log(usuarios[usuario]);
                         //Solo se hacen los cierres para quien tenga el horario personalizado hecho
                         if (usuarios[usuario].horarioEmpleado && usuarios[usuario].horarioEmpleado != "") {
-                            //console.log(usuarios[usuario].horarioEmpleado);
+
                             buscarHorario(usuarios[usuario]._id, tipoUsuario, epochMin, epochMax,
                                 usuarios[usuario].horarioEmpleado, usuarios[usuario].tipo.length);
                         }
@@ -117,18 +117,28 @@ const CronJobOperations = {
         const today = moment();
         DBOperations.findUsers().then(users => {
             users.forEach(user => {
-                user.tipo.filter(type => type !== USER_TYPES.ADMIN).forEach(type =>{
-                    const schedule = user.horarioEmpleado || user.horarioFijo || user.horario;
-                    if (schedule) {
-                        this.checkUserMarks(user, schedule, type, day, today).catch(error => console.log(error));
-                    }else {
-                        console.log(`El usuario ${user._id} no tiene un horario asociado`);
+
+                DBOperations.findActiveRequest(user).then(request =>{
+
+                    if(request && request.length > 0){
+                        console.log(`El usuario ${user._id} (${user.username}) se encuentra en un permiso por lo cual no sera tomado en cuenta en este cierre`);
+                    } else {
+                        user.departamentos.filter(departamento => departamento.tipo !== USER_TYPES.ADMIN && departamento.tipo !== USER_TYPES.REPORT_MANAGER && departamento.tipo !== USER_TYPES.SUPERVISOR).forEach(type =>{
+                            const schedule = user.horarioEmpleado || user.horarioFijo || user.horario;
+                            if (schedule) {
+                                this.checkUserMarks(user, schedule, type.tipo, day, today).catch(error => console.log(error));
+                            }else {
+                                console.log(`El usuario ${user._id} (${user.username}) no tiene un horario asociado`);
+                            }
+                        });
                     }
                 });
+
             });
         }).catch(error => console.log("Error retrieving users", JSON.stringify(error)));
     },
     checkUserMarks(user, userSchedule, userType, currentDay, today) {
+
         const _idUser = user._id;
         return DBOperations.findMarks(_idUser, userType).then(marks => {
             ScheduleOperations.groupMarks(marks, userSchedule, today).forEach(definedWorkHours => {
@@ -167,7 +177,7 @@ const CronJobOperations = {
                                     });
                                 }).catch(error => console.log(error));
                             } else {
-                                console.log(`No se ha encontrado una marca de salida asociada a la marca de entrada, pero no es posible agregar la marca de salida aún, debido al intervalo maximo de 12 horas. Usuario ${user.nombre}`);
+                                console.log(`No se ha encontrado una marca de salida asociada a la marca de entrada, pero no es posible agregar la marca de salida aún, debido al intervalo maximo de 12 horas. Usuario ${user.username}`);
                             }
                         }
                     }
@@ -406,15 +416,19 @@ const DBOperations = {
     findUsers(){
         return new Promise((resolve, reject) => {
             //The closure is created for all users except for the administrator type
-            User.find({estado: "Activo"}, {
-                _id: 1,
-                nombre: 1,
-                horarioFijo: 1,
-                horario: 1,
-                horarioEmpleado: 1,
-                tipo: 1
-            }).populate("horarioFijo").populate('horario').populate('horarioEmpleado')
+            User.find({estado: "Activo"}).populate("horarioFijo").populate('horario').populate('horarioEmpleado')
                 .then(users => resolve(users))
+                .catch(error => reject(error));
+        });
+    },
+    findActiveRequest(user){
+        return new Promise((resolve, reject) => {
+            //The closure is created for all users except for the administrator type
+            var date = moment();
+            date.set({hour:0,minute:0,second:0,millisecond:0});
+            var currentDate  = date.unix();
+            Solicitudes.find({usuario: user._id, estado: "Aceptada", epochInicio: { "$lte": currentDate}, epochTermino : {"$gte": currentDate },  motivo: {$in: ["Permiso sin goce de salario", "Vacaciones", "Articulo 51", "Salida-Visita (INS)"]}})
+                .then(request => resolve(request))
                 .catch(error => reject(error));
         });
     },
@@ -558,15 +572,11 @@ function registroHorasRegulares(tipoUsuario, _idUser, marcas, tiempoDia, horario
         m: horario.tiempoReceso.minutos,
     };
     var totalJornada = util.ajustarHoras(hOut, hIn);
-    console.log("Calculando jornada de: " + _idUser);
-    console.log(totalJornada);
-    console.log(almuerzoT);
+
     totalJornada = util.ajustarHoras(totalJornada, almuerzoT);
-    console.log(totalJornada);
-    console.log(recesoT);
+
     totalJornada = util.ajustarHoras(totalJornada, recesoT);
-    console.log(totalJornada);
-    console.log(tiempo);
+
     var comparaH = util.compararHoras(totalJornada.h, totalJornada.m, tiempo.h, tiempo.m);
     agregarUsuarioACierre(tipoUsuario, _idUser, {h: tiempo.h, m: tiempo.m});
     //No importa la hora que salió, lo importante es que cumpla la jornada

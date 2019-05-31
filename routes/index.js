@@ -4,7 +4,6 @@
  */
  var fs = require('fs');
  var mongoose = require('mongoose');
- var nodemailer = require('nodemailer');
  var moment = require('moment');
  var passport = require('passport');
  var enviarCorreo = require('../config/enviarCorreo');
@@ -35,6 +34,7 @@
  var crudConfiguracion = require('./crudConfiguracion');
  var crudCorreo = require('./crudCorreo');
  var crudRed = require('./crudRed');
+ var crudCorreoRH = require('./crudCorreoRH');
  var crud = require('./crud');
  var util = require('../util/util');
  var ObjectId = mongoose.Types.ObjectId;
@@ -47,32 +47,21 @@ var Feriado = require('../models/Feriado');
 var Correo = require('../models/Correo');
 var Contenido = require('../models/Contenido');
 var Red = require('../models/Red');
+var CorreoRH = require('../models/CorreoRH');
 var Usuario = require('../models/Usuario');
-var Horario = require('../models/Horario');
 var HorarioFijo = require('../models/HorarioFijo');
 var HorarioPersonalizado = require('../models/HorarioEmpleado');
-var Departamento = require('../models/Departamento');
 var Justificaciones = require('../models/Justificaciones');
 var Solicitudes = require('../models/Solicitudes');
 var PeriodoUsuario = require('../models/PeriodoUsuario');
-var PeriodoSolicitud = require('../models/PeriodoUsuario');
 var Cierre = require('../models/Cierre');
-var emailSIGUCA = 'siguca@greencore.co.cr';
-var Articulo51 = require('../models/Articulo51');
 var Configuracion = require('../models/Configuracion');
 var Alerta = require('../models/Alerta');
 var EventosTeletrabajo = require('../models/EventosTeletrabajo');
 var HoraExtra = require('../models/HoraExtra');
-//***************************************
-//var multer=require('multer');
-//var upload = multer({ dest: '' });
-
-var multer  =  require('multer');
-
-//***************************************
+const log = require('node-file-logger');
 var config 			= require('../config');
 
-//************************************
 module.exports = function(app, io) {
     /*
     *   Redirecciona a la página principal (index.html)
@@ -111,8 +100,7 @@ module.exports = function(app, io) {
 
     //var upload = multer({storage: 'pru/'});
    // app.post('/imagen',upload.single('myimage'),function(req,res,next){
-    //    console.log('test :'+ JSON.stringify(req.file));
-    //    console.log('test :'+ JSON.stringify(req.files));
+
     //    res.end('Imagen Cargada en el servidor');
     //});
 
@@ -304,9 +292,8 @@ module.exports = function(app, io) {
     */
 
     app.get('/solicitud/inciso', autentificado, function (req, res) {
-        //console.log('INCISO PRUEBA ID    ' + req.user.id)
+
         Solicitudes.find({usuario: req.user.id, "inciso":"Inciso C", "estado":"Aceptada" }).exec(function (err, quantity) {
-            //console.log(quantity);
             var size = quantity.length;
             res.json({quantity});
         });
@@ -317,24 +304,23 @@ module.exports = function(app, io) {
         fechaActual.hours(0);
         fechaActual.minutes(0);
         fechaActual.seconds(0);
-        //console.log("fechaActual: " + fechaActual.unix());
+
         var diaAnterior = moment(req.params.fecha).add(-1, 'days').unix();
-        //console.log("diaAnterior: " + diaAnterior);
+
         var diaSiguiente = moment(req.params.fecha).add(1, 'days').unix();
-        //console.log("diaSiguiente: " + diaSiguiente);
-        //console.log("fechaActual: " + fechaActual.unix());
+
         var coincidencias = 0;
-        //console.log({usuario: ObjectId(req.user.id), estado: "Aceptada", epochInicio: {$gte: fechaActual.unix()} });
+
         Solicitudes.find( {usuario: ObjectId(req.user.id), estado: "Aceptada", epochInicio: {$gte: fechaActual.unix()} }).exec(function (err, solicitudes) {
             if(solicitudes && solicitudes.length > 0){
-                //console.log("Cantidad: "+solicitudes.length);
+
                 solicitudes.forEach(function (solicitud) {
-                    //console.log("solicitud.epochInicio: " + solicitud.epochInicio);
+
                     if(solicitud.epochInicio === diaAnterior || solicitud.epochInicio === diaSiguiente){
                         coincidencias++;
                     }
                 });
-                //console.log("coincidencias: "+coincidencias);
+
                 res.json(coincidencias);
             } else {
                 res.json(coincidencias);
@@ -466,7 +452,7 @@ module.exports = function(app, io) {
 
                     Correo.find({},function(errorCritico, listaCorreos){
                         if (!errorCritico && listaCorreos.length > 0 ) {
-                            enviarCorreo.enviar(listaCorreos[0].nombreCorreo, usuario.email, 'Alerta de Validación de Presencia','Estimado(a) funcionario:', 'Usted ha recibido una alerta de validación de presencia en SIGUCA:<br><br>Se le recuerda que debe atender esta solicitud en los proximos ' + req.body.tiempoRespuesta + ' minuto(s).');
+                            enviarCorreo.enviar(listaCorreos[0].nombreCorreo, usuario.email, 'Alerta de Validación de Presencia','Estimado(a) funcionario:', 'Usted ha recibido una alerta de validación de presencia en SIGUCA:<br><br>Se le recuerda que debe atender esta solicitud en los proximos ' + req.body.tiempoRespuesta + ' minuto(s).', '');
                         } else {
                             console.log("error al enviar correo de solicitud de confirmación de conexión");
                         }
@@ -514,7 +500,7 @@ module.exports = function(app, io) {
                     if (err) console.log(err);
                     if (usuario){
                         usuario.departamentos.forEach(function(departamento) {
-                            Usuario.find({departamentos: {$elemMatch: {departamento: ObjectId(departamento.departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisores){
+                            Usuario.find({departamentos: {$elemMatch: {departamento: ObjectId(departamento.departamento), tipo: "Supervisor"}}}).exec(function(error, supervisores){
                                 if (error) console.log(error);
 
                                 if(supervisores && supervisores.length > 0){
@@ -522,7 +508,7 @@ module.exports = function(app, io) {
 
                                         Correo.find({},function(error,listaCorreos){
                                             if (!error && listaCorreos.length > 0 ) {
-                                                enviarCorreo.enviar(listaCorreos[0].nombreCorreo, supervisor.email, 'Verificación de presencia fallida','Estimado Funcionario:', 'Usted ha recibido una notificación de no comprobación de presencia en modalidad de teletrabajo del empleado: <br><br>' +  usuario.nombre + ' ' + usuario.apellido1 + ' ' + usuario.apellido2 + '.');
+                                                enviarCorreo.enviar(listaCorreos[0].nombreCorreo, supervisor.email, 'Verificación de presencia fallida','Estimado Funcionario:', 'Usted ha recibido una notificación de no comprobación de presencia en modalidad de teletrabajo del empleado: <br><br>' +  usuario.nombre + ' ' + usuario.apellido1 + ' ' + usuario.apellido2 + '.', '');
                                             } else {
                                                 console.log("error al enviar correo de solicitud de confirmación de conexión");
                                             }
@@ -560,17 +546,16 @@ module.exports = function(app, io) {
                 var estaDisponible = false;
 
                 var entrada = marcas.filter(x => x.tipoMarca === 'Entrada');
-                // console.log('entrada: ' + entrada.length);
+
                 var salidaReceso = marcas.filter(x => x.tipoMarca === 'Salida a Receso');
-                // console.log('salidaReceso: ' + salidaReceso.length);
+
                 var entradaReceso = marcas.filter(x => x.tipoMarca === 'Entrada de Receso');
-                // console.log('entradaReceso: ' + entradaReceso.length);
+
                 var salidaAlmuerzo = marcas.filter(x => x.tipoMarca === 'Salida al Almuerzo');
-                // console.log('salidaAlmuerzo: ' + salidaAlmuerzo.length);
+
                 var entradaAlmuerzo = marcas.filter(x => x.tipoMarca === 'Entrada de Almuerzo');
-                // console.log('entradaAlmuerzo: ' + entradaAlmuerzo.length);
+
                 var salida = marcas.filter(x => x.tipoMarca === 'Salida');
-                // console.log('salida: ' + salida.length);
 
                 if(entrada.length === 1 && salidaReceso.length === entradaReceso.length && salidaAlmuerzo.length === entradaAlmuerzo.length && salida.length === 0){
                     estaDisponible = true;
@@ -749,10 +734,9 @@ module.exports = function(app, io) {
               titulo:req.body.titulo,
               llave:req.body.llave
           });
-          console.log(content);
+          //console.log(content);
           content.save(function (err, user) {
               if (err) console.log(err);
-              //console.log("El usuario se creo ");
           });
           res.redirect('/escritorioAdmin');
       });
@@ -814,8 +798,6 @@ module.exports = function(app, io) {
                         if(user[h]._id==req.body.empleado._id){
                             contador++;
                         }
-
-
                     }
                     if(contador>0){
                         res.json("Correcto");
@@ -847,6 +829,9 @@ module.exports = function(app, io) {
     */
     app.post('/empleado', autentificado, function (req, res) {
         if (req.session.name == "Administrador") {
+            log.Info('Creación de usuario');
+            log.Info('Admin: ' +req.user._id);
+            log.Info(req.body);
             crudUsuario.addUsuario(req.body, function() {
                 if (req.session.name == "Administrador"){
                  res.redirect('/escritorioAdmin');
@@ -881,7 +866,7 @@ module.exports = function(app, io) {
         Usuario.findById(req.params.id, function (err, empleado) {
             if (err) return res.json(err);
             else res.json(empleado);
-        });
+        }).populate('departamentos.departamento');
     });
 
 
@@ -894,6 +879,9 @@ module.exports = function(app, io) {
             id: req.params.id,
             empleado: req.body
         };
+        log.Info('Actualizar usuario');
+        log.Info('Admin: ' +req.user._id);
+        log.Info(req.body);
         crudUsuario.updateUsuario(data, function() {
             res.redirect('/empleado');
         });
@@ -906,6 +894,9 @@ module.exports = function(app, io) {
     *  Modifica el estado de Activo a Inactivo de un usuario en específico
     */
     app.get('/empleado/delete/:id', autentificado, function (req, res) {
+        log.Info('Borrar usuario');
+        log.Info('Admin: ' +req.user._id);
+        log.Info('Usuaruio: ' +req.params.id);
         crudUsuario.deleteUsuario(req.params.id, function (err, msj) {
             if (err) res.json(err);
             res.send(msj);
@@ -919,7 +910,7 @@ module.exports = function(app, io) {
         Usuario.findOne({username:req.body.username2,estado:"Activo"}, function (err, user) {
             if (err || (user && !user.validPassword(req.body.password2))) { return res.json(err) }
             res.json(user);
-        });
+        }).populate('departamentos');
     });
     //******************************************************************************
     //Periodos de un usuario
@@ -927,8 +918,7 @@ module.exports = function(app, io) {
     *  Crea un nuevo periodo
     */
     app.post('/periodo/:id', autentificado, function (req, res) {
-        //console.log("post de periodo mandando el id " + req.params.id);
-        //console.log("ESTE ES usuario dentro del post     " + req.user);
+
         if (req.session.name == "Administrador") {
             req.body.usuario = req.params.id;
             crudPeriodo.addPeriodo(req.body, function() {
@@ -951,7 +941,7 @@ module.exports = function(app, io) {
             }else{
                 req.user.tipo = req.session.name;
                 Usuario.findById(req.params.id, function (err, empleado) {
-                    //console.log("NOMBRE USUARIO    " + empleado.nombre);
+
                     if (err) return res.json(err);
                     else{
                         return res.render('periodo', {
@@ -971,7 +961,7 @@ module.exports = function(app, io) {
    *  Modifica el estado de Activo a Inactivo de un periodo en específico
    */
     app.get('/periodo/delete/:id', autentificado, function (req, res) {
-        //console.log("ESTE ES id a eliminar   " + req.params.id);
+
         crudPeriodo.deletePeriodo(req.params.id, function (err, msj) {
             if (err) res.json(err);
             res.send(msj);
@@ -1016,6 +1006,9 @@ module.exports = function(app, io) {
     *  Crea un nuevo departamento
     */
     app.post('/departamento',autentificado, function (req, res) {
+        log.Info('Crear departamento');
+        log.Info('Admin: ' +req.user._id);
+        log.Info(req.body);
         crudDepartamento.addDepa(req.body, function() {
             if (req.session.name == "Administrador") {
                 res.redirect('/escritorioAdmin');
@@ -1056,6 +1049,9 @@ module.exports = function(app, io) {
             departamento: req.body,
             id: req.params.id
         };
+        log.Info('Actualiza departamento');
+        log.Info('Admin: ' +req.user._id);
+        log.Info(req.body);
         crudDepartamento.updateDepa(data, function() {
             res.redirect('/departamento');
         });
@@ -1065,6 +1061,9 @@ module.exports = function(app, io) {
     *  Elimina un departamento en específico
     */
     app.get('/departamento/delete/:id', autentificado, function (req, res) {
+        log.Info('Elimina departamento');
+        log.Info('Admin: ' +req.user._id);
+        log.Info('Departamento: ' + req.params.id);
         crudDepartamento.deleteDepa(req.params.id, function (msj) {
             res.send(msj);
         });
@@ -1103,6 +1102,9 @@ module.exports = function(app, io) {
     app.post('/cambioUsername/:id', autentificado, function (req, res) {
 
         if(req.session.name != "Administrador"){
+            log.Info('Cambia el username de los usuarios');
+            log.Info('Admin: ' +req.user._id);
+            log.Info(req.body);
             var user = {
                 id: req.params.id,
                 username: req.body.username
@@ -1113,27 +1115,6 @@ module.exports = function(app, io) {
         }
     });
 
-
-
- //  var storage = multer.diskStorage({
-   //     destination: function(req, file, cb) {
-    //        cb(null, './uploads/');
-    //    },
-    //    filename: function(req, file, cb) {
-    //        var ext = file.originalname.split('.').pop();
-    //        cb(null, file.fieldname + '-' + Date.now() + '.' + ext);
-    //    }
-   // });
-
-   // upload = multer({ storage: storage });
-   // app.post('/IMAGENXD/:id', autentificado,upload.single('upl'), function (req, res,next) {
-   //    //console.log('body', req.body);
-        //console.log('file', req.file);
-    //    console.log('file', req.files);
-    //    res.redirect('/configuracion');
-    //});
-
-
 // Funcionalidad para cargar la imagen en el servidor, con la validacionde  png , la ruta donde  se  guarda
 // se define en /config/express.js
     app.post('/IMAGEN/:id', autentificado, function(req, res) {
@@ -1141,7 +1122,7 @@ module.exports = function(app, io) {
 
         var extension=String(req.files.upl.type);
         var extension = extension.substring(6);
-        //console.log(extension);
+
         if(extension!=="png"){
             res.send("Solo se aceptan .png");
         }
@@ -1158,14 +1139,15 @@ module.exports = function(app, io) {
     }
     });
 
-
-
     /*
     *   Cambia la contraseña de los usuarios
     */
     app.post('/cambioPassword/:id', autentificado, function (req, res) {
         var user = req.body;
         user.id = req.params.id;
+        log.Info('Cambia la contraseña de los usuarios');
+        log.Info('Admin: ' +req.user._id);
+        log.Info(req.body);
         crudUsuario.changePassword(user, function () {
             res.redirect('/configuracion');
         });
@@ -1273,9 +1255,10 @@ module.exports = function(app, io) {
     *  Crea un nuevo horario
     */
 
-
-
     app.post('/horarioN', autentificado, function (req, res) {
+        log.Info('Crea un nuevo horario');
+        log.Info('Admin: ' +req.user._id);
+        log.Info(req.body);
         crud.addHorario(req.body, function() {
             if (req.session.name == "Administrador") {
                 res.redirect('/escritorioAdmin');
@@ -1284,6 +1267,9 @@ module.exports = function(app, io) {
     });
 
     app.post('/horarioFijo', autentificado, function (req, res) {
+        log.Info('Crea un nuevo horario fijo');
+        log.Info('Admin: ' +req.user._id);
+        log.Info(req.body);
        crud.addHorarioFIjo(req.body,function(){
            if (req.session.name == "Administrador") {
                 res.redirect('/escritorioAdmin');
@@ -1349,6 +1335,10 @@ module.exports = function(app, io) {
     */
     app.post('/horarioN/:id',autentificado, function (req, res) {
         var data = { horario: req.body, id: req.params.id };
+        log.Info('Actualiza horario');
+        log.Info('Admin: ' +req.user._id);
+        log.Info('Id del horario' + req.params.id);
+        log.Info(req.body);
         crud.updateHorario(data, function (err, horarios) {
             if (err) return res.json(err);
             res.redirect('/horarioN');
@@ -1357,8 +1347,11 @@ module.exports = function(app, io) {
 
     app.post('/formUpdatePersonalizado/:id',autentificado, function (req, res) {
 
-
         var data = { horario: req.body, id: req.params.id };
+        log.Info('Actualiza horario');
+        log.Info('Admin: ' +req.user._id);
+        log.Info('Id del horario' + req.params.id);
+        log.Info(req.body);
         crud.updateHorarioPersonalizado(data, function (err, horarios) {
             if (err) return res.json(err);
             res.redirect('/horarioN');
@@ -1369,6 +1362,10 @@ module.exports = function(app, io) {
     //Actualiza los datos de un horario fijo en especifico
      app.post('/horarioFijoN/:id',autentificado, function (req, res) {
         var data = { horario: req.body, id: req.params.id };
+         log.Info('Actualiza horario fijo');
+         log.Info('Admin: ' +req.user._id);
+         log.Info('Id del horario' + req.params.id);
+         log.Info(req.body);
         crud.updateHorarioFijo(data, function (err, horarios) {
             if (err) return res.json(err);
             res.redirect('/horarioN');
@@ -1379,6 +1376,10 @@ module.exports = function(app, io) {
     *  Elimina un horario libre
     */
     app.get('/horarioN/delete/:id', autentificado, function (req, res) {
+        log.Info('Elimina horario libre');
+        log.Info('Admin: ' +req.user._id);
+        log.Info('Id del horario' + req.params.id);
+
         crud.deleteHorario(req.params.id, function (err, msj) {
             if (err) return res.json(err);
             else res.send(msj);
@@ -1386,6 +1387,10 @@ module.exports = function(app, io) {
     });
     //Elimina un horario fijo
     app.get('/horarioFijo/delete/:id', autentificado, function (req, res) {
+        log.Info('Elimina horario fijo');
+        log.Info('Admin: ' +req.user._id);
+        log.Info('Id del horario' + req.params.id);
+
         crud.deleteHorarioFijo(req.params.id, function (err, msj) {
             if (err) return res.json(err);
             else res.send(msj);
@@ -1394,6 +1399,10 @@ module.exports = function(app, io) {
 
     //eliminar horario personalizado
     app.get('/horarioPersonalizado/delete/:id', autentificado, function (req, res) {
+        log.Info('Elimina horario personalizado');
+        log.Info('Admin: ' +req.user._id);
+        log.Info('Id del horario' + req.params.id);
+
         crud.deleteHorarioPersonalizado(req.params.id, function (err, msj) {
             if (err) return res.json(err);
             else res.send(msj);
@@ -1462,7 +1471,6 @@ module.exports = function(app, io) {
     //asignarCorreo
     app.post('/asignarCorreo',autentificado, crudCorreo.insertarCorreo);
 
-
     app.get('/correo',autentificado,function(req,res){
         Correo.find(function(err,correos){
             if(err){
@@ -1498,6 +1506,9 @@ module.exports = function(app, io) {
     });
 
     app.get('/red/delete/:id', autentificado, function (req, res) {
+        log.Info('Elimina red');
+        log.Info('Admin: ' +req.user._id);
+        log.Info('Id de la red' + req.params.id);
         crudRed.deleteRed(req.params.id, function (err, msj) {
             if (err) return res.json(err);
             else res.send(msj);
@@ -1514,6 +1525,48 @@ module.exports = function(app, io) {
 
 
     app.post('/redUpdate/:id',autentificado, crudRed.actualizarRed);
+
+
+    /*
+    *Crud Correos RH
+     */
+
+    app.post('/asignarCorreoRH',autentificado, crudCorreoRH.insertarCorreoRH);
+
+    app.get('/correoRH',autentificado,function(req,res){
+        CorreoRH.find(function(err,correos){
+            if(err){
+                return res.jason(err);
+            }else{
+                req.user.tipo = req.session.name;
+                return res.render('correoRH', {
+                    title: 'Correos Recursos Humanos | SIGUCA',
+                    correos:correos,
+                    usuario:req.user
+                });
+            }
+        });
+    });
+
+    app.get('/correoRH/delete/:id', autentificado, function (req, res) {
+        log.Info('Elimina correo');
+        log.Info('Admin: ' +req.user._id);
+        log.Info('Id del correo' + req.params.id);
+        crudCorreoRH.deleteCorreoRH(req.params.id, function (err, msj) {
+            if (err) return res.json(err);
+            else res.send(msj);
+        });
+    });
+
+
+    app.get('/correoRH/editCorreoRH/:id',function(req,res){
+        CorreoRH.findById(req.params.id,function(err,red){
+            if (err) return res.json(err);
+            else res.json(red);
+        });
+    });
+
+    app.post('/correoRHUpdate/:id',autentificado, crudCorreoRH.actualizarCorreoRH);
 
     /*
     *  Crud de feriados
@@ -1623,6 +1676,9 @@ module.exports = function(app, io) {
     });
 
     app.get('/feriado/delete/:id', autentificado, function (req, res) {
+        log.Info('Eliminar Feriado');
+        log.Info('Admin: ' +req.user._id);
+        log.Info('Id del feriado: ' + req.params.id);
         crudFeriado.deleteFeriado(req.params.id, function (err, msj) {
             if (err) return res.json(err);
             else res.send(msj);
@@ -1630,6 +1686,9 @@ module.exports = function(app, io) {
     });
 
     app.get('/correo/delete/:id', autentificado, function (req, res) {
+        log.Info('Eliminar Correo');
+        log.Info('Admin: ' +req.user._id);
+        log.Info('Id del correo: ' + req.params.id);
         crudCorreo.deleteCorreo(req.params.id, function (err, msj) {
             if (err) return res.json(err);
             else res.send(msj);
@@ -1688,14 +1747,14 @@ module.exports = function(app, io) {
                     "$or": or
                 }
                 Cierre.find(queryOr).exec(function(err, cierre) {
-                    if (err) console.log('error al cargar los cierres: ' + err);
+                    if (err)
                     else {
                         socket.emit('listaCierre', cierre);
                     }
                 });
             } else {
                 Cierre.find({tipo: "General", departamento: option[1]}).exec(function(){
-                    if (err) console.log('error al cargar los cierres: ' + err);
+                    if (err)
                     else {
                         socket.emit('listaCierre', cierre);
                     }
@@ -1706,9 +1765,9 @@ module.exports = function(app, io) {
         function listarEmpleado(departamentoId){
             var option = departamentoId.split(',');
             Cierre.find({usuario: option[2]}).exec(function(err, cierre) {
-                if (err) console.log('error al cargar los cierres: ' + err);
+                if (err)
                 else {
-                    //console.log('consulta sin errores');
+
                     var result = {
                         cierre: cierre
                     }
@@ -1734,12 +1793,12 @@ module.exports = function(app, io) {
     app.post('/generarBoleta/:boleta', autentificado, function (req, res) {
 
         var parametros = JSON.parse(req.params.boleta);
-        //console.log(parametros);
+
         if (parametros.tipo === 'justificacion'){
 
             Justificaciones.findById(parametros.id).populate('usuario').exec(function (err, justificacion) {
                 if(err) return err;
-                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(justificacion.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(justificacion.usuario.departamentos[0].departamento), tipo: "Supervisor"}}}).exec(function(error, supervisor){
                     if(error) return error;
                     var nombreSupervisor = '';
                     if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){
@@ -1767,7 +1826,7 @@ module.exports = function(app, io) {
 
             Solicitudes.findById(parametros.id).populate('usuario').exec(function (err, solicitud) {
                 if(err) return err;
-                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento), tipo: "Supervisor"}}}).exec(function(error, supervisor){
                     if(error) return error;
                     var nombreSupervisor = '';
                     if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){
@@ -1798,7 +1857,7 @@ module.exports = function(app, io) {
 
             Solicitudes.findById(parametros.id).populate('usuario').exec(function (err, solicitud) {
                 if(err) return err;
-                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento), tipo: "Supervisor"}}}).exec(function(error, supervisor){
                     if(error) return error;
                     var nombreSupervisor = '';
                     if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){
@@ -1829,7 +1888,7 @@ module.exports = function(app, io) {
 
             Solicitudes.findById(parametros.id).populate('usuario').exec(function (err, solicitud) {
                 if(err) return err;
-                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento), tipo: "Supervisor"}}}).exec(function(error, supervisor){
                     if(error) return error;
                     var nombreSupervisor = '';
                     if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){
@@ -1860,7 +1919,7 @@ module.exports = function(app, io) {
 
             Solicitudes.findById(parametros.id).populate('usuario').exec(function (err, solicitud) {
                 if(err) return err;
-                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento), tipo: "Supervisor"}}}).exec(function(error, supervisor){
                     if(error) return error;
                     var nombreSupervisor = '';
                     if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){
@@ -1891,7 +1950,7 @@ module.exports = function(app, io) {
 
             Solicitudes.findById(parametros.id).populate('usuario').exec(function (err, solicitud) {
                 if(err) return err;
-                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento), tipo: "Supervisor"}}}).exec(function(error, supervisor){
                     if(error) return error;
                     var nombreSupervisor = '';
                     if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){
@@ -1924,7 +1983,7 @@ module.exports = function(app, io) {
             Solicitudes.findById(parametros.id).populate('usuario').exec(function (err, solicitud) {
                 if(err) return err;
 
-                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento), tipo: "Supervisor"}}}).exec(function(error, supervisor){
                     if(error) return error;
                     var nombreSupervisor = '';
                     if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){
@@ -1955,7 +2014,7 @@ module.exports = function(app, io) {
 
             HoraExtra.findById(parametros.id).populate('usuario').exec(function (err, horasExtra) {
                 if(err) return err;
-                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(horasExtra.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(horasExtra.usuario.departamentos[0].departamento), tipo: "Supervisor"}}}).exec(function(error, supervisor){
                     if(error) return error;
                     var nombreSupervisor = '';
                     if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){
@@ -1987,7 +2046,7 @@ module.exports = function(app, io) {
             Solicitudes.findById(parametros.id).populate('usuario').exec(function (err, solicitud) {
                 if(err) return err;
 
-                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento), tipo: "Supervisor"}}}).exec(function(error, supervisor){
                     if(error) return error;
                     var nombreSupervisor = '';
                     if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){
@@ -2019,7 +2078,7 @@ module.exports = function(app, io) {
             Solicitudes.findById(parametros.id).populate('usuario').exec(function (err, solicitud) {
                 if(err) return err;
 
-                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento)}}, tipo: "Supervisor"}).exec(function(error, supervisor){
+                Usuario.findOne({departamentos: {$elemMatch: {departamento: ObjectId(solicitud.usuario.departamentos[0].departamento), tipo: "Supervisor"}}}).exec(function(error, supervisor){
                     if(error) return error;
                     var nombreSupervisor = '';
                     if(supervisor && supervisor.nombre && supervisor.apellido1 && supervisor.apellido2){

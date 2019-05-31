@@ -4,14 +4,17 @@ extends layout
 block sigucaCSS
   link(rel='stylesheet', href='/stylesheets/cal-heatmap.css')
 
-block content   
+block content
     .container
-      if(usuario.tipo != 'Administrador')
-        include ./escritorioUsuario.jade
-        
       if(usuario.tipo == 'Administrador')
         include ./escritorioAdministrador.jade
-                
+      else if(usuario.tipo == 'Administrador de Reportes')
+        include ./escritorioAdminReportes.jade
+      else if(usuario.tipo == 'Supervisor')
+        include ./escritorioSupervisor.jade
+      else
+        include ./escritorioUsuario.jade
+
 block sigucaJS
   if(usuario.tipo != 'Administrador')
     script(src="/socket.io/socket.io.js")

@@ -17,9 +17,11 @@ util 			= require('../util/util'),
 emailSIGUCA 	= 'siguca@greencore.co.cr',
 Periodo = require('../models/Periodo'),
 PeriodoUsuario = require('../models/PeriodoUsuario');
+EventosTeletrabajo = require('../models/EventosTeletrabajo');
 var config 			= require('../config');
 var enviarCorreo = require('../config/enviarCorreo');
 var ObjectID = require('mongodb').ObjectID;
+const log = require('node-file-logger');
 
 //--------------------------------------------------------------------
 //	Métodos Usuario
@@ -29,31 +31,26 @@ exports.addUsuario = function(us, cb){
 		us.teleTrabajo="off";
 	}
 
-	var arrayTipo = [];
-	if(us.tipo instanceof Array){
-		for( var t in us.tipo){
-			arrayTipo.push(us.tipo[t]);
-		}
-	} else {
-		arrayTipo.push(us.tipo);
-	}
-
-	//Inserta los departamentos como array
+	var rolesDepartamento = us.rolesDepartamento.split("|");
 	var array = [];
-	if(us.idDepartamento instanceof Array){
-		for( var i in us.idDepartamento){
-			array.push({departamento: us.idDepartamento[i]});
+
+	rolesDepartamento.forEach(function (rolDepartamento) {
+		var rd = rolDepartamento.split(";");
+
+		if(rd[0] === '' || rd[0] === 'Sin Departamento'){
+			array.push({departamento: null, tipo: rd[1]});
+		} else {
+			array.push({departamento: rd[0], tipo: rd[1]});
 		}
-	} else {
-		array.push({departamento: us.idDepartamento});
-	}
+	});
+
 	Usuario.findOne({ 'username' :  us.username }, function (err, user) {
 		if (err) return cb(err);
 		if (!user) {
 			if(us.idHorario){
 				var newUser = new Usuario({
 				username: us.username,
-				tipo: arrayTipo,
+				tipo: [],
 				estado: "Activo",
 				nombre: us.nombre,
 				apellido1: us.apellido1,
@@ -70,7 +67,7 @@ exports.addUsuario = function(us, cb){
 
 				var newUser = new Usuario({
 				username: us.username,
-				tipo: arrayTipo,
+				tipo: [],
 				estado: "Activo",
 				nombre: us.nombre,
 				apellido1: us.apellido1,
@@ -85,7 +82,7 @@ exports.addUsuario = function(us, cb){
 			}else if(us.personalizado){
 				var newUser = new Usuario({
 				username: us.username,
-				tipo: arrayTipo,
+				tipo: [],
 				estado: "Activo",
 				nombre: us.nombre,
 				apellido1: us.apellido1,
@@ -98,9 +95,10 @@ exports.addUsuario = function(us, cb){
 				teleTrabajo:us.teleTrabajo
 				});
 			}else{
+				console.log(array);
 				var newUser = new Usuario({
 				username: us.username,
-				tipo: arrayTipo,
+				tipo: [],
 				estado: "Activo",
 				nombre: us.nombre,
 				apellido1: us.apellido1,
@@ -115,9 +113,10 @@ exports.addUsuario = function(us, cb){
 
 			//Se pasa la fecha a epoch
 			var splitDate1 = us.fechaIngreso.split('/');
-			console.log(us.fechaIngreso);
+			//console.log(splitDate1);
 			var day = splitDate1[0];
-			if(parseInt(day) > 28){
+			var month = splitDate1[1];
+			if(parseInt(month) === 2 && parseInt(day) > 28){
 				day = 28;
 			}
     		var date1 = new Date(splitDate1[2], splitDate1[1]-1, day);
@@ -150,13 +149,19 @@ exports.addUsuario = function(us, cb){
 
 	function crearPeriodo(periodos, fechaActual, usuario, fechaIngreso, cantidadSemanas, numeroPeriodo) {
 
+
+		var fechaFinalPeriodo = getFechaFinal(fechaIngreso);
+
+
 		var fechaPeriodo = fechaIngreso + 30240000;
 
-		// console.log('fechaIngreso: '+ moment.unix(fechaIngreso).format("YYYY-MM-DD hh:mm:ss"));
-		// console.log('fechaPeriodo: '+ moment.unix(fechaPeriodo).format("YYYY-MM-DD hh:mm:ss"));
-		// console.log('cantidadSemanas: '+ cantidadSemanas);
+		//console.log('fechaActual: '+ moment.unix(fechaActual).format("YYYY-MM-DD hh:mm:ss"));
+		//console.log('fechaIngreso: '+ moment.unix(fechaIngreso).format("YYYY-MM-DD hh:mm:ss"));
+		//console.log('fechaFinalPeriodo: '+ moment.unix(fechaFinalPeriodo).format("YYYY-MM-DD hh:mm:ss"));
+		//console.log('fechaPeriodo: '+ moment.unix(fechaPeriodo).format("YYYY-MM-DD hh:mm:ss"));
+		//console.log('cantidadSemanas: '+ cantidadSemanas);
 
-		if(fechaPeriodo < fechaActual){
+		if(fechaPeriodo <= fechaActual){
 			periodos.forEach(function(periodo) {
 				if(cantidadSemanas >= periodo.rangoInicial && cantidadSemanas < periodo.rangoFinal){
 
@@ -166,7 +171,8 @@ exports.addUsuario = function(us, cb){
 						periodo: periodo._id,
                         nombrePeriodoPadre: periodo.nombre,
 						fechaInicio: fechaIngreso,
-						fechaFinal: fechaPeriodo,
+						fechaFinal: fechaFinalPeriodo,
+						fechaDisfrute: fechaPeriodo,
 						diasAsignados: periodo.cantidadDias,
 						numeroPeriodo: numeroPeriodo
 					});
@@ -175,11 +181,19 @@ exports.addUsuario = function(us, cb){
 						if (err) console.log(err);
 					});
 
-					crearPeriodo(periodos, fechaActual, usuario, fechaPeriodo, (cantidadSemanas + 50), (numeroPeriodo + 1));
+					crearPeriodo(periodos, fechaActual, usuario, fechaFinalPeriodo, (cantidadSemanas + 50), (numeroPeriodo + 1));
 				}
 			});
 		}
 
+	}
+
+	function getFechaFinal(fechaInicio) {
+
+		var fechaFinalPeriodo = moment.unix(fechaInicio);
+		fechaFinalPeriodo.set("year", fechaFinalPeriodo.get("year") + 1);
+
+		return fechaFinalPeriodo.unix();
 	}
 };
 
@@ -249,7 +263,8 @@ exports.updateUsuario = function(data, cb){
 		data.empleado.fechaIngreso = 0;
 	}
 
-	data.empleado.estado=data.empleado.estadoEmpleado;
+	data.empleado.estado = data.empleado.estadoEmpleado;
+
 	delete data.empleado.estadoEmpleado;
 
 	if(data.empleado.horarioFijo && data.empleado.horarioFijo!="Sin horario" &&
@@ -260,10 +275,20 @@ exports.updateUsuario = function(data, cb){
 		delete data.empleado.horario;
 	}
 
+	var rolesDepartamento = data.empleado.rolesDepartamento.split("|");
+	var arrayDepartamentos = [];
 
-	if(data.empleado.horarioFijo && data.empleado.horarioFijo!="Sin horario") {
+	rolesDepartamento.forEach(function (rolDepartamento) {
+		var rd = rolDepartamento.split(";");
 
+		if(rd[0] === '' || rd[0] === 'Sin Departamento'){
+			arrayDepartamentos.push({departamento: null, tipo: rd[1]});
+		} else {
+			arrayDepartamentos.push({departamento: rd[0], tipo: rd[1]});
+		}
+	});
 
+	if(data.empleado.horarioFijo && data.empleado.horarioFijo != "Sin horario") {
 
 		Usuario.update({_id:data.id},{ $unset: {horario: ""}},function(error,correcto){});
 		delete data.empleado.horario;
@@ -271,27 +296,10 @@ exports.updateUsuario = function(data, cb){
 		Usuario.update({_id:data.id},{ $unset: {horarioEmpleado: ""}},function(error,correcto){});
 		delete data.empleado.horarioEmpleado;
 
-		var arrayTipo = [];
-		if(data.empleado.tipo instanceof Array){
-			for( var t in data.empleado.tipo){
-				arrayTipo.push(data.empleado.tipo[t]);
-			}
-		} else {
-			arrayTipo.push(data.empleado.tipo);
-		}
-		data.empleado.tipo = arrayTipo;
+		data.empleado.tipo = [];
 
-		//Genera el array de departamentos
-		var array = [];
-		if(data.empleado.departamentos instanceof Array){
-			for( var i in data.empleado.departamentos){
-				array.push({departamento:data.empleado.departamentos[i]});
-			}
-			data.empleado.departamentos = array;
-		} else if (data.empleado.departamentos){
-			array.push({departamento:data.empleado.departamentos});
-			data.empleado.departamentos = array;
-		}
+		data.empleado.departamentos = arrayDepartamentos;
+
 		if(data.empleado.password && data.empleado.password != ""){
 			data.empleado.password = Usuario.generateHash(data.empleado.password);
 		} else {
@@ -302,9 +310,7 @@ exports.updateUsuario = function(data, cb){
 		});
 
 	}
-	else if(data.empleado.horario && data.empleado.horario!="Sin horario"){
-
-
+	else if(data.empleado.horario && data.empleado.horario != "Sin horario"){
 
 		Usuario.update({_id:data.id},{ $unset: {horarioFijo: ""}},function(error,correcto){});
 		delete data.empleado.horarioFijo;
@@ -312,27 +318,10 @@ exports.updateUsuario = function(data, cb){
 		Usuario.update({_id:data.id},{ $unset: {horarioEmpleado: ""}},function(error,correcto){});
 		delete data.empleado.horarioEmpleado;
 
-		var arrayTipo = [];
-		if(data.empleado.tipo instanceof Array){
-			for( var t in data.empleado.tipo){
-				arrayTipo.push(data.empleado.tipo[t]);
-			}
-		} else {
-			arrayTipo.push(data.empleado.tipo);
-		}
-		data.empleado.tipo = arrayTipo;
+		data.empleado.tipo = [];
 
-		//Genera el array de departamentos
-		var array = [];
-		if(data.empleado.departamentos instanceof Array){
-			for( var i in data.empleado.departamentos){
-				array.push({departamento:data.empleado.departamentos[i]});
-			}
-			data.empleado.departamentos = array;
-		} else if (data.empleado.departamentos){
-			array.push({departamento:data.empleado.departamentos});
-			data.empleado.departamentos = array;
-		}
+		data.empleado.departamentos = arrayDepartamentos;
+
 		if(data.empleado.password && data.empleado.password != ""){
 			data.empleado.password = Usuario.generateHash(data.empleado.password);
 		} else {
@@ -343,41 +332,19 @@ exports.updateUsuario = function(data, cb){
 			return cb(err, empleado);
 		});
 	}
-
-
 
 	else if(data.empleado.horarioEmpleado && data.empleado.horarioEmpleado!="Sin horario"){
 
-
-
-
 		Usuario.update({_id:data.id},{ $unset: {horarioFijo: ""}},function(error,correcto){});
 		delete data.empleado.horarioFijo;
 
 		Usuario.update({_id:data.id},{ $unset: {horario: ""}},function(error,correcto){});
 		delete data.empleado.horario;
 
-		var arrayTipo = [];
-		if(data.empleado.tipo instanceof Array){
-			for( var t in data.empleado.tipo){
-				arrayTipo.push(data.empleado.tipo[t]);
-			}
-		} else {
-			arrayTipo.push(data.empleado.tipo);
-		}
-		data.empleado.tipo = arrayTipo;
+		data.empleado.tipo = [];
 
-		//Genera el array de departamentos
-		var array = [];
-		if(data.empleado.departamentos instanceof Array){
-			for( var i in data.empleado.departamentos){
-				array.push({departamento:data.empleado.departamentos[i]});
-			}
-			data.empleado.departamentos = array;
-		} else if (data.empleado.departamentos){
-			array.push({departamento:data.empleado.departamentos});
-			data.empleado.departamentos = array;
-		}
+		data.empleado.departamentos = arrayDepartamentos;
+
 		if(data.empleado.password && data.empleado.password != ""){
 			data.empleado.password = Usuario.generateHash(data.empleado.password);
 		} else {
@@ -389,12 +356,7 @@ exports.updateUsuario = function(data, cb){
 		});
 	}
 
-
-
-
 	else if(data.empleado.horario==="Sin horario" && data.empleado.horarioFijo==="Sin horario" && data.empleado.horarioEmpleado==="Sin horario"){
-
-
 
 		Usuario.update({_id:data.id},{ $unset: {horario: ""}},function(error,correcto){});
 		Usuario.update({_id:data.id},{ $unset: {horarioFijo: ""}},function(error,correcto){});
@@ -403,27 +365,10 @@ exports.updateUsuario = function(data, cb){
 		delete data.empleado.horarioFijo;
 		delete data.empleado.horarioEmpleado;
 
-		var arrayTipo = [];
-		if(data.empleado.tipo instanceof Array){
-			for( var t in data.empleado.tipo){
-				arrayTipo.push(data.empleado.tipo[t]);
-			}
-		} else {
-			arrayTipo.push(data.empleado.tipo);
-		}
-		data.empleado.tipo = arrayTipo;
+		data.empleado.tipo = [];
 
-		//Genera el array de departamentos
-		var array = [];
-		if(data.empleado.departamentos instanceof Array){
-			for( var i in data.empleado.departamentos){
-				array.push({departamento:data.empleado.departamentos[i]});
-			}
-			data.empleado.departamentos = array;
-		} else if (data.empleado.departamentos){
-			array.push({departamento:data.empleado.departamentos});
-			data.empleado.departamentos = array;
-		}
+		data.empleado.departamentos = arrayDepartamentos;
+
 		if(data.empleado.password && data.empleado.password != ""){
 			data.empleado.password = Usuario.generateHash(data.empleado.password);
 		} else {
@@ -433,7 +378,6 @@ exports.updateUsuario = function(data, cb){
 			return cb(err, empleado);
 		});
 	}else{
-
 
 
 		if(data.empleado.horarioFijo==="Sin horario"){
@@ -447,28 +391,10 @@ exports.updateUsuario = function(data, cb){
 			delete data.empleado.horarioEmpleado;
 		}
 
+		data.empleado.tipo = [];
 
-		var arrayTipo = [];
-		if(data.empleado.tipo instanceof Array){
-			for( var t in data.empleado.tipo){
-				arrayTipo.push(data.empleado.tipo[t]);
-			}
-		} else {
-			arrayTipo.push(data.empleado.tipo);
-		}
-		data.empleado.tipo = arrayTipo;
+		data.empleado.departamentos = arrayDepartamentos;
 
-		//Genera el array de departamentos
-		var array = [];
-		if(data.empleado.departamentos instanceof Array){
-			for( var i in data.empleado.departamentos){
-				array.push({departamento:data.empleado.departamentos[i]});
-			}
-			data.empleado.departamentos = array;
-		} else if (data.empleado.departamentos){
-			array.push({departamento:data.empleado.departamentos});
-			data.empleado.departamentos = array;
-		}
 		if(data.empleado.password && data.empleado.password != ""){
 			data.empleado.password = Usuario.generateHash(data.empleado.password);
 		} else {
@@ -483,10 +409,13 @@ exports.updateUsuario = function(data, cb){
 
 };
 
-exports.reset=function(){
+exports.reset = function(){
+
 	    var array=new Array();
+
 	    array.push('Supervisor');
 	    array.push('Administrador');
+
 	    var newUser = new Usuario({
 	        username: 'admingreencore',
 	        tipo: array,
@@ -526,6 +455,9 @@ exports.deleteUsuario = function(id, cb){
 	PeriodoUsuario.remove({usuario:id}, function (err, solicitudes) {
 	});
 
+	EventosTeletrabajo.remove({usuario:id}, function (err, eventosTeletrabajo) {
+	});
+
 	Usuario.remove({_id:id}, function (err, empleados) {
 		if (err) return cb(err, '');
 		return cb(err, 'Se elimino');
@@ -560,17 +492,33 @@ exports.changePassword = function(data, cb){
 };
 
 exports.getEmpleadoPorSupervisor = function(idSupervisor, usuarioQuery, callback){
-	Usuario.find({_id:idSupervisor}).exec(function(error, supervisor){
+	Usuario.findOne({_id:idSupervisor}).exec(function(error, supervisor){
 		var depIds = [];
-		for(depSup in supervisor[0].departamentos){
-			if(supervisor[0].departamentos[depSup].departamento)
-				depIds.push(supervisor[0].departamentos[depSup].departamento.toString());
+
+		if(supervisor.departamentos && supervisor.departamentos.length > 0){
+			supervisor.departamentos.forEach(function (departamento) {
+				if(departamento.tipo === "Supervisor"){
+					depIds.push(departamento.departamento);
+				}
+			})
 		}
+
 		Departamento.find({_id:{"$in":depIds}}).exec(function(error, departamentos){
-			usuarioQuery.departamentos = {$elemMatch:{departamento:{"$in":depIds}}};
+			usuarioQuery.departamentos = { $elemMatch: { departamento: {"$in":depIds}, tipo: { $in: ['Empleado', 'Usuario sin acceso web']} } };
+
 			Usuario.find(usuarioQuery).exec(function(error, usuarios){
+
 				callback(error, usuarios, departamentos);
 			});
+		});
+	});
+};
+
+exports.getTodosEmpleados = function(callback){
+
+	Departamento.find().exec(function(error, departamentos){
+		Usuario.find({ departamentos : { $elemMatch: { tipo: {$in: ["Empleado", "Supervisor", "Usuario sin acceso web"]}}}}).exec(function(error, usuarios){
+			callback(error, usuarios, departamentos);
 		});
 	});
 };
@@ -582,7 +530,7 @@ exports.updateVacaciones = function(){
 	var fechaActual = new Date();
 
 	//Obtiene usuarios activos
-	Usuario.find({estado: "Activo", fechaIngreso: {$exists: true, $ne:0}, tipo: {$ne:"Supervisor"}}).populate("departamentos").exec(function(err, listUserTem){
+	Usuario.find({estado: "Activo", fechaIngreso: {$exists: true, $ne:0}, departamentos : { $elemMatch: { tipo: { $ne: "Supervisor"}}}}).populate("departamentos").exec(function(err, listUserTem){
 
 		/**
 		 * Validaciones para optener los usuarios a los que se les debe aumentar vacaciones
@@ -629,7 +577,7 @@ exports.updateVacaciones = function(){
 							+ ", usted dispone de " + (user.vacaciones+1) + " días de vacaciones, se recomienda no exceder 12 días,"
 							+ " favor contactar a su supervisor.<br><br> ¡Saludos!";
 
-						enviarCorreo.enviar(from, to, subject, '', text);
+						enviarCorreo.enviar(from, to, subject, '', text, '');
 
 						//Recorre departamentos del usuario
 						for (var index = 0; index < user.departamentos.length; index++) {
@@ -697,7 +645,7 @@ exports.updateVacaciones = function(){
 						text = "Estimado(a) " + email.nameSpv +", se le informa que la siguiente lista de usuarios ha superado 11 días de vacaciones acumulados:<br>"
 						+ email.message + "<br><br> ¡Saludos!";
 
-					enviarCorreo.enviar(from, to, subject, '', text);
+					enviarCorreo.enviar(from, to, subject, '', text, '');
 
 				}
 			});
@@ -719,7 +667,7 @@ exports.validarPeriodoUsuario = function (usuario, periodos) {
 			}
 		});
 
-		Solicitudes.find({usuario: ObjectID(usuario._id), estado: "Aceptada", epochInicio: { "$gte": mayorPeriodo.fechaFinal, "$lte": fechaActual} , motivo: "Permiso sin goce de salario"}).sort({ "epochInicio" : 1}).exec(function (error, permisosSinGoceSalario) {
+		Solicitudes.find({usuario: ObjectID(usuario._id), estado: "Aceptada", epochInicio: { "$gte": mayorPeriodo.fechaFinal, "$lte": fechaActual} , motivo: "Permiso sin goce de salario", $or: [ { inciso: { $regex: ".*;6.*" } }, { inciso: { $regex: ".*;12.*" } }, { inciso: { $regex: ".*;24.*" } }, { inciso: { $regex: ".*;48.*" } } ]}).sort({ "epochInicio" : 1}).exec(function (error, permisosSinGoceSalario) {
 
 			if(permisosSinGoceSalario && permisosSinGoceSalario.length > 0){
 
@@ -733,6 +681,11 @@ exports.validarPeriodoUsuario = function (usuario, periodos) {
 				fechaFinalUltimoPeriodo.add(totalDiasPermisoSinSalario, 'days');
 				fechaFinalUltimoPeriodo.add(350, 'days'); //350 = 50 semanas
 
+				var fechaFinal = moment.unix(mayorPeriodo.fechaFinal);
+
+				fechaFinal.add(totalDiasPermisoSinSalario, 'days');
+				fechaFinal.set("year", fechaFinal.get("year") + 1);
+
 				if(fechaFinalUltimoPeriodo.unix() < fechaActual){
 
 					var semanasLaboradas = (fechaActual - usuario.fechaIngreso) / 604800; // 604800 = 1 semana
@@ -743,7 +696,7 @@ exports.validarPeriodoUsuario = function (usuario, periodos) {
 						if (error) return res.json(error);
 						periodos.forEach(function (periodo) {
 							if (semanasLaboradas >= periodo.rangoInicial && semanasLaboradas < periodo.rangoFinal) {
-								crearPeriodo(fechaActual, usuario.id, periodo._id, periodo.nombre, mayorPeriodo.fechaFinal, fechaFinalUltimoPeriodo.unix(), periodo.cantidadDias, (mayorPeriodo.numeroPeriodo + 1));
+								crearPeriodo(fechaActual, usuario.id, periodo._id, periodo.nombre, mayorPeriodo.fechaFinal, fechaFinalUltimoPeriodo.unix(), periodo.cantidadDias, (mayorPeriodo.numeroPeriodo + 1), fechaFinal);
 							}
 						});
 					});
@@ -761,7 +714,9 @@ exports.validarPeriodoUsuario = function (usuario, periodos) {
 						if (error) return res.json(error);
 						periodos.forEach(function (periodo) {
 							if (semanasLaboradas >= periodo.rangoInicial && semanasLaboradas < periodo.rangoFinal) {
-								crearPeriodo(fechaActual, usuario.id, periodo._id, periodo.nombre, mayorPeriodo.fechaFinal, cierreSiguientePeriodo, periodo.cantidadDias, (mayorPeriodo.numeroPeriodo + 1));
+								var fechaFi = moment.unix(mayorPeriodo.fechaFinal);
+								fechaFi.set("year", fechaFi.get("year") + 1);
+								crearPeriodo(fechaActual, usuario.id, periodo._id, periodo.nombre, mayorPeriodo.fechaFinal, cierreSiguientePeriodo, periodo.cantidadDias, (mayorPeriodo.numeroPeriodo + 1), fechaFi);
 							}
 						});
 					});
@@ -773,7 +728,7 @@ exports.validarPeriodoUsuario = function (usuario, periodos) {
 
 		var cierreFechaCreacion = usuario.fechaIngreso + 30240000; // 30240000 = 50 semanas
 
-		Solicitudes.find({usuario: ObjectID(usuario._id), estado: "Aceptada", epochInicio: { "$gte": usuario.fechaIngreso, "$lte": fechaActual} , motivo: "Permiso sin goce de salario"}).sort({ "epochInicio" : 1}).exec(function (error, permisosSinGoceSalario) {
+		Solicitudes.find({usuario: ObjectID(usuario._id), estado: "Aceptada", epochInicio: { "$gte": usuario.fechaIngreso, "$lte": fechaActual} , motivo: "Permiso sin goce de salario", $or: [ { inciso: { $regex: ".*;6.*" } }, { inciso: { $regex: ".*;12.*" } }, { inciso: { $regex: ".*;24.*" } }, { inciso: { $regex: ".*;48.*" } } ]}).sort({ "epochInicio" : 1}).exec(function (error, permisosSinGoceSalario) {
 
 			if(permisosSinGoceSalario && permisosSinGoceSalario.length > 0){
 
@@ -787,6 +742,11 @@ exports.validarPeriodoUsuario = function (usuario, periodos) {
 				fechaFinalUltimoPeriodo.add(totalDiasPermisoSinSalario, 'days');
 				fechaFinalUltimoPeriodo.add(350, 'days'); //350 = 50 semanas
 
+				var fechaFinal = moment.unix(usuario.fechaIngreso);
+
+				fechaFinal.add(totalDiasPermisoSinSalario, 'days');
+				fechaFinal.set("year", fechaFinal.get("year") + 1);
+
 				if(fechaFinalUltimoPeriodo.unix() < fechaActual){
 
 					var semanasLaboradas = (fechaActual - usuario.fechaIngreso) / 604800; // 604800 = 1 semana
@@ -797,7 +757,7 @@ exports.validarPeriodoUsuario = function (usuario, periodos) {
 						if (error) return res.json(error);
 						periodos.forEach(function (periodo) {
 							if (semanasLaboradas >= periodo.rangoInicial && semanasLaboradas < periodo.rangoFinal) {
-								crearPeriodo(fechaActual, usuario.id, periodo._id, periodo.nombre, usuario.fechaIngreso, fechaFinalUltimoPeriodo.unix(), periodo.cantidadDias, 1);
+								crearPeriodo(fechaActual, usuario.id, periodo._id, periodo.nombre, usuario.fechaIngreso, fechaFinalUltimoPeriodo.unix(), periodo.cantidadDias, 1, fechaFinal);
 							}
 						});
 					});
@@ -809,14 +769,16 @@ exports.validarPeriodoUsuario = function (usuario, periodos) {
 
 					Periodo.find().sort({ "numeroPeriodo" : 1}).exec(function (error, periodos) {
 						if (error) console.log(error);
-						crearPeriodo(fechaActual, usuario.id, periodos[0]._id, periodos[0].nombre, usuario.fechaIngreso, cierreFechaCreacion, periodos[0].cantidadDias, 1);
+						var fechaF = moment.unix(usuario.fechaIngreso);
+						fechaF.set("year", fechaF.get("year") + 1);
+						crearPeriodo(fechaActual, usuario.id, periodos[0]._id, periodos[0].nombre, usuario.fechaIngreso, cierreFechaCreacion, periodos[0].cantidadDias, 1, fechaF);
 					});
 				}
 			}
 		});
 	}
 
-	function crearPeriodo(fechaCreada, usuario, periodo, nombrePeriodoPadre, fechaInicio, fechaFinal, diasAsignados, numeroPeriodo) {
+	function crearPeriodo(fechaCreada, usuario, periodo, nombrePeriodoPadre, fechaInicio, fechaDisfrute, diasAsignados, numeroPeriodo, fechaFinal) {
 
 		var periodoUsuario = new PeriodoUsuario({
 			fechaCreada: fechaCreada,
@@ -824,11 +786,12 @@ exports.validarPeriodoUsuario = function (usuario, periodos) {
 			periodo: periodo,
 			nombrePeriodoPadre: nombrePeriodoPadre,
 			fechaInicio: fechaInicio,
-			fechaFinal: fechaFinal,
+			fechaDisfrute: fechaDisfrute,
+			fechaFinal: fechaFinal.unix(),
 			diasAsignados: diasAsignados,
 			numeroPeriodo: numeroPeriodo
 		});
-
+		log.Info("Periodo creado para el usuario: " + usuario + " Fecha creación: " + fechaCreada + " fechaInicio: " + fechaInicio + " fechaFinal: " + fechaFinal);
 		periodoUsuario.save(function (err, respuesta) {
 			if (err) console.log(err);
 		});

@@ -24,7 +24,8 @@ var ObjectId = mongoose.Types.ObjectId;
 
 module.exports = {
   filtrarEventos : function (req, res) {
-    if (req.session.name === "Supervisor") {
+
+    if (req.session.name === "Supervisor" || req.session.name === "Administrador de Reportes") {
       var usuarioId;
       var option;
       if(req.body.filtro){
@@ -41,7 +42,7 @@ module.exports = {
       var permisosQuery = { tipoSolicitudes:'Permisos' };
       var marcaQuery = {};
       var cierreQuery = {};//{"usuarios.tiempo.horas":{"$gte":0}};
-      var usuarioQuery = { estado:"Activo", tipo:{'$in': ['Empleado', 'Usuario sin acceso web']}};
+      var usuarioQuery = { _id: { "$ne": ObjectId(req.user.id) }, estado:"Activo", departamentos : { $elemMatch: { tipo: {$in: ['Empleado', 'Usuario sin acceso web']}}}};
       var populateQuery = {
         path: 'usuario'
       };
@@ -67,24 +68,29 @@ module.exports = {
           _id:{
             "$ne":ObjectId(req.user.id)
           },
-          tipo:"Supervisor",
-          departamentos: {$elemMatch: {departamento: ObjectId(req.user.departamentos[0].departamento)}}
+          departamentos: {$elemMatch: {departamento: ObjectId(req.user.departamentos[0].departamento), tipo:"Supervisor"}}
         };
 
-        crudUsuario.get(querrySupervisores, function (err, supervisores){
-          crudUsuario.getEmpleadoPorSupervisor(req.user.id, usuarioQuery, function(error, usuarios, departamentos){
-              if(!usuarioId || usuarioId == 'todos'){
-                var queryUsers = {"$in":util.getIdsList(usuarios.concat(supervisores))};
+        if(req.session.name === "Administrador de Reportes"){
+          crudUsuario.getTodosEmpleados(function(error, usuarios, departamentos){
+            if(!usuarioId || usuarioId === 'todos'){
+              var queryUsers = {"$in":util.getIdsList(usuarios)};
+              justQuery.usuario = extraQuery.usuario = permisosQuery.usuario = marcaQuery.usuario = queryUsers;
+            }
+            getInformacionRender(req, res, titulo, usuarios, departamentos, marcaQuery, justQuery, extraQuery, permisosQuery, cierreQuery, populateQuery, ((!err && usuario) ? (usuario.apellido1+" "+usuario.apellido2+", "+usuario.nombre) : null), periodosUsuarioQuery);
+          });
+
+        }else{
+            crudUsuario.getEmpleadoPorSupervisor(req.user.id, usuarioQuery, function(error, usuarios, departamentos){
+              if(!usuarioId || usuarioId === 'todos'){
+                var queryUsers = {"$in":util.getIdsList(usuarios)};
                 justQuery.usuario = extraQuery.usuario = permisosQuery.usuario = marcaQuery.usuario = queryUsers;
               }
-              getInformacionRender(req, res, titulo, usuarios.concat(supervisores), departamentos, marcaQuery,
-                justQuery, extraQuery, permisosQuery, cierreQuery, populateQuery,
-                ((!err && usuario) ? (usuario.apellido1+" "+usuario.apellido2+", "+usuario.nombre) : null), periodosUsuarioQuery);
+              getInformacionRender(req, res, titulo, usuarios, departamentos, marcaQuery, justQuery, extraQuery, permisosQuery, cierreQuery, populateQuery, ((!err && usuario) ? (usuario.apellido1+" "+usuario.apellido2+", "+usuario.nombre) : null), periodosUsuarioQuery);
             });
-        });
+        }
       });
-} else {
-      //
+    } else {
       req.logout();
       res.redirect('/');
     }
@@ -124,7 +130,7 @@ module.exports = {
                       listaCierre = util.unixTimeToRegularDate(listaCierre, true);
 
                       //En caso de ser profesor no se pasan las justificaciones
-                      if(req.user.tipo.length > 1 && req.session.name == config.empleadoProfesor){
+                      if(req.user.departamentos.length > 1 && req.session.name == config.empleadoProfesor){
                         arrayJust = new Array();
                         listaCierre = new Array();
                       }
@@ -218,7 +224,7 @@ module.exports = {
                     listaCierre = util.unixTimeToRegularDate(listaCierre, true);
 
                     //En caso de ser profesor no se pasan las justificaciones
-                    if(req.user.tipo.length > 1 && req.session.name == config.empleadoProfesor){
+                    if(req.user.departamentos.length > 1 && req.session.name == config.empleadoProfesor){
                       arrayJust = new Array();
                       listaCierre =  new Array();
                     }
@@ -286,50 +292,44 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos, marcaQu
 
   Justificaciones.find(justQuery).populate(populateQuery).exec(function(error, justificaciones){
     HoraExtra.find(extraQuery).populate(populateQuery).exec(function(error, extras) {
-      Solicitudes.find(permisosQuery).populate(populateQuery).exec(function(error, permisos) {
+      Solicitudes.find(permisosQuery).populate('usuario').exec(function(error, permisos) {
         PermisoSinSalario.find().sort({numero: 1}).exec(function(error, permisosSinSalario) {
-
-            var permisosTemp = [];
+          PeriodoUsuario.find().populate('usuario').sort({numeroPeriodo: 1}).exec(function(error, periodos) {
+            if (error) return res.json(err);
 
             if(permisos && permisos.length > 0 ){
-              permisos.forEach(function (permiso) {
 
+              permisos.forEach(function (permiso) {
                 var infoPeriodo = {
                   diasDerechoDisfrutar: 0,
                   diasDisfrutados: 0,
                   diasDisponibles: 0
                 };
 
-                PeriodoUsuario.find({usuario: permiso.usuario._id}).sort({numeroPeriodo: 1}).exec(function(error, periodos) {
-                  if (error) return res.json(err);
-
-                  periodos.forEach(function (periodo) {
+                periodos.forEach(function (periodo) {
+                  if(permiso.usuario._id.equals(periodo.usuario._id)){
                     infoPeriodo.diasDerechoDisfrutar = infoPeriodo.diasDerechoDisfrutar + periodo.diasAsignados;
                     infoPeriodo.diasDisfrutados = infoPeriodo.diasDisfrutados + periodo.diasDisfrutados;
-                  });
-
-                  infoPeriodo.diasDisponibles = infoPeriodo.diasDerechoDisfrutar-infoPeriodo.diasDisfrutados;
-                  permiso.usuario.vacaciones = infoPeriodo.diasDisponibles;
-
+                  }
                 });
-                permisosTemp.push(permiso)
+
+                infoPeriodo.diasDisponibles = infoPeriodo.diasDerechoDisfrutar-infoPeriodo.diasDisfrutados;
+                permiso.usuario.vacaciones = infoPeriodo.diasDisponibles;
+
               });
             }
-
-            permisos = permisosTemp;
 
             if(req.route.path.substring(0, 9) !=='/reportes'){
               //Se asigna el tipo de usuario con el cual ha iniciado sesion
               req.user.tipo = req.session.name;
-              return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, null,
-                justificaciones, extras, permisos, null, nombreUsuario, null, null, permisosSinSalario);
+              return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, null, justificaciones, extras, permisos, null, nombreUsuario, null, null, permisosSinSalario);
             }
             else {
               Marca.find(marcaQuery).populate(populateQuery).exec(function(error, marcas){
 
                 var usuarioQueryFiltrado = {};
                 //Si se realizo un filtrado por departamento
-                if(req.body.filtro_departamento && req.body.filtro_departamento!="todos"){
+                if(req.body.filtro_departamento && req.body.filtro_departamento != "todos"){
                   usuarioQueryFiltrado.departamentos = {$elemMatch:{departamento:{"$in":req.body.filtro_departamento}}};
                 }
 
@@ -342,18 +342,19 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos, marcaQu
                   }
 
                   CierrePersonal.find(cierreQuery).populate("usuario").exec(function(error, cierres) {
-                        //Se asigna el tipo de usuario con el cual ha iniciado sesion
-                        req.user.tipo = req.session.name;
-                        EventosTeletrabajo.find(marcaQuery).populate('alerta').exec(function(error, eventosTeletrabajo) {
-                          PeriodoUsuario.find(periodosUsuarioQuery).populate('usuario').populate('periodo').sort({usuario: 1, numeroPeriodo: 1}).exec(function(error, periodoUsuarios) {
-                            return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, marcas,
-                              justificaciones, extras, permisos, cierres, nombreUsuario, eventosTeletrabajo, periodoUsuarios, permisosSinSalario);
-                          });
-                        });
+                    //Se asigna el tipo de usuario con el cual ha iniciado sesion
+                    req.user.tipo = req.session.name;
+                    EventosTeletrabajo.find(marcaQuery).populate('alerta').exec(function(error, eventosTeletrabajo) {
+                      PeriodoUsuario.find(periodosUsuarioQuery).populate('usuario').populate('periodo').sort({usuario: 1, numeroPeriodo: 1}).exec(function(error, periodoUsuarios) {
+                        return renderFiltro(req, res, titulo, req.user, departamentos, usuarios, marcas,
+                            justificaciones, extras, permisos, cierres, nombreUsuario, eventosTeletrabajo, periodoUsuarios, permisosSinSalario);
                       });
+                    });
+                  });
                 });//Fin usuarios filtrados por departamento
-            });//Marcas
-          }
+              });//Marcas
+            }
+          });
         });
       });//Solicitudes permisos
     });//Solicitudes horas extra
@@ -484,7 +485,6 @@ function renderFiltro(req, res, titulo, usuario, departamentos, usuarios, marcas
     });
   }
 
-  // console.log(req.route.path.substring(0, 9));
   //Si el filtrado es por vacaciones
   if(filtrado && filtrado == "vacaciones" && req.route.path.substring(0, 9) =='/reportes'){
     filtro.vacaciones = true;

@@ -57,7 +57,7 @@ emailSIGUCA 	= 'siguca@greencore.co.cr';
 				return cb(err, horarios);
 			})
 		}
-		
+
 
 		exports.updateHorario = function(data, cb){
 			Horario.findByIdAndUpdate(data.id, data.horario, function (err, horarios) {
@@ -89,7 +89,7 @@ emailSIGUCA 	= 'siguca@greencore.co.cr';
 			}else{
 				var Jueves="";
 			}
-			
+
 			if(data.horario.Viernes){
 				var Viernes="Viernes";
 			}else{
@@ -105,8 +105,8 @@ emailSIGUCA 	= 'siguca@greencore.co.cr';
 			}else{
 				 var Domingo="";
 			}
-			
-			
+
+
 			var horario={
 				Domingo:Domingo,
 				Jueves:Jueves,
@@ -122,7 +122,7 @@ emailSIGUCA 	= 'siguca@greencore.co.cr';
 				tiempoReceso:data.horario.tiempoReceso,
 				tipo:"Fijo"
 			};
-			
+
 			HorarioFijo.findByIdAndUpdate(data.id,horario, function (err, horarios) {
 				return cb(err, horarios);
 			});
@@ -167,7 +167,7 @@ emailSIGUCA 	= 'siguca@greencore.co.cr';
 					entrada:{
 						hora:parseInt(data.horario.viernesEntrada.split(":")[0]),
 						minutos:parseInt(data.horario.viernesEntrada.split(":")[1])
-					}	
+					}
 				},
 				jueves:{
 					salida:{
@@ -188,7 +188,7 @@ emailSIGUCA 	= 'siguca@greencore.co.cr';
 						hora:parseInt(data.horario.miercolesEntrada.split(":")[0]),
 						minutos:parseInt(data.horario.miercolesEntrada.split(":")[1])
 					}
-					
+
 				},
 				martes:{
 					salida:{
@@ -273,7 +273,7 @@ emailSIGUCA 	= 'siguca@greencore.co.cr';
 			//nombre
 			personalizado.nombreHorarioPersonalizado=data.horario.nombreHorarioPersonalizado;
 			*/
-			console.log(personalizado);
+			//console.log(personalizado);
 
 			HorarioEmpleado.findByIdAndUpdate(data.id,personalizado, function (err, horarios) {
 				return cb(err, horarios);
@@ -320,15 +320,15 @@ emailSIGUCA 	= 'siguca@greencore.co.cr';
 		}
 
 
-		
+
 
 	function cierre (id) {
 		Marca.findById(id).populate('usuario').exec(function (err, marca) {
 			if(marca.tipoMarca == 'Entrada'){
 				var newCierre =  new Cierre({
-					usuario: marca.usuario.id, 
-					epoch: marca.epoch, 
-					departamento: marca.usuario.departamentos[0].departamento, 
+					usuario: marca.usuario.id,
+					epoch: marca.epoch,
+					departamento: marca.usuario.departamentos[0].departamento,
 					tipo: 'Personal',
 					etapa: 0
 				});
@@ -340,15 +340,15 @@ emailSIGUCA 	= 'siguca@greencore.co.cr';
 							Justificaciones.find({usuario: marca.usuario.id, fechaCreada: {'$gte': cierre.epoch}}).count().exec(function (err, just) {
 								Solicitudes.find({usuario: marca.usuario.id, fechaCreada: {'$gte': cierre.epoch}}).count().exec(function (err, soli) {
 									Cierre.find({usuario: marca.usuario.id, tipo: 'Personal', etapa: 1}).sort({_id: -1}).limit(1).exec(function (err, cierreAnterior) {
-										if (!err) {		                
+										if (!err) {
 											var rangoJornada = horario.rangoJornada,
 											split = rangoJornada.split(':'),
 											sJornada = (parseInt(split[0]) * 3600 + parseInt(split[1]) * 60)*1000,
 											estado = 0,
 											horasSemanales = 0,
-											esLunes =  moment(cierre.epoch); 
+											esLunes =  moment(cierre.epoch);
 											if(sJornada > marca.epoch - cierre.epoch){
-												estado += 1;   
+												estado += 1;
 									}//if
 									if(esLunes.day() != 1){
 										horasSemanales += marca.epoch - cierre.epoch;
@@ -389,7 +389,7 @@ emailSIGUCA 	= 'siguca@greencore.co.cr';
 													if (err) console.log(err);
 													else console.log("éxito al guardar");
 						                           			 });//cierre
-											} 
+											}
 										})
 });
 }

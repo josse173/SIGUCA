@@ -2,18 +2,28 @@
 
 var Departamento 	= require('../models/Departamento'),
 Usuario 			= require('../models/Usuario');
+const log = require('node-file-logger');
 //--------------------------------------------------------------------
 //Métodos Departamento
 //---------------------------------------------------------------------
 exports.addDepa = function(departamento, cb){
-	var newDepartamento = Departamento(departamento);
-	newDepartamento.save(function() {
+	var newDepartamento = {};
+
+	if(departamento.departamentoSupervisor){
+		newDepartamento = Departamento({nombre: departamento.nombre, departamentoSupervisor: departamento.departamentoSupervisor, nivel: departamento.nivel});
+	}else{
+		newDepartamento = Departamento({nombre: departamento.nombre, departamentoSupervisor: null, nivel: departamento.nivel});
+	}
+
+	console.log(departamento);
+
+	newDepartamento.save(function(err, creado) {
 		return cb();
 	})
 }
 
 exports.listDepa = function(cb){
-	Departamento.find().exec(function (err, departamentos) {
+	Departamento.find().populate('departamentoSupervisor').exec(function (err, departamentos) {
 		return cb(err, departamentos);
 	});
 }
@@ -22,10 +32,15 @@ exports.loadDepa = function(id, cb){
 	Departamento.findById(id, function (err, departamento) {
 		if (err) return cb(err);
 		else return cb(departamento);
-	});
+	}).populate('departamentoSupervisor');
 }
 
 exports.updateDepa = function(data, cb){
+
+	if(!data.departamento.departamentoSupervisor){
+		data.departamento.departamentoSupervisor = null;
+	}
+
 	Departamento.findByIdAndUpdate(data.id, data.departamento, function (err, departamento) {
 		return cb();
 	});

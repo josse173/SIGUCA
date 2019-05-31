@@ -1,16 +1,21 @@
 var mongoose 		= require('mongoose');
 var Feriados 		= require('../models/Feriado');
 var moment = require('moment');
+const log = require('node-file-logger');
 
 exports.insertarFeriado = function(req, res){
+
+    log.Info('Insertar Feriado');
+    log.Info('Admin: ' +req.user._id);
+    log.Info(req.body);
+
     if(req.body.date && req.body.date.split("/").length == 3){
             var date = req.body.date.split("/");
             var epochGte = moment();
             epochGte.year(date[2]).month(date[1]-1).date(date[0]);
             //epochGte.hour(0).minutes(0).seconds(0);
             var fecha=epochGte.unix();
-           //console.log(moment.unix(fecha).format("MM/DD/YYYY")) Linea importante
-           
+
            var feriado = new Feriados({
 			   nombreFeriado:req.body.nombreFeriado,
                epoch:fecha
@@ -18,11 +23,11 @@ exports.insertarFeriado = function(req, res){
           feriado.save(function (err, feriado) {
 				if (err) console.log(err);
 				res.redirect('/escritorioAdmin');
-               
-            });//Crea Usuari  
-           
-           
-        }else{ 
+
+            });//Crea Usuari
+
+
+        }else{
             res.redirect('/escritorioAdmin');
         }
 };
@@ -30,7 +35,7 @@ exports.insertarFeriado = function(req, res){
 exports.deleteFeriado = function(id, cb){
     Feriados.findByIdAndRemove(id,function(err,feriado){
         if(!err){
-            
+
             return cb(err, 'Se elimino');
         }else{
             return cb("");
@@ -40,6 +45,12 @@ exports.deleteFeriado = function(id, cb){
 
 
 exports.actualizarFeriado = function(req,res){
+
+    log.Info('Eliminar Feriado');
+    log.Info('Admin: ' +req.user._id);
+    log.Info('Id del refiado: ' + req.params.id);
+    log.Info(req.body);
+
     var date = req.body.epoch.split("/");
           var epo = moment();
           epo.year(date[2]).month(date[1]-1).date(date[0]);
@@ -47,7 +58,7 @@ exports.actualizarFeriado = function(req,res){
           var obj={
             epoch:fecha,
             nombreFeriado:req.body.nombreFeriado
-         };  
+         };
          Feriados.findByIdAndUpdate(req.params.id,obj,function(err,feriado){
             res.redirect('feriado');
          });
@@ -63,7 +74,7 @@ exports.listaFeriados=function(cb){
                 var obj=new Object();
                 obj._id=feriados[i]._id;
                 obj.nombreFeriado=feriados[i].nombreFeriado;
-                
+
                 var anTemporal=moment.unix(feriados[i].epoch).format("DD/MM/YY").split("/");
                 var obj=new Object();
                 obj._id=feriados[i]._id;
@@ -81,7 +92,7 @@ exports.listaFeriados=function(cb){
 
 
             }
-        
+
             cb(feriadosArreglado);
         }
     });

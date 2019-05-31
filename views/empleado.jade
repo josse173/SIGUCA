@@ -12,7 +12,7 @@ block content
             th Nombre
             th Apellidos
             th(data-hide="phone") Cédula
-            th(data-hide="phone") Tipo
+            th(data-hide="phone") Usuario
             th(data-hide="phone,small,medium" data-sort-ignore="true") Departamento
             th(data-hide="phone,small,medium") Horario libre
             th(data-hide="phone,small,medium") Horario Fijo
@@ -29,38 +29,31 @@ block content
               td #{empleado.nombre}
               td #{empleado.apellido1} #{empleado.apellido2}
               td #{empleado.cedula}
-              td
-                each tipo, t in empleado.tipo
-                  ul
-                    if(tipo)
-                      li #{tipo}
-                    else
-                      li No tiene tipos de usuario asignados
+              td #{empleado.username}
               td
                 each departamentos, i in empleado.departamentos
                   ul
                     if(departamentos.departamento)
-                      li #{departamentos.departamento.nombre}
+                      li #{departamentos.departamento.nombre} (#{departamentos.tipo})
                     else
-                      li No tiene departamento asignado
+                      li Sin departamento (#{departamentos.tipo})
               if(empleado.horario)
                 td #{empleado.horario.nombre}
 
               else
-                td No tiene horario asignado
+                td -
 
               if(empleado.horarioFijo)
                 td #{empleado.horarioFijo.nombre}
 
               else
-                td No tiene horario asignado
+                td -
 
               if(empleado.horarioEmpleado)
                 td #{empleado.horarioEmpleado.nombreHorarioPersonalizado}
 
               else
-                td No tiene horario asignado
-
+                td -
 
                td #{empleado.estado}
               td
@@ -91,16 +84,15 @@ block content
                     h3 Información Básica
                     label(for='nombre') Nombre:
                       input#nombre.form-control(type= 'text', placeholder='Carlos', name= 'nombre')
-                    label(for='cedula') Cédula:
-                     input#cedula.form-control(type= 'text', placeholder='110459625', name='cedula')
-                  .form-group
                     label(for='apellido1') Primer Apellido:
                       input#apellido1.form-control(type= 'text', placeholder='Corella', name= 'apellido1')
                     label(for='apellido2') Segundo Apellido:
-                     input#apellido2.form-control(type= 'text', placeholder='Sandi', name='apellido2')
+                      input#apellido2.form-control(type= 'text', placeholder='Sandi', name='apellido2')
+                  .form-group
+                   label(for='cedula') Cédula:
+                     input#cedula.form-control(type= 'text', placeholder='110459625', name='cedula')
                     label(for='email') Correo Eléctronico:
                       input#email.form-control(type= 'email', placeholder='alguien@ejemplo.com', name='email')
-
 
                   .form-group
                     h3 Información Laboral
@@ -132,34 +124,38 @@ block content
                           each horario, i in horarioPersonalizado
                               option(value= horario._id) #{horario.nombreHorarioPersonalizado}
 
-
-                    br
+                  .form-group
+                    label(for='departamento') Departamento:
+                      br
+                      select.form-control#selectDepartamentos.selectpicker(data-style="btn-inverse", data-width="200px", data-selected-text-format="count>2", type="text", name="departamentos")
+                        option(value='Sin Departamento') Seleccione una opción
+                        each departamento, i in departamentos
+                          option(value= departamento.id) #{departamento.nombre}
                     label(for="tipoInput") Tipo de Usuario:
                       br
-                      select.form-control#selectTipo.selectpicker(data-style="btn-inverse", data-width="140px", type="text", name="tipo" , multiple="multiple")
+                      select.form-control#selectTipo.selectpicker(data-style="btn-inverse", data-width="200px", type="text", name="tipo" )
+                        option Seleccione una opción
                         option Empleado
                         option Supervisor
                         option Administrador
                         option #{tipoEmpleado}
                         option #{empleadoProfesor}
-
-                    label(for='estado') Estado:
+                        option Administrador de Reportes
+                    label(for="selectTipo")
                       br
-                      select.form-control#estadoEmpleado(data-style="btn-inverse", data-width="140px", name="estadoEmpleado")
-
-
-                    label(for='departamento') Departamento:
-                      br
-                      select.form-control#selectDepartamentos.selectpicker(data-style="btn-success", data-width="200px", data-selected-text-format="count>2", type="text", name="departamentos", multiple="multiple")
-                        each departamento, i in departamentos
-                            option(value= departamento.id) #{departamento.nombre}
-
+                      button.btn.btn-info(type='button', onclick='agregarRolDepartamento()') Agregar
+                  .form-group
+                    input.form-control(type="hidden" id="rolesDepartamento", name="rolesDepartamento")
+                    ul#listDepartamentos
+                  .form-group
                     label.labelFiltro(for='fechaIngreso') Fecha Ingreso:
                       input#fechaIngresoo.form-control(type="text", name='fechaIngreso', readonly="readonly")
 
-                    label.labelFiltro(for='vacaciones') Vacaciones:
-                      input#vacaciones.form-control(type="text", name='vacaciones')
+                      input#vacaciones.form-control(type="hidden", name='vacaciones')
                   .form-group
+                    label(for='estado') Estado:
+                      br
+                      select.form-control#estadoEmpleado(data-style="btn-inverse", data-width="140px", name="estadoEmpleado")
                     label(for='teleTrabajo') Tele trabajo:
                       input#teleTrabajo.form-control(type='checkbox', name="teleTrabajo")
                   .form-group

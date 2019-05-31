@@ -261,8 +261,9 @@ block content
             tr
               th Fecha Creación
               th Periodo
-              th Fecha Inicio
+              th Fecha Ajustada Para Vacaciones
               th Fecha Final
+              th Fecha Disfrute
               th Tipo Periodo
               th Días Asignados
               th Días Disfrutados
@@ -272,8 +273,9 @@ block content
               tr
                 td #{moment.unix(periodo.fechaCreada).format("YYYY-MM-DD hh:mm:ss")}
                 td #{periodo.numeroPeriodo}
-                td #{moment.unix(periodo.fechaInicio).format("YYYY-MM-DD hh:mm:ss")}
-                td #{moment.unix(periodo.fechaFinal).format("YYYY-MM-DD hh:mm:ss")}
+                td #{moment.unix(periodo.fechaInicio).format("YYYY-MM-DD")}
+                td #{moment.unix(periodo.fechaFinal).format("YYYY-MM-DD")}
+                td #{moment.unix(periodo.fechaDisfrute).format("YYYY-MM-DD")}
                 td #{periodo.periodo.nombre}
                 td #{periodo.diasAsignados}
                 td #{periodo.diasDisfrutados}

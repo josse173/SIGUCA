@@ -1,16 +1,25 @@
 var nodemailer = require('nodemailer');
 Correo		= require('../models/Correo'),
 
-module.exports = { enviar : function (de, para, titulo, tituloCuerpo, cuerpo ) {
+module.exports = { enviar : function (de, para, titulo, tituloCuerpo, cuerpo, cc) {
 
     Correo.find({}, function (errorCritico, listaCorreos) {
         if (!errorCritico && listaCorreos.length > 0) {
 
             var transporter = nodemailer.createTransport('smtps://'+listaCorreos[0].nombreCorreo+':'+listaCorreos[0].password+'@'+listaCorreos[0].dominioCorreo);
 
+            /*var transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: 'rsoto07.2@gmail.com',
+                    pass: 'Qwerty123!'
+                }
+            });*/
+
             var mailOptions = {
                 from: de,
                 to: para,
+                cc: cc,
                 subject: titulo,
                 html: '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">\n' +
                     '<html xmlns="http://www.w3.org/1999/xhtml">\n' +

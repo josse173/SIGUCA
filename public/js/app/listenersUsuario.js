@@ -14,7 +14,6 @@ $( document ).ready(function() {
     function validarAlertas() {
 
         var fechaActual = moment().unix();
-        //console.log('fechaActual: ' + fechaActual);
 
         var tiempoRespuesta = document.getElementById("tiempoRespuesta").value;
         var alertas = document.getElementById("alertas").value;
@@ -23,9 +22,7 @@ $( document ).ready(function() {
             var listaAlertas = JSON.parse(alertas);
             var listaAlertasActivas = [];
             listaAlertas.forEach(function(alerta) {
-                // console.log(alerta);
                 var fechaAlerta = alerta.fechaAlertaUnix;
-                 //console.log('fechaAlerta: '+ fechaAlerta);
                 if ( fechaAlerta <= fechaActual && alerta.mostrada === false) {
 
                     $.ajax({
@@ -34,7 +31,7 @@ $( document ).ready(function() {
                         dataType : "json",
                         data: {usuario: alerta.usuario},
                         success: function(data) {
-                            // console.log(data.result);
+
                             if (data.result && data.result === true) {
                                 setTimeout(mostrarAlerta, 20000, tiempoRespuesta, alerta);
                             } else {
@@ -357,13 +354,16 @@ $("#diaFinal,#diaInicio").change(function(e){
         var selectPermisosSinSalario = document.getElementById("selectPermisosSinSalario");
         var fechaInicio = new Date(document.getElementById("diaInicio").value);
 
-        if(selectMotivo.options[selectMotivo.selectedIndex].value === 'Permiso sin goce de salario'){
-            var cantidadMeses = Number(selectPermisosSinSalario.options[selectPermisosSinSalario.selectedIndex].value.split(';')[1]);
-            fechaInicio.setMonth(fechaInicio.getMonth() + cantidadMeses);
-            var mes = Number(fechaInicio.getMonth()+1) < 10 ? '0' + Number(fechaInicio.getMonth()+1) : Number(fechaInicio.getMonth()+1);
-            document.getElementById("diaFinal").value = fechaInicio.getFullYear() + '/' + mes + '/' +fechaInicio.getDate();
-        }
+        console.log(selectPermisosSinSalario[selectPermisosSinSalario.selectedIndex].value.split(';')[1]);
 
+        if(selectMotivo.options[selectMotivo.selectedIndex].value === 'Permiso sin goce de salario'){
+            if(selectPermisosSinSalario[selectPermisosSinSalario.selectedIndex].value.split(';')[1] !== '1'){
+                var cantidadMeses = Number(selectPermisosSinSalario.options[selectPermisosSinSalario.selectedIndex].value.split(';')[1]);
+                fechaInicio.setMonth(fechaInicio.getMonth() + cantidadMeses);
+                var mes = Number(fechaInicio.getMonth()+1) < 10 ? '0' + Number(fechaInicio.getMonth()+1) : Number(fechaInicio.getMonth()+1);
+                document.getElementById("diaFinal").value = fechaInicio.getFullYear() + '-' + mes + '-' +fechaInicio.getDate();
+            }
+        }
 
         var fecha1 = new Date(document.getElementById("diaInicio").value);
         var fecha2 = new Date(document.getElementById("diaFinal").value);
@@ -396,7 +396,7 @@ $("#selectMotivo,#selectPermisosSinSalario").change(function(e){
                 var cantidadMeses = Number(selectPermisosSinSalario.options[selectPermisosSinSalario.selectedIndex].value.split(';')[1]);
                 fechaInicio.setMonth(fechaInicio.getMonth() + cantidadMeses);
                 var mes = Number(fechaInicio.getMonth()+1) < 10 ? '0' + Number(fechaInicio.getMonth()+1) : Number(fechaInicio.getMonth()+1);
-                document.getElementById("diaFinal").value = fechaInicio.getFullYear() + '/' + mes + '/' +fechaInicio.getDate();
+                document.getElementById("diaFinal").value = fechaInicio.getFullYear() + '-' + mes + '-' +fechaInicio.getDate();
 
                 var fecha1 = new Date(document.getElementById("diaInicio").value);
                 var fecha2 = new Date(document.getElementById("diaFinal").value);

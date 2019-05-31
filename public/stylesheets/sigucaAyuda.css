@@ -170,6 +170,7 @@ body {
 }
 .tablasReportes {
 	display: inline-block;
+	min-width: 1300px;
 }
 /** Media Queries **/
 @media(max-width: 1200px) {
@@ -298,4 +299,30 @@ body {
     #calSupervisor {
 		margin-left: 20px;
     }
+}
+
+.labelHorarioFijo{
+	margin-bottom: -30px!important;
+	margin-top: 20px;
+}
+
+.checkboxHorarioFijo{
+	margin-top: 0px !important;
+	float: right;
+}
+
+.labelTeletrabajo{
+	float: right;
+	margin-right: 345px;
+}
+
+.botonGenerarContrasena{
+	margin-bottom: 0!important;
+}
+
+table.dataTable thead {
+	-webkit-box-sizing: content-box;
+	box-sizing: content-box;
+	background-color: #004277;
+	color: white;
 }

@@ -303,12 +303,26 @@ $('#selectMotivo').change(function (){
         $("#divTotalDiasDisponibles").attr('style','display:block') &&
         $("#divDiasSolicitadosVacaciones").attr('style','display:block') &&
         $("#divSaldoDisfrutarVacaciones").attr('style','display:block');
-    else if($('#selectMotivo').val() == 'Permiso sin goce de salario')
-        $("#selectOpcionesPermisosSinSalario").attr('style','display:block') &&
-        $("#diaFinal").attr('disabled','disabled');
+    else if($('#selectMotivo').val() == 'Permiso sin goce de salario'){
+        $("#selectOpcionesPermisosSinSalario").attr('style','display:block');
+        if($("#selectPermisosSinSalario").val().split(';')[1] !== "1"){
+            $("#diaFinal").attr('readonly','true');
+        }else{
+            $("#diaFinal").removeAttr('readonly');
+        }
+    }
+
     if($('#selectMotivo').val() !== 'Permiso sin goce de salario')
         $("#selectOpcionesPermisosSinSalario").attr('style','display:none') &&
         $("#diaFinal").attr('disabled',false);
+});
+
+$('#selectPermisosSinSalario').change(function (){
+    if($("#selectPermisosSinSalario").val().split(';')[1] !== "1"){
+        $("#diaFinal").attr('readonly','true');
+    }else{
+        $("#diaFinal").removeAttr('readonly');
+    }
 });
 
 $('#selectDerechoDisfrutar').change(function (){
@@ -347,7 +361,6 @@ $('#selectMotivoJust').change(function (){
 
 //Si nos desconectamos, muestra el log y cambia el mensaje.
 socket.on('disconnect', function () {
-    //console.log('Desconectado!');
 });
 
 $('#btn-marca').click(function(){

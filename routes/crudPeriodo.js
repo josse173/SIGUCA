@@ -29,8 +29,7 @@ exports.cantidadVacacionesPorUsuario = function(id, cb){
         var fechaIngreso = user.fechaIngreso;
         var fechaParse2=moment.unix(fechaIngreso).format("DD/MM/YYYY");
         var diaDeHoy = moment().format("DD/MM/YYYY");
-        console.log(diaDeHoy);
-        console.log(fechaParse2);
+
         var periodos;
         var diasVacaciones;
         if(periodos<= 250){
@@ -57,7 +56,6 @@ exports.vacacionesAcumuladas = function(id, cb){
 
 exports.actualizarPeriodo = function(req,res){
     var ids = req.params.id;
-    console.log(ids);
     var split = ids.split(',');
     var obj={
         diasDisfrutados:req.body.diasDisfrutados
