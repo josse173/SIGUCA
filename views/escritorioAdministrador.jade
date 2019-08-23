@@ -1,7 +1,7 @@
 .col-xs-4.col-sm-offset-2.col-md-offset-3.col-lg-offset-4
     h3#labelIMEC(class="text-center")
       |#{textos[0].titulo}
-    table.footable(data-page-size="12")
+    table.footable(data-page-size="13")
       thead
         tr
           th #{textos[1].titulo}
@@ -116,6 +116,16 @@
 
             td
               form(action= '/correoRH')
+                button.btn.btn-primary(type = 'submit')
+                  i.icon-edit.icon-large
+        tr
+          td Vacaciones colectivas
+            td
+              button.btn.btn-success(type = 'submit' data-toggle="modal" data-target="#asignarVacacionesColectivas")
+                i.icon-plus.icon-large
+
+            td
+              form(action= '/vacacionesColectivas')
                 button.btn.btn-primary(type = 'submit')
                   i.icon-edit.icon-large
 

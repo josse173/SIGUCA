@@ -1558,7 +1558,6 @@ module.exports = function(app, io) {
         });
     });
 
-
     app.get('/correoRH/editCorreoRH/:id',function(req,res){
         CorreoRH.findById(req.params.id,function(err,red){
             if (err) return res.json(err);
@@ -1569,11 +1568,52 @@ module.exports = function(app, io) {
     app.post('/correoRHUpdate/:id',autentificado, crudCorreoRH.actualizarCorreoRH);
 
     /*
+   *Crud vacaciones colectivas
+    */
+
+    app.post('/asignarVacacionesColectivas',autentificado, crudCorreoRH.insertarCorreoRH);
+
+    app.get('/vacacionesColectivas',autentificado,function(req,res){
+        CorreoRH.find(function(err,correos){
+            if(err){
+                return res.jason(err);
+            }else{
+                req.user.tipo = req.session.name;
+                return res.render('vacacionesColectivas', {
+                    title: 'Administración de Vacaciones Colectivas | SIGUCA',
+                    correos:correos,
+                    usuario:req.user
+                });
+            }
+        });
+    });
+
+    app.get('/vacacionesColectivas/delete/:id', autentificado, function (req, res) {
+        log.Info('Elimina correo');
+        log.Info('Admin: ' +req.user._id);
+        log.Info('Id del correo' + req.params.id);
+        crudCorreoRH.deleteCorreoRH(req.params.id, function (err, msj) {
+            if (err) return res.json(err);
+            else res.send(msj);
+        });
+    });
+
+
+    app.get('/vacacionesColectivas/editCorreoRH/:id',function(req,res){
+        CorreoRH.findById(req.params.id,function(err,red){
+            if (err) return res.json(err);
+            else res.json(red);
+        });
+    });
+
+    app.post('/vacacionesColectivasUpdate/:id',autentificado, crudCorreoRH.actualizarCorreoRH);
+
+
+    /*
     *  Crud de feriados
     */
 
     app.post('/asignarFeriado',autentificado, crudFeriado.insertarFeriado);
-
 
     //Contenido
     //lista la lista de contenidos creados.
@@ -1702,8 +1742,7 @@ module.exports = function(app, io) {
         });
      });
 
-
-     app.get('/feriado/editFeriado/:id',function(req,res){
+    app.get('/feriado/editFeriado/:id',function(req,res){
         Feriado.findById(req.params.id,function(err,feriado){
             if (err) return res.json(err);
             else res.json(feriado);
