@@ -8,13 +8,13 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
 var SchemaVacacionesColectivas = new Schema({
-    fechaCreacion: {
-        type: Number,
-        default: Date.now()
-    },
     nombre: {
         type: String,
         default: ''
+    },
+    fechaCreacionEpoch: {
+        type: Number,
+        default: Date.now()
     },
     fechaInicialEpoch: {
         type: Number,
@@ -23,6 +23,10 @@ var SchemaVacacionesColectivas = new Schema({
     fechaFinalEpoch: {
         type: Number,
         default: 0
+    },
+    fechaCreacion: {
+        type: String,
+        default: ''
     },
     fechaInicial: {
         type: String,
@@ -38,4 +42,4 @@ var SchemaVacacionesColectivas = new Schema({
     }
 });
 
-module.exports = mongoose.model('Periodo', SchemaVacacionesColectivas);
+module.exports = mongoose.model('VacacionesColectiva', SchemaVacacionesColectivas);

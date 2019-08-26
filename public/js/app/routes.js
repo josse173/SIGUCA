@@ -126,6 +126,15 @@ $(document).ready(function()
         timepicker:false
     });
 
+     jQuery('#diaInicioVC').datetimepicker({
+         format:'Y-m-d',
+         timepicker:false
+     });
+     jQuery('#diaFinalVC').datetimepicker({
+         format:'Y-m-d',
+         timepicker:false
+     });
+
     jQuery('#date_range_start').datetimepicker({
         format: 'd/m/Y',
         timepicker: false
@@ -1276,6 +1285,30 @@ $('.tableRed').footable().on('click', '.redDelete', function(e) {
                  });
              }
          }).setHeader('<em> Eliminar Correo </em> ').show();
+ });
+
+ $('.tableVacacionesColectivas').footable().on('click', '.vacacionesColectivasDelete', function(e) {
+     var footable = $('.tableVacacionesColectivas').data('footable');
+     var row = $(this).parents('tr:first');
+
+     var red= $(this).val();
+     var split = red.split(',');
+     alertify.dialog('confirm')
+         .set({
+             'labels':{ok:'Eliminar', cancel:'Cancelar'},
+             'transition': 'slide',
+             'message': '¿Está seguro de eliminar esta Vacaciones Colectivas <strong>' +  split[0] + '</strong>?' ,
+             'onok': function(){
+                 $.get('/vacacionesColectivas/delete/'+split[1], function (data){
+                     if(data == 'Se elimino'){
+                         footable.removeRow(row);
+                         alertify.message('Se eliminó las Vacaciones Colectivas ' +  split[0] + ' con éxito');
+                     } else {
+                         alertify.error('No se puede eliminar las Vacaciones Colectivas <strong>' +  split[0] + '</strong>');
+                     }
+                 });
+             }
+         }).setHeader('<em> Eliminar Vacaciones Colectivas </em> ').show();
  });
 
 $("button[data-target=#editFeriado]").click( function() {

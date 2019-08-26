@@ -35,6 +35,7 @@
  var crudCorreo = require('./crudCorreo');
  var crudRed = require('./crudRed');
  var crudCorreoRH = require('./crudCorreoRH');
+ var crudVacacionesColectivas = require('./crudVacacionesColectivas');
  var crud = require('./crud');
  var util = require('../util/util');
  var ObjectId = mongoose.Types.ObjectId;
@@ -48,6 +49,7 @@ var Correo = require('../models/Correo');
 var Contenido = require('../models/Contenido');
 var Red = require('../models/Red');
 var CorreoRH = require('../models/CorreoRH');
+var VacacionesColectiva = require('../models/VacacionesColectiva');
 var Usuario = require('../models/Usuario');
 var HorarioFijo = require('../models/HorarioFijo');
 var HorarioPersonalizado = require('../models/HorarioEmpleado');
@@ -1536,7 +1538,7 @@ module.exports = function(app, io) {
     app.get('/correoRH',autentificado,function(req,res){
         CorreoRH.find(function(err,correos){
             if(err){
-                return res.jason(err);
+                return res.json(err);
             }else{
                 req.user.tipo = req.session.name;
                 return res.render('correoRH', {
@@ -1549,9 +1551,6 @@ module.exports = function(app, io) {
     });
 
     app.get('/correoRH/delete/:id', autentificado, function (req, res) {
-        log.Info('Elimina correo');
-        log.Info('Admin: ' +req.user._id);
-        log.Info('Id del correo' + req.params.id);
         crudCorreoRH.deleteCorreoRH(req.params.id, function (err, msj) {
             if (err) return res.json(err);
             else res.send(msj);
@@ -1571,28 +1570,25 @@ module.exports = function(app, io) {
    *Crud vacaciones colectivas
     */
 
-    app.post('/asignarVacacionesColectivas',autentificado, crudCorreoRH.insertarCorreoRH);
+    app.post('/asignarVacacionesColectivas',autentificado, crudVacacionesColectivas.insertarVacacionesColectivas);
 
     app.get('/vacacionesColectivas',autentificado,function(req,res){
-        CorreoRH.find(function(err,correos){
+        VacacionesColectiva.find(function(err, vacacionesColectivas){
             if(err){
-                return res.jason(err);
+                return res.json(err);
             }else{
                 req.user.tipo = req.session.name;
                 return res.render('vacacionesColectivas', {
                     title: 'Administración de Vacaciones Colectivas | SIGUCA',
-                    correos:correos,
-                    usuario:req.user
+                    vacacionesColectivas: vacacionesColectivas,
+                    usuario: req.user
                 });
             }
         });
     });
 
     app.get('/vacacionesColectivas/delete/:id', autentificado, function (req, res) {
-        log.Info('Elimina correo');
-        log.Info('Admin: ' +req.user._id);
-        log.Info('Id del correo' + req.params.id);
-        crudCorreoRH.deleteCorreoRH(req.params.id, function (err, msj) {
+        crudVacacionesColectivas.deleteVacacionesColectiva(req.params.id, function (err, msj) {
             if (err) return res.json(err);
             else res.send(msj);
         });
