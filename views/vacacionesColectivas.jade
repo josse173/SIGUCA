@@ -24,26 +24,39 @@ block content
               td #{vacacionesColectiva.fechaFinal}
               td #{vacacionesColectiva.cantidadDias}
               td
-                button.btn.btn-default(data-toggle="modal" data-target="#editCorreoRH" value=vacacionesColectiva._id)
+                button.btn.btn-default(data-toggle="modal" data-target="#editVacacionesColectivas" value=vacacionesColectiva._id)
                   i.icon-pencil.icon-large.i-success
 
               td
                 button.vacacionesColectivasDelete.btn.btn-default(value=vacacionesColectiva.nombre+','+vacacionesColectiva._id)
                   i.icon-trash.icon-large.i-danger
 
-    #editCorreoRH.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+    #editVacacionesColectivas.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
       .modal-dialog
           .modal-content
             .modal-header
               button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-              h4#myModalLabel.modal-title Actualizar Correo
+              h4#myModalLabel.modal-title Actualizar Vacaciones Colectivas
             .modal-body
-              form.formUpdateCorreoRH(action='/correoRHUpdate', method='post')#login-form.well.span4
+              form.formUpdateVacacionesColectivas(action='/vacacionesColectivasUpdate', method='post')#login-form.well.span4
                 .form-group
-                  label(for='nombre' style="float:left") Correo:
-                  input#nombreCorreoRH.form-control( type= 'email', name="nombreCorreoRH")
-
-
+                    label(for='nombreVacacionesColectiva' style="float:left") Nombre:
+                        input.form-control#nombreVacacionesColectiva( type= 'text', name="nombreVacacionesColectiva", required)
+                    br
+                    br
+                    br
+                    label(for='diaInicioVC' style="float:left") Fecha Inicio:
+                        div.input-group
+                            input.form-control#diaInicioVC( type= 'text', name="diaInicioVC", required)
+                            span.input-group-addon
+                                i.icon-calendar
+                    label(for='diaFinalVC' style="float:left") Fecha Fin:
+                        div.input-group
+                            input.form-control#diaFinalVC( type= 'text', name="diaFinalVC", required)
+                            span.input-group-addon
+                                i.icon-calendar
+                    br
+                    br
                 button.btn.btn-success(type='submit') Actualizar
                 alertify.myAlert("Browser dialogs made easy!")
                 button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar

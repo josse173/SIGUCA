@@ -1595,14 +1595,14 @@ module.exports = function(app, io) {
     });
 
 
-    app.get('/vacacionesColectivas/editCorreoRH/:id',function(req,res){
-        CorreoRH.findById(req.params.id,function(err,red){
+    app.get('/vacacionesColectivas/editVacacionesColectivas/:id',function(req,res){
+        VacacionesColectiva.findById(req.params.id,function(err,red){
             if (err) return res.json(err);
             else res.json(red);
         });
     });
 
-    app.post('/vacacionesColectivasUpdate/:id',autentificado, crudCorreoRH.actualizarCorreoRH);
+    app.post('/vacacionesColectivasUpdate/:id',autentificado, crudVacacionesColectivas.actualizarVacacionesColectiva);
 
 
     /*

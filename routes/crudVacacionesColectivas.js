@@ -30,18 +30,20 @@ exports.insertarVacacionesColectivas = function(req, res){
         res.redirect('/escritorioAdmin');
     });
 
-    function contarDias(inicio, fin) {
-        cantidad = 0;
-        while (fin.diff(inicio, ('days')) >= 0) {
-            cantidad += 1;
-            if (inicio.isoWeekday() === 6 || inicio.isoWeekday() === 7) {
-                cantidad -= 1;
-            }
-            inicio = inicio.add(1, 'days');
-        }
-        return cantidad;
-    }
+
 };
+
+function contarDias(inicio, fin) {
+    cantidad = 0;
+    while (fin.diff(inicio, ('days')) >= 0) {
+        cantidad += 1;
+        if (inicio.isoWeekday() === 6 || inicio.isoWeekday() === 7) {
+            cantidad -= 1;
+        }
+        inicio = inicio.add(1, 'days');
+    }
+    return cantidad;
+}
 
 exports.deleteVacacionesColectiva = function(id, cb){
     VacacionesColectiva.findByIdAndRemove(id,function(err,result){
@@ -54,8 +56,18 @@ exports.deleteVacacionesColectiva = function(id, cb){
 };
 
 exports.actualizarVacacionesColectiva = function(req,res){
+
+    var epochInicio = moment(req.body.diaInicioVC);
+    var epochFinal = moment(req.body.diaFinalVC);
+    var cantidadDias = contarDias(moment(req.body.diaInicioVC), moment(req.body.diaFinalVC));
+
     var obj={
-        nombre: req.body.nombre,
+        nombre: req.body.nombreVacacionesColectiva,
+        fechaInicialEpoch: epochInicio.unix(),
+        fechaFinalEpoch: epochFinal.unix(),
+        fechaInicial: epochInicio.format('DD-MM-YYYY'),
+        fechaFinal: epochFinal.format('DD-MM-YYYY'),
+        cantidadDias: cantidadDias
     };
 
     log.Info('Actualizar VacacionesColectiva');
@@ -63,7 +75,7 @@ exports.actualizarVacacionesColectiva = function(req,res){
     log.Info('Id del VacacionesColectiva' + req.params.id);
     log.Info(req.body);
 
-    VacacionesColectiva.findByIdAndUpdate(req.params.id,obj,function(err,correoRH){
+    VacacionesColectiva.findByIdAndUpdate(req.params.id, obj,function(err,respuesta){
         res.redirect('vacacionesColectivas');
     });
 };

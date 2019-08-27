@@ -1381,6 +1381,16 @@ $("button[data-target=#editRed]").click( function() {
      });
  });
 
+ $("button[data-target=#editVacacionesColectivas]").click( function() {
+     var id = $(this).val();
+     $('.formUpdateVacacionesColectivas').attr('action', '/vacacionesColectivasUpdate/'+id);
+     $.get('/vacacionesColectivas/editVacacionesColectivas/'+id, function( data ) {
+         $('#nombreVacacionesColectiva').val(data.nombre);
+         $('#diaInicioVC').val(moment.unix(data.fechaInicialEpoch).format("YYYY-MM-DD"));
+         $('#diaFinalVC').val(moment.unix(data.fechaFinalEpoch).format("YYYY-MM-DD"));
+     });
+ });
+
 $('.tableHorarioEliminar').footable().on('click','.eliminarFijo',function(e) {
     var footable = $('.tableHorarioEliminar').data('footable');
     var row = $(this).parents('tr:first');
