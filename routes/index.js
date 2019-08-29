@@ -1581,7 +1581,8 @@ module.exports = function(app, io) {
                 return res.render('vacacionesColectivas', {
                     title: 'Administración de Vacaciones Colectivas | SIGUCA',
                     vacacionesColectivas: vacacionesColectivas,
-                    usuario: req.user
+                    usuario: req.user,
+                    moment: require( 'moment' )
                 });
             }
         });

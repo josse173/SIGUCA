@@ -12,6 +12,7 @@ block content
             th Fecha Inicial
             th Fecha Final
             th Cantidad Días
+            th Estado
             th Editar
             th Eliminar
 
@@ -23,6 +24,7 @@ block content
               td #{vacacionesColectiva.fechaInicial}
               td #{vacacionesColectiva.fechaFinal}
               td #{vacacionesColectiva.cantidadDias}
+              td #{moment.unix(vacacionesColectiva.fechaFinalEpoch) > moment() ? 'Pendiente' : 'Disfrutado'}
               td
                 button.btn.btn-default(data-toggle="modal" data-target="#editVacacionesColectivas" value=vacacionesColectiva._id)
                   i.icon-pencil.icon-large.i-success

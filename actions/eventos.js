@@ -19,6 +19,7 @@ var HoraExtra = require('../models/HoraExtra');
 var PeriodoUsuario = require('../models/PeriodoUsuario');
 var Periodo = require('../models/Periodo');
 var PermisoSinSalario = require('../models/PermisoSinSalario');
+var VacacionesColectiva = require('../models/VacacionesColectiva');
 var mongoose = require('mongoose');
 var ObjectId = mongoose.Types.ObjectId;
 
@@ -264,28 +265,40 @@ module.exports = {
 
 function getInformacionRender(req, res, titulo, usuarios, departamentos, marcaQuery, justQuery, extraQuery, permisosQuery, cierreQuery, populateQuery, nombreUsuario, periodosUsuarioQuery){
 
-  var usuariosTemp = [];
+  let usuariosTemp = [];
+  let epochTime = moment();
 
   usuarios.forEach(function (usuario) {
-    PeriodoUsuario.find({usuario: usuario._id}).sort({numeroPeriodo: 1}).exec(function(error, periodos) {
-      crudUsuario.validarPeriodoUsuario(usuario, periodos);
+    VacacionesColectiva.find( { fechaInicialEpoch:{ "$gte": usuario.fechaIngreso }, fechaFinalEpoch: { "$lt": epochTime.unix()} }).exec(function(error, vacacionesColectivasResult) {
 
-      var infoPeriodo = {
-        diasDerechoDisfrutar: 0,
-        diasDisfrutados: 0,
-        diasDisponibles: 0
-      };
+      PeriodoUsuario.find({usuario: usuario._id}).sort({numeroPeriodo: 1}).exec(function(error, periodos) {
+        crudUsuario.validarPeriodoUsuario(usuario, periodos);
 
-      periodos.forEach(function (periodo) {
-        infoPeriodo.diasDerechoDisfrutar = infoPeriodo.diasDerechoDisfrutar + periodo.diasAsignados;
-        infoPeriodo.diasDisfrutados = infoPeriodo.diasDisfrutados + periodo.diasDisfrutados;
+        var infoPeriodo = {
+          diasDerechoDisfrutar: 0,
+          diasDisfrutados: 0,
+          diasDisponibles: 0
+        };
+
+        var cantidadDias = 0;
+
+        vacacionesColectivasResult.forEach(function (vacacionesColectiva) {
+          cantidadDias += vacacionesColectiva.cantidadDias;
+        });
+
+        periodos.forEach(function (periodo) {
+          infoPeriodo.diasDerechoDisfrutar = infoPeriodo.diasDerechoDisfrutar + periodo.diasAsignados;
+          infoPeriodo.diasDisfrutados = infoPeriodo.diasDisfrutados + periodo.diasDisfrutados;
+        });
+
+        infoPeriodo.diasDisponibles = infoPeriodo.diasDerechoDisfrutar-infoPeriodo.diasDisfrutados;
+        usuario.vacaciones = infoPeriodo.diasDisponibles - cantidadDias;
+
       });
-
-      infoPeriodo.diasDisponibles = infoPeriodo.diasDerechoDisfrutar-infoPeriodo.diasDisfrutados;
-      usuario.vacaciones = infoPeriodo.diasDisponibles;
-
     });
+
     usuariosTemp.push(usuario)
+
   });
 
   usuarios = usuariosTemp;
