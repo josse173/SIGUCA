@@ -594,6 +594,32 @@ block content
                 tr
                   td(colspan='8')
                     .pagination.pagination-centered.hide-if-no-paging
+
+          if(tipoReporte === 'vacacionesColectivas')
+            h3 Vacaciones Colectivas
+            table.tableContenido#opcionesTablaVacacionesColectivas
+              thead
+                tr
+                  th Nombre
+                  th Creación
+                  th Fecha Inicial
+                  th Fecha Final
+                  th Cantidad Días
+                  th Estado
+              tbody
+                each vacacionesColectiva, i in vacacionesColectivas
+                  tr
+                    td #{vacacionesColectiva.nombre}
+                    td #{vacacionesColectiva.fechaCreacion}
+                    td #{vacacionesColectiva.fechaInicial}
+                    td #{vacacionesColectiva.fechaFinal}
+                    td #{vacacionesColectiva.cantidadDias}
+                    td #{moment.unix(vacacionesColectiva.fechaFinalEpoch) > moment() ? 'Pendiente' : 'Disfrutado'}
+
+              tfoot
+                tr
+                  td(colspan='6')
+                    .pagination.pagination-centered.hide-if-no-paging
 block sigucaJS
   script(src="/js/app/reportes.js")
   script(src="/socket.io/socket.io.js")

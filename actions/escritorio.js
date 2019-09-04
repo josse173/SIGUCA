@@ -21,7 +21,7 @@ var Alerta = require('../models/Alerta');
 var PeriodoUsuario = require('../models/PeriodoUsuario');
 var HoraExtra = require('../models/HoraExtra');
 var PermisoSinSalario = require('../models/PermisoSinSalario');
-var VacacionesColectiva = require('../models/VacacionesColectiva');
+var VacacionesColectivaUsuario = require('../models/VacacionesColectivaUsuario');
 var mongoose = require('mongoose');
 var ObjectId = mongoose.Types.ObjectId;
 
@@ -85,14 +85,14 @@ module.exports = {
 																if (error) return res.json(err);
 																PeriodoUsuario.find({usuario: req.user.id}).sort({numeroPeriodo: 1}).exec(function(error, periodos){
 																	if (error) return res.json(err);
-																	VacacionesColectiva.find( { fechaInicialEpoch:{ "$gte": req.user.fechaIngreso }, fechaFinalEpoch: { "$lt": epochTime.unix()} }).exec(function(error, vacacionesColectivasResult) {
+																	VacacionesColectivaUsuario.findOne({ usuario: req.user._id }).exec(function(error, vacacionesColectivasResult) {
 																		if (error) return res.json(err);
 
 																		var cantidadDias = 0;
 
-																		vacacionesColectivasResult.forEach(function (vacacionesColectiva) {
-																			cantidadDias += vacacionesColectiva.cantidadDias;
-																		});
+																		if(vacacionesColectivasResult){
+																			cantidadDias = vacacionesColectivasResult.diasPendientes;
+																		}
 
 																		var infoPeriodo = {
 																			cargoAlosPeriodos: [],
@@ -233,14 +233,10 @@ module.exports = {
 							PeriodoUsuario.find({usuario: req.user.id}).sort({numeroPeriodo: 1}).populate('usuario').populate('periodo').exec(function(error, periodos){
 								if (error) return res.json(err);
 
-								VacacionesColectiva.find( { fechaInicialEpoch:{ "$gte": req.user.fechaIngreso }, fechaFinalEpoch: { "$lt": epochTime.unix()} }).exec(function(error, vacacionesColectivasResult) {
+								VacacionesColectivaUsuario.findOne({ usuario: req.user._id }).exec(function(error, vacacionesColectivasResult) {
 									if (error) return res.json(err);
 
-									var cantidadDias = 0;
-
-									vacacionesColectivasResult.forEach(function (vacacionesColectiva) {
-										cantidadDias += vacacionesColectiva.cantidadDias;
-									});
+									var cantidadDias = vacacionesColectivasResult.diasPendientes;
 
 									var infoPeriodo = {
 										cargoAlosPeriodos: [],
