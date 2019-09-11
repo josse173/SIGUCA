@@ -236,7 +236,11 @@ module.exports = {
 								VacacionesColectivaUsuario.findOne({ usuario: req.user._id }).exec(function(error, vacacionesColectivasResult) {
 									if (error) return res.json(err);
 
-									var cantidadDias = vacacionesColectivasResult.diasPendientes;
+									let cantidadDias = 0;
+
+									if(vacacionesColectivasResult){
+										cantidadDias = vacacionesColectivasResult.diasPendientes;
+									}
 
 									var infoPeriodo = {
 										cargoAlosPeriodos: [],

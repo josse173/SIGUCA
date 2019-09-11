@@ -283,7 +283,11 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos, marcaQu
           diasDisponibles: 0
         };
 
-        var cantidadDias =  vacacionesColectivasResult.diasPendientes;
+        let cantidadDias = 0;
+
+        if(vacacionesColectivasResult){
+          cantidadDias = vacacionesColectivasResult.diasPendientes;
+        }
 
         periodos.forEach(function (periodo) {
           infoPeriodo.diasDerechoDisfrutar = infoPeriodo.diasDerechoDisfrutar + periodo.diasAsignados;

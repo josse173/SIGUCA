@@ -288,11 +288,11 @@ block content
       br
       label Cantidad de vacaciones acumuladas: #{totalAsignados}
       br
-      label Total de vacaciones individuales solicitadas: #{(totalDisfrutado - vacacionesColectivasUsuario.diasAplicados)}
+      label Total de vacaciones individuales solicitadas: #{(totalDisfrutado - vacacionesColectivasUsuario ? vacacionesColectivasUsuario.diasAplicados : 0)}
       br
-      label Total de vacaciones colectivas disfrutas: #{vacacionesColectivasUsuario.cantidadDias}
+      label Total de vacaciones colectivas disfrutas: #{vacacionesColectivasUsuario ? vacacionesColectivasUsuario.cantidadDias : 0}
       br
-      label Días de vacaciones disponibles: #{totalAsignados-(vacacionesColectivasUsuario.diasPendientes + totalDisfrutado)}
+      label Días de vacaciones disponibles: #{totalAsignados-((vacacionesColectivasUsuario ? vacacionesColectivasUsuario.diasPendientes : 0) + totalDisfrutado)}
   #editJust.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
       .modal-dialog
         .modal-content

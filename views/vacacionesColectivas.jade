@@ -32,7 +32,10 @@ block content
               td
                 button.vacacionesColectivasDelete.btn.btn-default(value=vacacionesColectiva.nombre+','+vacacionesColectiva._id)
                   i.icon-trash.icon-large.i-danger
-
+        tfoot
+            tr
+                td(colspan='8')
+                    .pagination.pagination-centered.hide-if-no-paging
     #editVacacionesColectivas.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
       .modal-dialog
           .modal-content
