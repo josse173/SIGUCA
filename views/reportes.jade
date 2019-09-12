@@ -607,7 +607,7 @@ block content
                   th Cantidad Días
                   th Estado
               tbody
-                each vacacionesColectiva, i in vacacionesColectivas
+                for vacacionesColectiva in vacacionesColectivas
                   tr
                     td #{vacacionesColectiva.nombre}
                     td #{vacacionesColectiva.fechaCreacion}
@@ -615,7 +615,6 @@ block content
                     td #{vacacionesColectiva.fechaFinal}
                     td #{vacacionesColectiva.cantidadDias}
                     td #{moment.unix(vacacionesColectiva.fechaFinalEpoch) > moment() ? 'Pendiente' : 'Disfrutado'}
-
               tfoot
                 tr
                   td(colspan='6')

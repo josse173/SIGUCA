@@ -1,10 +1,17 @@
 extends layout
 
 block content
+  script(src="/js/app/vacacionesColectivas.js")
   .container
     br
     h3 Lista de Vacaciones Colectivas
-    table.footable.tableVacacionesColectivas
+    select(id="filter", name="filter", onchange='onChange(this.value);')
+        option(value="Pendiente", selected=(filtro === 'Pendiente')) Pendiente
+        option(value="Disfrutado", selected=(filtro === 'Disfrutado')) Disfrutado
+        option(value="Todos", selected=(filtro === 'Todos')) Todos
+    br
+    br
+    table.footable.tableVacacionesColectivas(data-page-size="20")
         thead
           tr
             th Nombre
@@ -17,24 +24,27 @@ block content
             th Eliminar
 
         tbody
-          each vacacionesColectiva, i in vacacionesColectivas
-            tr
-              td #{vacacionesColectiva.nombre}
-              td #{vacacionesColectiva.fechaCreacion}
-              td #{vacacionesColectiva.fechaInicial}
-              td #{vacacionesColectiva.fechaFinal}
-              td #{vacacionesColectiva.cantidadDias}
-              td #{Number(vacacionesColectiva.fechaFinalEpoch) > (moment().unix()) ? 'Pendiente' : 'Disfrutado'}
-              td
-                button.btn.btn-default(data-toggle="modal" data-target="#editVacacionesColectivas" value=vacacionesColectiva._id)
-                  i.icon-pencil.icon-large.i-success
+          each vacacionesColectiva in vacacionesColectivas
+            -var estado = Number(vacacionesColectiva.fechaFinalEpoch) > (moment().unix()) ? 'Pendiente' : 'Disfrutado';
+                if(filtro === 'Todos' || estado === filtro)
+                    tr
+                      td #{vacacionesColectiva.nombre}
+                      td #{vacacionesColectiva.fechaCreacion}
+                      td #{vacacionesColectiva.fechaInicial}
+                      td #{vacacionesColectiva.fechaFinal}
+                      td #{vacacionesColectiva.cantidadDias}
+                      td #{estado}
+                      if(estado === 'Pendiente')
+                          td
+                            button.btn.btn-default(data-toggle="modal" data-target="#editVacacionesColectivas" value=vacacionesColectiva._id)
+                              i.icon-pencil.icon-large.i-success
 
-              td
-                button.vacacionesColectivasDelete.btn.btn-default(value=vacacionesColectiva.nombre+','+vacacionesColectiva._id)
-                  i.icon-trash.icon-large.i-danger
+                          td
+                            button.vacacionesColectivasDelete.btn.btn-default(value=vacacionesColectiva.nombre+','+vacacionesColectiva._id)
+                              i.icon-trash.icon-large.i-danger
         tfoot
             tr
-                td(colspan='8')
+                td(colspan='9')
                     .pagination.pagination-centered.hide-if-no-paging
     #editVacacionesColectivas.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
       .modal-dialog
@@ -67,3 +77,4 @@ block content
                 button.btn.btn-danger(type='button', data-dismiss='modal') Cancelar
 
 block sigucaJS
+script(type='text/javascript' src="../public/js/app/vacacionesColectivas.js")

@@ -40,6 +40,7 @@ module.exports = {
       var queryEpoch = filtrarPorFecha(req);
       var titulo = getTitulo(req.route.path.substring(0, 9));
       var justQuery = {};
+      var vacacionesColectivasQuery = {};
       var extraQuery = {};
       var permisosQuery = { tipoSolicitudes:'Permisos' };
       var marcaQuery = {};
@@ -56,7 +57,7 @@ module.exports = {
       }
 
       if(JSON.stringify(queryEpoch) !== JSON.stringify({})){
-        cierreQuery.epoch = marcaQuery.epoch = justQuery.fechaCreada = extraQuery.fechaCreada = permisosQuery.fechaCreada =  queryEpoch;
+        cierreQuery.epoch = marcaQuery.epoch = justQuery.fechaCreada = extraQuery.fechaCreada = permisosQuery.fechaCreada = vacacionesColectivasQuery.fechaInicialEpoch =  queryEpoch;
       }
 
       if(usuarioId && usuarioId !== 'todos'){
@@ -79,7 +80,7 @@ module.exports = {
               var queryUsers = {"$in":util.getIdsList(usuarios)};
               justQuery.usuario = extraQuery.usuario = permisosQuery.usuario = marcaQuery.usuario = queryUsers;
             }
-            getInformacionRender(req, res, titulo, usuarios, departamentos, marcaQuery, justQuery, extraQuery, permisosQuery, cierreQuery, populateQuery, ((!err && usuario) ? (usuario.apellido1+" "+usuario.apellido2+", "+usuario.nombre) : null), periodosUsuarioQuery);
+            getInformacionRender(req, res, titulo, usuarios, departamentos, marcaQuery, justQuery, extraQuery, permisosQuery, cierreQuery, populateQuery, ((!err && usuario) ? (usuario.apellido1+" "+usuario.apellido2+", "+usuario.nombre) : null), periodosUsuarioQuery, vacacionesColectivasQuery);
           });
 
         }else{
@@ -88,7 +89,7 @@ module.exports = {
                 var queryUsers = {"$in":util.getIdsList(usuarios)};
                 justQuery.usuario = extraQuery.usuario = permisosQuery.usuario = marcaQuery.usuario = queryUsers;
               }
-              getInformacionRender(req, res, titulo, usuarios, departamentos, marcaQuery, justQuery, extraQuery, permisosQuery, cierreQuery, populateQuery, ((!err && usuario) ? (usuario.apellido1+" "+usuario.apellido2+", "+usuario.nombre) : null), periodosUsuarioQuery);
+              getInformacionRender(req, res, titulo, usuarios, departamentos, marcaQuery, justQuery, extraQuery, permisosQuery, cierreQuery, populateQuery, ((!err && usuario) ? (usuario.apellido1+" "+usuario.apellido2+", "+usuario.nombre) : null), periodosUsuarioQuery, vacacionesColectivasQuery);
             });
         }
       });
@@ -266,7 +267,7 @@ module.exports = {
   }
 };
 
-function getInformacionRender(req, res, titulo, usuarios, departamentos, marcaQuery, justQuery, extraQuery, permisosQuery, cierreQuery, populateQuery, nombreUsuario, periodosUsuarioQuery){
+function getInformacionRender(req, res, titulo, usuarios, departamentos, marcaQuery, justQuery, extraQuery, permisosQuery, cierreQuery, populateQuery, nombreUsuario, periodosUsuarioQuery, vacacionesColectivasQuery){
 
   let usuariosTemp = [];
   let epochTime = moment();
@@ -312,7 +313,7 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos, marcaQu
         PermisoSinSalario.find().sort({numero: 1}).exec(function(error, permisosSinSalario) {
           PeriodoUsuario.find().populate('usuario').sort({numeroPeriodo: 1}).exec(function(error, periodos) {
             if (error) return res.json(err);
-            VacacionesColectiva.find().sort({fechaCreacionEpoch: 1}).exec(function(error, vacacionesColectivas) {
+            VacacionesColectiva.find(vacacionesColectivasQuery).sort({'fechaInicialEpoch': -1}).exec(function(error, vacacionesColectivas) {
               if (error) return res.json(err);
 
               if(permisos && permisos.length > 0 ){

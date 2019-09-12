@@ -1572,8 +1572,8 @@ module.exports = function(app, io) {
 
     app.post('/asignarVacacionesColectivas',autentificado, crudVacacionesColectivas.insertarVacacionesColectivas);
 
-    app.get('/vacacionesColectivas',autentificado,function(req,res){
-        VacacionesColectiva.find(function(err, vacacionesColectivas){
+    app.get('/vacacionesColectivas/:filtro',autentificado,function(req,res){
+        VacacionesColectiva.find().sort({ fechaInicialEpoch:-1 }).exec(function(err, vacacionesColectivas){
             if(err){
                 return res.json(err);
             }else{
@@ -1582,7 +1582,8 @@ module.exports = function(app, io) {
                     title: 'Administración de Vacaciones Colectivas | SIGUCA',
                     vacacionesColectivas: vacacionesColectivas,
                     usuario: req.user,
-                    moment: require( 'moment' )
+                    moment: require('moment'),
+                    filtro: req.params.filtro
                 });
             }
         });
