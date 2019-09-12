@@ -288,7 +288,7 @@ block content
       br
       label Cantidad de vacaciones acumuladas: #{totalAsignados}
       br
-      label Total de vacaciones individuales solicitadas: #{(totalDisfrutado - vacacionesColectivasUsuario ? vacacionesColectivasUsuario.diasAplicados : 0)}
+      label Total de vacaciones individuales solicitadas: #{(totalDisfrutado - (vacacionesColectivasUsuario ? vacacionesColectivasUsuario.diasAplicados : 0))}
       br
       label Total de vacaciones colectivas disfrutas: #{vacacionesColectivasUsuario ? vacacionesColectivasUsuario.cantidadDias : 0}
       br
