@@ -1,5 +1,6 @@
 var mongoose 	= require('mongoose');
-var VacacionesColectiva 		= require('../models/VacacionesColectiva');
+var VacacionesColectiva = require('../models/VacacionesColectiva');
+var Feriado = require('../models/Feriado');
 const log = require('node-file-logger');
 var moment = require('moment');
 
@@ -25,10 +26,27 @@ exports.insertarVacacionesColectivas = function(req, res){
         cantidadDias: cantidadDias
     });
 
-    vacacionesColectiva.save(function (err, result) {
-        if (err) console.log(err);
-        res.redirect('/escritorioAdmin');
+    let epochGte = epochInicio.hours(0).minutes(0).seconds(0).unix(),
+        epochLte = epochFinal.hours(23).minutes(59).seconds(59).unix();
+
+    Feriado.find({epoch: {"$gte": epochGte, "$lte": epochLte}}).exec(function(error, feriados){
+        if (error) return res.json(err);
+
+        let cantidadDeFeriados = 0;
+
+        if(feriados){
+            cantidadDeFeriados = feriados.length;
+        }
+
+        vacacionesColectiva.cantidadDias = vacacionesColectiva.cantidadDias - cantidadDeFeriados;
+
+        vacacionesColectiva.save(function (err, result) {
+            if (err) console.log(err);
+            res.redirect('/escritorioAdmin');
+        });
     });
+
+
 
 
 };
@@ -61,7 +79,7 @@ exports.actualizarVacacionesColectiva = function(req,res){
     var epochFinal = moment(req.body.diaFinalVC);
     var cantidadDias = contarDias(moment(req.body.diaInicioVC), moment(req.body.diaFinalVC));
 
-    var obj={
+    var obj = {
         nombre: req.body.nombreVacacionesColectiva,
         fechaInicialEpoch: epochInicio.unix(),
         fechaFinalEpoch: epochFinal.unix(),
@@ -75,7 +93,24 @@ exports.actualizarVacacionesColectiva = function(req,res){
     log.Info('Id del VacacionesColectiva' + req.params.id);
     log.Info(req.body);
 
-    VacacionesColectiva.findByIdAndUpdate(req.params.id, obj,function(err,respuesta){
-        res.redirect('vacacionesColectivas');
+    let epochGte = epochInicio.hours(0).minutes(0).seconds(0).unix(),
+        epochLte = epochFinal.hours(23).minutes(59).seconds(59).unix();
+
+    Feriado.find({epoch: {"$gte": epochGte, "$lte": epochLte}}).exec(function(error, feriados){
+        if (error) return res.json(err);
+
+        let cantidadDeFeriados = 0;
+
+        if(feriados){
+            cantidadDeFeriados = feriados.length;
+        }
+
+        obj.cantidadDias = obj.cantidadDias - cantidadDeFeriados;
+
+        VacacionesColectiva.findByIdAndUpdate(req.params.id, obj,function(err,respuesta){
+            res.redirect('vacacionesColectivas/Pendiente');
+        });
     });
+
+
 };

@@ -25,7 +25,7 @@ block content
 
         tbody
           each vacacionesColectiva in vacacionesColectivas
-            -var estado = Number(vacacionesColectiva.fechaFinalEpoch) > (moment().unix()) ? 'Pendiente' : 'Disfrutado';
+            -var estado = Number(vacacionesColectiva.fechaFinalEpoch) >= Number(moment().startOf('day').unix()) ? 'Pendiente' : 'Disfrutado';
                 if(filtro === 'Todos' || estado === filtro)
                     tr
                       td #{vacacionesColectiva.nombre}
