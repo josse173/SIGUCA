@@ -36,6 +36,15 @@ exports.insertarVacacionesColectivas = function(req, res){
 
         if(feriados){
             cantidadDeFeriados = feriados.length;
+
+            feriados.forEach(function (feriado) {
+
+                let fechaFeriado = moment.unix(feriado.epoch);
+
+                if (fechaFeriado.isoWeekday() === 6 || fechaFeriado.isoWeekday() === 7) {
+                    cantidadDeFeriados -= 1;
+                }
+            });
         }
 
         vacacionesColectiva.cantidadDias = vacacionesColectiva.cantidadDias - cantidadDeFeriados;
@@ -45,10 +54,6 @@ exports.insertarVacacionesColectivas = function(req, res){
             res.redirect('/escritorioAdmin');
         });
     });
-
-
-
-
 };
 
 function contarDias(inicio, fin) {
@@ -103,6 +108,16 @@ exports.actualizarVacacionesColectiva = function(req,res){
 
         if(feriados){
             cantidadDeFeriados = feriados.length;
+
+            feriados.forEach(function (feriado) {
+
+                let fechaFeriado = moment.unix(feriado.epoch);
+
+                if (fechaFeriado.isoWeekday() === 6 || fechaFeriado.isoWeekday() === 7) {
+                    cantidadDeFeriados -= 1;
+                }
+            });
+
         }
 
         obj.cantidadDias = obj.cantidadDias - cantidadDeFeriados;
