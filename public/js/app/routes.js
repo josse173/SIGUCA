@@ -735,6 +735,12 @@ $("#extraLink").click(function(){
 
          if(cantidadDias && cantidadDias > 0){
 
+             if(parseInt(diasVacacionesDisponibles) < 1){
+                 alertify.error('No cuenta con días de vacaciones disponibles');
+                 return false;
+
+             }
+
              if(parseInt(cantidadDias) > parseInt(diasVacacionesDisponibles)){
                  alertify.error('La cantidad de días solicitados supera la cantidad de Vacaciones disponibles');
                  return false;
@@ -744,6 +750,9 @@ $("#extraLink").click(function(){
                  $('.formSoli').attr('action', '/solicitud_permisos/');
                  $self.off('click').get(0).click();
              }
+         } else {
+             alertify.error('La cantidad de días solicitados debe ser mayor a cero');
+             return false;
          }
      }else {
 

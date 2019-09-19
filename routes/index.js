@@ -1517,7 +1517,6 @@ module.exports = function(app, io) {
         });
     });
 
-
     app.get('/red/editRed/:id',function(req,res){
         Red.findById(req.params.id,function(err,red){
             if (err) return res.json(err);
@@ -1525,9 +1524,7 @@ module.exports = function(app, io) {
         });
      });
 
-
     app.post('/redUpdate/:id',autentificado, crudRed.actualizarRed);
-
 
     /*
     *Crud Correos RH
@@ -1596,7 +1593,6 @@ module.exports = function(app, io) {
         });
     });
 
-
     app.get('/vacacionesColectivas/editVacacionesColectivas/:id',function(req,res){
         VacacionesColectiva.findById(req.params.id,function(err,red){
             if (err) return res.json(err);
@@ -1605,7 +1601,6 @@ module.exports = function(app, io) {
     });
 
     app.post('/vacacionesColectivasUpdate/:id',autentificado, crudVacacionesColectivas.actualizarVacacionesColectiva);
-
 
     /*
     *  Crud de feriados
@@ -2144,6 +2139,59 @@ module.exports = function(app, io) {
             });
         }
 
+    });
+
+    app.post('/contarSolicitudesEmpleado', autentificado, function (req, res) {
+
+        let diaInicio = moment(req.body.diaInicio);
+        let diaFinal = moment(req.body.diaFinal);
+
+        let cantidad = 0;
+        let cantidadVacacionesColectivas = 0;
+        let cantidadFinesDeSemana = 0;
+        let cantidadFeriados = 0;
+
+
+        VacacionesColectiva.find().exec(function (err, vacacionesColectivas) {
+            Feriado.find().exec(function (err, feriados) {
+
+                while (diaFinal.diff(diaInicio, ('days')) >= 0) {
+
+                    cantidad ++;
+
+                    if (diaInicio.isoWeekday() === 6 || diaInicio.isoWeekday() === 7) {
+                        cantidadFinesDeSemana++;
+                    } else {
+
+                        vacacionesColectivas.forEach(function (vacacionColectiva) {
+
+                            if(diaInicio.unix() >= vacacionColectiva.fechaInicialEpoch && diaInicio.unix() <= vacacionColectiva.fechaFinalEpoch){
+                                cantidadVacacionesColectivas ++;
+                            }
+                        });
+
+                        feriados.forEach(function (feriado) {
+
+                            if(diaInicio.unix() === feriado.epoch){
+                                cantidadFeriados ++;
+                            }
+                        });
+                    }
+
+                    diaInicio = diaInicio.add(1, 'days');
+                }
+
+                let cantidadADescontar = cantidad - (cantidadVacacionesColectivas + cantidadFeriados + cantidadFinesDeSemana);
+
+                let detalle = 'Total de días solicitados: ' + cantidadADescontar +
+                              '<br>Días de vacaciones colectivas: ' + cantidadVacacionesColectivas +
+                              '<br>Días Feriados: ' + cantidadFeriados +
+                              '<br>Días en fin de semana: ' + cantidadFinesDeSemana +
+                              '<br>Total de días naturales: ' + cantidad;
+
+                res.json({result:"ok", total: cantidadADescontar, detalle: detalle});
+            });
+        });
     });
 };
 
