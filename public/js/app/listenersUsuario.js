@@ -388,7 +388,7 @@ $("#diaFinal,#diaInicio").on('change', function(e){
                     error: function(){}
                 });
             } else {
-                document.getElementById("lblnumDias").innerHTML = "Días: " + 0;
+                document.getElementById("lblnumDias").innerHTML = 'Días: <b>' + 0 + '</b>';
                 document.getElementById("cantidadDias").value = 0;
             }
 
@@ -400,7 +400,7 @@ $("#diaFinal,#diaInicio").on('change', function(e){
 
             dias++;
             if(dias && dias!= null){
-                document.getElementById("lblnumDias").innerHTML = "Días: " + dias;
+                document.getElementById("lblnumDias").innerHTML = 'Días: <b>' + dias + '</b>';
                 document.getElementById("cantidadDias").value = dias;
             }
         }
@@ -434,7 +434,7 @@ $("#selectMotivo,#selectPermisosSinSalario").change(function(e){
 
                 dias++;
                 if(dias && dias!= null){
-                    document.getElementById("lblnumDias").innerHTML = "Días: " + dias;
+                    document.getElementById("lblnumDias").innerHTML = 'Días: <b>' + dias + '</b>';
                     document.getElementById("cantidadDias").value = dias;
                 }
             }
@@ -493,13 +493,13 @@ $("#selectMotivo,#selectPermisosSinSalario").change(function(e){
                         success: function(data) {
                             console.log(data.total);
                             console.log(data.detalle);
-                            document.getElementById("lblnumDias").innerHTML = data.detalle;
+                            document.getElementById("lblnumDias").innerHTML =  data.detalle;
                             document.getElementById("cantidadDias").value = data.total;
                         },
                         error: function(){}
                     });
                 } else {
-                    document.getElementById("lblnumDias").innerHTML = "Días: " + 0;
+                    document.getElementById("lblnumDias").innerHTML =  'Días: <b>' + 0 + '</b>';
                     document.getElementById("cantidadDias").value = 0;
                 }
             } else {
@@ -510,7 +510,7 @@ $("#selectMotivo,#selectPermisosSinSalario").change(function(e){
 
                 dias++;
                 if(dias && dias!= null){
-                    document.getElementById("lblnumDias").innerHTML = "Días: " + dias;
+                    document.getElementById("lblnumDias").innerHTML = 'Días: <b>' + dias + '</b>';
                     document.getElementById("cantidadDias").value = dias;
                 }
             }

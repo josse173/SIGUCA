@@ -2158,22 +2158,27 @@ module.exports = function(app, io) {
                 while (diaFinal.diff(diaInicio, ('days')) >= 0) {
 
                     cantidad ++;
+                    let sumado = false;
 
                     if (diaInicio.isoWeekday() === 6 || diaInicio.isoWeekday() === 7) {
                         cantidadFinesDeSemana++;
                     } else {
 
-                        vacacionesColectivas.forEach(function (vacacionColectiva) {
+                        feriados.forEach(function (feriado) {
 
-                            if(diaInicio.unix() >= vacacionColectiva.fechaInicialEpoch && diaInicio.unix() <= vacacionColectiva.fechaFinalEpoch){
-                                cantidadVacacionesColectivas ++;
+                            let mFeriado = moment.unix(feriado.epoch).startOf('day');
+                            if(diaInicio.unix() === mFeriado.unix()){
+                                cantidadFeriados ++;
+                                sumado = true;
                             }
                         });
 
-                        feriados.forEach(function (feriado) {
+                        vacacionesColectivas.forEach(function (vacacionColectiva) {
 
-                            if(diaInicio.unix() === feriado.epoch){
-                                cantidadFeriados ++;
+                            if(diaInicio.unix() >= vacacionColectiva.fechaInicialEpoch && diaInicio.unix() <= vacacionColectiva.fechaFinalEpoch){
+                                if(!sumado){
+                                    cantidadVacacionesColectivas ++;
+                                }
                             }
                         });
                     }
@@ -2183,11 +2188,11 @@ module.exports = function(app, io) {
 
                 let cantidadADescontar = cantidad - (cantidadVacacionesColectivas + cantidadFeriados + cantidadFinesDeSemana);
 
-                let detalle = 'Total de días solicitados: ' + cantidadADescontar +
-                              '<br>Días de vacaciones colectivas: ' + cantidadVacacionesColectivas +
-                              '<br>Días Feriados: ' + cantidadFeriados +
-                              '<br>Días en fin de semana: ' + cantidadFinesDeSemana +
-                              '<br>Total de días naturales: ' + cantidad;
+                let detalle = 'Total de días solicitados: <b>' + cantidadADescontar + '</b>' +
+                              ', Días de vacaciones colectivas: <b>' + cantidadVacacionesColectivas + '</b>' +
+                              '<br>Días Feriados: <b>' + cantidadFeriados + '</b>' +
+                              ', Días en fin de semana: <b>' + cantidadFinesDeSemana + '</b>' +
+                              ', Total de días naturales: <b>' + cantidad + '</b>' ;
 
                 res.json({result:"ok", total: cantidadADescontar, detalle: detalle});
             });
