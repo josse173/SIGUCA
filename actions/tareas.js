@@ -237,45 +237,6 @@ const CronJobOperations = {
                             cantidadDias = 1;
                         }
 
-                        DBOperations.findPeriodsByUser(user._id).then(periodos => {
-
-                            if(periodos){
-
-                                periodos.forEach(function (periodo) {
-                                    var diasDisponibles = periodo.diasAsignados - periodo.diasDisfrutados;
-
-                                    if(diasDisponibles > 0 && pendientes > 0){
-                                        if(diasDisponibles >= pendientes){
-
-                                            periodo.diasDisfrutados = periodo.diasDisfrutados + pendientes;
-                                            periodo.save(function (error, respuesta) {});
-                                            aplicados = aplicados + pendientes;
-                                            pendientes = 0;
-
-                                        } else {
-
-                                            periodo.diasDisfrutados = periodo.diasDisfrutados + diasDisponibles;
-                                            periodo.save(function (error, respuesta) {});
-                                            aplicados = aplicados + diasDisponibles;
-                                            pendientes = pendientes - diasDisponibles;
-                                        }
-                                    }
-                                });
-                            }
-
-                            if(vacacionesColectivasUsuario){
-
-                                vacacionesColectivasUsuario.cantidadDias = cantidadDias;
-                                vacacionesColectivasUsuario.diasAplicados = aplicados;
-                                vacacionesColectivasUsuario.diasPendientes =  pendientes;
-
-                                DBOperations.updateCollectiveVacationsByUser(vacacionesColectivasUsuario).then(respuesta => {}).catch(error => log.Info(error));
-
-                            }else{
-                                DBOperations.addCollectiveVacationsByUser(user._id, cantidadDias, aplicados, pendientes).then(respuesta => {}).catch(error => log.Info(error));
-                            }
-                        }).catch(error => log.Info(error));
-
                         DBOperations.findVacationsByUser(user._id).then(vacationsUser => {
 
                             if(vacationsUser && vacationsUser.length > 0){
@@ -283,28 +244,44 @@ const CronJobOperations = {
                                 vacationsUser.forEach(function (vacationUser) {
 
                                     if(collectiveVacation.fechaCreacionEpoch  > vacationUser.fechaCreada){
-
-                                        log.Info('Se ha encontrado un día de vacaciones solicitado por el empleado ' + user._id  + ' durante un día de vacaciones colectivas, se procede a devolverle el día');
-
+                                        log.Info('Se ha encontrado un día de vacaciones solicitado por el empleado ' + user._id  + ' durante un día de vacaciones colectivas creado posterior a la solicitud del empleado por lo que no se descontara el día');
+                                    } else {
                                         DBOperations.findPeriodsByUser(user._id).then(periodos => {
 
-                                            if(periodos && periodos.length > 0){
-
-                                                let periodosReverse = periodos.reverse();
-                                                let descontado = false;
+                                            if(periodos){
 
                                                 periodos.forEach(function (periodo) {
+                                                    var diasDisponibles = periodo.diasAsignados - periodo.diasDisfrutados;
 
-                                                    let periodoReverse = periodosReverse.pop();
+                                                    if(diasDisponibles > 0 && pendientes > 0){
+                                                        if(diasDisponibles >= pendientes){
 
-                                                    if(!descontado && periodoReverse.diasDisfrutados > 0){
+                                                            periodo.diasDisfrutados = periodo.diasDisfrutados + pendientes;
+                                                            periodo.save(function (error, respuesta) {});
+                                                            aplicados = aplicados + pendientes;
+                                                            pendientes = 0;
 
-                                                        periodoReverse.diasDisfrutados = periodoReverse.diasDisfrutados - 1;
-                                                        periodoReverse.save(function (error, respuesta) {});
-                                                        descontado = true;
+                                                        } else {
 
+                                                            periodo.diasDisfrutados = periodo.diasDisfrutados + diasDisponibles;
+                                                            periodo.save(function (error, respuesta) {});
+                                                            aplicados = aplicados + diasDisponibles;
+                                                            pendientes = pendientes - diasDisponibles;
+                                                        }
                                                     }
                                                 });
+                                            }
+
+                                            if(vacacionesColectivasUsuario){
+
+                                                vacacionesColectivasUsuario.cantidadDias = cantidadDias;
+                                                vacacionesColectivasUsuario.diasAplicados = aplicados;
+                                                vacacionesColectivasUsuario.diasPendientes =  pendientes;
+
+                                                DBOperations.updateCollectiveVacationsByUser(vacacionesColectivasUsuario).then(respuesta => {}).catch(error => log.Info(error));
+
+                                            }else{
+                                                DBOperations.addCollectiveVacationsByUser(user._id, cantidadDias, aplicados, pendientes).then(respuesta => {}).catch(error => log.Info(error));
                                             }
                                         }).catch(error => log.Info(error));
                                     }
