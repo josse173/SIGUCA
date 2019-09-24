@@ -20,29 +20,34 @@ const AUTOMATIC_CLOSURE = 'Cierre Automático  de Sistema';
 const DAY_NOT_WORKED = "Día no laborado.";
 const END_MARK_MISSING = "Olvidó Marcar Salida.";
 const START_MARK = "Entrada";
+const log = require('node-file-logger');
 
 const //cronTime = '* * * * *';
      cronTime = '00 50 23 * * 0-7';
 //cronTime = '50 5,11,17,23 * * *';
 module.exports = {
     cierreAutomatico: new CronJob(cronTime, function () {
+            log.Info("Ejecución del Cron: " + moment().format("YYYY-MM-DD hh:mm:ss"));
             console.log("Ejecución del Cron: " + moment().format("YYYY-MM-DD hh:mm:ss"));
             DBOperations.findHolidays().then(holidays => {
                 if (holidays.length > 0) {
+                    log.Info("No se generan cierres ni justificaciones, dia feriado");
                     console.log("No se generan cierres ni justificaciones, dia feriado");
                 } else {
                     DBOperations.findCollectiveVacations().then(collectiveVacations => {
                         if (collectiveVacations && collectiveVacations.length > 0) {
+                            log.Info("No se generan cierres ni justificaciones, día de vacaciones colectivas");
                             console.log("No se generan cierres ni justificaciones, día de vacaciones colectivas");
-                            console.log("Procesando los usuarios para descontar del disponible de vacaciones el día o generar el saldo negativo");
-                            CronJobOperations.processCollectiveVacations();
+                            log.Info("Procesando los usuarios para descontar del disponible de vacaciones el día o generar el saldo negativo");
+                            CronJobOperations.processCollectiveVacations(collectiveVacations);
                         } else {
+                            log.Info("------ Realizando cierre en la fecha '" +  new Date() + "' ------");
                             console.log("------ Realizando cierre en la fecha '" +  new Date() + "' ------");
                             CronJobOperations.executeAutomaticClosure();
                         }
-                    }).catch(error => console.log(error));
+                    }).catch(error => log.Info(error));
                 }
-            }).catch(error => console.log(error));
+            }).catch(error => log.Info(error));
             //Realizar actualización de vacaciones
             //crudUsuario.updateVacaciones();
         },
@@ -133,22 +138,23 @@ const CronJobOperations = {
                 DBOperations.findActiveRequest(user).then(request =>{
 
                     if(request && request.length > 0){
-                        console.log(`El usuario ${user._id} (${user.username}) se encuentra en un permiso por lo cual no sera tomado en cuenta en este cierre`);
+                        log.Info(`El usuario ${user._id} (${user.username}) se encuentra en un permiso por lo cual no sera tomado en cuenta en este cierre`);
                     } else {
                         user.departamentos.filter(departamento => departamento.tipo !== USER_TYPES.ADMIN && departamento.tipo !== USER_TYPES.REPORT_MANAGER && departamento.tipo !== USER_TYPES.SUPERVISOR).forEach(type =>{
                             const schedule = user.horarioEmpleado || user.horarioFijo || user.horario;
                             if (schedule) {
                                 this.checkUserMarks(user, schedule, type.tipo, day, today).catch(error => console.log(error));
                             }else {
-                                console.log(`El usuario ${user._id} (${user.username}) no tiene un horario asociado`);
+                                log.Info(`El usuario ${user._id} (${user.username}) no tiene un horario asociado`);
                             }
                         });
                     }
                 });
 
             });
-        }).catch(error => console.log("Error retrieving users", JSON.stringify(error)));
+        }).catch(error => log.Info("Error retrieving users", JSON.stringify(error)));
     },
+
     checkUserMarks(user, userSchedule, userType, currentDay, today) {
 
         const _idUser = user._id;
@@ -157,8 +163,8 @@ const CronJobOperations = {
                 const startTime = definedWorkHours.startTime !== 0 ? definedWorkHours.startTime.unix() : 0;
                 DBOperations.findWorkedHour(_idUser, startTime).then(result => {
                     if (result) {
-                        console.log(`La marca de salida ya ha sido registrada. Usuario: ${user.nombre}`);
-                        console.log(`Cambiando estado de marcas a procesadas en cierre`);
+                        log.Info(`La marca de salida ya ha sido registrada. Usuario: ${user.nombre}`);
+                        log.Info(`Cambiando estado de marcas a procesadas en cierre`);
                         definedWorkHours.marks.forEach(function (mark) {
                             DBOperations.updateMark(mark);
                         });
@@ -167,41 +173,49 @@ const CronJobOperations = {
 
                         let {canCompletePersonalClosing, absentFromWork, isAWorkableDay} = ScheduleOperations.verifyWorkedHours(userSchedule, definedWorkHours, closingHours.asHours(), currentDay);
                         if(!isAWorkableDay && marks.length >= 1)
-                            console.log(`${currentDay} no es un día laborable para el usuario; ${user.nombre}, pero tiene marcas pendientes de procesar`);
+                            log.Info(`${currentDay} no es un día laborable para el usuario; ${user.nombre}, pero tiene marcas pendientes de procesar`);
                         if (absentFromWork) {
                             DBOperations.addPersonalClosure(_idUser, userType, closingHours, true)
                                 .then(_ => {
                                     DBOperations.addIncompleteJustification(_idUser, userType, DAY_NOT_WORKED, DAY_NOT_WORKED);
-                                    console.log(`${currentDay} no laborado por el usuario: ${user.nombre}`)
-                                }).catch(error => console.log(error));
+                                    log.Info(`${currentDay} no laborado por el usuario: ${user.nombre}`)
+                                }).catch(error => log.Info(error));
                         } else {
                             if (canCompletePersonalClosing) {
                                 DBOperations.addPersonalClosure(_idUser, userType, closingHours, true, startTime).then(() => {
-                                    DBOperations.addMark(_idUser, userType, definedWorkHours.startTime).then(_ => console.log(`Marca agregada para el usuario ${user.nombre}`)).catch(error => console.log(error));
+                                    DBOperations.addMark(_idUser, userType, definedWorkHours.startTime).then(_ => log.Info(`Marca agregada para el usuario ${user.nombre}`)).catch(error => log.Info(error));
                                     if (userType !== USER_TYPES.TEACHER) {
-                                        DBOperations.addIncompleteJustification(_idUser, userType, END_MARK_MISSING, END_MARK_MISSING, definedWorkHours.startTime).then(_ => console.log(`Justificación agregada para el usuario ${user.nombre}`)).catch((error) => console.log(error));
+                                        DBOperations.addIncompleteJustification(_idUser, userType, END_MARK_MISSING, END_MARK_MISSING, definedWorkHours.startTime).then(_ => log.Info(`Justificación agregada para el usuario ${user.nombre}`)).catch((error) => log.Info(error));
                                     }
-                                    console.log(`Cierre automático procesado correctamente para el usuario: ${user.nombre}.`)
+                                    log.Info(`Cierre automático procesado correctamente para el usuario: ${user.nombre}.`)
                                 }).then(()=>{
-                                    console.log(`Cambiando estado de marcas a procesadas en cierre`);
+                                    log.Info(`Cambiando estado de marcas a procesadas en cierre`);
                                     definedWorkHours.marks.forEach(function (mark) {
                                         DBOperations.updateMark(mark);
                                     });
-                                }).catch(error => console.log(error));
+                                }).catch(error => log.Info(error));
                             } else {
-                                console.log(`No se ha encontrado una marca de salida asociada a la marca de entrada, pero no es posible agregar la marca de salida aún, debido al intervalo maximo de 12 horas. Usuario ${user.username}`);
+                                log.Info(`No se ha encontrado una marca de salida asociada a la marca de entrada, pero no es posible agregar la marca de salida aún, debido al intervalo maximo de 12 horas. Usuario ${user.username}`);
                             }
                         }
                     }
                 }).catch(error => {
-                    console.log(error);
+                    log.Info(error);
                 });
             });
         }).catch(error => {
-            console.log(error)
+            log.Info(error)
         });
     },
-    processCollectiveVacations(){
+
+    processCollectiveVacations(collectiveVacations){
+
+        if(collectiveVacations.length > 1){
+            log.Info("Se encontraron mas de una vacaciones colectiva para el mismo día, se utilizara la primera");
+        }
+
+        let collectiveVacation = collectiveVacations[0];
+
         DBOperations.findUsers().then(users => {
             users.forEach(user => {
 
@@ -255,18 +269,55 @@ const CronJobOperations = {
                                 vacacionesColectivasUsuario.diasAplicados = aplicados;
                                 vacacionesColectivasUsuario.diasPendientes =  pendientes;
 
-                                DBOperations.updateCollectiveVacationsByUser(vacacionesColectivasUsuario).then(respuesta => {}).catch(error => console.log(error));
+                                DBOperations.updateCollectiveVacationsByUser(vacacionesColectivasUsuario).then(respuesta => {}).catch(error => log.Info(error));
 
                             }else{
-                                DBOperations.addCollectiveVacationsByUser(user._id, cantidadDias, aplicados, pendientes).then(respuesta => {}).catch(error => console.log(error));
+                                DBOperations.addCollectiveVacationsByUser(user._id, cantidadDias, aplicados, pendientes).then(respuesta => {}).catch(error => log.Info(error));
                             }
-                        }).catch(error => console.log(error));
+                        }).catch(error => log.Info(error));
 
-                    }).catch(error => console.log(error));
+                        DBOperations.findVacationsByUser(user._id).then(vacationsUser => {
+
+                            if(vacationsUser && vacationsUser.length > 0){
+
+                                vacationsUser.forEach(function (vacationUser) {
+
+                                    if(collectiveVacation.fechaCreacionEpoch  > vacationUser.fechaCreada){
+
+                                        log.Info('Se ha encontrado un día de vacaciones solicitado por el empleado ' + user._id  + ' durante un día de vacaciones colectivas, se procede a devolverle el día');
+
+                                        DBOperations.findPeriodsByUser(user._id).then(periodos => {
+
+                                            if(periodos && periodos.length > 0){
+
+                                                let periodosReverse = periodos.reverse();
+                                                let descontado = false;
+
+                                                periodos.forEach(function (periodo) {
+
+                                                    let periodoReverse = periodosReverse.pop();
+
+                                                    if(!descontado && periodoReverse.diasDisfrutados > 0){
+
+                                                        periodoReverse.diasDisfrutados = periodoReverse.diasDisfrutados - 1;
+                                                        periodoReverse.save(function (error, respuesta) {});
+                                                        descontado = true;
+
+                                                    }
+                                                });
+                                            }
+                                        }).catch(error => log.Info(error));
+                                    }
+                                });
+                            }
+
+                        }).catch(error => log.Info(error));
+
+                    }).catch(error => log.Info(error));
                 });
             });
-            console.log("Proceso de vacaciones colectivas finalizado correctamente");
-        }).catch(error => console.log("Error retrieving users in findCollectiveVacations", JSON.stringify(error)));
+            log.Info("Proceso de vacaciones colectivas finalizado correctamente");
+        }).catch(error => log.Info("Error retrieving users in findCollectiveVacations", JSON.stringify(error)));
     }
 };
 
@@ -555,7 +606,7 @@ const DBOperations = {
         return new Promise((resolve, reject) => {
             const today = moment();
             if (today.isoWeekday() === 6 || today.isoWeekday() === 7) {
-                console.log("Fin de semana no se realiza la busqueda de vacaciones colectivas");
+                log.Info("Fin de semana no se realiza la busqueda de vacaciones colectivas");
                 resolve([]);
             } else {
                 const todayEpoch = moment().startOf('day').unix();
@@ -599,6 +650,14 @@ const DBOperations = {
                 .catch(error => reject(error));
         })
     },
+    findVacationsByUser(_idUser){
+        return new Promise((resolve, reject) => {
+            const today = moment().startOf('day');
+            Solicitudes.find({usuario: _idUser, motivo: 'Vacaciones', estado: 'Aceptada', $and:[{epochInicio:{'$lte':today.unix()}},{epochTermino:{'$gte':today.unix()}}]}).sort({numeroPeriodo:1})
+                .then(vacationsUser => resolve(vacationsUser))
+                .catch(error => reject(error));
+        })
+    },
     addIncompleteJustification(_idUser, _userType, reason, information, markDate){
         return new Promise((resolve, reject) => {
             const currentMoment = moment();
@@ -632,7 +691,7 @@ function crearCierre(epoch, ejecutar) {
     var nuevoCierre = new CierrePersonal(queryCierre);
     nuevoCierre.save(function (err, cierre) {
         if (err)
-            console.log("Error al crear cierre en la fecha '" + hoy + "' Mensaje: " + error);
+            log.Info("Error al crear cierre en la fecha '" + hoy + "' Mensaje: " + error);
         ejecutar(cierre._id);
     });
 }
@@ -678,7 +737,7 @@ function buscarInformacionUsuarioCierre(tipoUsuario, _idUser, epochMin, epochMax
             }
         }
     }).catch(error => {
-        console.log(error)
+        log.Info(error)
     });
 }
 
@@ -710,7 +769,7 @@ function registroHorasRegulares(tipoUsuario, _idUser, marcas, tiempoDia, horario
     agregarUsuarioACierre(tipoUsuario, _idUser, {h: tiempo.h, m: tiempo.m});
     //No importa la hora que salió, lo importante es que cumpla la jornada
     if (comparaH == 1) {
-        console.log("Jornada laborada menor que la establecida");
+        log.Info("Jornada laborada menor que la establecida");
         DBOperations.addIncompleteJustification(_idUser, tipoUsuario, "Jornada laborada menor que la establecida",
             "Horas trabajadas: " + util.horaStr(tiempo.h, tiempo.m) +
             " - Horas establecidas: " + util.horaStr(totalJornada.h, totalJornada.m));
@@ -730,6 +789,6 @@ function agregarUsuarioACierre(tipoUsuario, _idUser, tiempo) {
     var cierre = CierrePersonal(obj);
     cierre.save(function (err, cierreActualizado) {
         if (err)
-            console.log("Error al crear cierre en la fecha '" + hoy + "' => Mensaje: " + error);
+            log.Info("Error al crear cierre en la fecha '" + hoy + "' => Mensaje: " + error);
     });
 }
