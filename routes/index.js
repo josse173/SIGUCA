@@ -2188,11 +2188,11 @@ module.exports = function(app, io) {
 
                 let cantidadADescontar = cantidad - (cantidadVacacionesColectivas + cantidadFeriados + cantidadFinesDeSemana);
 
-                let detalle = 'Total de días solicitados: <b>' + cantidadADescontar + '</b>' +
-                              ', Días de vacaciones colectivas: <b>' + cantidadVacacionesColectivas + '</b>' +
-                              '<br>Días Feriados: <b>' + cantidadFeriados + '</b>' +
-                              ', Días en fin de semana: <b>' + cantidadFinesDeSemana + '</b>' +
-                              ', Total de días naturales: <b>' + cantidad + '</b>' ;
+                let detalle = 'Total de días solicitados: <b>' + cantidadADescontar + '</b>&emsp;|&emsp;' +
+                              'Días de vacaciones colectivas: <b>' + cantidadVacacionesColectivas + '</b>&emsp;|&emsp;' +
+                              '<br>Días Feriados: <b>' + cantidadFeriados + '</b>&emsp;|&emsp;' +
+                              'Días en fin de semana: <b>' + cantidadFinesDeSemana + '</b>&emsp;|&emsp;' +
+                              'Total de días naturales: <b>' + cantidad + '</b>' ;
 
                 res.json({result:"ok", total: cantidadADescontar, detalle: detalle});
             });
