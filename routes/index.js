@@ -2198,6 +2198,72 @@ module.exports = function(app, io) {
             });
         });
     });
+
+    app.post('/contarSolicitudesConMensaje', autentificado, function (req, res) {
+
+        let diaInicio = moment(req.body.diaInicio);
+        let diaFinal = moment(req.body.diaFinal);
+
+        let cantidad = 0;
+        let cantidadVacacionesColectivas = 0;
+        let cantidadFinesDeSemana = 0;
+        let cantidadFeriados = 0;
+
+
+        VacacionesColectiva.find().exec(function (err, vacacionesColectivas) {
+            Feriado.find().exec(function (err, feriados) {
+
+                while (diaFinal.diff(diaInicio, ('days')) >= 0) {
+
+                    cantidad ++;
+                    let sumado = false;
+
+                    if (diaInicio.isoWeekday() === 6 || diaInicio.isoWeekday() === 7) {
+                        cantidadFinesDeSemana++;
+                    } else {
+
+                        feriados.forEach(function (feriado) {
+
+                            let mFeriado = moment.unix(feriado.epoch).startOf('day');
+                            if(diaInicio.unix() === mFeriado.unix()){
+                                cantidadFeriados ++;
+                                sumado = true;
+                            }
+                        });
+
+                        vacacionesColectivas.forEach(function (vacacionColectiva) {
+
+                            if(diaInicio.unix() >= vacacionColectiva.fechaInicialEpoch && diaInicio.unix() <= vacacionColectiva.fechaFinalEpoch){
+                                if(!sumado){
+                                    cantidadVacacionesColectivas ++;
+                                }
+                            }
+                        });
+                    }
+
+                    diaInicio = diaInicio.add(1, 'days');
+                }
+
+                let cantidadADescontar = cantidad - (cantidadVacacionesColectivas + cantidadFeriados + cantidadFinesDeSemana);
+
+                let detalle = 'No se puede crear la solicitud, (Días solicitados: ' + cantidad + '), Detalle: ';
+
+                if(cantidadVacacionesColectivas > 0){
+                    detalle = detalle + ' Días de vacaciones colectivas: ' + cantidadVacacionesColectivas;
+                }
+
+                if(cantidadFeriados > 0){
+                    detalle = detalle + ' Días Feriados: ' + cantidadFeriados;
+                }
+
+                if(cantidadFinesDeSemana > 0){
+                    detalle = detalle + ' Días en fin de semana: ' + cantidadFinesDeSemana;
+                }
+
+                res.json({result:"ok", total: cantidadADescontar, detalle: detalle});
+            });
+        });
+    });
 };
 
 tareas_actions.cierreAutomatico.start();

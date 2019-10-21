@@ -774,8 +774,26 @@ $("#extraLink").click(function(){
                  $self.off('click').get(0).click();
              }
          } else {
-             alertify.error('La cantidad de días solicitados debe ser mayor a cero');
-             return false;
+
+             let diaInicio = document.getElementById("diaInicio").value;
+             let diaFinal = document.getElementById("diaFinal").value;
+
+             $.ajax({
+                 url: "contarSolicitudesConMensaje",
+                 type: "POST",
+                 dataType : "json",
+                 async: false,
+                 data: {diaInicio: diaInicio, diaFinal: diaFinal},
+                 success: function(data) {
+                     alertify.error(data.detalle, 15000);
+                     return false;
+                 },
+                 error: function(){
+                     alertify.error('La cantidad de días solicitados debe ser mayor a cero');
+                     return false;
+                 }
+             });
+
          }
      }else {
 
