@@ -111,20 +111,41 @@ $(document).ready(function()
         format:'Y-m-d',
         onShow:function( ct ){
             this.setOptions({
-                maxDate:jQuery('#diaFinal').val()?jQuery('#diaFinal').val():false
-            })
+                minDate:new Date()
+            });
         },
-        timepicker:false
+        timepicker:false,
+        onSelect: function() {
+            console.log('aler');
+        }
+    }).change(function(){
+        $('#diaFinal').datetimepicker('destroy');
+
+        jQuery('#diaFinal').datetimepicker({
+            format:'Y-m-d',
+            onShow:function( ct ){
+                var newDate = new Date( !jQuery('#diaInicio').val() ? false : jQuery('#diaInicio').val());
+                newDate.setDate(newDate.getDate() + 1);
+                this.setOptions({
+                    minDate: newDate
+                });
+            },
+            timepicker:false
+        });
+
     });
-    jQuery('#diaFinal').datetimepicker({
-        format:'Y-m-d',
-        onShow:function( ct ){
-            this.setOptions({
-                minDate:jQuery('#diaInicio').val()?jQuery('#diaInicio').val():false
-            })
-        },
-        timepicker:false
-    });
+
+     jQuery('#diaFinal').datetimepicker({
+         format:'Y-m-d',
+         onShow:function( ct ){
+             var newDate = new Date( !jQuery('#diaInicio').val() ? false : jQuery('#diaInicio').val());
+             newDate.setDate(newDate.getDate() + 1);
+             this.setOptions({
+                 minDate: newDate
+             });
+         },
+         timepicker:false
+     });
 
      jQuery('#diaInicioVC').datetimepicker({
          format:'Y-m-d',
@@ -252,7 +273,7 @@ $(document).ready(function()
                 timepicker:true,
                 onShow:function( ct ){
                     this.setOptions({
-                        maxDate:jQuery('#diaFinal').val()?jQuery('#diaFinal').val():false
+                        minDate:new Date()
                     })
                 }
             });
@@ -260,9 +281,11 @@ $(document).ready(function()
                 format: 'Y-m-d H:i:00',
                 timepicker:true,
                 onShow:function( ct ){
+                    var newDate = new Date( !jQuery('#diaInicio').val() ? false : jQuery('#diaInicio').val());
+                    newDate.setDate(newDate.getDate() + 1);
                     this.setOptions({
-                        minDate:jQuery('#diaInicio').val()?jQuery('#diaInicio').val():false
-                    })
+                        minDate: newDate
+                    });
                 }
             });
         }

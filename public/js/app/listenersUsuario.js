@@ -213,7 +213,6 @@ $( document ).ready(function() {
     });
 });
 
-
 $.each([".btnEntrada",".btnSalida",
     ".btnSalidaAlmuerzo",".btnEntradaAlmuerzo",
     ".btnSalidaReceso",".btnEntradaReceso"],
@@ -355,8 +354,6 @@ $("#diaFinal,#diaInicio").on('change', function(e){
         var selectPermisosSinSalario = document.getElementById("selectPermisosSinSalario");
         var fechaInicio = new Date(document.getElementById("diaInicio").value);
 
-        /*console.log(selectPermisosSinSalario[selectPermisosSinSalario.selectedIndex].value.split(';')[1]);*/
-
         if(selectMotivo.options[selectMotivo.selectedIndex].value === 'Permiso sin goce de salario'){
             if(selectPermisosSinSalario[selectPermisosSinSalario.selectedIndex].value.split(';')[1] !== '1'){
                 var cantidadMeses = Number(selectPermisosSinSalario.options[selectPermisosSinSalario.selectedIndex].value.split(';')[1]);
@@ -392,7 +389,9 @@ $("#diaFinal,#diaInicio").on('change', function(e){
                 document.getElementById("cantidadDias").value = 0;
             }
 
-        } else {
+        }
+
+        else {
             var fecha1 = new Date(document.getElementById("diaInicio").value);
             var fecha2 = new Date(document.getElementById("diaFinal").value);
             var diasDif = fecha2.getTime() - fecha1.getTime();
@@ -438,13 +437,15 @@ $("#selectMotivo,#selectPermisosSinSalario").change(function(e){
                     document.getElementById("cantidadDias").value = dias;
                 }
             }
-        } else if(selectMotivo.options[selectMotivo.selectedIndex].value === 'Salida-Visita (INS)'){
+        }
+
+        else if(selectMotivo.options[selectMotivo.selectedIndex].value === 'Salida-Visita (INS)'){
             jQuery('#diaInicio').datetimepicker({
                 format: 'Y-m-d H:i:00',
                 timepicker:true,
                 onShow:function( ct ){
                     this.setOptions({
-                        maxDate:jQuery('#diaFinal').val()?jQuery('#diaFinal').val():false
+                        minDate:new Date()
                     })
                 }
             });
@@ -452,18 +453,22 @@ $("#selectMotivo,#selectPermisosSinSalario").change(function(e){
                 format: 'Y-m-d H:i:00',
                 timepicker:true,
                 onShow:function( ct ){
+                    var newDate = new Date( !jQuery('#diaInicio').val() ? false : jQuery('#diaInicio').val());
+                    newDate.setDate(newDate.getDate() + 1);
                     this.setOptions({
-                        minDate:jQuery('#diaInicio').val()?jQuery('#diaInicio').val():false
-                    })
+                        minDate: newDate
+                    });
                 }
             });
-        }else{
+        }
+
+        else{
             jQuery('#diaInicio').datetimepicker({
                 format:'Y-m-d',
                 timepicker:false,
                 onShow:function( ct ){
                     this.setOptions({
-                        maxDate:jQuery('#diaFinal').val()?jQuery('#diaFinal').val():false
+                        minDate:new Date()
                     })
                 }
             });
@@ -471,9 +476,11 @@ $("#selectMotivo,#selectPermisosSinSalario").change(function(e){
                 format: 'Y-m-d',
                 timepicker:false,
                 onShow:function( ct ){
+                    var newDate = new Date( !jQuery('#diaInicio').val() ? false : jQuery('#diaInicio').val());
+                    newDate.setDate(newDate.getDate() + 1);
                     this.setOptions({
-                        minDate:jQuery('#diaInicio').val()?jQuery('#diaInicio').val():false
-                    })
+                        minDate: newDate
+                    });
                 }
             });
 
@@ -515,6 +522,7 @@ $("#selectMotivo,#selectPermisosSinSalario").change(function(e){
                 }
             }
         }
+
     }catch(error){
         // alert(error.message);
     }
