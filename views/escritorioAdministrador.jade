@@ -1,7 +1,7 @@
 .col-xs-4.col-sm-offset-2.col-md-offset-3.col-lg-offset-4
     h3#labelIMEC(class="text-center")
       |#{textos[0].titulo}
-    table.footable(data-page-size="12")
+    table.footable(data-page-size="13")
       thead
         tr
           th #{textos[1].titulo}
@@ -116,6 +116,16 @@
 
             td
               form(action= '/correoRH')
+                button.btn.btn-primary(type = 'submit')
+                  i.icon-edit.icon-large
+        tr
+          td Vacaciones colectivas
+            td
+              button.btn.btn-success(type = 'submit' data-toggle="modal" data-target="#asignarVacacionesColectivas")
+                i.icon-plus.icon-large
+
+            td
+              form(action= '/vacacionesColectivas/Pendiente')
                 button.btn.btn-primary(type = 'submit')
                   i.icon-edit.icon-large
 
@@ -519,6 +529,37 @@
               h4 #{textos[17].titulo}
               label(for='nombre' style="float:left") Correo:
                 input.form-control#textInput( type= 'email', name="nombreCorreoRH",required)
+              div.clearfix
+              button.btn.btn-success(type='submit') #{textos[13].titulo}
+              button.btn.btn-danger(type='button', data-dismiss='modal') #{textos[14].titulo}
+
+
+  #asignarVacacionesColectivas.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+    .modal-dialog
+      .modal-content
+        .modal-header
+          button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+          h4.modal-title Asignar Vacaciones Colectivas
+        .modal-body
+          form(action='/asignarVacacionesColectivas', method='post').well.span4
+            .form-group
+              label(for='nombreVacacionesColectiva' style="float:left") Nombre:
+                input.form-control#nombreVacacionesColectiva( type= 'text', name="nombreVacacionesColectiva", required)
+              br
+              br
+              br
+              label(for='diaInicioVC' style="float:left") Fecha Inicio:
+                div.input-group
+                  input.form-control#diaInicioVC( type= 'text', name="diaInicioVC", required)
+                  span.input-group-addon
+                    i.icon-calendar
+              label(for='diaFinalVC' style="float:left") Fecha Fin:
+                div.input-group
+                  input.form-control#diaFinalVC( type= 'text', name="diaFinalVC", required)
+                  span.input-group-addon
+                    i.icon-calendar
+              br
+              br
               div.clearfix
               button.btn.btn-success(type='submit') #{textos[13].titulo}
               button.btn.btn-danger(type='button', data-dismiss='modal') #{textos[14].titulo}

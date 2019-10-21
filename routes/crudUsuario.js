@@ -18,6 +18,7 @@ emailSIGUCA 	= 'siguca@greencore.co.cr',
 Periodo = require('../models/Periodo'),
 PeriodoUsuario = require('../models/PeriodoUsuario');
 EventosTeletrabajo = require('../models/EventosTeletrabajo');
+var VacacionesColectivasUsuario = require('../models/VacacionesColectivaUsuario');
 var config 			= require('../config');
 var enviarCorreo = require('../config/enviarCorreo');
 var ObjectID = require('mongodb').ObjectID;
@@ -780,20 +781,53 @@ exports.validarPeriodoUsuario = function (usuario, periodos) {
 
 	function crearPeriodo(fechaCreada, usuario, periodo, nombrePeriodoPadre, fechaInicio, fechaDisfrute, diasAsignados, numeroPeriodo, fechaFinal) {
 
-		var periodoUsuario = new PeriodoUsuario({
-			fechaCreada: fechaCreada,
-			usuario: usuario,
-			periodo: periodo,
-			nombrePeriodoPadre: nombrePeriodoPadre,
-			fechaInicio: fechaInicio,
-			fechaDisfrute: fechaDisfrute,
-			fechaFinal: fechaFinal.unix(),
-			diasAsignados: diasAsignados,
-			numeroPeriodo: numeroPeriodo
+		VacacionesColectivasUsuario.findOne({ usuario: usuario, }).exec(function (error, vacacionesColectivasUsuario) {
+
+			let disfrutados = 0;
+
+			if(vacacionesColectivasUsuario && vacacionesColectivasUsuario.diasPendientes > 0){
+
+				if(diasAsignados >= vacacionesColectivasUsuario.diasPendientes ){
+
+					disfrutados = vacacionesColectivasUsuario.diasPendientes;
+					vacacionesColectivasUsuario.diasPendientes = 0;
+					vacacionesColectivasUsuario.diasAplicados = vacacionesColectivasUsuario.diasAplicados + disfrutados;
+
+					vacacionesColectivasUsuario.save(function (err, respuesta) {
+						if (err) console.log(err);
+					});
+
+				} else {
+
+					disfrutados = diasAsignados;
+					vacacionesColectivasUsuario.diasPendientes = vacacionesColectivasUsuario.diasPendientes - diasAsignados;
+					vacacionesColectivasUsuario.diasAplicados = vacacionesColectivasUsuario.diasAplicados + diasAsignados;
+
+					vacacionesColectivasUsuario.save(function (err, respuesta) {
+						if (err) console.log(err);
+					});
+				}
+			}
+
+			var periodoUsuario = new PeriodoUsuario({
+				fechaCreada: fechaCreada,
+				usuario: usuario,
+				periodo: periodo,
+				nombrePeriodoPadre: nombrePeriodoPadre,
+				fechaInicio: fechaInicio,
+				fechaDisfrute: fechaDisfrute,
+				fechaFinal: fechaFinal.unix(),
+				diasAsignados: diasAsignados,
+				numeroPeriodo: numeroPeriodo,
+				diasDisfrutados: disfrutados
+			});
+			log.Info("Periodo creado para el usuario: " + usuario + " Fecha creación: " + fechaCreada + " fechaInicio: " + fechaInicio + " fechaFinal: " + fechaFinal);
+			periodoUsuario.save(function (err, respuesta) {
+				if (err) console.log(err);
+			});
+
 		});
-		log.Info("Periodo creado para el usuario: " + usuario + " Fecha creación: " + fechaCreada + " fechaInicio: " + fechaInicio + " fechaFinal: " + fechaFinal);
-		periodoUsuario.save(function (err, respuesta) {
-			if (err) console.log(err);
-		});
+
+
 	}
 };

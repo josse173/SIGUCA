@@ -252,7 +252,7 @@ block content
               td(colspan='11')
                 .pagination.pagination-centered.hide-if-no-paging
             //button.btnDescargaPdf.btn.btn-default(type='button', data-dismiss='modal')  Descargar pdf
-
+      -var totalAsignados = 0, totalDisfrutado = 0;
       if(periodos && periodos.length > 0)
         h3 Lista de Periodos
         //button.btn.btn-success#btnAgregarPeriodo(value=usuario ,type='button',data-toggle="modal" data-target="#crearPeriodo") Crear Nuevo Periodo
@@ -270,6 +270,8 @@ block content
 
           tbody
             each periodo in periodos
+              -totalAsignados += periodo.diasAsignados
+              -totalDisfrutado += periodo.diasDisfrutados
               tr
                 td #{moment.unix(periodo.fechaCreada).format("YYYY-MM-DD hh:mm:ss")}
                 td #{periodo.numeroPeriodo}
@@ -283,7 +285,8 @@ block content
             tr
               td(colspan='12')
                 .pagination.pagination-centered.hide-if-no-paging
-
+      br
+      h5 * Cantidad de vacaciones acumuladas: <b>#{totalAsignados}</b> &emsp;|&emsp; Total de vacaciones colectivas disfrutadas: <b>#{vacacionesColectivasUsuario ? vacacionesColectivasUsuario.cantidadDias : 0}</b> &emsp;|&emsp; Días de vacaciones disponibles: <b>#{totalAsignados-((vacacionesColectivasUsuario ? vacacionesColectivasUsuario.diasPendientes : 0) + totalDisfrutado)}</b>
   #editJust.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
       .modal-dialog
         .modal-content

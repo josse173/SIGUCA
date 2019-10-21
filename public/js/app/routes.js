@@ -111,20 +111,50 @@ $(document).ready(function()
         format:'Y-m-d',
         onShow:function( ct ){
             this.setOptions({
-                maxDate:jQuery('#diaFinal').val()?jQuery('#diaFinal').val():false
-            })
+                minDate:new Date()
+            });
         },
-        timepicker:false
+        timepicker:false,
+        onSelect: function() {
+            console.log('aler');
+        }
+    }).change(function(){
+        $('#diaFinal').datetimepicker('destroy');
+
+        jQuery('#diaFinal').datetimepicker({
+            format:'Y-m-d',
+            onShow:function( ct ){
+                var newDate = new Date( !jQuery('#diaInicio').val() ? false : jQuery('#diaInicio').val());
+                newDate.setDate(newDate.getDate() + 1);
+                this.setOptions({
+                    minDate: newDate
+                });
+            },
+            timepicker:false
+        });
+
     });
-    jQuery('#diaFinal').datetimepicker({
-        format:'Y-m-d',
-        onShow:function( ct ){
-            this.setOptions({
-                minDate:jQuery('#diaInicio').val()?jQuery('#diaInicio').val():false
-            })
-        },
-        timepicker:false
-    });
+
+     jQuery('#diaFinal').datetimepicker({
+         format:'Y-m-d',
+         onShow:function( ct ){
+             var newDate = new Date( !jQuery('#diaInicio').val() ? false : jQuery('#diaInicio').val());
+             newDate.setDate(newDate.getDate() + 1);
+             this.setOptions({
+                 minDate: newDate
+             });
+         },
+         timepicker:false
+     });
+
+     jQuery('#diaInicioVC').datetimepicker({
+         format:'Y-m-d',
+         timepicker:false
+     });
+     jQuery('#diaFinalVC').datetimepicker({
+         format:'Y-m-d',
+         timepicker:false
+     });
 
     jQuery('#date_range_start').datetimepicker({
         format: 'd/m/Y',
@@ -243,7 +273,7 @@ $(document).ready(function()
                 timepicker:true,
                 onShow:function( ct ){
                     this.setOptions({
-                        maxDate:jQuery('#diaFinal').val()?jQuery('#diaFinal').val():false
+                        minDate:new Date()
                     })
                 }
             });
@@ -251,9 +281,11 @@ $(document).ready(function()
                 format: 'Y-m-d H:i:00',
                 timepicker:true,
                 onShow:function( ct ){
+                    var newDate = new Date( !jQuery('#diaInicio').val() ? false : jQuery('#diaInicio').val());
+                    newDate.setDate(newDate.getDate() + 1);
                     this.setOptions({
-                        minDate:jQuery('#diaInicio').val()?jQuery('#diaInicio').val():false
-                    })
+                        minDate: newDate
+                    });
                 }
             });
         }
@@ -726,6 +758,12 @@ $("#extraLink").click(function(){
 
          if(cantidadDias && cantidadDias > 0){
 
+             if(parseInt(diasVacacionesDisponibles) < 1){
+                 alertify.error('No cuenta con días de vacaciones disponibles');
+                 return false;
+
+             }
+
              if(parseInt(cantidadDias) > parseInt(diasVacacionesDisponibles)){
                  alertify.error('La cantidad de días solicitados supera la cantidad de Vacaciones disponibles');
                  return false;
@@ -735,6 +773,27 @@ $("#extraLink").click(function(){
                  $('.formSoli').attr('action', '/solicitud_permisos/');
                  $self.off('click').get(0).click();
              }
+         } else {
+
+             let diaInicio = document.getElementById("diaInicio").value;
+             let diaFinal = document.getElementById("diaFinal").value;
+
+             $.ajax({
+                 url: "contarSolicitudesConMensaje",
+                 type: "POST",
+                 dataType : "json",
+                 async: false,
+                 data: {diaInicio: diaInicio, diaFinal: diaFinal},
+                 success: function(data) {
+                     alertify.error(data.detalle, 15);
+                     return false;
+                 },
+                 error: function(){
+                     alertify.error('La cantidad de días solicitados debe ser mayor a cero');
+                     return false;
+                 }
+             });
+
          }
      }else {
 
@@ -1278,6 +1337,30 @@ $('.tableRed').footable().on('click', '.redDelete', function(e) {
          }).setHeader('<em> Eliminar Correo </em> ').show();
  });
 
+ $('.tableVacacionesColectivas').footable().on('click', '.vacacionesColectivasDelete', function(e) {
+     var footable = $('.tableVacacionesColectivas').data('footable');
+     var row = $(this).parents('tr:first');
+
+     var red= $(this).val();
+     var split = red.split(',');
+     alertify.dialog('confirm')
+         .set({
+             'labels':{ok:'Eliminar', cancel:'Cancelar'},
+             'transition': 'slide',
+             'message': '¿Está seguro de eliminar esta Vacaciones Colectivas <strong>' +  split[0] + '</strong>?' ,
+             'onok': function(){
+                 $.get('/vacacionesColectivas/delete/'+split[1], function (data){
+                     if(data == 'Se elimino'){
+                         footable.removeRow(row);
+                         alertify.message('Se eliminó las Vacaciones Colectivas ' +  split[0] + ' con éxito');
+                     } else {
+                         alertify.error('No se puede eliminar las Vacaciones Colectivas <strong>' +  split[0] + '</strong>');
+                     }
+                 });
+             }
+         }).setHeader('<em> Eliminar Vacaciones Colectivas </em> ').show();
+ });
+
 $("button[data-target=#editFeriado]").click( function() {
     var id = $(this).val();
     $('.formUpdateFeriado').attr('action', '/feriadoUpdate/'+id);
@@ -1345,6 +1428,16 @@ $("button[data-target=#editRed]").click( function() {
      $('.formUpdateCorreoRH').attr('action', '/correoRHUpdate/'+id);
      $.get('/correoRH/editCorreoRH/'+id, function( data ) {
          $('#nombreCorreoRH').val(data.correo);
+     });
+ });
+
+ $("button[data-target=#editVacacionesColectivas]").click( function() {
+     var id = $(this).val();
+     $('.formUpdateVacacionesColectivas').attr('action', '/vacacionesColectivasUpdate/'+id);
+     $.get('/vacacionesColectivas/editVacacionesColectivas/'+id, function( data ) {
+         $('#nombreVacacionesColectiva').val(data.nombre);
+         $('#diaInicioVC').val(moment.unix(data.fechaInicialEpoch).format("YYYY-MM-DD"));
+         $('#diaFinalVC').val(moment.unix(data.fechaFinalEpoch).format("YYYY-MM-DD"));
      });
  });
 

@@ -1,3 +1,4 @@
+
 var urlHorario = 'asignarHorario';
 
 
@@ -212,7 +213,6 @@ $( document ).ready(function() {
     });
 });
 
-
 $.each([".btnEntrada",".btnSalida",
     ".btnSalidaAlmuerzo",".btnEntradaAlmuerzo",
     ".btnSalidaReceso",".btnEntradaReceso"],
@@ -346,15 +346,13 @@ $("#solicitud-extra-form").submit(function(e){
     });
 });
 
-$("#diaFinal,#diaInicio").change(function(e){
+$("#diaFinal,#diaInicio").on('change', function(e){
 
     try{
 
         var selectMotivo = document.getElementById("selectMotivo");
         var selectPermisosSinSalario = document.getElementById("selectPermisosSinSalario");
         var fechaInicio = new Date(document.getElementById("diaInicio").value);
-
-        console.log(selectPermisosSinSalario[selectPermisosSinSalario.selectedIndex].value.split(';')[1]);
 
         if(selectMotivo.options[selectMotivo.selectedIndex].value === 'Permiso sin goce de salario'){
             if(selectPermisosSinSalario[selectPermisosSinSalario.selectedIndex].value.split(';')[1] !== '1'){
@@ -365,15 +363,45 @@ $("#diaFinal,#diaInicio").change(function(e){
             }
         }
 
-        var fecha1 = new Date(document.getElementById("diaInicio").value);
-        var fecha2 = new Date(document.getElementById("diaFinal").value);
-        var diasDif = fecha2.getTime() - fecha1.getTime();
-        var dias = Math.round(diasDif/(1000 * 60 * 60 * 24));
+        if(selectMotivo.options[selectMotivo.selectedIndex].value === 'Vacaciones'){
 
-        dias++;
-        if(dias && dias!= null){
-            document.getElementById("lblnumDias").innerHTML = "Días: " + dias;
-            document.getElementById("cantidadDias").value = dias;
+            let diaInicio = document.getElementById("diaInicio").value;
+            let diaFinal = document.getElementById("diaFinal").value;
+
+            if(diaInicio && diaFinal){
+
+                $.ajax({
+                    url: "contarSolicitudesEmpleado",
+                    type: "POST",
+                    dataType : "json",
+                    async: false,
+                    data: {diaInicio: diaInicio, diaFinal: diaFinal},
+                    success: function(data) {
+                        console.log(data.total);
+                        console.log(data.detalle);
+                        document.getElementById("lblnumDias").innerHTML = data.detalle;
+                        document.getElementById("cantidadDias").value = data.total;
+                    },
+                    error: function(){}
+                });
+            } else {
+                document.getElementById("lblnumDias").innerHTML = 'Días: <b>' + 0 + '</b>';
+                document.getElementById("cantidadDias").value = 0;
+            }
+
+        }
+
+        else {
+            var fecha1 = new Date(document.getElementById("diaInicio").value);
+            var fecha2 = new Date(document.getElementById("diaFinal").value);
+            var diasDif = fecha2.getTime() - fecha1.getTime();
+            var dias = Math.round(diasDif/(1000 * 60 * 60 * 24));
+
+            dias++;
+            if(dias && dias!= null){
+                document.getElementById("lblnumDias").innerHTML = 'Días: <b>' + dias + '</b>';
+                document.getElementById("cantidadDias").value = dias;
+            }
         }
 
     }catch(error){
@@ -405,17 +433,19 @@ $("#selectMotivo,#selectPermisosSinSalario").change(function(e){
 
                 dias++;
                 if(dias && dias!= null){
-                    document.getElementById("lblnumDias").innerHTML = "Días: " + dias;
+                    document.getElementById("lblnumDias").innerHTML = 'Días: <b>' + dias + '</b>';
                     document.getElementById("cantidadDias").value = dias;
                 }
             }
-        } else if(selectMotivo.options[selectMotivo.selectedIndex].value === 'Salida-Visita (INS)'){
+        }
+
+        else if(selectMotivo.options[selectMotivo.selectedIndex].value === 'Salida-Visita (INS)'){
             jQuery('#diaInicio').datetimepicker({
                 format: 'Y-m-d H:i:00',
                 timepicker:true,
                 onShow:function( ct ){
                     this.setOptions({
-                        maxDate:jQuery('#diaFinal').val()?jQuery('#diaFinal').val():false
+                        minDate:new Date()
                     })
                 }
             });
@@ -423,18 +453,22 @@ $("#selectMotivo,#selectPermisosSinSalario").change(function(e){
                 format: 'Y-m-d H:i:00',
                 timepicker:true,
                 onShow:function( ct ){
+                    var newDate = new Date( !jQuery('#diaInicio').val() ? false : jQuery('#diaInicio').val());
+                    newDate.setDate(newDate.getDate() + 1);
                     this.setOptions({
-                        minDate:jQuery('#diaInicio').val()?jQuery('#diaInicio').val():false
-                    })
+                        minDate: newDate
+                    });
                 }
             });
-        }else{
+        }
+
+        else{
             jQuery('#diaInicio').datetimepicker({
                 format:'Y-m-d',
                 timepicker:false,
                 onShow:function( ct ){
                     this.setOptions({
-                        maxDate:jQuery('#diaFinal').val()?jQuery('#diaFinal').val():false
+                        minDate:new Date()
                     })
                 }
             });
@@ -442,12 +476,53 @@ $("#selectMotivo,#selectPermisosSinSalario").change(function(e){
                 format: 'Y-m-d',
                 timepicker:false,
                 onShow:function( ct ){
+                    var newDate = new Date( !jQuery('#diaInicio').val() ? false : jQuery('#diaInicio').val());
+                    newDate.setDate(newDate.getDate() + 1);
                     this.setOptions({
-                        minDate:jQuery('#diaInicio').val()?jQuery('#diaInicio').val():false
-                    })
+                        minDate: newDate
+                    });
                 }
             });
+
+            if(selectMotivo.options[selectMotivo.selectedIndex].value === 'Vacaciones'){
+
+                let diaInicio = document.getElementById("diaInicio").value;
+                let diaFinal = document.getElementById("diaFinal").value;
+
+                if(diaInicio && diaFinal){
+
+                    $.ajax({
+                        url: "contarSolicitudesEmpleado",
+                        type: "POST",
+                        dataType : "json",
+                        async: false,
+                        data: {diaInicio: diaInicio, diaFinal: diaFinal},
+                        success: function(data) {
+                            console.log(data.total);
+                            console.log(data.detalle);
+                            document.getElementById("lblnumDias").innerHTML =  data.detalle;
+                            document.getElementById("cantidadDias").value = data.total;
+                        },
+                        error: function(){}
+                    });
+                } else {
+                    document.getElementById("lblnumDias").innerHTML =  'Días: <b>' + 0 + '</b>';
+                    document.getElementById("cantidadDias").value = 0;
+                }
+            } else {
+                var fecha1 = new Date(document.getElementById("diaInicio").value);
+                var fecha2 = new Date(document.getElementById("diaFinal").value);
+                var diasDif = fecha2.getTime() - fecha1.getTime();
+                var dias = Math.round(diasDif/(1000 * 60 * 60 * 24));
+
+                dias++;
+                if(dias && dias!= null){
+                    document.getElementById("lblnumDias").innerHTML = 'Días: <b>' + dias + '</b>';
+                    document.getElementById("cantidadDias").value = dias;
+                }
+            }
         }
+
     }catch(error){
         // alert(error.message);
     }

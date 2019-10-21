@@ -35,6 +35,7 @@
  var crudCorreo = require('./crudCorreo');
  var crudRed = require('./crudRed');
  var crudCorreoRH = require('./crudCorreoRH');
+ var crudVacacionesColectivas = require('./crudVacacionesColectivas');
  var crud = require('./crud');
  var util = require('../util/util');
  var ObjectId = mongoose.Types.ObjectId;
@@ -48,6 +49,7 @@ var Correo = require('../models/Correo');
 var Contenido = require('../models/Contenido');
 var Red = require('../models/Red');
 var CorreoRH = require('../models/CorreoRH');
+var VacacionesColectiva = require('../models/VacacionesColectiva');
 var Usuario = require('../models/Usuario');
 var HorarioFijo = require('../models/HorarioFijo');
 var HorarioPersonalizado = require('../models/HorarioEmpleado');
@@ -1515,7 +1517,6 @@ module.exports = function(app, io) {
         });
     });
 
-
     app.get('/red/editRed/:id',function(req,res){
         Red.findById(req.params.id,function(err,red){
             if (err) return res.json(err);
@@ -1523,9 +1524,7 @@ module.exports = function(app, io) {
         });
      });
 
-
     app.post('/redUpdate/:id',autentificado, crudRed.actualizarRed);
-
 
     /*
     *Crud Correos RH
@@ -1536,7 +1535,7 @@ module.exports = function(app, io) {
     app.get('/correoRH',autentificado,function(req,res){
         CorreoRH.find(function(err,correos){
             if(err){
-                return res.jason(err);
+                return res.json(err);
             }else{
                 req.user.tipo = req.session.name;
                 return res.render('correoRH', {
@@ -1549,15 +1548,11 @@ module.exports = function(app, io) {
     });
 
     app.get('/correoRH/delete/:id', autentificado, function (req, res) {
-        log.Info('Elimina correo');
-        log.Info('Admin: ' +req.user._id);
-        log.Info('Id del correo' + req.params.id);
         crudCorreoRH.deleteCorreoRH(req.params.id, function (err, msj) {
             if (err) return res.json(err);
             else res.send(msj);
         });
     });
-
 
     app.get('/correoRH/editCorreoRH/:id',function(req,res){
         CorreoRH.findById(req.params.id,function(err,red){
@@ -1569,11 +1564,49 @@ module.exports = function(app, io) {
     app.post('/correoRHUpdate/:id',autentificado, crudCorreoRH.actualizarCorreoRH);
 
     /*
+   *Crud vacaciones colectivas
+    */
+
+    app.post('/asignarVacacionesColectivas',autentificado, crudVacacionesColectivas.insertarVacacionesColectivas);
+
+    app.get('/vacacionesColectivas/:filtro',autentificado,function(req,res){
+        VacacionesColectiva.find().sort({ fechaInicialEpoch:-1 }).exec(function(err, vacacionesColectivas){
+            if(err){
+                return res.json(err);
+            }else{
+                req.user.tipo = req.session.name;
+                return res.render('vacacionesColectivas', {
+                    title: 'Administración de Vacaciones Colectivas | SIGUCA',
+                    vacacionesColectivas: vacacionesColectivas,
+                    usuario: req.user,
+                    moment: require('moment'),
+                    filtro: req.params.filtro
+                });
+            }
+        });
+    });
+
+    app.get('/vacacionesColectivas/delete/:id', autentificado, function (req, res) {
+        crudVacacionesColectivas.deleteVacacionesColectiva(req.params.id, function (err, msj) {
+            if (err) return res.json(err);
+            else res.send(msj);
+        });
+    });
+
+    app.get('/vacacionesColectivas/editVacacionesColectivas/:id',function(req,res){
+        VacacionesColectiva.findById(req.params.id,function(err,red){
+            if (err) return res.json(err);
+            else res.json(red);
+        });
+    });
+
+    app.post('/vacacionesColectivasUpdate/:id',autentificado, crudVacacionesColectivas.actualizarVacacionesColectiva);
+
+    /*
     *  Crud de feriados
     */
 
     app.post('/asignarFeriado',autentificado, crudFeriado.insertarFeriado);
-
 
     //Contenido
     //lista la lista de contenidos creados.
@@ -1702,8 +1735,7 @@ module.exports = function(app, io) {
         });
      });
 
-
-     app.get('/feriado/editFeriado/:id',function(req,res){
+    app.get('/feriado/editFeriado/:id',function(req,res){
         Feriado.findById(req.params.id,function(err,feriado){
             if (err) return res.json(err);
             else res.json(feriado);
@@ -2107,6 +2139,130 @@ module.exports = function(app, io) {
             });
         }
 
+    });
+
+    app.post('/contarSolicitudesEmpleado', autentificado, function (req, res) {
+
+        let diaInicio = moment(req.body.diaInicio);
+        let diaFinal = moment(req.body.diaFinal);
+
+        let cantidad = 0;
+        let cantidadVacacionesColectivas = 0;
+        let cantidadFinesDeSemana = 0;
+        let cantidadFeriados = 0;
+
+
+        VacacionesColectiva.find().exec(function (err, vacacionesColectivas) {
+            Feriado.find().exec(function (err, feriados) {
+
+                while (diaFinal.diff(diaInicio, ('days')) >= 0) {
+
+                    cantidad ++;
+                    let sumado = false;
+
+                    if (diaInicio.isoWeekday() === 6 || diaInicio.isoWeekday() === 7) {
+                        cantidadFinesDeSemana++;
+                    } else {
+
+                        feriados.forEach(function (feriado) {
+
+                            let mFeriado = moment.unix(feriado.epoch).startOf('day');
+                            if(diaInicio.unix() === mFeriado.unix()){
+                                cantidadFeriados ++;
+                                sumado = true;
+                            }
+                        });
+
+                        vacacionesColectivas.forEach(function (vacacionColectiva) {
+
+                            if(diaInicio.unix() >= vacacionColectiva.fechaInicialEpoch && diaInicio.unix() <= vacacionColectiva.fechaFinalEpoch){
+                                if(!sumado){
+                                    cantidadVacacionesColectivas ++;
+                                }
+                            }
+                        });
+                    }
+
+                    diaInicio = diaInicio.add(1, 'days');
+                }
+
+                let cantidadADescontar = cantidad - (cantidadVacacionesColectivas + cantidadFeriados + cantidadFinesDeSemana);
+
+                let detalle = 'Total de días solicitados: <b>' + cantidadADescontar + '</b>&emsp;|&emsp;' +
+                              'Días de vacaciones colectivas: <b>' + cantidadVacacionesColectivas + '</b>&emsp;|&emsp;' +
+                              '<br>Días Feriados: <b>' + cantidadFeriados + '</b>&emsp;|&emsp;' +
+                              'Días en fin de semana: <b>' + cantidadFinesDeSemana + '</b>&emsp;|&emsp;' +
+                              'Total de días naturales: <b>' + cantidad + '</b>' ;
+
+                res.json({result:"ok", total: cantidadADescontar, detalle: detalle});
+            });
+        });
+    });
+
+    app.post('/contarSolicitudesConMensaje', autentificado, function (req, res) {
+
+        let diaInicio = moment(req.body.diaInicio);
+        let diaFinal = moment(req.body.diaFinal);
+
+        let cantidad = 0;
+        let cantidadVacacionesColectivas = 0;
+        let cantidadFinesDeSemana = 0;
+        let cantidadFeriados = 0;
+
+
+        VacacionesColectiva.find().exec(function (err, vacacionesColectivas) {
+            Feriado.find().exec(function (err, feriados) {
+
+                while (diaFinal.diff(diaInicio, ('days')) >= 0) {
+
+                    cantidad ++;
+                    let sumado = false;
+
+                    if (diaInicio.isoWeekday() === 6 || diaInicio.isoWeekday() === 7) {
+                        cantidadFinesDeSemana++;
+                    } else {
+
+                        feriados.forEach(function (feriado) {
+
+                            let mFeriado = moment.unix(feriado.epoch).startOf('day');
+                            if(diaInicio.unix() === mFeriado.unix()){
+                                cantidadFeriados ++;
+                                sumado = true;
+                            }
+                        });
+
+                        vacacionesColectivas.forEach(function (vacacionColectiva) {
+
+                            if(diaInicio.unix() >= vacacionColectiva.fechaInicialEpoch && diaInicio.unix() <= vacacionColectiva.fechaFinalEpoch){
+                                if(!sumado){
+                                    cantidadVacacionesColectivas ++;
+                                }
+                            }
+                        });
+                    }
+
+                    diaInicio = diaInicio.add(1, 'days');
+                }
+
+                let cantidadADescontar = cantidad - (cantidadVacacionesColectivas + cantidadFeriados + cantidadFinesDeSemana);
+
+                let detalle = 'No se puede crear la solicitud, (Días solicitados: ' + cantidad + '), Detalle: ';
+
+                if(cantidadVacacionesColectivas > 0){
+                    detalle = detalle + ' Días de vacaciones colectivas: ' + cantidadVacacionesColectivas;
+                }
+
+                if(cantidadFeriados > 0){
+                    detalle = detalle + ' Días Feriados: ' + cantidadFeriados;
+                }
+
+                if(cantidadFinesDeSemana > 0){
+                    detalle = detalle + ' Días en fin de semana: ' + cantidadFinesDeSemana;
+                }
+
+                res.json({result:"ok", total: cantidadADescontar, detalle: detalle});
+            });
+        });
     });
 };
 
