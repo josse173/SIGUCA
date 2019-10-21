@@ -785,7 +785,7 @@ $("#extraLink").click(function(){
                  async: false,
                  data: {diaInicio: diaInicio, diaFinal: diaFinal},
                  success: function(data) {
-                     alertify.error(data.detalle, 15000);
+                     alertify.error(data.detalle, 15);
                      return false;
                  },
                  error: function(){
