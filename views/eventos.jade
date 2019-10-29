@@ -287,6 +287,7 @@ block content
                 .pagination.pagination-centered.hide-if-no-paging
       br
       h5 * Cantidad de vacaciones acumuladas: <b>#{totalAsignados}</b> &emsp;|&emsp; Total de vacaciones colectivas disfrutadas: <b>#{vacacionesColectivasUsuario ? vacacionesColectivasUsuario.cantidadDias : 0}</b> &emsp;|&emsp; Días de vacaciones disponibles: <b>#{totalAsignados-((vacacionesColectivasUsuario ? vacacionesColectivasUsuario.diasPendientes : 0) + totalDisfrutado)}</b>
+      br
   #editJust.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
       .modal-dialog
         .modal-content
