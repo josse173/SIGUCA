@@ -61,6 +61,7 @@ var Configuracion = require('../models/Configuracion');
 var Alerta = require('../models/Alerta');
 var EventosTeletrabajo = require('../models/EventosTeletrabajo');
 var HoraExtra = require('../models/HoraExtra');
+var VacacionesColectivaUsuario = require('../models/VacacionesColectivaUsuario');
 const log = require('node-file-logger');
 var config 			= require('../config');
 
@@ -938,20 +939,59 @@ module.exports = function(app, io) {
     */
     app.get('/periodo/:id', autentificado, function (req, res) {
         PeriodoUsuario.find({usuario: req.params.id}).sort({numeroPeriodo: 1}).exec(function(err, periodos){
-            if(err){
+            if(err) {
                 return res.json(err);
-            }else{
-                req.user.tipo = req.session.name;
-                Usuario.findById(req.params.id, function (err, empleado) {
+            } else {
 
-                    if (err) return res.json(err);
-                    else{
-                        return res.render('periodo', {
-                            title: 'Nuevo Periodo | SIGUCA',
-                            periodo:periodos,
-                            usuario:req.params.id,
-                            nombreUsuario: empleado.nombre,
-                            moment: moment
+                VacacionesColectivaUsuario.findOne({ usuario: req.user._id }).exec(function(error, vacacionesColectivasResult) {
+
+                    if (err) {
+                        return res.json(err);
+                    } else {
+                        req.user.tipo = req.session.name;
+
+                        Usuario.findById(req.params.id, function (err, empleado) {
+
+                            if (err) {
+                                return res.json(err);
+                            } else {
+
+                                let cantidadDias = 0;
+
+                                if(vacacionesColectivasResult){
+                                    cantidadDias = vacacionesColectivasResult.diasPendientes;
+                                }
+
+                                var infoPeriodo = {
+                                    cargoAlosPeriodos: [],
+                                    diasDerechoDisfrutar: 0,
+                                    diasDisfrutados: 0,
+                                    diasDisponibles: 0
+                                };
+
+                                periodos.forEach(function (periodo) {
+                                    if(!(periodo.diasDisfrutados === periodo.diasAsignados)){
+                                        infoPeriodo.cargoAlosPeriodos.push(periodo.numeroPeriodo)
+                                    }
+                                    infoPeriodo.diasDerechoDisfrutar = infoPeriodo.diasDerechoDisfrutar + periodo.diasAsignados;
+                                    infoPeriodo.diasDisfrutados = infoPeriodo.diasDisfrutados + periodo.diasDisfrutados;
+
+                                });
+
+                                infoPeriodo.diasDisponibles = infoPeriodo.diasDerechoDisfrutar-infoPeriodo.diasDisfrutados;
+                                infoPeriodo.diasDisponibles = infoPeriodo.diasDisponibles - cantidadDias;
+                                infoPeriodo.diasDisfrutados = infoPeriodo.diasDisfrutados + cantidadDias;
+
+
+                                return res.render('periodo', {
+                                    title: 'Nuevo Periodo | SIGUCA',
+                                    periodo: periodos,
+                                    usuario: req.params.id,
+                                    nombreUsuario: empleado.nombre,
+                                    moment: moment,
+                                    infoPeriodo: infoPeriodo
+                                });
+                            }
                         });
                     }
                 });
