@@ -943,7 +943,7 @@ module.exports = function(app, io) {
                 return res.json(err);
             } else {
 
-                VacacionesColectivaUsuario.findOne({ usuario: req.user._id }).exec(function(error, vacacionesColectivasResult) {
+                VacacionesColectivaUsuario.findOne({ usuario: req.params.id }).exec(function(error, vacacionesColectivasResult) {
 
                     if (err) {
                         return res.json(err);
@@ -981,7 +981,6 @@ module.exports = function(app, io) {
                                 infoPeriodo.diasDisponibles = infoPeriodo.diasDerechoDisfrutar-infoPeriodo.diasDisfrutados;
                                 infoPeriodo.diasDisponibles = infoPeriodo.diasDisponibles - cantidadDias;
                                 infoPeriodo.diasDisfrutados = infoPeriodo.diasDisfrutados + cantidadDias;
-
 
                                 return res.render('periodo', {
                                     title: 'Nuevo Periodo | SIGUCA',
