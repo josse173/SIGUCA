@@ -710,8 +710,8 @@ $("#extraLink").click(function(){
          return false;
      } else if(val === 'Articulo 51') {
          if(inciso === 'Inciso A'){
-             if(cantidadDias > 5){
-                 alertify.error('No puede ingresar un Inciso A debido que la cantidad maxima a solicitar son 5 días');
+             if(cantidadDias > 7){
+                 alertify.error('No puede ingresar un Inciso A debido que la cantidad maxima a solicitar son 7 días');
                  return false;
              }else{
                  $('.formSoli').attr('action', '/solicitud_permisos/');
