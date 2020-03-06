@@ -23,7 +23,7 @@ const START_MARK = "Entrada";
 const log = require('node-file-logger');
 
 const //cronTime = '* * * * *';
-     cronTime = '00 50 23 * * 0-7';
+     cronTime = '00 50 23 * * 0-6';
 //cronTime = '50 5,11,17,23 * * *';
 module.exports = {
     cierreAutomatico: new CronJob(cronTime, function () {
