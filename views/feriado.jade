@@ -3,7 +3,7 @@ extends layout
 
 block content
   .container
-    
+
     br
     h3 Lista de feriados
     table.footable.tableFeriado
@@ -13,12 +13,12 @@ block content
             th Fecha
             th Editar
             th Eliminar
-            
-        tbody 
+
+        tbody
           each feriadoCurrent, i in feriado
             tr
-              td #{feriadoCurrent.nombreFeriado} 
-              td #{feriadoCurrent.epoch} 
+              td #{feriadoCurrent.nombreFeriado}
+              td #{feriadoCurrent.epoch}
               td
                 button.btn.btn-default(data-toggle="modal" data-target="#editFeriado" value=feriadoCurrent._id)
                   i.icon-pencil.icon-large.i-success
@@ -26,6 +26,11 @@ block content
               td
                 button.feriadoDelete.btn.btn-default(value=feriadoCurrent.nombreFeriado+','+feriadoCurrent._id)
                   i.icon-trash.icon-large.i-danger
+
+        tfoot
+          tr
+            td(colspan='4')
+              .pagination.pagination-centered.hide-if-no-paging
 
      #editFeriado.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
       .modal-dialog
@@ -51,4 +56,3 @@ block content
 
 
 block sigucaJS
-  
