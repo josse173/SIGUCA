@@ -119,8 +119,6 @@ module.exports = {
 
                         var supervisor = {departamentos: [1]};
 
-                        crudUsuario.validarPeriodoUsuario(req.user, periodos);
-
                         var arrayMarcas = util.eventosAjuste(marcas,supervisor,"eventosEmpl");
                         var arrayJust = util.eventosAjuste(justificaciones,supervisor,"eventosEmpl");
                         var arrayExtras = util.eventosAjuste(extras,supervisor,"eventosEmpl");
@@ -276,7 +274,6 @@ function getInformacionRender(req, res, titulo, usuarios, departamentos, marcaQu
     VacacionesColectivaUsuario.findOne( { usuario: usuario._id }).exec(function(error, vacacionesColectivasResult) {
 
       PeriodoUsuario.find({usuario: usuario._id}).sort({numeroPeriodo: 1}).exec(function(error, periodos) {
-        crudUsuario.validarPeriodoUsuario(usuario, periodos);
 
         var infoPeriodo = {
           diasDerechoDisfrutar: 0,

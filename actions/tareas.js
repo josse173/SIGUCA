@@ -11,6 +11,7 @@ var Solicitudes = require('../models/Solicitudes');
 var VacacionesColectiva = require('../models/VacacionesColectiva');
 var VacacionesColectivasUsuario = require('../models/VacacionesColectivaUsuario');
 var PeriodoUsuario = require('../models/PeriodoUsuario');
+var crudUsuario = require('../routes/crudUsuario');
 
 const WORKING_DAYS = ["Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"];
 const USER_TYPES = {ADMIN: 'Administrador', TEACHER: 'Profesor', REPORT_MANAGER: "Administrador de Reportes", SUPERVISOR: "Supervisor"};
@@ -48,8 +49,11 @@ module.exports = {
                     }).catch(error => log.Info(error));
                 }
             }).catch(error => log.Info(error));
-            //Realizar actualización de vacaciones
-            //crudUsuario.updateVacaciones();
+
+            //Realizar actualización de periodos
+            console.log("Ejecutando actualización de periodos");
+            crudUsuario.procesarPeriodos();
+            console.log("Termino el proceso de actualización de periodos");
         },
         null,
         false,

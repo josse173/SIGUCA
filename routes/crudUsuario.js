@@ -654,7 +654,7 @@ exports.updateVacaciones = function(){
 	});//Fin consulta obtiene usuarios
 };
 
-exports.validarPeriodoUsuario = function (usuario, periodos) {
+function validarPeriodoUsuario(usuario, periodos) {
 
 	var mayorPeriodo = {};
 	var fechaActual = moment().unix();
@@ -827,7 +827,18 @@ exports.validarPeriodoUsuario = function (usuario, periodos) {
 			});
 
 		});
-
-
 	}
+};
+
+exports.procesarPeriodos = function () {
+
+	Usuario.find({estado: "Activo", departamentos : { $elemMatch: { tipo: {$in: ['Empleado', 'Usuario sin acceso web']}}}}).exec(function(err, usuarios){
+
+		usuarios.forEach(function (usuario) {
+
+			PeriodoUsuario.find({usuario: usuario.id}).sort({numeroPeriodo: 1}).populate('usuario').populate('periodo').exec(function(error, periodos){
+				validarPeriodoUsuario(usuario, periodos);
+			});
+		});
+	});
 };
