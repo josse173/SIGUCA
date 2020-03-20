@@ -718,8 +718,8 @@ $("#extraLink").click(function(){
                  $self.off('click').get(0).click();
              }
          }else if(inciso === 'Inciso B'){
-             if(cantidadDias > 1){
-                 alertify.error('No puede ingresar Inciso B cantidad maxima a solicitar es 1 día');
+             if(cantidadDias > 7){
+                 alertify.error('No puede ingresar Inciso B cantidad maxima a solicitar es 7 días');
                  return false;
              }else{
                  $('.formSoli').attr('action', '/solicitud_permisos/');
