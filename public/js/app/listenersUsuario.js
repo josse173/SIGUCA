@@ -200,7 +200,7 @@ $( document ).ready(function() {
         }, 1000);
     }
     //insert IP addresses into the page
-    getIPs(function(ip){
+    /*getIPs(function(ip){
         var li = document.createElement("li");
         li.textContent = ip;
        // document.getElementById("nose").innerHTML=ip;
@@ -210,7 +210,7 @@ $( document ).ready(function() {
             }
         }
 
-    });
+    });*/
 });
 
 $.each([".btnEntrada",".btnSalida",
