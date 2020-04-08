@@ -37,17 +37,6 @@ require('./config/passport')(passport);
 var app = express();
 require('./config/express')(app, config, passport);
 
-var requestIp = require('request-ip');
-app.use(requestIp.mw());
-
-app.use(function(req, res, next){
-	let ip = String(req.clientIp);
-	ip = ip.replace("::ffff:", "");
-	console.log(ip);
-	req.app.locals.user_ip = ip;
-	next();
-});
-
 /*
 	Rutas
 */

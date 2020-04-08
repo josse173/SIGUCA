@@ -39,6 +39,7 @@
  var crud = require('./crud');
  var util = require('../util/util');
  var ObjectId = mongoose.Types.ObjectId;
+const requestIp = require('request-ip');
 
 //**********************************************
 //Modelos para el manejo de objetos de la base de datos
@@ -433,10 +434,12 @@ module.exports = function(app, io) {
     app.post('/marca', autentificado, function (req, res) {
 
         console.log('Realizando Marca.');
-        console.log('IP:');
-        console.log(req.app.locals.user_ip);
 
-        crudMarca.addMarca(req.app.locals.user_ip,req.session.name,
+        let ip = String(requestIp.getClientIp(req));
+        ip = ip.replace("::ffff:", "");
+        console.log('IP: '+ip);
+
+        crudMarca.addMarca(ip, req.session.name,
             {tipoMarca: req.body.marca, usuario: req.user.id,tipoUsuario: req.session.name},
             function(msj, msjJust){
                 res.json({result:msj, justificacion:msjJust});

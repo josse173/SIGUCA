@@ -24,6 +24,7 @@ var PermisoSinSalario = require('../models/PermisoSinSalario');
 var VacacionesColectivaUsuario = require('../models/VacacionesColectivaUsuario');
 var mongoose = require('mongoose');
 var ObjectId = mongoose.Types.ObjectId;
+const requestIp = require('request-ip');
 
 module.exports = {
 	escritorio : function (req, res) {
@@ -437,6 +438,10 @@ module.exports = {
 
     function retornarRenderEmpleado(usuario, marcas, justificaciones, textos, alertas, tiempoRespuesta, departamentos, infoPeriodos, periodos, permisosSinSalario){
 
+        let ip = String(requestIp.getClientIp(req));
+        ip = ip.replace("::ffff:", "");
+        console.log('IP: '+ip);
+
         return res.render('escritorio', {
             title: 'Escritorio Empleado | SIGUCA',
             usuario: usuario,
@@ -448,7 +453,8 @@ module.exports = {
 			departamentosUsuario: departamentos,
 			infoPeriodos: infoPeriodos,
 			periodos: periodos,
-			permisosSinSalario: permisosSinSalario
+			permisosSinSalario: permisosSinSalario,
+            user_ip: ip
         });
 
     }
