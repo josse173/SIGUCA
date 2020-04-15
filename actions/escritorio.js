@@ -176,7 +176,12 @@ module.exports = {
         }
 
         function retornaRenderSupervisor(departamentos, justificaciones, solicitudes, justCount, soliCount, todos, usuario, marcas, cierreUsuarios, contJust, textos, departamentosUsuario, infoPeriodos, permisosSinSalario) {
-            return res.render('escritorio', {
+
+			let ip = String(requestIp.getClientIp(req));
+			ip = ip.replace("::ffff:", "");
+			console.log('IP: '+ip);
+
+			return res.render('escritorio', {
                 title: 'Escritorio Supervisor | SIGUCA',
                 departamentos: departamentos,
                 justificaciones: justificaciones,
@@ -191,7 +196,8 @@ module.exports = {
                 textos: textos,
                 departamentosUsuario: departamentosUsuario,
                 infoPeriodos: infoPeriodos,
-				permisosSinSalario: permisosSinSalario
+				permisosSinSalario: permisosSinSalario,
+				user_ip: ip
             });
 
         }
