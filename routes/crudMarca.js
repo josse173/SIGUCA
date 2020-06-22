@@ -528,7 +528,6 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 
 									if(util.compararHoras(mIn.hour(), mIn.minutes(),mReal.hora,mReal.minutos)==1){
 										if( tipoUsuario != config. empleadoProfesor){
-
 											addJustIncompleta(_idUser, "Entrada tardía",
 												"Hora de entrada: "+ util.horaStr(horarioOriginal.hora, horarioOriginal.minutos)+
 												" - Hora de marca: "+ util.horaStr(mIn.hour(), mIn.minutes()),cb);
@@ -565,15 +564,23 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 							"Jueves", "Viernes", "Sabado"][today.day()];
 							var tiempoDia = horarioFijo[dia];
 
-							var horarioOriginal={minutos:parseInt(String(horarioFijo.horaEntrada).substr(3,2)),
-								hora:parseInt(String(horarioFijo.horaEntrada).substr(0,2))};
+							var hora = String(horarioFijo.horaEntrada).split(":")[0];
+							var minutos = String(horarioFijo.horaEntrada).split(":")[1];
+
+							var horarioOriginal={
+								minutos:parseInt(minutos),
+								hora:parseInt(hora)
+							};
 
 							if(tiempoDia){
 								var minutosEntrada,minutosSalida,horaEntrada,horaSalida;
-								minutosEntrada=parseInt(String(horarioFijo.horaEntrada).substr(3,2));
-								minutosSalida=parseInt(String(horarioFijo.horaSalida).substr(3,2));
-								horaEntrada=parseInt(String(horarioFijo.horaEntrada).substr(0,2));
-								horaSalida=parseInt(String(horarioFijo.horaSalida).substr(0,2));
+
+								minutosEntrada = parseInt(String(horarioFijo.horaEntrada).split(":")[1]);
+								minutosSalida = parseInt(String(horarioFijo.horaSalida).split(":")[1]);
+
+								horaEntrada = parseInt(String(horarioFijo.horaEntrada).split(":")[0]);
+								horaSalida = parseInt(String(horarioFijo.horaSalida).split(":")[0]);
+
 
 								/**
 								 * Se agrega el tiempo de grancia para la marca de entrada y de salida
@@ -619,7 +626,6 @@ function revisarMarca(tipoUsuario, _idUser, marca, cb){
 											addJustIncompleta(_idUser, "Entrada tardía",
 												"Hora de entrada: "+ util.horaStr(horarioOriginal.hora, horarioOriginal.minutos)+
 												" - Hora de marca: "+ util.horaStr(mIn.hour(), mIn.minutes()),cb);
-
 										}else{
 
 											return cb("");
@@ -734,9 +740,9 @@ function workedHourSchedule(_idUser,horarioEmpleado,mOut,cb,tipoUsuario,cantidad
 		finMinutos =moment().format();
 		finMinutos=parseInt(String(finMinutos).substr(14,2));
 
-		inicioMinutos = parseInt(tiempoEntrada.substr(3,2));
+		inicioMinutos = parseInt(tiempoEntrada.split(":")[1]);
 
-		inicioHoras = parseInt(String(tiempoEntrada).substr(0,2));
+		inicioHoras = parseInt(String(tiempoEntrada).split(":")[0]);
 
 		finHoras=moment().format();
 		finHoras = parseInt(String(finHoras).substr(11,2));
@@ -746,10 +752,10 @@ function workedHourSchedule(_idUser,horarioEmpleado,mOut,cb,tipoUsuario,cantidad
 		var transcurridoHoras = finHoras - inicioHoras;  //bloque de salida y entrada
 
 		if(tiempoSalidaReceso!=null){
-		var inicioRecesoMinutos = parseInt(String(tiempoSalidaReceso).substr(3,2));
-		var inicioRecesoHoras = parseInt(String(tiempoSalidaReceso).substr(0,2));
-		var finRecesoMinutos = parseInt(String(tiempoEntradaReceso).substr(3,2));
-		var finRecesoHoras = parseInt(String(tiempoEntradaReceso).substr(0,2));
+		var inicioRecesoMinutos = parseInt(String(tiempoSalidaReceso).split(":")[1]);
+		var inicioRecesoHoras = parseInt(String(tiempoSalidaReceso).split(":")[0]);
+		var finRecesoMinutos = parseInt(String(tiempoEntradaReceso).split(":")[1]);
+		var finRecesoHoras = parseInt(String(tiempoEntradaReceso).split(":")[0]);
 		var transcurridoRecesoMinutos = finRecesoMinutos - inicioRecesoMinutos;
 		var transcurridoRecesoHoras = finRecesoHoras - inicioRecesoHoras;//bloque para recesos
 		}else{
@@ -757,10 +763,10 @@ function workedHourSchedule(_idUser,horarioEmpleado,mOut,cb,tipoUsuario,cantidad
 			transcurridoRecesoMinutos = 0;
 		}
 		if(tiempoSalidaAlmuerzo!=null){
-		var inicioAlmuerzoMinutos = parseInt(String(tiempoSalidaAlmuerzo).substr(3,2));
-		var inicioAlmuerzoHoras = parseInt(String(tiempoSalidaAlmuerzo).substr(0,2));
-		var finAlmuerzoMinutos = parseInt(String(tiempoEntradaAlmuerzo).substr(3,2));
-		var finAlmuerzoHoras = parseInt(String(tiempoEntradaAlmuerzo).substr(0,2));
+		var inicioAlmuerzoMinutos = parseInt(String(tiempoSalidaAlmuerzo).split(":")[1]);
+		var inicioAlmuerzoHoras = parseInt(String(tiempoSalidaAlmuerzo).split(":")[0]);
+		var finAlmuerzoMinutos = parseInt(String(tiempoEntradaAlmuerzo).split(":")[1]);
+		var finAlmuerzoHoras = parseInt(String(tiempoEntradaAlmuerzo).split(":")[0]);
 		var transcurridoAlmuerzoMinutos = finAlmuerzoMinutos - inicioAlmuerzoMinutos;
 		var transcurridoAlmuerzoHoras = finAlmuerzoHoras - inicioAlmuerzoHoras;//bloque para almuerzos
 		}else{
@@ -882,9 +888,9 @@ function workedHourFix(_idUser,horaEntradaP,minutosEntradaP,horaSalidaP,minutosS
 				finMinutos =moment().format();
 				finMinutos=parseInt(String(finMinutos).substr(14,2));
 
-				inicioMinutos = parseInt(tiempoEntrada.substr(3,2));
+				inicioMinutos = parseInt(tiempoEntrada.split(":")[1]);
 
-				inicioHoras = parseInt(String(tiempoEntrada).substr(0,2));
+				inicioHoras = parseInt(String(tiempoEntrada).split(":")[0]);
 
 				finHoras=moment().format();
 				finHoras = parseInt(String(finHoras).substr(11,2));
@@ -894,10 +900,10 @@ function workedHourFix(_idUser,horaEntradaP,minutosEntradaP,horaSalidaP,minutosS
 				var transcurridoHoras = finHoras - inicioHoras;  //bloque de salida y entrada
 
 				if(tiempoSalidaReceso!=null){
-				var inicioRecesoMinutos = parseInt(String(tiempoSalidaReceso).substr(3,2));
-				var inicioRecesoHoras = parseInt(String(tiempoSalidaReceso).substr(0,2));
-				var finRecesoMinutos = parseInt(String(tiempoEntradaReceso).substr(3,2));
-				var finRecesoHoras = parseInt(String(tiempoEntradaReceso).substr(0,2));
+				var inicioRecesoMinutos = parseInt(String(tiempoSalidaReceso).split(":")[1]);
+				var inicioRecesoHoras = parseInt(String(tiempoSalidaReceso).split(":")[0]);
+				var finRecesoMinutos = parseInt(String(tiempoEntradaReceso).split(":")[1]);
+				var finRecesoHoras = parseInt(String(tiempoEntradaReceso).split(":")[0]);
 				var transcurridoRecesoMinutos = finRecesoMinutos - inicioRecesoMinutos;
 				var transcurridoRecesoHoras = finRecesoHoras - inicioRecesoHoras;//bloque para recesos
 				}else{
@@ -905,10 +911,10 @@ function workedHourFix(_idUser,horaEntradaP,minutosEntradaP,horaSalidaP,minutosS
 					transcurridoRecesoMinutos = 0;
 				}
 				if(tiempoSalidaAlmuerzo!=null){
-				var inicioAlmuerzoMinutos = parseInt(String(tiempoSalidaAlmuerzo).substr(3,2));
-				var inicioAlmuerzoHoras = parseInt(String(tiempoSalidaAlmuerzo).substr(0,2));
-				var finAlmuerzoMinutos = parseInt(String(tiempoEntradaAlmuerzo).substr(3,2));
-				var finAlmuerzoHoras = parseInt(String(tiempoEntradaAlmuerzo).substr(0,2));
+				var inicioAlmuerzoMinutos = parseInt(String(tiempoSalidaAlmuerzo).split(":")[1]);
+				var inicioAlmuerzoHoras = parseInt(String(tiempoSalidaAlmuerzo).split(":")[0]);
+				var finAlmuerzoMinutos = parseInt(String(tiempoEntradaAlmuerzo).split(":")[1]);
+				var finAlmuerzoHoras = parseInt(String(tiempoEntradaAlmuerzo).split(":")[0]);
 				var transcurridoAlmuerzoMinutos = finAlmuerzoMinutos - inicioAlmuerzoMinutos;
 				var transcurridoAlmuerzoHoras = finAlmuerzoHoras - inicioAlmuerzoHoras;//bloque para almuerzos
 				}else{
@@ -1064,9 +1070,9 @@ function workedHour(_idUser,horario, mOut, mReal,cb){
 				finMinutos =moment().format();
 				finMinutos=parseInt(String(finMinutos).substr(14,2));
 
-				inicioMinutos = parseInt(tiempoEntrada.substr(3,2));
+				inicioMinutos = parseInt(tiempoEntrada.split(":")[1]);
 
-				inicioHoras = parseInt(String(tiempoEntrada).substr(0,2));
+				inicioHoras = parseInt(String(tiempoEntrada).split(":")[0]);
 
 				finHoras=moment().format();
 				finHoras = parseInt(String(finHoras).substr(11,2));
@@ -1076,10 +1082,10 @@ function workedHour(_idUser,horario, mOut, mReal,cb){
 				var transcurridoHoras = finHoras - inicioHoras;  //bloque de salida y entrada
 
 				if(tiempoSalidaReceso!=null){
-				var inicioRecesoMinutos = parseInt(String(tiempoSalidaReceso).substr(3,2));
-				var inicioRecesoHoras = parseInt(String(tiempoSalidaReceso).substr(0,2));
-				var finRecesoMinutos = parseInt(String(tiempoEntradaReceso).substr(3,2));
-				var finRecesoHoras = parseInt(String(tiempoEntradaReceso).substr(0,2));
+				var inicioRecesoMinutos = parseInt(String(tiempoSalidaReceso).split(":")[1]);
+				var inicioRecesoHoras = parseInt(String(tiempoSalidaReceso).split(":")[0]);
+				var finRecesoMinutos = parseInt(String(tiempoEntradaReceso).split(":")[1]);
+				var finRecesoHoras = parseInt(String(tiempoEntradaReceso).split(":")[0]);
 				var transcurridoRecesoMinutos = finRecesoMinutos - inicioRecesoMinutos;
 				var transcurridoRecesoHoras = finRecesoHoras - inicioRecesoHoras;//bloque para recesos
 				}else{
@@ -1087,10 +1093,10 @@ function workedHour(_idUser,horario, mOut, mReal,cb){
 					transcurridoRecesoMinutos = 0;
 				}
 				if(tiempoSalidaAlmuerzo!=null){
-				var inicioAlmuerzoMinutos = parseInt(String(tiempoSalidaAlmuerzo).substr(3,2));
-				var inicioAlmuerzoHoras = parseInt(String(tiempoSalidaAlmuerzo).substr(0,2));
-				var finAlmuerzoMinutos = parseInt(String(tiempoEntradaAlmuerzo).substr(3,2));
-				var finAlmuerzoHoras = parseInt(String(tiempoEntradaAlmuerzo).substr(0,2));
+				var inicioAlmuerzoMinutos = parseInt(String(tiempoSalidaAlmuerzo).split(":")[1]);
+				var inicioAlmuerzoHoras = parseInt(String(tiempoSalidaAlmuerzo).split(":")[0]);
+				var finAlmuerzoMinutos = parseInt(String(tiempoEntradaAlmuerzo).split(":")[1]);
+				var finAlmuerzoHoras = parseInt(String(tiempoEntradaAlmuerzo).split(":")[0]);
 				var transcurridoAlmuerzoMinutos = finAlmuerzoMinutos - inicioAlmuerzoMinutos;
 				var transcurridoAlmuerzoHoras = finAlmuerzoHoras - inicioAlmuerzoHoras;//bloque para almuerzos
 				}else{
