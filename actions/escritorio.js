@@ -218,7 +218,25 @@ module.exports = {
 			if (error) return res.json(error);
 			PermisoSinSalario.find().sort({numero: 1}).exec(function(error, permisosSinSalario) {
 				if (error) return res.json(error);
-				Marca.find({usuario: req.user.id, procesadaEnCierre: false, tipoUsuario: req.session.name}, {_id:0, tipoMarca:1, epoch:1, dispositivo:1, red:1}).exec( function(error, marcas) {
+				const currentDate = moment().format('L').split("/");
+				const year = Number(currentDate[2]), month = currentDate[0] - 1, date = Number(currentDate[1]);
+
+				const epochGte = moment({
+					year: year,
+					month: month,
+					hour: 0,
+					minutes: 0,
+					seconds: 0
+				}).date(date);
+
+				const epochLte = moment({
+					year: year,
+					month: month,
+					hour: 23,
+					minutes: 59,
+					seconds: 59}).date(date);
+
+				Marca.find({usuario: req.user.id, procesadaEnCierre: false, tipoUsuario: req.session.name, epoch: {"$gte": epochGte.unix(), "$lte": epochLte.unix()}}, {_id:0, tipoMarca:1, epoch:1, dispositivo:1, red:1}).exec( function(error, marcas) {
 					if (error) return res.json(error);
 					Justificaciones.find({usuario: req.user.id, estado:'Incompleto', tipoUsuario: req.session.name}).exec(function(error, justificaciones) {
 						if (error) return res.json(error);
