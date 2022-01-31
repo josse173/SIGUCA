@@ -44,6 +44,18 @@ Install
   -  Open the SIGUCA folder: cd SIGUCA
   -  install dependencies: npm install 
   -  Create the database: into the folder "DB" use the command mongorestore
+
+/////////////////////////////////////////
+Para restaurar una sola base de datos, debe proporcionar la ruta al directorio de volcado como parte de la mongorestorelínea de comando.
+Por ejemplo:
+# Backup the training database
+mongodump --db training
+# Restore the training database to a new database called training2
+mongorestore --db training2 dump/training
+La --dbopción para mongodumpespecifica la base de datos de origen para volcar.
+La --dbopción para mongorestoreespecifica la base de datos de destino para restaurar.
+/////////////////////////////////////////
+
   -  Start the web application: into the folder SIGUCA, use the command "nodejs app.js"
 
 ### Files structure
